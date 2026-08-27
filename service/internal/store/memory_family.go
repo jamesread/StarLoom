@@ -11,16 +11,16 @@ import (
 type memoryFamily struct {
 	mu sync.Mutex
 
-	nextFamilyID    int
-	families        map[int]FamilyRow
-	nextMemberID    int
-	members         map[int]FamilyMemberRow
-	nextLedgerID    int
-	ledger          map[int]StarLedgerRow
-	nextRewardID    int
-	rewards         map[int]RewardRow
+	nextFamilyID     int
+	families         map[int]FamilyRow
+	nextMemberID     int
+	members          map[int]FamilyMemberRow
+	nextLedgerID     int
+	ledger           map[int]StarLedgerRow
+	nextRewardID     int
+	rewards          map[int]RewardRow
 	nextRedemptionID int
-	redemptions     map[int]RedemptionRow
+	redemptions      map[int]RedemptionRow
 }
 
 func (m *Memory) familyState() *memoryFamily {

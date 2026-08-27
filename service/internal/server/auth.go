@@ -73,18 +73,18 @@ func (s *Server) GetStatus(ctx context.Context, req *connect.Request[apiv1.GetSt
 	_, init := s.shellFields(ctx)
 
 	res := &apiv1.GetStatusResponse{
-		ShowFooter:         init.ShowFooter,
-		ShowNewVersions:    init.ShowNewVersions,
-		AvailableVersion:   init.AvailableVersion,
-		CurrentVersion:     init.CurrentVersion,
-		PageTitle:          init.PageTitle,
-		ShowVersionNumber:  init.ShowVersionNumber,
-		SiteTitle:          init.SiteTitle,
-		Features:           init.Features,
-		WebhookEvents:      init.WebhookEvents,
-		UsesSecureCookies:  auth.SecureCookiesEnabled(),
-		Username:           "<anonymous>",
-		IsLoggedIn:         au != nil && au.User != nil && au.User.ID > 0,
+		ShowFooter:        init.ShowFooter,
+		ShowNewVersions:   init.ShowNewVersions,
+		AvailableVersion:  init.AvailableVersion,
+		CurrentVersion:    init.CurrentVersion,
+		PageTitle:         init.PageTitle,
+		ShowVersionNumber: init.ShowVersionNumber,
+		SiteTitle:         init.SiteTitle,
+		Features:          init.Features,
+		WebhookEvents:     init.WebhookEvents,
+		UsesSecureCookies: auth.SecureCookiesEnabled(),
+		Username:          "<anonymous>",
+		IsLoggedIn:        au != nil && au.User != nil && au.User.ID > 0,
 	}
 
 	if au != nil && au.User != nil && au.User.ID > 0 {

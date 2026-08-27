@@ -10,7 +10,7 @@ dockers:
     goarch: amd64
     use: buildx
     image_templates:
-      - ghcr.io/jamesread/starapp:{{.Version}}-amd64
+      - ghcr.io/jamesread/starloom:{{.Version}}-amd64
     build_flag_templates:
       - "--platform=linux/amd64"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
@@ -27,7 +27,7 @@ dockers:
     goarch: arm64
     use: buildx
     image_templates:
-      - ghcr.io/jamesread/starapp:{{.Version}}-arm64
+      - ghcr.io/jamesread/starloom:{{.Version}}-arm64
     build_flag_templates:
       - "--platform=linux/arm64"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
@@ -41,15 +41,15 @@ dockers:
       - service
 
 docker_manifests:
-  - name_template: ghcr.io/jamesread/starapp:{{.Version}}
+  - name_template: ghcr.io/jamesread/starloom:{{.Version}}
     image_templates:
-      - ghcr.io/jamesread/starapp:{{.Version}}-amd64
-      - ghcr.io/jamesread/starapp:{{.Version}}-arm64
+      - ghcr.io/jamesread/starloom:{{.Version}}-amd64
+      - ghcr.io/jamesread/starloom:{{.Version}}-arm64
 
-  - name_template: ghcr.io/jamesread/starapp:latest
+  - name_template: ghcr.io/jamesread/starloom:latest
     image_templates:
-      - ghcr.io/jamesread/starapp:{{.Version}}-amd64
-      - ghcr.io/jamesread/starapp:{{.Version}}-arm64
+      - ghcr.io/jamesread/starloom:{{.Version}}-amd64
+      - ghcr.io/jamesread/starloom:{{.Version}}-arm64
 
 release:
   disable: true

@@ -33,26 +33,28 @@ The **Release Pipeline** workflow (`.github/workflows/release.yml`) runs `make
 build`, `make test`, and `make lint` on every push and pull request. On pushes to
 `main`, semantic-release creates a GitHub Release when commits warrant a version
 bump, then GoReleaser builds and publishes multi-arch container images to
-`ghcr.io/jamesread/starapp`.
+`ghcr.io/jamesread/starloom`.
 
 ### Container images
 
 After a release:
 
 ```bash
-docker pull ghcr.io/jamesread/starapp:latest
+docker pull ghcr.io/jamesread/starloom:latest
 # or pin a version:
-docker pull ghcr.io/jamesread/starapp:1.2.3
+docker pull ghcr.io/jamesread/starloom:1.2.3
 ```
 
 The image serves the built SPA from `/usr/share/starapp/webui`, stores SQLite
 data under `/config` (volume), and runs migrations on startup.
 
-### Repository secret
+### GitHub Actions permissions
 
-Configure **`CONTAINER_TOKEN`** — a GitHub PAT with `packages:write` (and
-`contents` write if branch protection blocks the default `GITHUB_TOKEN` for
-tagging). Same pattern as [Japella](https://github.com/jamesread/Japella).
+The **release** job sets `packages: write` so the built-in `GITHUB_TOKEN` can
+push container images to GHCR. No extra repository secrets are required.
+
+If releases fail to create tags (e.g. branch protection on `main`), allow GitHub
+Actions to bypass protection or adjust protection rules for the release bot.
 
 ## GoReleaser
 

@@ -16,12 +16,12 @@ const RequiredMigration = "6.domain-rbac.sql"
 
 // Config holds StarApp service configuration.
 type Config struct {
-	ConfigDir string `koanf:"config_dir"`
-	DBDriver  string `koanf:"db_driver"`
-	DBPath    string `koanf:"db_path"`
-	HTTPAddr  string `koanf:"http_addr"`
-	WebUIDir  string `koanf:"webui_dir"`
-	ShowFooter bool  `koanf:"show_footer"`
+	ConfigDir  string         `koanf:"config_dir"`
+	DBDriver   string         `koanf:"db_driver"`
+	DBPath     string         `koanf:"db_path"`
+	HTTPAddr   string         `koanf:"http_addr"`
+	WebUIDir   string         `koanf:"webui_dir"`
+	ShowFooter bool           `koanf:"show_footer"`
 	Auth       map[string]any `koanf:"auth"`
 }
 

@@ -98,13 +98,12 @@ jobs:
       - name: Build release artifacts
         run: make build
 
-      # CONTAINER_TOKEN: PAT with packages:write (and contents if branch protection blocks GITHUB_TOKEN).
       - name: Login to ghcr
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.CONTAINER_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install goreleaser
         uses: goreleaser/goreleaser-action@v6
@@ -117,5 +116,5 @@ jobs:
         with:
           semantic_version: 24.2.3
         env:
-          GITHUB_TOKEN: ${{ secrets.CONTAINER_TOKEN }}
-          GH_TOKEN: ${{ secrets.CONTAINER_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

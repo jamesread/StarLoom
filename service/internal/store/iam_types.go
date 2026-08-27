@@ -58,7 +58,7 @@ type RBACRoleRow struct {
 }
 
 type MyPermissionAuditRow struct {
-	Permission      string
-	Granted         bool
-	GrantingGroups  []string
+	Permission     string
+	Granted        bool
+	GrantingGroups []string
 }

@@ -65,8 +65,8 @@ func run(log *logrus.Logger, configDir string) error {
 		return fmt.Errorf("database %q: %w", cfg.DBPath, err)
 	}
 	log.WithFields(logrus.Fields{
-		"db_path":         cfg.DBPath,
-		"migrations_dir":  migrationsDir,
+		"db_path":        cfg.DBPath,
+		"migrations_dir": migrationsDir,
 	}).Info("running database migrations")
 
 	applied, err := migrate.RunSQLiteUp(st, migrationsDir)

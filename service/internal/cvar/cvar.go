@@ -7,10 +7,10 @@ const (
 )
 
 const (
-	KeySiteTitle                  = "site_title"
-	KeyShowFooter                 = "show_footer"
-	KeyDefaultAwardStars          = "default_award_stars"
-	KeyEnableRedemptionApproval   = "enable_redemption_approval"
+	KeySiteTitle                = "site_title"
+	KeyShowFooter               = "show_footer"
+	KeyDefaultAwardStars        = "default_award_stars"
+	KeyEnableRedemptionApproval = "enable_redemption_approval"
 
 	DefaultAwardStars = 1
 	MaxAwardStars     = 100
@@ -58,9 +58,9 @@ func Defaults(siteTitle string, showFooter bool) []Def {
 		},
 		{
 			Key: KeyEnableRedemptionApproval, MainType: TypeBool, ValueInt: 1,
-			Title: "Redemption approval by default",
+			Title:       "Redemption approval by default",
 			Description: "When enabled, new rewards require parent approval before stars are deducted.",
-			Category: CategoryFeatures, Ordinal: 40,
+			Category:    CategoryFeatures, Ordinal: 40,
 		},
 	}
 }

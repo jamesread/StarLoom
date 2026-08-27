@@ -13,8 +13,8 @@ import (
 	"github.com/mark3labs/mcp-go/server"
 
 	apiv1 "github.com/jamesread/starapp/service/gen/starapp/api/v1"
-	"github.com/jamesread/starapp/service/internal/buildinfo"
 	"github.com/jamesread/starapp/service/internal/auth"
+	"github.com/jamesread/starapp/service/internal/buildinfo"
 	srvpkg "github.com/jamesread/starapp/service/internal/server"
 )
 

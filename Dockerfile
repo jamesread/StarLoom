@@ -13,7 +13,7 @@ RUN CGO_ENABLED=1 go build \
   -o /starapp .
 
 FROM alpine:3.20
-LABEL org.opencontainers.image.source="https://github.com/jamesread/StarApp"
+LABEL org.opencontainers.image.source="https://github.com/jamesread/StarLoom"
 LABEL org.opencontainers.image.title="StarApp"
 LABEL org.opencontainers.image.description="Family star rewards — parents award stars; children redeem privileges."
 RUN apk add --no-cache ca-certificates sqlite-libs

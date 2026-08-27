@@ -24,8 +24,8 @@ func (s *Server) GetParentHomeSummary(ctx context.Context, _ *connect.Request[ap
 	}
 	pending, _ := s.store.CountPendingRedemptions(ctx, fc.family.ID)
 	out := &apiv1.GetParentHomeSummaryResponse{
-		Family:              toProtoFamily(fc.family),
-		PendingRedemptions:  int32(pending),
+		Family:             toProtoFamily(fc.family),
+		PendingRedemptions: int32(pending),
 	}
 	for i := range members {
 		if members[i].Role != store.MemberRoleChild {
