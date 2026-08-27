@@ -115,6 +115,8 @@ jobs:
         uses: cycjimmy/semantic-release-action@v6.0.0
         with:
           semantic_version: 24.2.3
+          extra_plugins: |
+            @semantic-release/exec
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
