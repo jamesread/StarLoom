@@ -5,6 +5,9 @@
 version: 2
 
 # Binary is built inside the multi-stage Dockerfile (CGO + sqlite).
+builds:
+  - skip: true
+
 dockers:
   - dockerfile: Dockerfile
     goarch: amd64
