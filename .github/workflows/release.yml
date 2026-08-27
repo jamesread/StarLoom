@@ -1,0 +1,121 @@
+name: Release Pipeline
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: service/go.mod
+          cache: true
+          cache-dependency-path: service/go.sum
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install buf
+        run: |
+          curl -sSL "https://github.com/bufbuild/buf/releases/download/v1.50.0/buf-Linux-x86_64" -o /usr/local/bin/buf
+          chmod +x /usr/local/bin/buf
+
+      - name: Build
+        run: make build
+
+      - name: Test
+        env:
+          CGO_ENABLED: '1'
+        run: make test
+
+      - name: Lint
+        env:
+          CGO_ENABLED: '1'
+        run: make lint
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          cache-image: true
+          platforms: arm64,amd64
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: service/go.mod
+          cache: true
+          cache-dependency-path: service/go.sum
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install buf
+        run: |
+          curl -sSL "https://github.com/bufbuild/buf/releases/download/v1.50.0/buf-Linux-x86_64" -o /usr/local/bin/buf
+          chmod +x /usr/local/bin/buf
+
+      - name: Build release artifacts
+        run: make build
+
+      # CONTAINER_TOKEN: PAT with packages:write (and contents if branch protection blocks GITHUB_TOKEN).
+      - name: Login to ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.CONTAINER_TOKEN }}
+
+      - name: Install goreleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          install-only: true
+
+      - name: Release
+        if: github.ref_type != 'tag'
+        uses: cycjimmy/semantic-release-action@v6.0.0
+        with:
+          semantic_version: 24.2.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.CONTAINER_TOKEN }}
+          GH_TOKEN: ${{ secrets.CONTAINER_TOKEN }}

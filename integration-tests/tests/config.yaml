@@ -1,0 +1,5 @@
+# Backend config for integration tests (-configdir points here).
+http_addr: ":18080"
+db_driver: sqlite
+db_path: "starapp-test.db"
+webui_dir: "../../frontend/dist"

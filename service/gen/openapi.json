@@ -1,0 +1,5856 @@
+{
+  "openapi": "3.1.0",
+  "info": {},
+  "paths": {
+    "/api/starapp.api.v1.StarAppService/ApproveRedemption": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ApproveRedemption",
+        "operationId": "starapp.api.v1.StarAppService.ApproveRedemption",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ApproveRedemptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ApproveRedemptionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/AwardStars": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "AwardStars",
+        "operationId": "starapp.api.v1.StarAppService.AwardStars",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.AwardStarsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.AwardStarsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ChangePassword": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ChangePassword",
+        "operationId": "starapp.api.v1.StarAppService.ChangePassword",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ChangePasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ChangePasswordResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/CreateApiKey": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "CreateApiKey",
+        "operationId": "starapp.api.v1.StarAppService.CreateApiKey",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.CreateApiKeyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.CreateApiKeyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/CreateChildMember": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "CreateChildMember",
+        "operationId": "starapp.api.v1.StarAppService.CreateChildMember",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.CreateChildMemberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.CreateChildMemberResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/CreateFamily": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "CreateFamily",
+        "operationId": "starapp.api.v1.StarAppService.CreateFamily",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.CreateFamilyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.CreateFamilyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/CreateRbacRole": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "CreateRbacRole",
+        "operationId": "starapp.api.v1.StarAppService.CreateRbacRole",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.CreateRbacRoleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.CreateRbacRoleResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/CreateReward": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "CreateReward",
+        "operationId": "starapp.api.v1.StarAppService.CreateReward",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.CreateRewardRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.CreateRewardResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/CreateUser": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "CreateUser",
+        "operationId": "starapp.api.v1.StarAppService.CreateUser",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.CreateUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.CreateUserResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/CreateUserGroup": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "CreateUserGroup",
+        "operationId": "starapp.api.v1.StarAppService.CreateUserGroup",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.CreateUserGroupRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.CreateUserGroupResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/CreateWebhook": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "CreateWebhook",
+        "operationId": "starapp.api.v1.StarAppService.CreateWebhook",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.CreateWebhookRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.CreateWebhookResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/DeleteApiKey": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "DeleteApiKey",
+        "operationId": "starapp.api.v1.StarAppService.DeleteApiKey",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.DeleteApiKeyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.DeleteApiKeyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/DeleteMember": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "DeleteMember",
+        "operationId": "starapp.api.v1.StarAppService.DeleteMember",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.DeleteMemberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.DeleteMemberResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/DeleteMemberAvatar": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "DeleteMemberAvatar",
+        "operationId": "starapp.api.v1.StarAppService.DeleteMemberAvatar",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.DeleteMemberAvatarRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.DeleteMemberAvatarResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/DeleteRbacRole": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "DeleteRbacRole",
+        "operationId": "starapp.api.v1.StarAppService.DeleteRbacRole",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.DeleteRbacRoleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.DeleteRbacRoleResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/DeleteReward": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "DeleteReward",
+        "operationId": "starapp.api.v1.StarAppService.DeleteReward",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.DeleteRewardRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.DeleteRewardResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/DeleteUser": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "DeleteUser",
+        "operationId": "starapp.api.v1.StarAppService.DeleteUser",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.DeleteUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.DeleteUserResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/DeleteUserGroup": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "DeleteUserGroup",
+        "operationId": "starapp.api.v1.StarAppService.DeleteUserGroup",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.DeleteUserGroupRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.DeleteUserGroupResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/DeleteWebhook": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "DeleteWebhook",
+        "operationId": "starapp.api.v1.StarAppService.DeleteWebhook",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.DeleteWebhookRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.DeleteWebhookResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/GetChildHomeSummary": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetChildHomeSummary",
+        "operationId": "starapp.api.v1.StarAppService.GetChildHomeSummary",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetChildHomeSummaryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetChildHomeSummaryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/GetMemberBalance": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetMemberBalance",
+        "operationId": "starapp.api.v1.StarAppService.GetMemberBalance",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetMemberBalanceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetMemberBalanceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/GetMyFamily": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetMyFamily",
+        "operationId": "starapp.api.v1.StarAppService.GetMyFamily",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetMyFamilyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetMyFamilyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/GetMyPermissionsAudit": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetMyPermissionsAudit",
+        "operationId": "starapp.api.v1.StarAppService.GetMyPermissionsAudit",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetMyPermissionsAuditRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetMyPermissionsAuditResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/GetParentHomeSummary": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetParentHomeSummary",
+        "operationId": "starapp.api.v1.StarAppService.GetParentHomeSummary",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetParentHomeSummaryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetParentHomeSummaryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/GetRbacRoleGroups": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetRbacRoleGroups",
+        "operationId": "starapp.api.v1.StarAppService.GetRbacRoleGroups",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetRbacRoleGroupsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetRbacRoleGroupsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/GetRbacRoleUsers": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetRbacRoleUsers",
+        "operationId": "starapp.api.v1.StarAppService.GetRbacRoleUsers",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetRbacRoleUsersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetRbacRoleUsersResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/GetStatus": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetStatus",
+        "operationId": "starapp.api.v1.StarAppService.GetStatus",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetStatusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/GetUser": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetUser",
+        "operationId": "starapp.api.v1.StarAppService.GetUser",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetUserResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/GetUserGroupMembers": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetUserGroupMembers",
+        "operationId": "starapp.api.v1.StarAppService.GetUserGroupMembers",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetUserGroupMembersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetUserGroupMembersResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/GetUserGroupRbacRoles": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetUserGroupRbacRoles",
+        "operationId": "starapp.api.v1.StarAppService.GetUserGroupRbacRoles",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetUserGroupRbacRolesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetUserGroupRbacRolesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/GetUserPreferences": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetUserPreferences",
+        "operationId": "starapp.api.v1.StarAppService.GetUserPreferences",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetUserPreferencesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetUserPreferencesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/GetUserRbacRoles": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetUserRbacRoles",
+        "operationId": "starapp.api.v1.StarAppService.GetUserRbacRoles",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetUserRbacRolesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetUserRbacRolesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/GetUsers": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetUsers",
+        "operationId": "starapp.api.v1.StarAppService.GetUsers",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetUsersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetUsersResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ImpersonateUser": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ImpersonateUser",
+        "operationId": "starapp.api.v1.StarAppService.ImpersonateUser",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ImpersonateUserRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ImpersonateUserResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/Init": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "Init",
+        "operationId": "starapp.api.v1.StarAppService.Init",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.InitRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.InitResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ListApiKeys": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListApiKeys",
+        "operationId": "starapp.api.v1.StarAppService.ListApiKeys",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListApiKeysRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListApiKeysResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ListCvars": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListCvars",
+        "operationId": "starapp.api.v1.StarAppService.ListCvars",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListCvarsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListCvarsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ListLedger": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListLedger",
+        "operationId": "starapp.api.v1.StarAppService.ListLedger",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListLedgerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListLedgerResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ListMembers": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListMembers",
+        "operationId": "starapp.api.v1.StarAppService.ListMembers",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListMembersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListMembersResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ListRbacPermissions": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListRbacPermissions",
+        "operationId": "starapp.api.v1.StarAppService.ListRbacPermissions",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListRbacPermissionsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListRbacPermissionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ListRbacRoles": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListRbacRoles",
+        "operationId": "starapp.api.v1.StarAppService.ListRbacRoles",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListRbacRolesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListRbacRolesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ListRedemptions": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListRedemptions",
+        "operationId": "starapp.api.v1.StarAppService.ListRedemptions",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListRedemptionsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListRedemptionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ListRewards": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListRewards",
+        "operationId": "starapp.api.v1.StarAppService.ListRewards",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListRewardsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListRewardsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ListUserGroups": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListUserGroups",
+        "operationId": "starapp.api.v1.StarAppService.ListUserGroups",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListUserGroupsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListUserGroupsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ListWebhooks": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListWebhooks",
+        "operationId": "starapp.api.v1.StarAppService.ListWebhooks",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListWebhooksRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListWebhooksResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/LoginWithUsernameAndPassword": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "LoginWithUsernameAndPassword",
+        "operationId": "starapp.api.v1.StarAppService.LoginWithUsernameAndPassword",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.LoginWithUsernameAndPasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.LoginWithUsernameAndPasswordResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/Logout": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "Logout",
+        "operationId": "starapp.api.v1.StarAppService.Logout",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.LogoutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.LogoutResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/RejectRedemption": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "RejectRedemption",
+        "operationId": "starapp.api.v1.StarAppService.RejectRedemption",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.RejectRedemptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.RejectRedemptionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/RequestRedemption": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "RequestRedemption",
+        "operationId": "starapp.api.v1.StarAppService.RequestRedemption",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.RequestRedemptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.RequestRedemptionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ResetUserPassword": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ResetUserPassword",
+        "operationId": "starapp.api.v1.StarAppService.ResetUserPassword",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ResetUserPasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ResetUserPasswordResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/RevokeStars": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "RevokeStars",
+        "operationId": "starapp.api.v1.StarAppService.RevokeStars",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.RevokeStarsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.RevokeStarsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/SaveUserPreferences": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "SaveUserPreferences",
+        "operationId": "starapp.api.v1.StarAppService.SaveUserPreferences",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.SaveUserPreferencesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.SaveUserPreferencesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/SetUserGroupMembers": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "SetUserGroupMembers",
+        "operationId": "starapp.api.v1.StarAppService.SetUserGroupMembers",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.SetUserGroupMembersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.SetUserGroupMembersResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/SetUserGroupRbacRoles": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "SetUserGroupRbacRoles",
+        "operationId": "starapp.api.v1.StarAppService.SetUserGroupRbacRoles",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.SetUserGroupRbacRolesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.SetUserGroupRbacRolesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/StopImpersonation": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "StopImpersonation",
+        "operationId": "starapp.api.v1.StarAppService.StopImpersonation",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.StopImpersonationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.StopImpersonationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/UpdateCvar": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "UpdateCvar",
+        "operationId": "starapp.api.v1.StarAppService.UpdateCvar",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.UpdateCvarRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.Cvar"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/UpdateMember": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "UpdateMember",
+        "operationId": "starapp.api.v1.StarAppService.UpdateMember",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.UpdateMemberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.UpdateMemberResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/UpdateRbacRole": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "UpdateRbacRole",
+        "operationId": "starapp.api.v1.StarAppService.UpdateRbacRole",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.UpdateRbacRoleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.RbacRole"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/UpdateReward": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "UpdateReward",
+        "operationId": "starapp.api.v1.StarAppService.UpdateReward",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.UpdateRewardRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.UpdateRewardResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/UpdateWebhook": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "UpdateWebhook",
+        "operationId": "starapp.api.v1.StarAppService.UpdateWebhook",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.UpdateWebhookRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.Webhook"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/UploadMemberAvatar": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "UploadMemberAvatar",
+        "operationId": "starapp.api.v1.StarAppService.UploadMemberAvatar",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.UploadMemberAvatarRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.UploadMemberAvatarResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "connect-protocol-version": {
+        "type": "number",
+        "title": "Connect-Protocol-Version",
+        "enum": [
+          1
+        ],
+        "description": "Define the version of the Connect protocol",
+        "const": 1
+      },
+      "connect-timeout-header": {
+        "type": "number",
+        "title": "Connect-Timeout-Ms",
+        "description": "Define the timeout, in ms"
+      },
+      "connect.error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "examples": [
+              "not_found"
+            ],
+            "enum": [
+              "canceled",
+              "unknown",
+              "invalid_argument",
+              "deadline_exceeded",
+              "not_found",
+              "already_exists",
+              "permission_denied",
+              "resource_exhausted",
+              "failed_precondition",
+              "aborted",
+              "out_of_range",
+              "unimplemented",
+              "internal",
+              "unavailable",
+              "data_loss",
+              "unauthenticated"
+            ],
+            "description": "The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code]."
+          },
+          "message": {
+            "type": "string",
+            "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client."
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/connect.error_details.Any"
+            },
+            "description": "A list of messages that carry the error details. There is no limit on the number of messages."
+          }
+        },
+        "title": "Connect Error",
+        "additionalProperties": true,
+        "description": "Error type returned by Connect: https://connectrpc.com/docs/go/errors/#http-representation"
+      },
+      "connect.error_details.Any": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "A URL that acts as a globally unique identifier for the type of the serialized message. For example: `type.googleapis.com/google.rpc.ErrorInfo`. This is used to determine the schema of the data in the `value` field and is the discriminator for the `debug` field."
+          },
+          "value": {
+            "type": "string",
+            "format": "binary",
+            "description": "The Protobuf message, serialized as bytes and base64-encoded. The specific message type is identified by the `type` field."
+          },
+          "debug": {
+            "oneOf": [
+              {
+                "type": "object",
+                "title": "Any",
+                "additionalProperties": true,
+                "description": "Detailed error information."
+              }
+            ],
+            "discriminator": {
+              "propertyName": "type"
+            },
+            "title": "Debug",
+            "description": "Deserialized error detail payload. The 'type' field indicates the schema. This field is for easier debugging and should not be relied upon for application logic."
+          }
+        },
+        "additionalProperties": true,
+        "description": "Contains an arbitrary serialized message along with a @type that describes the type of the serialized message, with an additional debug field for ConnectRPC error details."
+      },
+      "starapp.api.v1.ApiKey": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "title": "name"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "created_at"
+          },
+          "lastUsedAt": {
+            "type": "string",
+            "title": "last_used_at"
+          },
+          "readOnly": {
+            "type": "boolean",
+            "title": "read_only"
+          }
+        },
+        "title": "ApiKey",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ApproveRedemptionRequest": {
+        "type": "object",
+        "properties": {
+          "redemptionId": {
+            "type": "integer",
+            "title": "redemption_id",
+            "format": "int32"
+          }
+        },
+        "title": "ApproveRedemptionRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ApproveRedemptionResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "redemption": {
+            "title": "redemption",
+            "$ref": "#/components/schemas/starapp.api.v1.Redemption"
+          }
+        },
+        "title": "ApproveRedemptionResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.AwardStarsRequest": {
+        "type": "object",
+        "properties": {
+          "childMemberId": {
+            "type": "integer",
+            "title": "child_member_id",
+            "format": "int32"
+          },
+          "amount": {
+            "type": "integer",
+            "title": "amount",
+            "format": "int32"
+          },
+          "note": {
+            "type": "string",
+            "title": "note"
+          }
+        },
+        "title": "AwardStarsRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.AwardStarsResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "entry": {
+            "title": "entry",
+            "$ref": "#/components/schemas/starapp.api.v1.StarLedgerEntry"
+          },
+          "newBalance": {
+            "type": "integer",
+            "title": "new_balance",
+            "format": "int32"
+          }
+        },
+        "title": "AwardStarsResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ChangePasswordRequest": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "title": "current_password"
+          },
+          "newPassword": {
+            "type": "string",
+            "title": "new_password"
+          }
+        },
+        "title": "ChangePasswordRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ChangePasswordResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "ChangePasswordResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ChildHomeSummary": {
+        "type": "object",
+        "properties": {
+          "member": {
+            "title": "member",
+            "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
+          },
+          "balance": {
+            "type": "integer",
+            "title": "balance",
+            "format": "int32"
+          },
+          "lastAward": {
+            "title": "last_award",
+            "$ref": "#/components/schemas/starapp.api.v1.StarLedgerEntry"
+          }
+        },
+        "title": "ChildHomeSummary",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateApiKeyRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "name"
+          },
+          "readOnly": {
+            "type": "boolean",
+            "title": "read_only"
+          }
+        },
+        "title": "CreateApiKeyRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateApiKeyResponse": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "title": "key",
+            "$ref": "#/components/schemas/starapp.api.v1.ApiKey"
+          },
+          "secret": {
+            "type": "string",
+            "title": "secret"
+          }
+        },
+        "title": "CreateApiKeyResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateChildMemberRequest": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "title": "display_name"
+          },
+          "username": {
+            "type": "string",
+            "title": "username"
+          },
+          "password": {
+            "type": "string",
+            "title": "password"
+          }
+        },
+        "title": "CreateChildMemberRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateChildMemberResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "member": {
+            "title": "member",
+            "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
+          }
+        },
+        "title": "CreateChildMemberResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateFamilyRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "name"
+          }
+        },
+        "title": "CreateFamilyRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateFamilyResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "family": {
+            "title": "family",
+            "$ref": "#/components/schemas/starapp.api.v1.Family"
+          },
+          "callerMember": {
+            "title": "caller_member",
+            "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
+          }
+        },
+        "title": "CreateFamilyResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateRbacRoleRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "name"
+          },
+          "description": {
+            "type": "string",
+            "title": "description"
+          },
+          "permissionIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "permission_ids"
+          }
+        },
+        "title": "CreateRbacRoleRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateRbacRoleResponse": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "title": "role",
+            "$ref": "#/components/schemas/starapp.api.v1.RbacRole"
+          }
+        },
+        "title": "CreateRbacRoleResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateRewardRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "title"
+          },
+          "description": {
+            "type": "string",
+            "title": "description"
+          },
+          "costStars": {
+            "type": "integer",
+            "title": "cost_stars",
+            "format": "int32"
+          },
+          "approvalRequired": {
+            "type": "boolean",
+            "title": "approval_required"
+          }
+        },
+        "title": "CreateRewardRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateRewardResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "reward": {
+            "title": "reward",
+            "$ref": "#/components/schemas/starapp.api.v1.Reward"
+          }
+        },
+        "title": "CreateRewardResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateUserGroupRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "name"
+          }
+        },
+        "title": "CreateUserGroupRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateUserGroupResponse": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "title": "group",
+            "$ref": "#/components/schemas/starapp.api.v1.UserGroup"
+          }
+        },
+        "title": "CreateUserGroupResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateUserRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "username"
+          },
+          "password": {
+            "type": "string",
+            "title": "password"
+          }
+        },
+        "title": "CreateUserRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateUserResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "user": {
+            "title": "user",
+            "$ref": "#/components/schemas/starapp.api.v1.UserAccount"
+          }
+        },
+        "title": "CreateUserResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateWebhookRequest": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "url"
+          },
+          "secret": {
+            "type": "string",
+            "title": "secret"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "events"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "enabled"
+          }
+        },
+        "title": "CreateWebhookRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateWebhookResponse": {
+        "type": "object",
+        "properties": {
+          "webhook": {
+            "title": "webhook",
+            "$ref": "#/components/schemas/starapp.api.v1.Webhook"
+          }
+        },
+        "title": "CreateWebhookResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.Cvar": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "key"
+          },
+          "mainType": {
+            "type": "string",
+            "title": "main_type"
+          },
+          "valueInt": {
+            "type": "integer",
+            "title": "value_int",
+            "format": "int32"
+          },
+          "valueString": {
+            "type": "string",
+            "title": "value_string"
+          },
+          "title": {
+            "type": "string",
+            "title": "title"
+          },
+          "description": {
+            "type": "string",
+            "title": "description"
+          },
+          "category": {
+            "type": "string",
+            "title": "category"
+          },
+          "ordinal": {
+            "type": "integer",
+            "title": "ordinal",
+            "format": "int32"
+          }
+        },
+        "title": "Cvar",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteApiKeyRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          }
+        },
+        "title": "DeleteApiKeyRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteApiKeyResponse": {
+        "type": "object",
+        "title": "DeleteApiKeyResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteMemberAvatarRequest": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "integer",
+            "title": "member_id",
+            "format": "int32"
+          }
+        },
+        "title": "DeleteMemberAvatarRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteMemberAvatarResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "member": {
+            "title": "member",
+            "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
+          }
+        },
+        "title": "DeleteMemberAvatarResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteMemberRequest": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "integer",
+            "title": "member_id",
+            "format": "int32"
+          }
+        },
+        "title": "DeleteMemberRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteMemberResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "DeleteMemberResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteRbacRoleRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          }
+        },
+        "title": "DeleteRbacRoleRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteRbacRoleResponse": {
+        "type": "object",
+        "title": "DeleteRbacRoleResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteRewardRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          }
+        },
+        "title": "DeleteRewardRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteRewardResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "DeleteRewardResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteUserGroupRequest": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "integer",
+            "title": "group_id",
+            "format": "int32"
+          }
+        },
+        "title": "DeleteUserGroupRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteUserGroupResponse": {
+        "type": "object",
+        "title": "DeleteUserGroupResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteUserRequest": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "title": "user_id",
+            "format": "int32"
+          }
+        },
+        "title": "DeleteUserRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteUserResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "DeleteUserResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteWebhookRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          }
+        },
+        "title": "DeleteWebhookRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteWebhookResponse": {
+        "type": "object",
+        "title": "DeleteWebhookResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.Family": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "title": "name"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "created_at"
+          }
+        },
+        "title": "Family",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.FamilyMember": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "familyId": {
+            "type": "integer",
+            "title": "family_id",
+            "format": "int32"
+          },
+          "userAccountId": {
+            "type": "integer",
+            "title": "user_account_id",
+            "format": "int32"
+          },
+          "displayName": {
+            "type": "string",
+            "title": "display_name"
+          },
+          "role": {
+            "type": "string",
+            "title": "role"
+          },
+          "hasAvatar": {
+            "type": "boolean",
+            "title": "has_avatar"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "created_at"
+          },
+          "username": {
+            "type": "string",
+            "title": "username"
+          }
+        },
+        "title": "FamilyMember",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.Features": {
+        "type": "object",
+        "properties": {
+          "redemptionApprovalDefault": {
+            "type": "boolean",
+            "title": "redemption_approval_default"
+          }
+        },
+        "title": "Features",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetChildHomeSummaryRequest": {
+        "type": "object",
+        "title": "GetChildHomeSummaryRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetChildHomeSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "member": {
+            "title": "member",
+            "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
+          },
+          "balance": {
+            "type": "integer",
+            "title": "balance",
+            "format": "int32"
+          },
+          "recentAwards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.StarLedgerEntry"
+            },
+            "title": "recent_awards"
+          },
+          "rewards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.Reward"
+            },
+            "title": "rewards"
+          }
+        },
+        "title": "GetChildHomeSummaryResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetMemberBalanceRequest": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "integer",
+            "title": "member_id",
+            "format": "int32"
+          }
+        },
+        "title": "GetMemberBalanceRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetMemberBalanceResponse": {
+        "type": "object",
+        "properties": {
+          "balance": {
+            "type": "integer",
+            "title": "balance",
+            "format": "int32"
+          }
+        },
+        "title": "GetMemberBalanceResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetMyFamilyRequest": {
+        "type": "object",
+        "title": "GetMyFamilyRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetMyFamilyResponse": {
+        "type": "object",
+        "properties": {
+          "family": {
+            "title": "family",
+            "$ref": "#/components/schemas/starapp.api.v1.Family"
+          },
+          "callerMember": {
+            "title": "caller_member",
+            "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
+          }
+        },
+        "title": "GetMyFamilyResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetMyPermissionsAuditRequest": {
+        "type": "object",
+        "title": "GetMyPermissionsAuditRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetMyPermissionsAuditResponse": {
+        "type": "object",
+        "properties": {
+          "groupNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "group_names"
+          },
+          "roleNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "role_names"
+          },
+          "isSuperuser": {
+            "type": "boolean",
+            "title": "is_superuser"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.MyPermissionAuditRow"
+            },
+            "title": "permissions"
+          }
+        },
+        "title": "GetMyPermissionsAuditResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetParentHomeSummaryRequest": {
+        "type": "object",
+        "title": "GetParentHomeSummaryRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetParentHomeSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "family": {
+            "title": "family",
+            "$ref": "#/components/schemas/starapp.api.v1.Family"
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.ChildHomeSummary"
+            },
+            "title": "children"
+          },
+          "pendingRedemptions": {
+            "type": "integer",
+            "title": "pending_redemptions",
+            "format": "int32"
+          }
+        },
+        "title": "GetParentHomeSummaryResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetRbacRoleGroupsRequest": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "integer",
+            "title": "role_id",
+            "format": "int32"
+          }
+        },
+        "title": "GetRbacRoleGroupsRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetRbacRoleGroupsResponse": {
+        "type": "object",
+        "properties": {
+          "groupNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "group_names"
+          }
+        },
+        "title": "GetRbacRoleGroupsResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetRbacRoleUsersRequest": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "integer",
+            "title": "role_id",
+            "format": "int32"
+          }
+        },
+        "title": "GetRbacRoleUsersRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetRbacRoleUsersResponse": {
+        "type": "object",
+        "properties": {
+          "usernames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "usernames"
+          }
+        },
+        "title": "GetRbacRoleUsersResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetStatusRequest": {
+        "type": "object",
+        "title": "GetStatusRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetStatusResponse": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "username"
+          },
+          "isLoggedIn": {
+            "type": "boolean",
+            "title": "is_logged_in"
+          },
+          "rbacPermissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "rbac_permissions"
+          },
+          "rbacIsSuperuser": {
+            "type": "boolean",
+            "title": "rbac_is_superuser"
+          },
+          "isImpersonating": {
+            "type": "boolean",
+            "title": "is_impersonating"
+          },
+          "impersonatorUsername": {
+            "type": "string",
+            "title": "impersonator_username"
+          },
+          "showFooter": {
+            "type": "boolean",
+            "title": "show_footer"
+          },
+          "showNewVersions": {
+            "type": "boolean",
+            "title": "show_new_versions"
+          },
+          "availableVersion": {
+            "type": "string",
+            "title": "available_version"
+          },
+          "currentVersion": {
+            "type": "string",
+            "title": "current_version"
+          },
+          "pageTitle": {
+            "type": "string",
+            "title": "page_title"
+          },
+          "showVersionNumber": {
+            "type": "boolean",
+            "title": "show_version_number"
+          },
+          "siteTitle": {
+            "type": "string",
+            "title": "site_title"
+          },
+          "features": {
+            "title": "features",
+            "$ref": "#/components/schemas/starapp.api.v1.Features"
+          },
+          "webhookEvents": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "webhook_events"
+          },
+          "usesSecureCookies": {
+            "type": "boolean",
+            "title": "uses_secure_cookies"
+          },
+          "accountCreatedAt": {
+            "type": "string",
+            "title": "account_created_at"
+          }
+        },
+        "title": "GetStatusResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetUserGroupMembersRequest": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "integer",
+            "title": "group_id",
+            "format": "int32"
+          }
+        },
+        "title": "GetUserGroupMembersRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetUserGroupMembersResponse": {
+        "type": "object",
+        "properties": {
+          "members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.UserAccount"
+            },
+            "title": "members"
+          }
+        },
+        "title": "GetUserGroupMembersResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetUserGroupRbacRolesRequest": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "integer",
+            "title": "group_id",
+            "format": "int32"
+          }
+        },
+        "title": "GetUserGroupRbacRolesRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetUserGroupRbacRolesResponse": {
+        "type": "object",
+        "properties": {
+          "roleIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "role_ids"
+          }
+        },
+        "title": "GetUserGroupRbacRolesResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetUserPreferencesRequest": {
+        "type": "object",
+        "title": "GetUserPreferencesRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetUserPreferencesResponse": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string",
+            "title": "language"
+          },
+          "availableLanguages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "available_languages"
+          },
+          "sidebarEnabled": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "title": "sidebar_enabled"
+          },
+          "themeToggleEnabled": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "title": "theme_toggle_enabled"
+          }
+        },
+        "title": "GetUserPreferencesResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetUserRbacRolesRequest": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "title": "user_id",
+            "format": "int32"
+          }
+        },
+        "title": "GetUserRbacRolesRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetUserRbacRolesResponse": {
+        "type": "object",
+        "properties": {
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.RbacRole"
+            },
+            "title": "roles"
+          }
+        },
+        "title": "GetUserRbacRolesResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetUserRequest": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "title": "user_id",
+            "format": "int32"
+          }
+        },
+        "title": "GetUserRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetUserResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "title": "user",
+            "$ref": "#/components/schemas/starapp.api.v1.UserAccount"
+          }
+        },
+        "title": "GetUserResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetUsersRequest": {
+        "type": "object",
+        "title": "GetUsersRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetUsersResponse": {
+        "type": "object",
+        "properties": {
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.UserAccount"
+            },
+            "title": "users"
+          }
+        },
+        "title": "GetUsersResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ImpersonateUserRequest": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "title": "user_id",
+            "format": "int32"
+          }
+        },
+        "title": "ImpersonateUserRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ImpersonateUserResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "ImpersonateUserResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.InitRequest": {
+        "type": "object",
+        "title": "InitRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.InitResponse": {
+        "type": "object",
+        "properties": {
+          "showFooter": {
+            "type": "boolean",
+            "title": "show_footer"
+          },
+          "showNewVersions": {
+            "type": "boolean",
+            "title": "show_new_versions"
+          },
+          "availableVersion": {
+            "type": "string",
+            "title": "available_version"
+          },
+          "currentVersion": {
+            "type": "string",
+            "title": "current_version"
+          },
+          "pageTitle": {
+            "type": "string",
+            "title": "page_title"
+          },
+          "showVersionNumber": {
+            "type": "boolean",
+            "title": "show_version_number"
+          },
+          "siteTitle": {
+            "type": "string",
+            "title": "site_title"
+          },
+          "features": {
+            "title": "features",
+            "$ref": "#/components/schemas/starapp.api.v1.Features"
+          },
+          "webhookEvents": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "webhook_events"
+          }
+        },
+        "title": "InitResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListApiKeysRequest": {
+        "type": "object",
+        "title": "ListApiKeysRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListApiKeysResponse": {
+        "type": "object",
+        "properties": {
+          "keys": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.ApiKey"
+            },
+            "title": "keys"
+          }
+        },
+        "title": "ListApiKeysResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListCvarsRequest": {
+        "type": "object",
+        "title": "ListCvarsRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListCvarsResponse": {
+        "type": "object",
+        "properties": {
+          "cvars": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.Cvar"
+            },
+            "title": "cvars"
+          }
+        },
+        "title": "ListCvarsResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListLedgerRequest": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "integer",
+            "title": "member_id",
+            "format": "int32"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "limit",
+            "format": "int32"
+          }
+        },
+        "title": "ListLedgerRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListLedgerResponse": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.StarLedgerEntry"
+            },
+            "title": "entries"
+          }
+        },
+        "title": "ListLedgerResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListMembersRequest": {
+        "type": "object",
+        "title": "ListMembersRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListMembersResponse": {
+        "type": "object",
+        "properties": {
+          "members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
+            },
+            "title": "members"
+          }
+        },
+        "title": "ListMembersResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListRbacPermissionsRequest": {
+        "type": "object",
+        "title": "ListRbacPermissionsRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListRbacPermissionsResponse": {
+        "type": "object",
+        "properties": {
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.RbacPermission"
+            },
+            "title": "permissions"
+          }
+        },
+        "title": "ListRbacPermissionsResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListRbacRolesRequest": {
+        "type": "object",
+        "title": "ListRbacRolesRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListRbacRolesResponse": {
+        "type": "object",
+        "properties": {
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.RbacRole"
+            },
+            "title": "roles"
+          }
+        },
+        "title": "ListRbacRolesResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListRedemptionsRequest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "status"
+          }
+        },
+        "title": "ListRedemptionsRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListRedemptionsResponse": {
+        "type": "object",
+        "properties": {
+          "redemptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.Redemption"
+            },
+            "title": "redemptions"
+          }
+        },
+        "title": "ListRedemptionsResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListRewardsRequest": {
+        "type": "object",
+        "properties": {
+          "includeInactive": {
+            "type": "boolean",
+            "title": "include_inactive"
+          }
+        },
+        "title": "ListRewardsRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListRewardsResponse": {
+        "type": "object",
+        "properties": {
+          "rewards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.Reward"
+            },
+            "title": "rewards"
+          }
+        },
+        "title": "ListRewardsResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListUserGroupsRequest": {
+        "type": "object",
+        "title": "ListUserGroupsRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListUserGroupsResponse": {
+        "type": "object",
+        "properties": {
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.UserGroup"
+            },
+            "title": "groups"
+          }
+        },
+        "title": "ListUserGroupsResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListWebhooksRequest": {
+        "type": "object",
+        "title": "ListWebhooksRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListWebhooksResponse": {
+        "type": "object",
+        "properties": {
+          "webhooks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.Webhook"
+            },
+            "title": "webhooks"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "events"
+          }
+        },
+        "title": "ListWebhooksResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.LoginWithUsernameAndPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "username"
+          },
+          "password": {
+            "type": "string",
+            "title": "password"
+          }
+        },
+        "title": "LoginWithUsernameAndPasswordRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.LoginWithUsernameAndPasswordResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "username": {
+            "type": "string",
+            "title": "username"
+          }
+        },
+        "title": "LoginWithUsernameAndPasswordResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.LogoutRequest": {
+        "type": "object",
+        "title": "LogoutRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.LogoutResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "LogoutResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.MyPermissionAuditRow": {
+        "type": "object",
+        "properties": {
+          "permission": {
+            "type": "string",
+            "title": "permission"
+          },
+          "granted": {
+            "type": "boolean",
+            "title": "granted"
+          },
+          "grantingGroups": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "granting_groups"
+          }
+        },
+        "title": "MyPermissionAuditRow",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.RbacPermission": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "title": "name"
+          },
+          "description": {
+            "type": "string",
+            "title": "description"
+          }
+        },
+        "title": "RbacPermission",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.RbacRole": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "title": "name"
+          },
+          "description": {
+            "type": "string",
+            "title": "description"
+          },
+          "permissionIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "permission_ids"
+          },
+          "groupCount": {
+            "type": "integer",
+            "title": "group_count",
+            "format": "int32"
+          },
+          "userCount": {
+            "type": "integer",
+            "title": "user_count",
+            "format": "int32"
+          }
+        },
+        "title": "RbacRole",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.Redemption": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "familyId": {
+            "type": "integer",
+            "title": "family_id",
+            "format": "int32"
+          },
+          "childMemberId": {
+            "type": "integer",
+            "title": "child_member_id",
+            "format": "int32"
+          },
+          "rewardId": {
+            "type": "integer",
+            "title": "reward_id",
+            "format": "int32"
+          },
+          "starsSpent": {
+            "type": "integer",
+            "title": "stars_spent",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "title": "status"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "created_at"
+          },
+          "resolvedAt": {
+            "type": "string",
+            "title": "resolved_at"
+          },
+          "resolvedByMemberId": {
+            "type": "integer",
+            "title": "resolved_by_member_id",
+            "format": "int32"
+          },
+          "fulfilledAt": {
+            "type": "string",
+            "title": "fulfilled_at"
+          },
+          "rewardTitle": {
+            "type": "string",
+            "title": "reward_title"
+          },
+          "childDisplayName": {
+            "type": "string",
+            "title": "child_display_name"
+          }
+        },
+        "title": "Redemption",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.RejectRedemptionRequest": {
+        "type": "object",
+        "properties": {
+          "redemptionId": {
+            "type": "integer",
+            "title": "redemption_id",
+            "format": "int32"
+          }
+        },
+        "title": "RejectRedemptionRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.RejectRedemptionResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "redemption": {
+            "title": "redemption",
+            "$ref": "#/components/schemas/starapp.api.v1.Redemption"
+          }
+        },
+        "title": "RejectRedemptionResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.RequestRedemptionRequest": {
+        "type": "object",
+        "properties": {
+          "rewardId": {
+            "type": "integer",
+            "title": "reward_id",
+            "format": "int32"
+          },
+          "childMemberId": {
+            "type": "integer",
+            "title": "child_member_id",
+            "format": "int32"
+          }
+        },
+        "title": "RequestRedemptionRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.RequestRedemptionResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "redemption": {
+            "title": "redemption",
+            "$ref": "#/components/schemas/starapp.api.v1.Redemption"
+          }
+        },
+        "title": "RequestRedemptionResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ResetUserPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "title": "user_id",
+            "format": "int32"
+          },
+          "newPassword": {
+            "type": "string",
+            "title": "new_password"
+          }
+        },
+        "title": "ResetUserPasswordRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ResetUserPasswordResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "ResetUserPasswordResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.RevokeStarsRequest": {
+        "type": "object",
+        "properties": {
+          "childMemberId": {
+            "type": "integer",
+            "title": "child_member_id",
+            "format": "int32"
+          },
+          "amount": {
+            "type": "integer",
+            "title": "amount",
+            "format": "int32"
+          },
+          "note": {
+            "type": "string",
+            "title": "note"
+          }
+        },
+        "title": "RevokeStarsRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.RevokeStarsResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "entry": {
+            "title": "entry",
+            "$ref": "#/components/schemas/starapp.api.v1.StarLedgerEntry"
+          },
+          "newBalance": {
+            "type": "integer",
+            "title": "new_balance",
+            "format": "int32"
+          }
+        },
+        "title": "RevokeStarsResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.Reward": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "familyId": {
+            "type": "integer",
+            "title": "family_id",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string",
+            "title": "title"
+          },
+          "description": {
+            "type": "string",
+            "title": "description"
+          },
+          "costStars": {
+            "type": "integer",
+            "title": "cost_stars",
+            "format": "int32"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "active"
+          },
+          "approvalRequired": {
+            "type": "boolean",
+            "title": "approval_required"
+          }
+        },
+        "title": "Reward",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.SaveUserPreferencesRequest": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string",
+            "title": "language"
+          },
+          "sidebarEnabled": {
+            "type": "boolean",
+            "title": "sidebar_enabled"
+          },
+          "themeToggleEnabled": {
+            "type": "boolean",
+            "title": "theme_toggle_enabled"
+          }
+        },
+        "title": "SaveUserPreferencesRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.SaveUserPreferencesResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "username": {
+            "type": "string",
+            "title": "username"
+          }
+        },
+        "title": "SaveUserPreferencesResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.SetUserGroupMembersRequest": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "integer",
+            "title": "group_id",
+            "format": "int32"
+          },
+          "userIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "user_ids"
+          }
+        },
+        "title": "SetUserGroupMembersRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.SetUserGroupMembersResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "SetUserGroupMembersResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.SetUserGroupRbacRolesRequest": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "integer",
+            "title": "group_id",
+            "format": "int32"
+          },
+          "roleIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "role_ids"
+          }
+        },
+        "title": "SetUserGroupRbacRolesRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.SetUserGroupRbacRolesResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "SetUserGroupRbacRolesResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.StandardResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "success"
+          },
+          "message": {
+            "type": "string",
+            "title": "message"
+          }
+        },
+        "title": "StandardResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.StarLedgerEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "familyId": {
+            "type": "integer",
+            "title": "family_id",
+            "format": "int32"
+          },
+          "childMemberId": {
+            "type": "integer",
+            "title": "child_member_id",
+            "format": "int32"
+          },
+          "amount": {
+            "type": "integer",
+            "title": "amount",
+            "format": "int32"
+          },
+          "entryType": {
+            "type": "string",
+            "title": "entry_type"
+          },
+          "note": {
+            "type": "string",
+            "title": "note"
+          },
+          "relatedRewardId": {
+            "type": "integer",
+            "title": "related_reward_id",
+            "format": "int32"
+          },
+          "createdByMemberId": {
+            "type": "integer",
+            "title": "created_by_member_id",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "created_at"
+          }
+        },
+        "title": "StarLedgerEntry",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.StopImpersonationRequest": {
+        "type": "object",
+        "title": "StopImpersonationRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.StopImpersonationResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "StopImpersonationResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.UpdateCvarRequest": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "key"
+          },
+          "valueInt": {
+            "type": "integer",
+            "title": "value_int",
+            "format": "int32"
+          },
+          "valueString": {
+            "type": "string",
+            "title": "value_string"
+          }
+        },
+        "title": "UpdateCvarRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.UpdateMemberRequest": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "integer",
+            "title": "member_id",
+            "format": "int32"
+          },
+          "displayName": {
+            "type": "string",
+            "title": "display_name"
+          }
+        },
+        "title": "UpdateMemberRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.UpdateMemberResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "member": {
+            "title": "member",
+            "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
+          }
+        },
+        "title": "UpdateMemberResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.UpdateRbacRoleRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "title": "name"
+          },
+          "description": {
+            "type": "string",
+            "title": "description"
+          },
+          "permissionIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "permission_ids"
+          }
+        },
+        "title": "UpdateRbacRoleRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.UpdateRewardRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string",
+            "title": "title"
+          },
+          "description": {
+            "type": "string",
+            "title": "description"
+          },
+          "costStars": {
+            "type": "integer",
+            "title": "cost_stars",
+            "format": "int32"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "active"
+          },
+          "approvalRequired": {
+            "type": "boolean",
+            "title": "approval_required"
+          }
+        },
+        "title": "UpdateRewardRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.UpdateRewardResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "reward": {
+            "title": "reward",
+            "$ref": "#/components/schemas/starapp.api.v1.Reward"
+          }
+        },
+        "title": "UpdateRewardResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.UpdateWebhookRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "url": {
+            "type": "string",
+            "title": "url"
+          },
+          "secret": {
+            "type": "string",
+            "title": "secret"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "events"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "enabled"
+          }
+        },
+        "title": "UpdateWebhookRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.UploadMemberAvatarRequest": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "integer",
+            "title": "member_id",
+            "format": "int32"
+          },
+          "data": {
+            "type": "string",
+            "title": "data",
+            "format": "byte"
+          },
+          "contentType": {
+            "type": "string",
+            "title": "content_type"
+          }
+        },
+        "title": "UploadMemberAvatarRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.UploadMemberAvatarResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "member": {
+            "title": "member",
+            "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
+          }
+        },
+        "title": "UploadMemberAvatarResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.UserAccount": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "username": {
+            "type": "string",
+            "title": "username"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "created_at"
+          },
+          "createdBy": {
+            "type": "string",
+            "title": "created_by"
+          }
+        },
+        "title": "UserAccount",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.UserGroup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "title": "name"
+          },
+          "memberCount": {
+            "type": "integer",
+            "title": "member_count",
+            "format": "int32"
+          }
+        },
+        "title": "UserGroup",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.Webhook": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "url": {
+            "type": "string",
+            "title": "url"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "events"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "enabled"
+          },
+          "created": {
+            "type": "string",
+            "title": "created"
+          },
+          "updated": {
+            "type": "string",
+            "title": "updated"
+          }
+        },
+        "title": "Webhook",
+        "additionalProperties": false
+      }
+    }
+  },
+  "security": [],
+  "tags": [
+    {
+      "name": "starapp.api.v1.StarAppService"
+    }
+  ]
+}

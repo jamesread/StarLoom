@@ -1,0 +1,10 @@
+# StarApp service configuration (example)
+#
+# Copy to ~/.config/starapp/config.yaml for local development.
+
+http_addr: ":8080"
+db_driver: sqlite
+db_path: starapp.db
+show_footer: true
+# webui_dir: ../frontend/dist
+# auth: {}   # httpauthshim — JWT, trusted headers, mTLS (see docs/content/authentication.md)

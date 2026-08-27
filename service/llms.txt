@@ -1,0 +1,26 @@
+# StarApp
+
+> Family star rewards — parents award stars; children redeem for privileges. Integrate via the Connect RPC API, OpenAPI spec, or MCP server.
+
+StarApp exposes machine-readable integration endpoints on the same base URL as the web application.
+
+Sign in with a session cookie (`starapp-sid`) after username/password login, or use a Bearer API key for automation and MCP:
+
+`Authorization: Bearer <api-key>`
+
+Create API keys in the web UI (API keys page). The MCP server accepts Bearer API keys only (not cookies). The Connect API accepts both session cookies and API keys.
+
+## API
+
+- [Connect RPC API](/api): StarApp Connect/gRPC-over-HTTP API (prefix `/api`)
+- [OpenAPI spec](/openapi): OpenAPI 3.1 JSON description of the Connect RPC API
+
+## MCP
+
+- [MCP server](/mcp): Model Context Protocol (Streamable HTTP) endpoint for AI assistants and agents
+
+## Documentation
+
+- [GitHub repository](https://github.com/jamesread/starapp): Source code, issues, and releases
+- [README](https://github.com/jamesread/starapp#readme): Project overview and setup
+- [AGENTS.md](https://github.com/jamesread/starapp/blob/main/AGENTS.md): AI agent integration guide and MCP tool reference

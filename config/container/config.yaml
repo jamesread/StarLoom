@@ -1,0 +1,6 @@
+# Default configuration for the container image (/config volume).
+http_addr: ":8080"
+db_driver: sqlite
+db_path: starapp.db
+webui_dir: /usr/share/starapp/webui
+show_footer: true

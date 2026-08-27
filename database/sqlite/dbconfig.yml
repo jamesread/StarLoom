@@ -1,0 +1,5 @@
+development:
+  dialect: sqlite3
+  datasource: ${DB_PATH}
+  dir: migrations
+  table: migrations

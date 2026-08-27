@@ -1,0 +1,9 @@
+@import 'picocrank/styles.css';
+
+body {
+  margin: 0;
+}
+
+#app {
+  min-height: 100svh;
+}

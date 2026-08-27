@@ -1,0 +1,18 @@
+site_name: StarApp
+site_description: Family star rewards — Vue frontend with a ConnectRPC Go backend.
+docs_dir: content
+site_dir: site
+
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+  - Product spec: spec.md
+  - Architecture: architecture.md
+  - Configuration: configuration.md
+  - Authentication: authentication.md
+  - User profile: user-profile.md
+  - Settings (cvars): configuration.md#runtime-settings-cvars
+  - Webhooks: webhooks.md
+  - Releases: releases.md

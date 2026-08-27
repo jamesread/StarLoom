@@ -1,0 +1,732 @@
+syntax = "proto3";
+
+package starapp.api.v1;
+
+option go_package = "github.com/jamesread/starapp/service/gen/starapp/api/v1;apiv1";
+
+message StandardResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message Features {
+  bool redemption_approval_default = 1;
+}
+
+message InitRequest {}
+
+message InitResponse {
+  bool show_footer = 1;
+  bool show_new_versions = 2;
+  string available_version = 3;
+  string current_version = 4;
+  string page_title = 5;
+  bool show_version_number = 6;
+  string site_title = 7;
+  Features features = 8;
+  repeated string webhook_events = 9;
+}
+
+message GetStatusRequest {}
+
+message GetStatusResponse {
+  string username = 1;
+  bool is_logged_in = 2;
+  repeated string rbac_permissions = 3;
+  bool rbac_is_superuser = 4;
+  bool is_impersonating = 5;
+  string impersonator_username = 6;
+  bool show_footer = 7;
+  bool show_new_versions = 8;
+  string available_version = 9;
+  string current_version = 10;
+  string page_title = 11;
+  bool show_version_number = 12;
+  string site_title = 13;
+  Features features = 14;
+  repeated string webhook_events = 15;
+  bool uses_secure_cookies = 16;
+  string account_created_at = 17;
+}
+
+message LoginWithUsernameAndPasswordRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginWithUsernameAndPasswordResponse {
+  StandardResponse standard_response = 1;
+  string username = 2;
+}
+
+message LogoutRequest {}
+
+message LogoutResponse {
+  StandardResponse standard_response = 1;
+}
+
+message ChangePasswordRequest {
+  string current_password = 1;
+  string new_password = 2;
+}
+
+message ChangePasswordResponse {
+  StandardResponse standard_response = 1;
+}
+
+message GetUserPreferencesRequest {}
+
+message GetUserPreferencesResponse {
+  string language = 1;
+  repeated string available_languages = 2;
+  optional bool sidebar_enabled = 3;
+  optional bool theme_toggle_enabled = 4;
+}
+
+message SaveUserPreferencesRequest {
+  string language = 1;
+  bool sidebar_enabled = 2;
+  bool theme_toggle_enabled = 3;
+}
+
+message SaveUserPreferencesResponse {
+  StandardResponse standard_response = 1;
+  string username = 2;
+}
+
+message UserAccount {
+  int32 id = 1;
+  string username = 2;
+  string created_at = 3;
+  string created_by = 4;
+}
+
+message GetUsersRequest {}
+
+message GetUsersResponse {
+  repeated UserAccount users = 1;
+}
+
+message GetUserRequest {
+  int32 user_id = 1;
+}
+
+message GetUserResponse {
+  UserAccount user = 1;
+}
+
+message CreateUserRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message CreateUserResponse {
+  StandardResponse standard_response = 1;
+  UserAccount user = 2;
+}
+
+message DeleteUserRequest {
+  int32 user_id = 1;
+}
+
+message DeleteUserResponse {
+  StandardResponse standard_response = 1;
+}
+
+message ResetUserPasswordRequest {
+  int32 user_id = 1;
+  string new_password = 2;
+}
+
+message ResetUserPasswordResponse {
+  StandardResponse standard_response = 1;
+}
+
+message RbacPermission {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message RbacRole {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+  repeated int32 permission_ids = 4;
+  int32 group_count = 5;
+  int32 user_count = 6;
+}
+
+message ListRbacPermissionsRequest {}
+
+message ListRbacPermissionsResponse {
+  repeated RbacPermission permissions = 1;
+}
+
+message ListRbacRolesRequest {}
+
+message ListRbacRolesResponse {
+  repeated RbacRole roles = 1;
+}
+
+message CreateRbacRoleRequest {
+  string name = 1;
+  string description = 2;
+  repeated int32 permission_ids = 3;
+}
+
+message CreateRbacRoleResponse {
+  RbacRole role = 1;
+}
+
+message UpdateRbacRoleRequest {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+  repeated int32 permission_ids = 4;
+}
+
+message DeleteRbacRoleRequest {
+  int32 id = 1;
+}
+
+message DeleteRbacRoleResponse {}
+
+message GetUserRbacRolesRequest {
+  int32 user_id = 1;
+}
+
+message GetUserRbacRolesResponse {
+  repeated RbacRole roles = 1;
+}
+
+message GetUserGroupRbacRolesRequest {
+  int32 group_id = 1;
+}
+
+message GetUserGroupRbacRolesResponse {
+  repeated int32 role_ids = 1;
+}
+
+message SetUserGroupRbacRolesRequest {
+  int32 group_id = 1;
+  repeated int32 role_ids = 2;
+}
+
+message SetUserGroupRbacRolesResponse {
+  StandardResponse standard_response = 1;
+}
+
+message GetRbacRoleUsersRequest {
+  int32 role_id = 1;
+}
+
+message GetRbacRoleUsersResponse {
+  repeated string usernames = 1;
+}
+
+message GetRbacRoleGroupsRequest {
+  int32 role_id = 1;
+}
+
+message GetRbacRoleGroupsResponse {
+  repeated string group_names = 1;
+}
+
+message MyPermissionAuditRow {
+  string permission = 1;
+  bool granted = 2;
+  repeated string granting_groups = 3;
+}
+
+message GetMyPermissionsAuditRequest {}
+
+message GetMyPermissionsAuditResponse {
+  repeated string group_names = 1;
+  repeated string role_names = 2;
+  bool is_superuser = 3;
+  repeated MyPermissionAuditRow permissions = 4;
+}
+
+message UserGroup {
+  int32 id = 1;
+  string name = 2;
+  int32 member_count = 3;
+}
+
+message ListUserGroupsRequest {}
+
+message ListUserGroupsResponse {
+  repeated UserGroup groups = 1;
+}
+
+message CreateUserGroupRequest {
+  string name = 1;
+}
+
+message CreateUserGroupResponse {
+  UserGroup group = 1;
+}
+
+message DeleteUserGroupRequest {
+  int32 group_id = 1;
+}
+
+message DeleteUserGroupResponse {}
+
+message GetUserGroupMembersRequest {
+  int32 group_id = 1;
+}
+
+message GetUserGroupMembersResponse {
+  repeated UserAccount members = 1;
+}
+
+message SetUserGroupMembersRequest {
+  int32 group_id = 1;
+  repeated int32 user_ids = 2;
+}
+
+message SetUserGroupMembersResponse {
+  StandardResponse standard_response = 1;
+}
+
+message ImpersonateUserRequest {
+  int32 user_id = 1;
+}
+
+message ImpersonateUserResponse {
+  StandardResponse standard_response = 1;
+}
+
+message StopImpersonationRequest {}
+
+message StopImpersonationResponse {
+  StandardResponse standard_response = 1;
+}
+
+message ApiKey {
+  int32 id = 1;
+  string name = 2;
+  string created_at = 3;
+  string last_used_at = 4;
+  bool read_only = 5;
+}
+
+message ListApiKeysRequest {}
+
+message ListApiKeysResponse {
+  repeated ApiKey keys = 1;
+}
+
+message CreateApiKeyRequest {
+  string name = 1;
+  bool read_only = 2;
+}
+
+message CreateApiKeyResponse {
+  ApiKey key = 1;
+  string secret = 2;
+}
+
+message DeleteApiKeyRequest {
+  int32 id = 1;
+}
+
+message DeleteApiKeyResponse {}
+
+message Cvar {
+  string key = 1;
+  string main_type = 2;
+  int32 value_int = 3;
+  string value_string = 4;
+  string title = 5;
+  string description = 6;
+  string category = 7;
+  int32 ordinal = 8;
+}
+
+message ListCvarsRequest {}
+
+message ListCvarsResponse {
+  repeated Cvar cvars = 1;
+}
+
+message UpdateCvarRequest {
+  string key = 1;
+  int32 value_int = 2;
+  string value_string = 3;
+}
+
+message Webhook {
+  int32 id = 1;
+  string url = 2;
+  repeated string events = 3;
+  bool enabled = 4;
+  string created = 5;
+  string updated = 6;
+}
+
+message ListWebhooksRequest {}
+
+message ListWebhooksResponse {
+  repeated Webhook webhooks = 1;
+  repeated string events = 2;
+}
+
+message CreateWebhookRequest {
+  string url = 1;
+  string secret = 2;
+  repeated string events = 3;
+  bool enabled = 4;
+}
+
+message CreateWebhookResponse {
+  Webhook webhook = 1;
+}
+
+message UpdateWebhookRequest {
+  int32 id = 1;
+  string url = 2;
+  string secret = 3;
+  repeated string events = 4;
+  bool enabled = 5;
+}
+
+message DeleteWebhookRequest {
+  int32 id = 1;
+}
+
+message DeleteWebhookResponse {}
+
+message Family {
+  int32 id = 1;
+  string name = 2;
+  string created_at = 3;
+}
+
+message FamilyMember {
+  int32 id = 1;
+  int32 family_id = 2;
+  int32 user_account_id = 3;
+  string display_name = 4;
+  string role = 5;
+  bool has_avatar = 6;
+  string created_at = 7;
+  string username = 8;
+}
+
+message StarLedgerEntry {
+  int32 id = 1;
+  int32 family_id = 2;
+  int32 child_member_id = 3;
+  int32 amount = 4;
+  string entry_type = 5;
+  string note = 6;
+  int32 related_reward_id = 7;
+  int32 created_by_member_id = 8;
+  string created_at = 9;
+}
+
+message Reward {
+  int32 id = 1;
+  int32 family_id = 2;
+  string title = 3;
+  string description = 4;
+  int32 cost_stars = 5;
+  bool active = 6;
+  bool approval_required = 7;
+}
+
+message Redemption {
+  int32 id = 1;
+  int32 family_id = 2;
+  int32 child_member_id = 3;
+  int32 reward_id = 4;
+  int32 stars_spent = 5;
+  string status = 6;
+  string created_at = 7;
+  string resolved_at = 8;
+  int32 resolved_by_member_id = 9;
+  string fulfilled_at = 10;
+  string reward_title = 11;
+  string child_display_name = 12;
+}
+
+message GetMyFamilyRequest {}
+
+message GetMyFamilyResponse {
+  Family family = 1;
+  FamilyMember caller_member = 2;
+}
+
+message CreateFamilyRequest {
+  string name = 1;
+}
+
+message CreateFamilyResponse {
+  StandardResponse standard_response = 1;
+  Family family = 2;
+  FamilyMember caller_member = 3;
+}
+
+message ListMembersRequest {}
+
+message ListMembersResponse {
+  repeated FamilyMember members = 1;
+}
+
+message CreateChildMemberRequest {
+  string display_name = 1;
+  string username = 2;
+  string password = 3;
+}
+
+message CreateChildMemberResponse {
+  StandardResponse standard_response = 1;
+  FamilyMember member = 2;
+}
+
+message UpdateMemberRequest {
+  int32 member_id = 1;
+  string display_name = 2;
+}
+
+message UpdateMemberResponse {
+  StandardResponse standard_response = 1;
+  FamilyMember member = 2;
+}
+
+message DeleteMemberRequest {
+  int32 member_id = 1;
+}
+
+message DeleteMemberResponse {
+  StandardResponse standard_response = 1;
+}
+
+message UploadMemberAvatarRequest {
+  int32 member_id = 1;
+  bytes data = 2;
+  string content_type = 3;
+}
+
+message UploadMemberAvatarResponse {
+  StandardResponse standard_response = 1;
+  FamilyMember member = 2;
+}
+
+message DeleteMemberAvatarRequest {
+  int32 member_id = 1;
+}
+
+message DeleteMemberAvatarResponse {
+  StandardResponse standard_response = 1;
+  FamilyMember member = 2;
+}
+
+message AwardStarsRequest {
+  int32 child_member_id = 1;
+  int32 amount = 2;
+  string note = 3;
+}
+
+message AwardStarsResponse {
+  StandardResponse standard_response = 1;
+  StarLedgerEntry entry = 2;
+  int32 new_balance = 3;
+}
+
+message RevokeStarsRequest {
+  int32 child_member_id = 1;
+  int32 amount = 2;
+  string note = 3;
+}
+
+message RevokeStarsResponse {
+  StandardResponse standard_response = 1;
+  StarLedgerEntry entry = 2;
+  int32 new_balance = 3;
+}
+
+message GetMemberBalanceRequest {
+  int32 member_id = 1;
+}
+
+message GetMemberBalanceResponse {
+  int32 balance = 1;
+}
+
+message ListLedgerRequest {
+  int32 member_id = 1;
+  int32 limit = 2;
+}
+
+message ListLedgerResponse {
+  repeated StarLedgerEntry entries = 1;
+}
+
+message ListRewardsRequest {
+  bool include_inactive = 1;
+}
+
+message ListRewardsResponse {
+  repeated Reward rewards = 1;
+}
+
+message CreateRewardRequest {
+  string title = 1;
+  string description = 2;
+  int32 cost_stars = 3;
+  bool approval_required = 4;
+}
+
+message CreateRewardResponse {
+  StandardResponse standard_response = 1;
+  Reward reward = 2;
+}
+
+message UpdateRewardRequest {
+  int32 id = 1;
+  string title = 2;
+  string description = 3;
+  int32 cost_stars = 4;
+  bool active = 5;
+  bool approval_required = 6;
+}
+
+message UpdateRewardResponse {
+  StandardResponse standard_response = 1;
+  Reward reward = 2;
+}
+
+message DeleteRewardRequest {
+  int32 id = 1;
+}
+
+message DeleteRewardResponse {
+  StandardResponse standard_response = 1;
+}
+
+message RequestRedemptionRequest {
+  int32 reward_id = 1;
+  int32 child_member_id = 2;
+}
+
+message RequestRedemptionResponse {
+  StandardResponse standard_response = 1;
+  Redemption redemption = 2;
+}
+
+message ApproveRedemptionRequest {
+  int32 redemption_id = 1;
+}
+
+message ApproveRedemptionResponse {
+  StandardResponse standard_response = 1;
+  Redemption redemption = 2;
+}
+
+message RejectRedemptionRequest {
+  int32 redemption_id = 1;
+}
+
+message RejectRedemptionResponse {
+  StandardResponse standard_response = 1;
+  Redemption redemption = 2;
+}
+
+message ListRedemptionsRequest {
+  string status = 1;
+}
+
+message ListRedemptionsResponse {
+  repeated Redemption redemptions = 1;
+}
+
+message ChildHomeSummary {
+  FamilyMember member = 1;
+  int32 balance = 2;
+  StarLedgerEntry last_award = 3;
+}
+
+message GetParentHomeSummaryRequest {}
+
+message GetParentHomeSummaryResponse {
+  Family family = 1;
+  repeated ChildHomeSummary children = 2;
+  int32 pending_redemptions = 3;
+}
+
+message GetChildHomeSummaryRequest {}
+
+message GetChildHomeSummaryResponse {
+  FamilyMember member = 1;
+  int32 balance = 2;
+  repeated StarLedgerEntry recent_awards = 3;
+  repeated Reward rewards = 4;
+}
+
+service StarAppService {
+  rpc Init(InitRequest) returns (InitResponse);
+  rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
+  rpc LoginWithUsernameAndPassword(LoginWithUsernameAndPasswordRequest) returns (LoginWithUsernameAndPasswordResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
+  rpc GetUserPreferences(GetUserPreferencesRequest) returns (GetUserPreferencesResponse);
+  rpc SaveUserPreferences(SaveUserPreferencesRequest) returns (SaveUserPreferencesResponse);
+  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+  rpc ResetUserPassword(ResetUserPasswordRequest) returns (ResetUserPasswordResponse);
+  rpc ListRbacPermissions(ListRbacPermissionsRequest) returns (ListRbacPermissionsResponse);
+  rpc ListRbacRoles(ListRbacRolesRequest) returns (ListRbacRolesResponse);
+  rpc CreateRbacRole(CreateRbacRoleRequest) returns (CreateRbacRoleResponse);
+  rpc UpdateRbacRole(UpdateRbacRoleRequest) returns (RbacRole);
+  rpc DeleteRbacRole(DeleteRbacRoleRequest) returns (DeleteRbacRoleResponse);
+  rpc GetUserRbacRoles(GetUserRbacRolesRequest) returns (GetUserRbacRolesResponse);
+  rpc GetUserGroupRbacRoles(GetUserGroupRbacRolesRequest) returns (GetUserGroupRbacRolesResponse);
+  rpc SetUserGroupRbacRoles(SetUserGroupRbacRolesRequest) returns (SetUserGroupRbacRolesResponse);
+  rpc GetRbacRoleUsers(GetRbacRoleUsersRequest) returns (GetRbacRoleUsersResponse);
+  rpc GetRbacRoleGroups(GetRbacRoleGroupsRequest) returns (GetRbacRoleGroupsResponse);
+  rpc GetMyPermissionsAudit(GetMyPermissionsAuditRequest) returns (GetMyPermissionsAuditResponse);
+  rpc ListUserGroups(ListUserGroupsRequest) returns (ListUserGroupsResponse);
+  rpc CreateUserGroup(CreateUserGroupRequest) returns (CreateUserGroupResponse);
+  rpc DeleteUserGroup(DeleteUserGroupRequest) returns (DeleteUserGroupResponse);
+  rpc GetUserGroupMembers(GetUserGroupMembersRequest) returns (GetUserGroupMembersResponse);
+  rpc SetUserGroupMembers(SetUserGroupMembersRequest) returns (SetUserGroupMembersResponse);
+  rpc ImpersonateUser(ImpersonateUserRequest) returns (ImpersonateUserResponse);
+  rpc StopImpersonation(StopImpersonationRequest) returns (StopImpersonationResponse);
+  rpc ListApiKeys(ListApiKeysRequest) returns (ListApiKeysResponse);
+  rpc CreateApiKey(CreateApiKeyRequest) returns (CreateApiKeyResponse);
+  rpc DeleteApiKey(DeleteApiKeyRequest) returns (DeleteApiKeyResponse);
+  rpc ListCvars(ListCvarsRequest) returns (ListCvarsResponse);
+  rpc UpdateCvar(UpdateCvarRequest) returns (Cvar);
+  rpc ListWebhooks(ListWebhooksRequest) returns (ListWebhooksResponse);
+  rpc CreateWebhook(CreateWebhookRequest) returns (CreateWebhookResponse);
+  rpc UpdateWebhook(UpdateWebhookRequest) returns (Webhook);
+  rpc DeleteWebhook(DeleteWebhookRequest) returns (DeleteWebhookResponse);
+  rpc GetMyFamily(GetMyFamilyRequest) returns (GetMyFamilyResponse);
+  rpc CreateFamily(CreateFamilyRequest) returns (CreateFamilyResponse);
+  rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);
+  rpc CreateChildMember(CreateChildMemberRequest) returns (CreateChildMemberResponse);
+  rpc UpdateMember(UpdateMemberRequest) returns (UpdateMemberResponse);
+  rpc DeleteMember(DeleteMemberRequest) returns (DeleteMemberResponse);
+  rpc UploadMemberAvatar(UploadMemberAvatarRequest) returns (UploadMemberAvatarResponse);
+  rpc DeleteMemberAvatar(DeleteMemberAvatarRequest) returns (DeleteMemberAvatarResponse);
+  rpc AwardStars(AwardStarsRequest) returns (AwardStarsResponse);
+  rpc RevokeStars(RevokeStarsRequest) returns (RevokeStarsResponse);
+  rpc GetMemberBalance(GetMemberBalanceRequest) returns (GetMemberBalanceResponse);
+  rpc ListLedger(ListLedgerRequest) returns (ListLedgerResponse);
+  rpc ListRewards(ListRewardsRequest) returns (ListRewardsResponse);
+  rpc CreateReward(CreateRewardRequest) returns (CreateRewardResponse);
+  rpc UpdateReward(UpdateRewardRequest) returns (UpdateRewardResponse);
+  rpc DeleteReward(DeleteRewardRequest) returns (DeleteRewardResponse);
+  rpc RequestRedemption(RequestRedemptionRequest) returns (RequestRedemptionResponse);
+  rpc ApproveRedemption(ApproveRedemptionRequest) returns (ApproveRedemptionResponse);
+  rpc RejectRedemption(RejectRedemptionRequest) returns (RejectRedemptionResponse);
+  rpc ListRedemptions(ListRedemptionsRequest) returns (ListRedemptionsResponse);
+  rpc GetParentHomeSummary(GetParentHomeSummaryRequest) returns (GetParentHomeSummaryResponse);
+  rpc GetChildHomeSummary(GetChildHomeSummaryRequest) returns (GetChildHomeSummaryResponse);
+}

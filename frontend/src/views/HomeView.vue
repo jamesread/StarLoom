@@ -1,0 +1,286 @@
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue'
+import { RouterLink } from 'vue-router'
+import Section from 'picocrank/vue/components/Section.vue'
+import FormField from 'picocrank/vue/components/FormField.vue'
+import { StarIcon } from '@hugeicons/core-free-icons'
+import { starapp, memberAvatarUrl, type ParentHomeSummary, type ChildHomeSummary } from '../api/client'
+import { fetchAppStatus, useStatus } from '../composables/useStatus'
+import {
+  canViewChildHomeFromStatus,
+  canViewFamilyHomeFromStatus,
+  hasPermission,
+} from '../lib/rbacAccess'
+
+const statusState = useStatus()
+const error = ref('')
+const loading = ref(true)
+const familyName = ref('')
+const creating = ref(false)
+
+const parentSummary = ref<ParentHomeSummary | null>(null)
+const childSummary = ref<ChildHomeSummary | null>(null)
+
+const isParentHome = computed(
+  () =>
+    canViewFamilyHomeFromStatus(statusState.status) ||
+    hasPermission(statusState.status, 'family.manage'),
+)
+const needsFamily = computed(
+  () => isParentHome.value && !parentSummary.value?.family?.id,
+)
+const canCreateFamily = computed(() => hasPermission(statusState.status, 'family.manage'))
+
+const sectionTitle = computed(() => {
+  if (loading.value) return 'Home'
+  if (isParentHome.value) {
+    if (needsFamily.value) return 'Home'
+    return parentSummary.value?.family?.name || 'Home'
+  }
+  return childSummary.value?.member?.displayName || 'My stars'
+})
+
+async function loadParent() {
+  error.value = ''
+  try {
+    parentSummary.value = await starapp.getParentHomeSummary()
+    return
+  } catch {
+    parentSummary.value = null
+  }
+  try {
+    const fam = await starapp.getMyFamily()
+    if (fam.family?.id) {
+      parentSummary.value = { family: fam.family, children: [] }
+    }
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : String(e)
+  }
+}
+
+async function loadChild() {
+  try {
+    childSummary.value = await starapp.getChildHomeSummary()
+    error.value = ''
+  } catch (e) {
+    error.value =
+      'Your child account is not linked to a family profile. A parent must add you via Family → Children (not IAM → Users).'
+    if (e instanceof Error && !e.message.includes('failed_precondition')) {
+      error.value = e.message
+    }
+  }
+}
+
+async function load() {
+  loading.value = true
+  error.value = ''
+  try {
+    await fetchAppStatus()
+    const st = statusState.status
+    if (canViewFamilyHomeFromStatus(st)) {
+      await loadParent()
+    } else if (canViewChildHomeFromStatus(st)) {
+      await loadChild()
+    } else if (hasPermission(st, 'family.manage')) {
+      await loadParent()
+    } else {
+      error.value =
+        'Your account is not linked to a family. Sign in as a parent, create the family on Home, then add children from Family → Children.'
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+async function createFamily() {
+  if (!familyName.value.trim()) return
+  creating.value = true
+  try {
+    await starapp.createFamily({ name: familyName.value.trim() })
+    familyName.value = ''
+    await loadParent()
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : String(e)
+  } finally {
+    creating.value = false
+  }
+}
+
+function formatAward(entry?: { amount?: number; note?: string; createdAt?: string }) {
+  if (!entry) return 'No recent awards'
+  const note = entry.note ? ` ${entry.note}` : ''
+  return `+${entry.amount}${note}`
+}
+
+async function redeem(rewardId: number) {
+  try {
+    await starapp.requestRedemption({ rewardId })
+    await loadChild()
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : String(e)
+  }
+}
+
+onMounted(load)
+watch(() => statusState.status?.isLoggedIn, () => {
+  void load()
+})
+</script>
+
+<template>
+  <Section :title="sectionTitle" :icon="StarIcon">
+    <p v-if="loading" class="subtle">Loading…</p>
+
+    <template v-else-if="isParentHome">
+      <p v-if="error" class="error">{{ error }}</p>
+
+      <div v-if="needsFamily && canCreateFamily">
+        <p>Create your family to start awarding stars.</p>
+        <FormField label="Family name">
+          <input v-model="familyName" type="text" placeholder="The Smith Family" />
+        </FormField>
+        <button type="button" :disabled="creating" @click="createFamily">Create family</button>
+      </div>
+
+      <div v-else-if="needsFamily" class="subtle">
+        <p>No family has been set up yet. An account with family management permission must create one.</p>
+      </div>
+
+      <template v-else>
+        <p v-if="parentSummary?.pendingRedemptions" class="subtle">
+          Pending redemptions:
+          <RouterLink :to="{ name: 'familyRedemptions' }">{{ parentSummary.pendingRedemptions }}</RouterLink>
+        </p>
+
+        <div v-if="!parentSummary?.children?.length" class="subtle">
+          <p>No children yet.</p>
+          <RouterLink :to="{ name: 'familyChildren' }">Add your first child</RouterLink>
+        </div>
+
+        <div v-else class="child-grid">
+          <RouterLink
+            v-for="child in parentSummary?.children"
+            :key="child.member?.id"
+            class="child-card"
+            :to="{ name: 'familyChildDetail', params: { id: child.member?.id } }"
+          >
+            <img
+              v-if="child.member?.hasAvatar"
+              class="avatar"
+              :src="memberAvatarUrl(child.member!.id, true)"
+              :alt="child.member?.displayName"
+            />
+            <div v-else class="avatar avatar-placeholder">{{ child.member?.displayName?.charAt(0) }}</div>
+            <strong>{{ child.member?.displayName }}</strong>
+            <div class="balance">★ {{ child.balance ?? 0 }}</div>
+            <div class="subtle last-award">{{ formatAward(child.lastAward) }}</div>
+          </RouterLink>
+        </div>
+      </template>
+    </template>
+
+    <template v-else>
+      <p v-if="error" class="error">{{ error }}</p>
+      <div class="child-home-header">
+        <img
+          v-if="childSummary?.member?.hasAvatar"
+          class="avatar large"
+          :src="memberAvatarUrl(childSummary!.member!.id, true)"
+          :alt="childSummary?.member?.displayName"
+        />
+        <div v-else class="avatar large avatar-placeholder">
+          {{ childSummary?.member?.displayName?.charAt(0) }}
+        </div>
+        <div class="balance large">★ {{ childSummary?.balance ?? 0 }} stars</div>
+      </div>
+
+      <h3>Recent awards</h3>
+      <ul v-if="childSummary?.recentAwards?.length" class="award-list">
+        <li v-for="entry in childSummary.recentAwards" :key="entry.id">
+          +{{ entry.amount }}
+          <span v-if="entry.note"> {{ entry.note }}</span>
+          <span class="subtle"> — {{ entry.createdAt }}</span>
+        </li>
+      </ul>
+      <p v-else class="subtle">No awards yet.</p>
+
+      <h3>Rewards you can get</h3>
+      <ul v-if="childSummary?.rewards?.length" class="reward-list">
+        <li v-for="reward in childSummary.rewards" :key="reward.id">
+          {{ reward.title }} — {{ reward.costStars }} stars
+          <button
+            type="button"
+            class="outline"
+            :disabled="(childSummary.balance ?? 0) < reward.costStars"
+            @click="redeem(reward.id)"
+          >
+            Redeem
+          </button>
+        </li>
+      </ul>
+      <p v-else class="subtle">No rewards available.</p>
+    </template>
+  </Section>
+</template>
+
+<style scoped>
+.child-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 1rem;
+}
+.child-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1rem;
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: var(--pico-border-radius);
+  text-decoration: none;
+  color: inherit;
+}
+.child-card:hover {
+  border-color: var(--pico-primary);
+}
+.avatar {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.avatar.large {
+  width: 5rem;
+  height: 5rem;
+}
+.avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--pico-muted-border-color);
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.balance {
+  font-size: 1.25rem;
+}
+.balance.large {
+  font-size: 1.75rem;
+}
+.child-home-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.award-list, .reward-list {
+  padding-left: 1.25rem;
+}
+.last-award {
+  font-size: 0.85rem;
+  text-align: center;
+}
+.error {
+  color: var(--pico-del-color);
+}
+</style>
