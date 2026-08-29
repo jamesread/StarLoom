@@ -84,6 +84,10 @@ func toProtoMember(m *store.FamilyMemberRow) *apiv1.FamilyMember {
 	if m.UserAccountID != nil {
 		accountID = int32(*m.UserAccountID)
 	}
+	starColor := m.StarColor
+	if starColor == "" {
+		starColor = store.DefaultMemberStarColor(m.ID)
+	}
 	return &apiv1.FamilyMember{
 		Id:            int32(m.ID),
 		FamilyId:      int32(m.FamilyID),
@@ -93,6 +97,7 @@ func toProtoMember(m *store.FamilyMemberRow) *apiv1.FamilyMember {
 		HasAvatar:     m.AvatarPath != "",
 		CreatedAt:     m.CreatedAt,
 		Username:      m.Username,
+		StarColor:     starColor,
 	}
 }
 

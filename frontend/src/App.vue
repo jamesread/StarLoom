@@ -3,6 +3,7 @@ import { onMounted, computed, ref } from 'vue'
 import AppLayout from './components/AppLayout.vue'
 import LoginForm from './components/LoginForm.vue'
 import { fetchAppStatus, useStatus } from './composables/useStatus'
+import { loadInit } from './composables/useInit'
 import { loadAndApplyUserPreferences, registerSidebarApplier, registerThemeToggleApplier } from './lib/userPreferences'
 
 const status = useStatus()
@@ -20,7 +21,7 @@ registerThemeToggleApplier((enabled) => {
 
 onMounted(async () => {
   try {
-    await fetchAppStatus()
+    await Promise.all([loadInit(), fetchAppStatus()])
     if (status.status?.isLoggedIn) {
       await loadAndApplyUserPreferences()
     }

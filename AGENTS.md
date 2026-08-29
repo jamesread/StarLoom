@@ -106,6 +106,121 @@ Regenerate OpenAPI after proto changes:
 make -C protocol
 ```
 
+## Frontend forms
+
+Wrap every data-entry form in PicoCrank **`FormLayout`** with **`FormField`** children. Put primary and secondary actions in the `#actions` slot; use `@submit.prevent` on `FormLayout` and `type="submit"` on the primary button.
+
+```vue
+<FormLayout @submit.prevent="save">
+  <FormField label="Title" for="example-title">
+    <input id="example-title" v-model="title" type="text" required />
+  </FormField>
+  <FormField label="Options" fake>
+    <CheckGroup v-model="selected" :options="options" name="example-options" />
+  </FormField>
+  <template #actions>
+    <button type="submit" class="good">Save</button>
+    <button type="button" class="secondary" @click="cancel">Cancel</button>
+  </template>
+</FormLayout>
+```
+
+Use `fake` on `FormField` when the control is not a single native input (e.g. `CheckGroup`, `RadioGroup`). Reference examples: `WebhookCreate.vue`, `ChangePassword.vue`, `SettingsAdmin.vue`.
+
+The login screen uses PicoCrank’s `Login` component (`LoginForm.vue`); all other app forms follow the `FormLayout` pattern above.
+
+## Buttons with icons
+
+Use Femtocrank **`inline-icon`** on plain `<button>` elements (no PicoCrank `Button` component). Follow PicoCrank’s [buttons-with-icons](https://github.com/jamesread/picocrank/blob/main/docs/buttons-with-icons.md) guide (`node_modules/picocrank/docs/buttons-with-icons.md` in development):
+
+1. Add **`inline-icon`** on the button; use **`neutral`** for secondary/toolbar actions, **`good`** for primary confirm.
+2. Render **`HugeiconsIcon`** from `@hugeicons/vue` with icons from `@hugeicons/core-free-icons`.
+3. Size icons at **`1em` × `1em`** with **`strokeWidth` `2.5`** for button-sized icons.
+4. Set **`aria-hidden="true"`** on the icon when visible text follows; use **`aria-label`** on the button for icon-only buttons.
+
+```vue
+<script setup lang="ts">
+import { HugeiconsIcon } from '@hugeicons/vue'
+import { Refresh01Icon } from '@hugeicons/core-free-icons'
+
+const iconStrokeWidth = 2.5
+</script>
+
+<template>
+  <button type="button" class="inline-icon neutral" aria-label="Refresh">
+    <HugeiconsIcon
+      :icon="Refresh01Icon"
+      width="1em"
+      height="1em"
+      :strokeWidth="iconStrokeWidth"
+      aria-hidden="true"
+    />
+  </button>
+  <button type="button" class="inline-icon neutral">
+    <HugeiconsIcon
+      :icon="ArrowLeft01Icon"
+      width="1em"
+      height="1em"
+      :strokeWidth="iconStrokeWidth"
+      aria-hidden="true"
+    />
+    <span>Previous</span>
+  </button>
+</template>
+```
+
+Section toolbars: put icon buttons in the Section **`#toolbar`** slot. Reference: `StarChart.vue`, `WebhooksAdmin.vue`, PicoCrank `vue/examples/ButtonsExample.vue`.
+
+## Section toolbars
+
+When adding page-level actions to a **`Section`** (refresh, create, navigation), put them in the section **title bar** via the **`#toolbar`** slot — not in a separate row inside the section body.
+
+Toolbar rules:
+
+- At most **one** **`good`** button per toolbar.
+- That **`good`** button is always the **rightmost** control (primary action).
+- Other actions use **`neutral`** (or icon-only with `aria-label`).
+
+```vue
+<Section title="Chores" :icon="Task01Icon">
+  <template #toolbar>
+    <button type="button" class="inline-icon neutral" aria-label="Refresh" @click="load">
+      <HugeiconsIcon :icon="Refresh01Icon" width="1em" height="1em" :strokeWidth="2.5" aria-hidden="true" />
+    </button>
+    <button type="button" class="inline-icon neutral" @click="showPause = true">
+      <HugeiconsIcon :icon="PauseIcon" width="1em" height="1em" :strokeWidth="2.5" aria-hidden="true" />
+      <span>Pause chores</span>
+    </button>
+    <button type="button" class="inline-icon good" @click="showCreate = true">
+      <HugeiconsIcon :icon="PlusSignIcon" width="1em" height="1em" :strokeWidth="2.5" aria-hidden="true" />
+      <span>Add chore</span>
+    </button>
+  </template>
+  <!-- section content -->
+</Section>
+```
+
+Row-level destructive actions (e.g. Deactivate on a table row) may stay inline in the table. Reference: `ChoresAdmin.vue`, `StarChart.vue`, `WebhooksAdmin.vue`.
+
+## Datatable row navigation
+
+When a datatable row links to **edit**, **open**, or **detail**, always **navigate to a dedicated route** — never open an inline panel below the table, a second `Section` on the same page, or an edit dialog.
+
+| Action | Pattern |
+|--------|---------|
+| Create | `<dialog>` on the list page, or a dedicated create route (e.g. `WebhookCreate.vue`) |
+| Edit / open / detail | New route with `:id` param (e.g. `/family/chores/:id`, `/control-panel/webhooks/:id`) |
+| Primary column | `RouterLink` to the edit/detail route |
+| Actions column | `RouterLink` labeled Edit, or navigate on row click |
+
+Edit pages include a **Back** link in the section `#toolbar` returning to the list. On save, `router.push` back to the list. Reference: `ChoreEdit.vue`, `WebhookEdit.vue`, `ChildDetail.vue`.
+
+```vue
+<RouterLink :to="{ name: 'familyChoreEdit', params: { id: row.id } }" class="title-link">
+  <strong>{{ value }}</strong>
+</RouterLink>
+```
+
 ## Security notes
 
 - Webhook secrets are never returned by list/get RPCs or MCP list tools.

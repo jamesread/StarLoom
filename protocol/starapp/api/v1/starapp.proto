@@ -414,6 +414,7 @@ message FamilyMember {
   bool has_avatar = 6;
   string created_at = 7;
   string username = 8;
+  string star_color = 9;
 }
 
 message StarLedgerEntry {
@@ -490,6 +491,7 @@ message CreateChildMemberResponse {
 message UpdateMemberRequest {
   int32 member_id = 1;
   string display_name = 2;
+  string star_color = 3;
 }
 
 message UpdateMemberResponse {
@@ -667,6 +669,153 @@ message GetChildHomeSummaryResponse {
   repeated Reward rewards = 4;
 }
 
+message Chore {
+  int32 id = 1;
+  int32 family_id = 2;
+  string title = 3;
+  int32 star_reward = 4;
+  repeated int32 weekdays = 5;
+  bool active = 6;
+  repeated int32 child_member_ids = 7;
+  string created_at = 8;
+}
+
+message ChorePause {
+  int32 id = 1;
+  int32 family_id = 2;
+  string start_date = 3;
+  string end_date = 4;
+  string reason = 5;
+  string created_at = 6;
+}
+
+message ListChoresRequest {
+  bool include_inactive = 1;
+}
+
+message ListChoresResponse {
+  repeated Chore chores = 1;
+}
+
+message CreateChoreRequest {
+  string title = 1;
+  int32 star_reward = 2;
+  repeated int32 weekdays = 3;
+  repeated int32 child_member_ids = 4;
+}
+
+message CreateChoreResponse {
+  StandardResponse standard_response = 1;
+  Chore chore = 2;
+}
+
+message UpdateChoreRequest {
+  int32 id = 1;
+  string title = 2;
+  int32 star_reward = 3;
+  repeated int32 weekdays = 4;
+  repeated int32 child_member_ids = 5;
+  bool active = 6;
+}
+
+message UpdateChoreResponse {
+  StandardResponse standard_response = 1;
+  Chore chore = 2;
+}
+
+message DeleteChoreRequest {
+  int32 id = 1;
+}
+
+message DeleteChoreResponse {
+  StandardResponse standard_response = 1;
+}
+
+message ListChorePausesRequest {}
+
+message ListChorePausesResponse {
+  repeated ChorePause pauses = 1;
+}
+
+message CreateChorePauseRequest {
+  string start_date = 1;
+  string end_date = 2;
+  string reason = 3;
+}
+
+message CreateChorePauseResponse {
+  StandardResponse standard_response = 1;
+  ChorePause pause = 2;
+}
+
+message DeleteChorePauseRequest {
+  int32 id = 1;
+}
+
+message DeleteChorePauseResponse {
+  StandardResponse standard_response = 1;
+}
+
+message WeeklyStarChartDay {
+  string date = 1;
+  bool scheduled = 2;
+  bool completed = 3;
+  int32 stars_earned = 4;
+  bool paused = 5;
+}
+
+message WeeklyStarChartChild {
+  int32 assignment_id = 1;
+  FamilyMember child = 2;
+  repeated WeeklyStarChartDay days = 3;
+}
+
+message WeeklyStarChartRow {
+  int32 chore_id = 1;
+  string title = 2;
+  int32 star_reward = 3;
+  repeated int32 weekdays = 4;
+  repeated WeeklyStarChartChild children = 5;
+}
+
+message WeeklyStarChartBonusDay {
+  string date = 1;
+  int32 stars = 2;
+}
+
+message GetWeeklyStarChartRequest {
+  string week_start = 1;
+}
+
+message GetWeeklyStarChartResponse {
+  string week_start = 1;
+  string week_end = 2;
+  repeated WeeklyStarChartRow rows = 3;
+  repeated WeeklyStarChartBonusDay bonus_days = 4;
+}
+
+message CompleteChoreRequest {
+  int32 chore_id = 1;
+  int32 child_member_id = 2;
+  string date = 3;
+}
+
+message CompleteChoreResponse {
+  StandardResponse standard_response = 1;
+  int32 new_balance = 2;
+}
+
+message UncompleteChoreRequest {
+  int32 chore_id = 1;
+  int32 child_member_id = 2;
+  string date = 3;
+}
+
+message UncompleteChoreResponse {
+  StandardResponse standard_response = 1;
+  int32 new_balance = 2;
+}
+
 service StarAppService {
   rpc Init(InitRequest) returns (InitResponse);
   rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
@@ -729,4 +878,14 @@ service StarAppService {
   rpc ListRedemptions(ListRedemptionsRequest) returns (ListRedemptionsResponse);
   rpc GetParentHomeSummary(GetParentHomeSummaryRequest) returns (GetParentHomeSummaryResponse);
   rpc GetChildHomeSummary(GetChildHomeSummaryRequest) returns (GetChildHomeSummaryResponse);
+  rpc ListChores(ListChoresRequest) returns (ListChoresResponse);
+  rpc CreateChore(CreateChoreRequest) returns (CreateChoreResponse);
+  rpc UpdateChore(UpdateChoreRequest) returns (UpdateChoreResponse);
+  rpc DeleteChore(DeleteChoreRequest) returns (DeleteChoreResponse);
+  rpc ListChorePauses(ListChorePausesRequest) returns (ListChorePausesResponse);
+  rpc CreateChorePause(CreateChorePauseRequest) returns (CreateChorePauseResponse);
+  rpc DeleteChorePause(DeleteChorePauseRequest) returns (DeleteChorePauseResponse);
+  rpc GetWeeklyStarChart(GetWeeklyStarChartRequest) returns (GetWeeklyStarChartResponse);
+  rpc CompleteChore(CompleteChoreRequest) returns (CompleteChoreResponse);
+  rpc UncompleteChore(UncompleteChoreRequest) returns (UncompleteChoreResponse);
 }

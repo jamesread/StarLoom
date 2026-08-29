@@ -9,6 +9,8 @@ const (
 const (
 	KeySiteTitle                = "site_title"
 	KeyShowFooter               = "show_footer"
+	KeyShowVersionNumber        = "show_version_number"
+	KeyShowNewVersions          = "show_new_versions"
 	KeyDefaultAwardStars        = "default_award_stars"
 	KeyEnableRedemptionApproval = "enable_redemption_approval"
 
@@ -50,6 +52,16 @@ func Defaults(siteTitle string, showFooter bool) []Def {
 			Key: KeyShowFooter, MainType: TypeBool, ValueInt: showFooterInt,
 			Title: "Show footer", Description: "Display the page footer with version and links.",
 			Category: CategorySite, Ordinal: 20,
+		},
+		{
+			Key: KeyShowVersionNumber, MainType: TypeBool, ValueInt: 1,
+			Title: "Show version number", Description: "Display the installed version in the footer.",
+			Category: CategorySite, Ordinal: 25,
+		},
+		{
+			Key: KeyShowNewVersions, MainType: TypeBool, ValueInt: 0,
+			Title: "Show new versions", Description: "Offer a link when a newer release is available.",
+			Category: CategorySite, Ordinal: 26,
 		},
 		{
 			Key: KeyDefaultAwardStars, MainType: TypeInt, ValueInt: DefaultAwardStars,

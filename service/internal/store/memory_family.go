@@ -149,7 +149,7 @@ func (m *Memory) ListMembersByFamily(_ context.Context, familyID int) ([]FamilyM
 	return out, nil
 }
 
-func (m *Memory) CreateMember(_ context.Context, familyID int, displayName, role string, accountID *int) (int, error) {
+func (m *Memory) CreateMember(_ context.Context, familyID int, displayName, role string, accountID *int, starColor string) (int, error) {
 	st := m.familyState()
 	st.mu.Lock()
 	defer st.mu.Unlock()
@@ -157,12 +157,12 @@ func (m *Memory) CreateMember(_ context.Context, familyID int, displayName, role
 	id := st.nextMemberID
 	st.members[id] = FamilyMemberRow{
 		ID: id, FamilyID: familyID, UserAccountID: accountID,
-		DisplayName: displayName, Role: role, CreatedAt: familyNow(),
+		DisplayName: displayName, Role: role, StarColor: starColor, CreatedAt: familyNow(),
 	}
 	return id, nil
 }
 
-func (m *Memory) UpdateMemberDisplayName(_ context.Context, id int, displayName string) error {
+func (m *Memory) UpdateMember(_ context.Context, id int, displayName, starColor string) error {
 	st := m.familyState()
 	st.mu.Lock()
 	defer st.mu.Unlock()
@@ -171,6 +171,7 @@ func (m *Memory) UpdateMemberDisplayName(_ context.Context, id int, displayName 
 		return fmt.Errorf("member not found")
 	}
 	row.DisplayName = displayName
+	row.StarColor = starColor
 	st.members[id] = row
 	return nil
 }

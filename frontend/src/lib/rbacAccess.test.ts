@@ -4,6 +4,7 @@ import {
   canAccessControlPanelFromStatus,
   canAccessIamFromStatus,
   canAccessSettingsFromStatus,
+  canAccessWebhooksFromStatus,
 } from './rbacAccess.ts'
 
 test('control panel is hidden when logged out', () => {
@@ -70,6 +71,19 @@ test('settings tile follows system.settings', () => {
     rbacPermissions: ['system.settings'],
   }), true)
   assert.equal(canAccessSettingsFromStatus({
+    isLoggedIn: true,
+    rbacIsSuperuser: false,
+    rbacPermissions: ['users.view'],
+  }), false)
+})
+
+test('webhooks tile follows system.settings', () => {
+  assert.equal(canAccessWebhooksFromStatus({
+    isLoggedIn: true,
+    rbacIsSuperuser: false,
+    rbacPermissions: ['system.settings'],
+  }), true)
+  assert.equal(canAccessWebhooksFromStatus({
     isLoggedIn: true,
     rbacIsSuperuser: false,
     rbacPermissions: ['users.view'],

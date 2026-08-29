@@ -26,6 +26,7 @@ type FamilyMemberRow struct {
 	DisplayName   string
 	Role          string
 	AvatarPath    string
+	StarColor     string
 	CreatedAt     string
 	Username      string
 }

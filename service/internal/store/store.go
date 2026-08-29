@@ -91,8 +91,8 @@ type Store interface {
 	GetMemberByID(ctx context.Context, id int) (*FamilyMemberRow, error)
 	GetMemberByAccountID(ctx context.Context, accountID int) (*FamilyMemberRow, error)
 	ListMembersByFamily(ctx context.Context, familyID int) ([]FamilyMemberRow, error)
-	CreateMember(ctx context.Context, familyID int, displayName, role string, accountID *int) (int, error)
-	UpdateMemberDisplayName(ctx context.Context, id int, displayName string) error
+	CreateMember(ctx context.Context, familyID int, displayName, role string, accountID *int, starColor string) (int, error)
+	UpdateMember(ctx context.Context, id int, displayName, starColor string) error
 	DeleteMember(ctx context.Context, id int) error
 	SetMemberAvatarPath(ctx context.Context, id int, path string) error
 
@@ -112,4 +112,23 @@ type Store interface {
 	CreateRedemption(ctx context.Context, familyID, childMemberID, rewardID, starsSpent int, status string, ledgerEntryID *int) (int, error)
 	ResolveRedemption(ctx context.Context, id int, status string, resolvedByMemberID int, ledgerEntryID *int) error
 	CountPendingRedemptions(ctx context.Context, familyID int) (int, error)
+
+	ListChores(ctx context.Context, familyID int, includeInactive bool) ([]ChoreWithAssignments, error)
+	GetChoreByID(ctx context.Context, id int) (*ChoreWithAssignments, error)
+	CreateChore(ctx context.Context, familyID int, title string, starReward, weekdayMask int, childMemberIDs []int) (int, error)
+	UpdateChore(ctx context.Context, id int, title string, starReward, weekdayMask int, active bool, childMemberIDs []int) error
+	DeactivateChore(ctx context.Context, id int) error
+
+	ListChorePauses(ctx context.Context, familyID int) ([]ChorePauseRow, error)
+	CreateChorePause(ctx context.Context, familyID int, startDate, endDate, reason string) (int, error)
+	DeleteChorePause(ctx context.Context, id int) error
+	IsDatePaused(ctx context.Context, familyID int, date string) (bool, error)
+
+	GetAssignment(ctx context.Context, choreID, childMemberID int) (*ChoreAssignmentRow, error)
+	GetCompletion(ctx context.Context, assignmentID int, date string) (*ChoreCompletionRow, error)
+	InsertChoreCompletion(ctx context.Context, assignmentID int, date string, ledgerEntryID int) (int, error)
+	DeleteChoreCompletion(ctx context.Context, id int) error
+	ListCompletionsForWeek(ctx context.Context, familyID int, weekStart, weekEnd string) ([]WeeklyChartCompletion, error)
+	ListChoreLedgerEntryIDs(ctx context.Context, familyID int) ([]int, error)
+	ListBonusStarsForWeek(ctx context.Context, familyID int, weekStart, weekEnd string, choreLedgerIDs []int) (map[string]int, error)
 }

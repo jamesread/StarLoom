@@ -21,6 +21,7 @@ import {
   canAccessControlPanelFromStatus,
   canAccessIamFromStatus,
   canAccessSettingsFromStatus,
+  canAccessWebhooksFromStatus,
 } from '../lib/rbacAccess'
 
 const router = useRouter()
@@ -45,7 +46,9 @@ function populateHubTiles() {
   if (!nav) return
   nav.clearNavigationLinks()
   const st = status.status
+  let tileCount = 0
   if (canAccessIamFromStatus(st)) {
+    tileCount += 1
     nav.addCallback('IAM', () => router.push({ name: 'iam' }), {
       icon: UserShield01Icon,
       name: 'iam',
@@ -53,16 +56,23 @@ function populateHubTiles() {
     })
   }
   if (canAccessSettingsFromStatus(st)) {
+    tileCount += 1
     nav.addCallback('Settings', () => router.push({ name: 'settings' }), {
       icon: Settings01Icon,
       name: 'settings',
       description: 'Configure system settings',
     })
+  }
+  if (canAccessWebhooksFromStatus(st)) {
+    tileCount += 1
     nav.addCallback('Webhooks', () => router.push({ name: 'webhooks' }), {
       icon: WebhookIcon,
       name: 'webhooks',
-      description: 'HTTP callbacks for StarApp events',
+      description: 'HTTP callbacks for StarLoom events',
     })
+  }
+  if (tileCount === 0) {
+    router.push('/')
   }
 }
 

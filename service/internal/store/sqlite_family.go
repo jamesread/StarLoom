@@ -57,9 +57,10 @@ func scanMember(scanner interface {
 	var m FamilyMemberRow
 	var accountID sql.NullInt64
 	var avatarPath sql.NullString
+	var starColor sql.NullString
 	var username sql.NullString
 	if err := scanner.Scan(
-		&m.ID, &m.FamilyID, &accountID, &m.DisplayName, &m.Role, &avatarPath, &m.CreatedAt, &username,
+		&m.ID, &m.FamilyID, &accountID, &m.DisplayName, &m.Role, &avatarPath, &starColor, &m.CreatedAt, &username,
 	); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -73,6 +74,9 @@ func scanMember(scanner interface {
 	if avatarPath.Valid {
 		m.AvatarPath = avatarPath.String
 	}
+	if starColor.Valid {
+		m.StarColor = starColor.String
+	}
 	if username.Valid {
 		m.Username = username.String
 	}
@@ -80,7 +84,7 @@ func scanMember(scanner interface {
 }
 
 const memberSelect = `SELECT fm.id, fm.family_id, fm.user_account_id, fm.display_name, fm.role,
-  fm.avatar_path, fm.created_at, ua.username
+  fm.avatar_path, fm.star_color, fm.created_at, ua.username
   FROM family_members fm
   LEFT JOIN user_accounts ua ON ua.id = fm.user_account_id`
 
@@ -104,9 +108,10 @@ func (s *SQLite) ListMembersByFamily(ctx context.Context, familyID int) ([]Famil
 		var m FamilyMemberRow
 		var accountID sql.NullInt64
 		var avatarPath sql.NullString
+		var starColor sql.NullString
 		var username sql.NullString
 		if err := rows.Scan(
-			&m.ID, &m.FamilyID, &accountID, &m.DisplayName, &m.Role, &avatarPath, &m.CreatedAt, &username,
+			&m.ID, &m.FamilyID, &accountID, &m.DisplayName, &m.Role, &avatarPath, &starColor, &m.CreatedAt, &username,
 		); err != nil {
 			return nil, err
 		}
@@ -117,6 +122,9 @@ func (s *SQLite) ListMembersByFamily(ctx context.Context, familyID int) ([]Famil
 		if avatarPath.Valid {
 			m.AvatarPath = avatarPath.String
 		}
+		if starColor.Valid {
+			m.StarColor = starColor.String
+		}
 		if username.Valid {
 			m.Username = username.String
 		}
@@ -125,14 +133,18 @@ func (s *SQLite) ListMembersByFamily(ctx context.Context, familyID int) ([]Famil
 	return out, rows.Err()
 }
 
-func (s *SQLite) CreateMember(ctx context.Context, familyID int, displayName, role string, accountID *int) (int, error) {
+func (s *SQLite) CreateMember(ctx context.Context, familyID int, displayName, role string, accountID *int, starColor string) (int, error) {
 	var aid any
 	if accountID != nil {
 		aid = *accountID
 	}
+	var color any
+	if starColor != "" {
+		color = starColor
+	}
 	res, err := s.db.ExecContext(ctx,
-		`INSERT INTO family_members (family_id, display_name, role, user_account_id) VALUES (?, ?, ?, ?)`,
-		familyID, displayName, role, aid)
+		`INSERT INTO family_members (family_id, display_name, role, user_account_id, star_color) VALUES (?, ?, ?, ?, ?)`,
+		familyID, displayName, role, aid, color)
 	if err != nil {
 		return 0, fmt.Errorf("create member: %w", err)
 	}
@@ -143,8 +155,10 @@ func (s *SQLite) CreateMember(ctx context.Context, familyID int, displayName, ro
 	return int(id), nil
 }
 
-func (s *SQLite) UpdateMemberDisplayName(ctx context.Context, id int, displayName string) error {
-	_, err := s.db.ExecContext(ctx, `UPDATE family_members SET display_name = ? WHERE id = ?`, displayName, id)
+func (s *SQLite) UpdateMember(ctx context.Context, id int, displayName, starColor string) error {
+	_, err := s.db.ExecContext(ctx,
+		`UPDATE family_members SET display_name = ?, star_color = ? WHERE id = ?`,
+		displayName, starColor, id)
 	return err
 }
 

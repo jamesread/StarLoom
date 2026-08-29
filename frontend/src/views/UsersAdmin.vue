@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import Section from 'picocrank/vue/components/Section.vue'
 import Table from 'picocrank/vue/components/Table.vue'
+import FormField from 'picocrank/vue/components/FormField.vue'
+import FormLayout from 'picocrank/vue/components/FormLayout.vue'
 import { onMounted, ref, computed } from 'vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { ArrowLeft01Icon } from '@hugeicons/core-free-icons'
@@ -75,11 +77,17 @@ const rows = computed(() =>
       <button type="button" class="inline-icon neutral" :disabled="loading" @click="load">Refresh</button>
     </template>
     <p v-if="error" class="inline-notification error">{{ error }}</p>
-    <div v-if="canCreate" class="toolbar-pad">
-      <input v-model="createUsername" placeholder="Username" />
-      <input v-model="createPassword" type="password" placeholder="Password (optional, min 8)" />
-      <button type="button" class="good" @click="createUser">Create user</button>
-    </div>
+    <FormLayout v-if="canCreate" class="toolbar-pad" @submit.prevent="createUser">
+      <FormField label="Username" for="create-username">
+        <input id="create-username" v-model="createUsername" type="text" required placeholder="Username" />
+      </FormField>
+      <FormField label="Password" for="create-password" description="Optional; at least 8 characters if set.">
+        <input id="create-password" v-model="createPassword" type="password" placeholder="Password (optional, min 8)" autocomplete="new-password" />
+      </FormField>
+      <template #actions>
+        <button type="submit" class="good">Create user</button>
+      </template>
+    </FormLayout>
     <Table
       :data="rows"
       :headers="[
@@ -105,9 +113,5 @@ const rows = computed(() =>
 <style scoped>
 .toolbar-pad {
   padding: 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
 }
 </style>

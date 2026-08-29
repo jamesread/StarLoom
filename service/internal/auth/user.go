@@ -39,6 +39,10 @@ func (a *AuthenticatedUser) CanAccessSettings() bool {
 	return a.HasPermission(rbac.PermissionSystemSettings)
 }
 
+func (a *AuthenticatedUser) CanAccessWebhooks() bool {
+	return a.CanAccessSettings()
+}
+
 func (a *AuthenticatedUser) CanAccessControlPanel() bool {
 	return a.CanAccessIam() || a.CanAccessSettings()
 }

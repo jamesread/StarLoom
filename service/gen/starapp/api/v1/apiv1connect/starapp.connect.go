@@ -212,6 +212,36 @@ const (
 	// StarAppServiceGetChildHomeSummaryProcedure is the fully-qualified name of the StarAppService's
 	// GetChildHomeSummary RPC.
 	StarAppServiceGetChildHomeSummaryProcedure = "/starapp.api.v1.StarAppService/GetChildHomeSummary"
+	// StarAppServiceListChoresProcedure is the fully-qualified name of the StarAppService's ListChores
+	// RPC.
+	StarAppServiceListChoresProcedure = "/starapp.api.v1.StarAppService/ListChores"
+	// StarAppServiceCreateChoreProcedure is the fully-qualified name of the StarAppService's
+	// CreateChore RPC.
+	StarAppServiceCreateChoreProcedure = "/starapp.api.v1.StarAppService/CreateChore"
+	// StarAppServiceUpdateChoreProcedure is the fully-qualified name of the StarAppService's
+	// UpdateChore RPC.
+	StarAppServiceUpdateChoreProcedure = "/starapp.api.v1.StarAppService/UpdateChore"
+	// StarAppServiceDeleteChoreProcedure is the fully-qualified name of the StarAppService's
+	// DeleteChore RPC.
+	StarAppServiceDeleteChoreProcedure = "/starapp.api.v1.StarAppService/DeleteChore"
+	// StarAppServiceListChorePausesProcedure is the fully-qualified name of the StarAppService's
+	// ListChorePauses RPC.
+	StarAppServiceListChorePausesProcedure = "/starapp.api.v1.StarAppService/ListChorePauses"
+	// StarAppServiceCreateChorePauseProcedure is the fully-qualified name of the StarAppService's
+	// CreateChorePause RPC.
+	StarAppServiceCreateChorePauseProcedure = "/starapp.api.v1.StarAppService/CreateChorePause"
+	// StarAppServiceDeleteChorePauseProcedure is the fully-qualified name of the StarAppService's
+	// DeleteChorePause RPC.
+	StarAppServiceDeleteChorePauseProcedure = "/starapp.api.v1.StarAppService/DeleteChorePause"
+	// StarAppServiceGetWeeklyStarChartProcedure is the fully-qualified name of the StarAppService's
+	// GetWeeklyStarChart RPC.
+	StarAppServiceGetWeeklyStarChartProcedure = "/starapp.api.v1.StarAppService/GetWeeklyStarChart"
+	// StarAppServiceCompleteChoreProcedure is the fully-qualified name of the StarAppService's
+	// CompleteChore RPC.
+	StarAppServiceCompleteChoreProcedure = "/starapp.api.v1.StarAppService/CompleteChore"
+	// StarAppServiceUncompleteChoreProcedure is the fully-qualified name of the StarAppService's
+	// UncompleteChore RPC.
+	StarAppServiceUncompleteChoreProcedure = "/starapp.api.v1.StarAppService/UncompleteChore"
 )
 
 // StarAppServiceClient is a client for the starapp.api.v1.StarAppService service.
@@ -277,6 +307,16 @@ type StarAppServiceClient interface {
 	ListRedemptions(context.Context, *connect.Request[v1.ListRedemptionsRequest]) (*connect.Response[v1.ListRedemptionsResponse], error)
 	GetParentHomeSummary(context.Context, *connect.Request[v1.GetParentHomeSummaryRequest]) (*connect.Response[v1.GetParentHomeSummaryResponse], error)
 	GetChildHomeSummary(context.Context, *connect.Request[v1.GetChildHomeSummaryRequest]) (*connect.Response[v1.GetChildHomeSummaryResponse], error)
+	ListChores(context.Context, *connect.Request[v1.ListChoresRequest]) (*connect.Response[v1.ListChoresResponse], error)
+	CreateChore(context.Context, *connect.Request[v1.CreateChoreRequest]) (*connect.Response[v1.CreateChoreResponse], error)
+	UpdateChore(context.Context, *connect.Request[v1.UpdateChoreRequest]) (*connect.Response[v1.UpdateChoreResponse], error)
+	DeleteChore(context.Context, *connect.Request[v1.DeleteChoreRequest]) (*connect.Response[v1.DeleteChoreResponse], error)
+	ListChorePauses(context.Context, *connect.Request[v1.ListChorePausesRequest]) (*connect.Response[v1.ListChorePausesResponse], error)
+	CreateChorePause(context.Context, *connect.Request[v1.CreateChorePauseRequest]) (*connect.Response[v1.CreateChorePauseResponse], error)
+	DeleteChorePause(context.Context, *connect.Request[v1.DeleteChorePauseRequest]) (*connect.Response[v1.DeleteChorePauseResponse], error)
+	GetWeeklyStarChart(context.Context, *connect.Request[v1.GetWeeklyStarChartRequest]) (*connect.Response[v1.GetWeeklyStarChartResponse], error)
+	CompleteChore(context.Context, *connect.Request[v1.CompleteChoreRequest]) (*connect.Response[v1.CompleteChoreResponse], error)
+	UncompleteChore(context.Context, *connect.Request[v1.UncompleteChoreRequest]) (*connect.Response[v1.UncompleteChoreResponse], error)
 }
 
 // NewStarAppServiceClient constructs a client for the starapp.api.v1.StarAppService service. By
@@ -656,6 +696,66 @@ func NewStarAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(starAppServiceMethods.ByName("GetChildHomeSummary")),
 			connect.WithClientOptions(opts...),
 		),
+		listChores: connect.NewClient[v1.ListChoresRequest, v1.ListChoresResponse](
+			httpClient,
+			baseURL+StarAppServiceListChoresProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("ListChores")),
+			connect.WithClientOptions(opts...),
+		),
+		createChore: connect.NewClient[v1.CreateChoreRequest, v1.CreateChoreResponse](
+			httpClient,
+			baseURL+StarAppServiceCreateChoreProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("CreateChore")),
+			connect.WithClientOptions(opts...),
+		),
+		updateChore: connect.NewClient[v1.UpdateChoreRequest, v1.UpdateChoreResponse](
+			httpClient,
+			baseURL+StarAppServiceUpdateChoreProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("UpdateChore")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteChore: connect.NewClient[v1.DeleteChoreRequest, v1.DeleteChoreResponse](
+			httpClient,
+			baseURL+StarAppServiceDeleteChoreProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("DeleteChore")),
+			connect.WithClientOptions(opts...),
+		),
+		listChorePauses: connect.NewClient[v1.ListChorePausesRequest, v1.ListChorePausesResponse](
+			httpClient,
+			baseURL+StarAppServiceListChorePausesProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("ListChorePauses")),
+			connect.WithClientOptions(opts...),
+		),
+		createChorePause: connect.NewClient[v1.CreateChorePauseRequest, v1.CreateChorePauseResponse](
+			httpClient,
+			baseURL+StarAppServiceCreateChorePauseProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("CreateChorePause")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteChorePause: connect.NewClient[v1.DeleteChorePauseRequest, v1.DeleteChorePauseResponse](
+			httpClient,
+			baseURL+StarAppServiceDeleteChorePauseProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("DeleteChorePause")),
+			connect.WithClientOptions(opts...),
+		),
+		getWeeklyStarChart: connect.NewClient[v1.GetWeeklyStarChartRequest, v1.GetWeeklyStarChartResponse](
+			httpClient,
+			baseURL+StarAppServiceGetWeeklyStarChartProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("GetWeeklyStarChart")),
+			connect.WithClientOptions(opts...),
+		),
+		completeChore: connect.NewClient[v1.CompleteChoreRequest, v1.CompleteChoreResponse](
+			httpClient,
+			baseURL+StarAppServiceCompleteChoreProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("CompleteChore")),
+			connect.WithClientOptions(opts...),
+		),
+		uncompleteChore: connect.NewClient[v1.UncompleteChoreRequest, v1.UncompleteChoreResponse](
+			httpClient,
+			baseURL+StarAppServiceUncompleteChoreProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("UncompleteChore")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -722,6 +822,16 @@ type starAppServiceClient struct {
 	listRedemptions              *connect.Client[v1.ListRedemptionsRequest, v1.ListRedemptionsResponse]
 	getParentHomeSummary         *connect.Client[v1.GetParentHomeSummaryRequest, v1.GetParentHomeSummaryResponse]
 	getChildHomeSummary          *connect.Client[v1.GetChildHomeSummaryRequest, v1.GetChildHomeSummaryResponse]
+	listChores                   *connect.Client[v1.ListChoresRequest, v1.ListChoresResponse]
+	createChore                  *connect.Client[v1.CreateChoreRequest, v1.CreateChoreResponse]
+	updateChore                  *connect.Client[v1.UpdateChoreRequest, v1.UpdateChoreResponse]
+	deleteChore                  *connect.Client[v1.DeleteChoreRequest, v1.DeleteChoreResponse]
+	listChorePauses              *connect.Client[v1.ListChorePausesRequest, v1.ListChorePausesResponse]
+	createChorePause             *connect.Client[v1.CreateChorePauseRequest, v1.CreateChorePauseResponse]
+	deleteChorePause             *connect.Client[v1.DeleteChorePauseRequest, v1.DeleteChorePauseResponse]
+	getWeeklyStarChart           *connect.Client[v1.GetWeeklyStarChartRequest, v1.GetWeeklyStarChartResponse]
+	completeChore                *connect.Client[v1.CompleteChoreRequest, v1.CompleteChoreResponse]
+	uncompleteChore              *connect.Client[v1.UncompleteChoreRequest, v1.UncompleteChoreResponse]
 }
 
 // Init calls starapp.api.v1.StarAppService.Init.
@@ -1029,6 +1139,56 @@ func (c *starAppServiceClient) GetChildHomeSummary(ctx context.Context, req *con
 	return c.getChildHomeSummary.CallUnary(ctx, req)
 }
 
+// ListChores calls starapp.api.v1.StarAppService.ListChores.
+func (c *starAppServiceClient) ListChores(ctx context.Context, req *connect.Request[v1.ListChoresRequest]) (*connect.Response[v1.ListChoresResponse], error) {
+	return c.listChores.CallUnary(ctx, req)
+}
+
+// CreateChore calls starapp.api.v1.StarAppService.CreateChore.
+func (c *starAppServiceClient) CreateChore(ctx context.Context, req *connect.Request[v1.CreateChoreRequest]) (*connect.Response[v1.CreateChoreResponse], error) {
+	return c.createChore.CallUnary(ctx, req)
+}
+
+// UpdateChore calls starapp.api.v1.StarAppService.UpdateChore.
+func (c *starAppServiceClient) UpdateChore(ctx context.Context, req *connect.Request[v1.UpdateChoreRequest]) (*connect.Response[v1.UpdateChoreResponse], error) {
+	return c.updateChore.CallUnary(ctx, req)
+}
+
+// DeleteChore calls starapp.api.v1.StarAppService.DeleteChore.
+func (c *starAppServiceClient) DeleteChore(ctx context.Context, req *connect.Request[v1.DeleteChoreRequest]) (*connect.Response[v1.DeleteChoreResponse], error) {
+	return c.deleteChore.CallUnary(ctx, req)
+}
+
+// ListChorePauses calls starapp.api.v1.StarAppService.ListChorePauses.
+func (c *starAppServiceClient) ListChorePauses(ctx context.Context, req *connect.Request[v1.ListChorePausesRequest]) (*connect.Response[v1.ListChorePausesResponse], error) {
+	return c.listChorePauses.CallUnary(ctx, req)
+}
+
+// CreateChorePause calls starapp.api.v1.StarAppService.CreateChorePause.
+func (c *starAppServiceClient) CreateChorePause(ctx context.Context, req *connect.Request[v1.CreateChorePauseRequest]) (*connect.Response[v1.CreateChorePauseResponse], error) {
+	return c.createChorePause.CallUnary(ctx, req)
+}
+
+// DeleteChorePause calls starapp.api.v1.StarAppService.DeleteChorePause.
+func (c *starAppServiceClient) DeleteChorePause(ctx context.Context, req *connect.Request[v1.DeleteChorePauseRequest]) (*connect.Response[v1.DeleteChorePauseResponse], error) {
+	return c.deleteChorePause.CallUnary(ctx, req)
+}
+
+// GetWeeklyStarChart calls starapp.api.v1.StarAppService.GetWeeklyStarChart.
+func (c *starAppServiceClient) GetWeeklyStarChart(ctx context.Context, req *connect.Request[v1.GetWeeklyStarChartRequest]) (*connect.Response[v1.GetWeeklyStarChartResponse], error) {
+	return c.getWeeklyStarChart.CallUnary(ctx, req)
+}
+
+// CompleteChore calls starapp.api.v1.StarAppService.CompleteChore.
+func (c *starAppServiceClient) CompleteChore(ctx context.Context, req *connect.Request[v1.CompleteChoreRequest]) (*connect.Response[v1.CompleteChoreResponse], error) {
+	return c.completeChore.CallUnary(ctx, req)
+}
+
+// UncompleteChore calls starapp.api.v1.StarAppService.UncompleteChore.
+func (c *starAppServiceClient) UncompleteChore(ctx context.Context, req *connect.Request[v1.UncompleteChoreRequest]) (*connect.Response[v1.UncompleteChoreResponse], error) {
+	return c.uncompleteChore.CallUnary(ctx, req)
+}
+
 // StarAppServiceHandler is an implementation of the starapp.api.v1.StarAppService service.
 type StarAppServiceHandler interface {
 	Init(context.Context, *connect.Request[v1.InitRequest]) (*connect.Response[v1.InitResponse], error)
@@ -1092,6 +1252,16 @@ type StarAppServiceHandler interface {
 	ListRedemptions(context.Context, *connect.Request[v1.ListRedemptionsRequest]) (*connect.Response[v1.ListRedemptionsResponse], error)
 	GetParentHomeSummary(context.Context, *connect.Request[v1.GetParentHomeSummaryRequest]) (*connect.Response[v1.GetParentHomeSummaryResponse], error)
 	GetChildHomeSummary(context.Context, *connect.Request[v1.GetChildHomeSummaryRequest]) (*connect.Response[v1.GetChildHomeSummaryResponse], error)
+	ListChores(context.Context, *connect.Request[v1.ListChoresRequest]) (*connect.Response[v1.ListChoresResponse], error)
+	CreateChore(context.Context, *connect.Request[v1.CreateChoreRequest]) (*connect.Response[v1.CreateChoreResponse], error)
+	UpdateChore(context.Context, *connect.Request[v1.UpdateChoreRequest]) (*connect.Response[v1.UpdateChoreResponse], error)
+	DeleteChore(context.Context, *connect.Request[v1.DeleteChoreRequest]) (*connect.Response[v1.DeleteChoreResponse], error)
+	ListChorePauses(context.Context, *connect.Request[v1.ListChorePausesRequest]) (*connect.Response[v1.ListChorePausesResponse], error)
+	CreateChorePause(context.Context, *connect.Request[v1.CreateChorePauseRequest]) (*connect.Response[v1.CreateChorePauseResponse], error)
+	DeleteChorePause(context.Context, *connect.Request[v1.DeleteChorePauseRequest]) (*connect.Response[v1.DeleteChorePauseResponse], error)
+	GetWeeklyStarChart(context.Context, *connect.Request[v1.GetWeeklyStarChartRequest]) (*connect.Response[v1.GetWeeklyStarChartResponse], error)
+	CompleteChore(context.Context, *connect.Request[v1.CompleteChoreRequest]) (*connect.Response[v1.CompleteChoreResponse], error)
+	UncompleteChore(context.Context, *connect.Request[v1.UncompleteChoreRequest]) (*connect.Response[v1.UncompleteChoreResponse], error)
 }
 
 // NewStarAppServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -1467,6 +1637,66 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 		connect.WithSchema(starAppServiceMethods.ByName("GetChildHomeSummary")),
 		connect.WithHandlerOptions(opts...),
 	)
+	starAppServiceListChoresHandler := connect.NewUnaryHandler(
+		StarAppServiceListChoresProcedure,
+		svc.ListChores,
+		connect.WithSchema(starAppServiceMethods.ByName("ListChores")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceCreateChoreHandler := connect.NewUnaryHandler(
+		StarAppServiceCreateChoreProcedure,
+		svc.CreateChore,
+		connect.WithSchema(starAppServiceMethods.ByName("CreateChore")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceUpdateChoreHandler := connect.NewUnaryHandler(
+		StarAppServiceUpdateChoreProcedure,
+		svc.UpdateChore,
+		connect.WithSchema(starAppServiceMethods.ByName("UpdateChore")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceDeleteChoreHandler := connect.NewUnaryHandler(
+		StarAppServiceDeleteChoreProcedure,
+		svc.DeleteChore,
+		connect.WithSchema(starAppServiceMethods.ByName("DeleteChore")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceListChorePausesHandler := connect.NewUnaryHandler(
+		StarAppServiceListChorePausesProcedure,
+		svc.ListChorePauses,
+		connect.WithSchema(starAppServiceMethods.ByName("ListChorePauses")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceCreateChorePauseHandler := connect.NewUnaryHandler(
+		StarAppServiceCreateChorePauseProcedure,
+		svc.CreateChorePause,
+		connect.WithSchema(starAppServiceMethods.ByName("CreateChorePause")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceDeleteChorePauseHandler := connect.NewUnaryHandler(
+		StarAppServiceDeleteChorePauseProcedure,
+		svc.DeleteChorePause,
+		connect.WithSchema(starAppServiceMethods.ByName("DeleteChorePause")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceGetWeeklyStarChartHandler := connect.NewUnaryHandler(
+		StarAppServiceGetWeeklyStarChartProcedure,
+		svc.GetWeeklyStarChart,
+		connect.WithSchema(starAppServiceMethods.ByName("GetWeeklyStarChart")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceCompleteChoreHandler := connect.NewUnaryHandler(
+		StarAppServiceCompleteChoreProcedure,
+		svc.CompleteChore,
+		connect.WithSchema(starAppServiceMethods.ByName("CompleteChore")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceUncompleteChoreHandler := connect.NewUnaryHandler(
+		StarAppServiceUncompleteChoreProcedure,
+		svc.UncompleteChore,
+		connect.WithSchema(starAppServiceMethods.ByName("UncompleteChore")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/starapp.api.v1.StarAppService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case StarAppServiceInitProcedure:
@@ -1591,6 +1821,26 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 			starAppServiceGetParentHomeSummaryHandler.ServeHTTP(w, r)
 		case StarAppServiceGetChildHomeSummaryProcedure:
 			starAppServiceGetChildHomeSummaryHandler.ServeHTTP(w, r)
+		case StarAppServiceListChoresProcedure:
+			starAppServiceListChoresHandler.ServeHTTP(w, r)
+		case StarAppServiceCreateChoreProcedure:
+			starAppServiceCreateChoreHandler.ServeHTTP(w, r)
+		case StarAppServiceUpdateChoreProcedure:
+			starAppServiceUpdateChoreHandler.ServeHTTP(w, r)
+		case StarAppServiceDeleteChoreProcedure:
+			starAppServiceDeleteChoreHandler.ServeHTTP(w, r)
+		case StarAppServiceListChorePausesProcedure:
+			starAppServiceListChorePausesHandler.ServeHTTP(w, r)
+		case StarAppServiceCreateChorePauseProcedure:
+			starAppServiceCreateChorePauseHandler.ServeHTTP(w, r)
+		case StarAppServiceDeleteChorePauseProcedure:
+			starAppServiceDeleteChorePauseHandler.ServeHTTP(w, r)
+		case StarAppServiceGetWeeklyStarChartProcedure:
+			starAppServiceGetWeeklyStarChartHandler.ServeHTTP(w, r)
+		case StarAppServiceCompleteChoreProcedure:
+			starAppServiceCompleteChoreHandler.ServeHTTP(w, r)
+		case StarAppServiceUncompleteChoreProcedure:
+			starAppServiceUncompleteChoreHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -1842,4 +2092,44 @@ func (UnimplementedStarAppServiceHandler) GetParentHomeSummary(context.Context, 
 
 func (UnimplementedStarAppServiceHandler) GetChildHomeSummary(context.Context, *connect.Request[v1.GetChildHomeSummaryRequest]) (*connect.Response[v1.GetChildHomeSummaryResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.GetChildHomeSummary is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) ListChores(context.Context, *connect.Request[v1.ListChoresRequest]) (*connect.Response[v1.ListChoresResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.ListChores is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) CreateChore(context.Context, *connect.Request[v1.CreateChoreRequest]) (*connect.Response[v1.CreateChoreResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.CreateChore is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) UpdateChore(context.Context, *connect.Request[v1.UpdateChoreRequest]) (*connect.Response[v1.UpdateChoreResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.UpdateChore is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) DeleteChore(context.Context, *connect.Request[v1.DeleteChoreRequest]) (*connect.Response[v1.DeleteChoreResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.DeleteChore is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) ListChorePauses(context.Context, *connect.Request[v1.ListChorePausesRequest]) (*connect.Response[v1.ListChorePausesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.ListChorePauses is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) CreateChorePause(context.Context, *connect.Request[v1.CreateChorePauseRequest]) (*connect.Response[v1.CreateChorePauseResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.CreateChorePause is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) DeleteChorePause(context.Context, *connect.Request[v1.DeleteChorePauseRequest]) (*connect.Response[v1.DeleteChorePauseResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.DeleteChorePause is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) GetWeeklyStarChart(context.Context, *connect.Request[v1.GetWeeklyStarChartRequest]) (*connect.Response[v1.GetWeeklyStarChartResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.GetWeeklyStarChart is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) CompleteChore(context.Context, *connect.Request[v1.CompleteChoreRequest]) (*connect.Response[v1.CompleteChoreResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.CompleteChore is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) UncompleteChore(context.Context, *connect.Request[v1.UncompleteChoreRequest]) (*connect.Response[v1.UncompleteChoreResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.UncompleteChore is not implemented"))
 }

@@ -1,27 +1,32 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useStatus } from '../composables/useStatus'
+import { useInit } from '../composables/useInit'
+
+const DOCS_URL = 'https://github.com/jamesread/StarLoom/tree/main/docs'
+const ISSUES_URL = 'https://github.com/jamesread/StarLoom/issues'
+const RELEASES_URL = 'https://github.com/jamesread/StarLoom/releases'
 
 const props = defineProps<{
-  appName?: string
   logoUrl?: string
-  docsUrl?: string
-  version?: string
 }>()
 
-const status = useStatus()
+const init = useInit()
 
-const showFooter = computed(() => status.status?.showFooter !== false)
-const showVersionNumber = computed(() => status.status?.showVersionNumber !== false)
-const currentVersion = computed(() => props.version || status.status?.currentVersion || '')
-const showNewVersions = computed(() => status.status?.showNewVersions === true)
-const availableVersion = computed(
-  () => status.status?.availableVersion?.trim() || '',
-)
+const showFooter = computed(() => init.init?.showFooter !== false)
+const showVersionNumber = computed(() => init.init?.showVersionNumber !== false)
+const appName = computed(() => init.init?.siteTitle?.trim() || 'StarLoom')
+const currentVersion = computed(() => init.init?.currentVersion?.trim() || '')
+const showNewVersions = computed(() => init.init?.showNewVersions === true)
+const availableVersion = computed(() => init.init?.availableVersion?.trim() || '')
 
-const showUpdateLink = computed(
-  () => showNewVersions.value && availableVersion.value !== '',
-)
+const showUpdateLink = computed(() => {
+  if (!showVersionNumber.value || !showNewVersions.value) return false
+  const v = availableVersion.value
+  if (!v || v === 'none' || v === '?' || v.toLowerCase().startsWith('you-are-using')) {
+    return false
+  }
+  return true
+})
 </script>
 
 <template>
@@ -39,14 +44,17 @@ const showUpdateLink = computed(
       <span v-if="showVersionNumber && currentVersion">{{ currentVersion }}</span>
     </p>
     <p>
-      <span v-if="docsUrl">
-        <a :href="docsUrl" target="_blank" rel="noopener noreferrer">Docs</a>
+      <span>
+        <a :href="DOCS_URL" target="_blank" rel="noopener noreferrer">Docs</a>
+      </span>
+      <span>
+        <a :href="ISSUES_URL" target="_blank" rel="noopener noreferrer">Raise an issue</a>
       </span>
     </p>
     <p v-if="showUpdateLink">
       <a
         id="available-version"
-        href="#"
+        :href="RELEASES_URL"
         target="_blank"
         rel="noopener noreferrer"
       >

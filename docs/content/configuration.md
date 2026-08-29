@@ -37,7 +37,9 @@ Saving Settings reloads **Init** in the SPA (no process restart).
 | Key | Type | Default | Category | Effect |
 |-----|------|---------|----------|--------|
 | `site_title` | string | StarApp | Site | Header and browser tab title |
-| `show_footer` | bool | on | Site | Footer visibility (also in Init) |
+| `show_footer` | bool | on | Site | Footer visibility (Init) |
+| `show_version_number` | bool | on | Site | Version text in footer (Init) |
+| `show_new_versions` | bool | off | Site | Update hint when a newer release exists (Init) |
 | `default_award_stars` | int | 1 | Features | Default stars when awarding (1–100) |
 | `enable_redemption_approval` | bool | on | Features | New rewards require approval by default (Init `features`) |
 
@@ -49,7 +51,7 @@ See [Authentication](authentication.md).
 Schema changes are versioned SQL files under `database/sqlite/migrations/`,
 applied with [sql-migrate](https://github.com/rubenv/sql-migrate).
 
-The service binary expects migration **`6.domain-rbac.sql`** (`config.RequiredMigration`).
+The service binary expects migration **`7.chores.sql`** (`config.RequiredMigration`).
 
 On startup the service **applies pending migrations automatically** (using
 `database/sqlite/migrations` relative to the working directory, or

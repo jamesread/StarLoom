@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
 import FormField from 'picocrank/vue/components/FormField.vue'
+import FormLayout from 'picocrank/vue/components/FormLayout.vue'
 import { StarIcon } from '@hugeicons/core-free-icons'
 import { starapp, memberAvatarUrl, type ParentHomeSummary, type ChildHomeSummary } from '../api/client'
 import { fetchAppStatus, useStatus } from '../composables/useStatus'
@@ -11,6 +12,7 @@ import {
   canViewFamilyHomeFromStatus,
   hasPermission,
 } from '../lib/rbacAccess'
+import { memberAvatarStyle, memberStarStyle } from '../lib/memberStarColor'
 
 const statusState = useStatus()
 const error = ref('')
@@ -136,10 +138,14 @@ watch(() => statusState.status?.isLoggedIn, () => {
 
       <div v-if="needsFamily && canCreateFamily">
         <p>Create your family to start awarding stars.</p>
-        <FormField label="Family name">
-          <input v-model="familyName" type="text" placeholder="The Smith Family" />
-        </FormField>
-        <button type="button" :disabled="creating" @click="createFamily">Create family</button>
+        <FormLayout @submit.prevent="createFamily">
+          <FormField label="Family name" for="family-name">
+            <input id="family-name" v-model="familyName" type="text" placeholder="The Smith Family" required />
+          </FormField>
+          <template #actions>
+            <button type="submit" class="good" :disabled="creating">{{ creating ? 'Creating…' : 'Create family' }}</button>
+          </template>
+        </FormLayout>
       </div>
 
       <div v-else-if="needsFamily" class="subtle">
@@ -167,12 +173,15 @@ watch(() => statusState.status?.isLoggedIn, () => {
             <img
               v-if="child.member?.hasAvatar"
               class="avatar"
+              :style="memberAvatarStyle(child.member)"
               :src="memberAvatarUrl(child.member!.id, true)"
               :alt="child.member?.displayName"
             />
-            <div v-else class="avatar avatar-placeholder">{{ child.member?.displayName?.charAt(0) }}</div>
+            <div v-else class="avatar avatar-placeholder" :style="memberAvatarStyle(child.member)">
+              {{ child.member?.displayName?.charAt(0) }}
+            </div>
             <strong>{{ child.member?.displayName }}</strong>
-            <div class="balance">★ {{ child.balance ?? 0 }}</div>
+            <div class="balance" :style="memberStarStyle(child.member)">★ {{ child.balance ?? 0 }}</div>
             <div class="subtle last-award">{{ formatAward(child.lastAward) }}</div>
           </RouterLink>
         </div>
@@ -185,13 +194,16 @@ watch(() => statusState.status?.isLoggedIn, () => {
         <img
           v-if="childSummary?.member?.hasAvatar"
           class="avatar large"
+          :style="memberAvatarStyle(childSummary?.member)"
           :src="memberAvatarUrl(childSummary!.member!.id, true)"
           :alt="childSummary?.member?.displayName"
         />
-        <div v-else class="avatar large avatar-placeholder">
+        <div v-else class="avatar large avatar-placeholder" :style="memberAvatarStyle(childSummary?.member)">
           {{ childSummary?.member?.displayName?.charAt(0) }}
         </div>
-        <div class="balance large">★ {{ childSummary?.balance ?? 0 }} stars</div>
+        <div class="balance large" :style="memberStarStyle(childSummary?.member)">
+          ★ {{ childSummary?.balance ?? 0 }} stars
+        </div>
       </div>
 
       <h3>Recent awards</h3>
@@ -248,6 +260,7 @@ watch(() => statusState.status?.isLoggedIn, () => {
   height: 4rem;
   border-radius: 50%;
   object-fit: cover;
+  box-sizing: border-box;
 }
 .avatar.large {
   width: 5rem;
@@ -263,6 +276,7 @@ watch(() => statusState.status?.isLoggedIn, () => {
 }
 .balance {
   font-size: 1.25rem;
+  font-weight: 700;
 }
 .balance.large {
   font-size: 1.75rem;

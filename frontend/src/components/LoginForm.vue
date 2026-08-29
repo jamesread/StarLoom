@@ -23,7 +23,7 @@ async function onLocalLogin(payload: { username: string; password: string }) {
 </script>
 
 <template>
-  <Section title="Login" subtitle="Sign in with your username and password" :padding="true">
+  <Section title="Login to StarLoom" subtitle="Sign in with your username and password" :padding="true">
     <Login
       ref="loginRef"
       :show-default-tabs="false"

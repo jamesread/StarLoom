@@ -4,6 +4,8 @@ import {
   GiftIcon,
   Home01Icon,
   Settings01Icon,
+  StarIcon,
+  Task01Icon,
   TaskDone01Icon,
   UserMultipleIcon,
   UserShield01Icon,
@@ -14,6 +16,7 @@ import {
   canAccessControlPanelFromStatus,
   canAccessIamFromStatus,
   canAccessSettingsFromStatus,
+  canViewChoresFromStatus,
   canViewFamilyHomeFromStatus,
 } from './lib/rbacAccess'
 import { applyRouteBreadcrumbs } from './lib/routeBreadcrumbs'
@@ -22,6 +25,7 @@ import ControlPanel from './views/ControlPanel.vue'
 import SettingsAdmin from './views/SettingsAdmin.vue'
 import WebhooksAdmin from './views/WebhooksAdmin.vue'
 import WebhookCreate from './views/WebhookCreate.vue'
+import WebhookEdit from './views/WebhookEdit.vue'
 import IamHub from './views/IamHub.vue'
 import UsersAdmin from './views/UsersAdmin.vue'
 import UserGroupsAdmin from './views/UserGroupsAdmin.vue'
@@ -35,7 +39,11 @@ import ChangePassword from './views/ChangePassword.vue'
 import ChildrenAdmin from './views/ChildrenAdmin.vue'
 import ChildDetail from './views/ChildDetail.vue'
 import RewardsAdmin from './views/RewardsAdmin.vue'
+import RewardEdit from './views/RewardEdit.vue'
 import RedemptionsAdmin from './views/RedemptionsAdmin.vue'
+import ChoresAdmin from './views/ChoresAdmin.vue'
+import ChoreEdit from './views/ChoreEdit.vue'
+import StarChart from './views/StarChart.vue'
 
 const routes = [
   { path: '/', name: 'home', component: HomeView, meta: { title: 'Home', icon: Home01Icon, requiresAuth: true } },
@@ -58,10 +66,34 @@ const routes = [
     meta: { title: 'Rewards', icon: GiftIcon, requiresAuth: true, requiresFamilyAdmin: true },
   },
   {
+    path: '/family/rewards/:id',
+    name: 'familyRewardEdit',
+    component: RewardEdit,
+    meta: { title: 'Edit reward', requiresAuth: true, requiresFamilyAdmin: true },
+  },
+  {
     path: '/family/redemptions',
     name: 'familyRedemptions',
     component: RedemptionsAdmin,
     meta: { title: 'Redemptions', icon: TaskDone01Icon, requiresAuth: true, requiresFamilyAdmin: true },
+  },
+  {
+    path: '/family/chores',
+    name: 'familyChores',
+    component: ChoresAdmin,
+    meta: { title: 'Chores', icon: Task01Icon, requiresAuth: true, requiresFamilyAdmin: true },
+  },
+  {
+    path: '/family/chores/:id',
+    name: 'familyChoreEdit',
+    component: ChoreEdit,
+    meta: { title: 'Edit chore', requiresAuth: true, requiresFamilyAdmin: true },
+  },
+  {
+    path: '/family/star-chart',
+    name: 'familyStarChart',
+    component: StarChart,
+    meta: { title: 'Star Chart', icon: StarIcon, requiresAuth: true, requiresChoresView: true },
   },
   { path: '/user-control-panel', name: 'userControlPanel', component: UserControlPanel, meta: { title: 'User Control Panel', requiresAuth: true } },
   { path: '/user-control-panel/preferences', name: 'userPreferences', component: UserPreferences, meta: { title: 'User preferences', requiresAuth: true } },
@@ -107,10 +139,17 @@ const routes = [
     component: WebhookCreate,
     meta: { title: 'Add webhook', requiresAuth: true, requiresSettings: true },
   },
+  {
+    path: '/control-panel/webhooks/:id',
+    name: 'webhook-edit',
+    component: WebhookEdit,
+    meta: { title: 'Edit webhook', requiresAuth: true, requiresSettings: true },
+  },
   { path: '/iam', redirect: { name: 'iam' } },
   { path: '/admin/settings', redirect: { name: 'settings' } },
   { path: '/admin/webhooks', redirect: { name: 'webhooks' } },
   { path: '/admin/webhooks/create', redirect: { name: 'webhook-create' } },
+  { path: '/admin/webhooks/:id', redirect: (to) => ({ name: 'webhook-edit', params: { id: to.params.id } }) },
   { path: '/my-permissions', redirect: { name: 'myPermissions' } },
 ]
 
@@ -150,6 +189,10 @@ router.beforeEach(async (to, _from, next) => {
     return
   }
   if (to.meta.requiresFamilyAdmin && !canViewFamilyHomeFromStatus(st)) {
+    next('/')
+    return
+  }
+  if (to.meta.requiresChoresView && !canViewChoresFromStatus(st)) {
     next('/')
     return
   }

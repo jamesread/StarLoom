@@ -51,7 +51,7 @@ func (s *Server) CreateFamily(ctx context.Context, req *connect.Request[apiv1.Cr
 	if err != nil {
 		return nil, mapStoreError(err)
 	}
-	memberID, err := s.store.CreateMember(ctx, familyID, au.User.Username, store.MemberRoleParent, &au.User.ID)
+	memberID, err := s.store.CreateMember(ctx, familyID, au.User.Username, store.MemberRoleParent, &au.User.ID, "")
 	if err != nil {
 		return nil, mapStoreError(err)
 	}
@@ -116,7 +116,18 @@ func (s *Server) CreateChildMember(ctx context.Context, req *connect.Request[api
 	if err := s.store.EnsureUserInGroup(ctx, userID, rbac.GroupChildren); err != nil {
 		return nil, mapStoreError(err)
 	}
-	memberID, err := s.store.CreateMember(ctx, fc.family.ID, displayName, store.MemberRoleChild, &userID)
+	members, err := s.store.ListMembersByFamily(ctx, fc.family.ID)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	childCount := 0
+	for _, m := range members {
+		if m.Role == store.MemberRoleChild {
+			childCount++
+		}
+	}
+	starColor := store.NextChildStarColor(childCount)
+	memberID, err := s.store.CreateMember(ctx, fc.family.ID, displayName, store.MemberRoleChild, &userID, starColor)
 	if err != nil {
 		_ = s.store.DeleteUserAccount(ctx, userID)
 		return nil, mapStoreError(err)
@@ -150,7 +161,18 @@ func (s *Server) UpdateMember(ctx context.Context, req *connect.Request[apiv1.Up
 	if displayName == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("display name required"))
 	}
-	if err := s.store.UpdateMemberDisplayName(ctx, member.ID, displayName); err != nil {
+	starColor := member.StarColor
+	if c := strings.TrimSpace(req.Msg.StarColor); c != "" {
+		normalized := store.NormalizeMemberStarColor(c)
+		if normalized == "" {
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("star color must be #RRGGBB"))
+		}
+		starColor = normalized
+	}
+	if starColor == "" {
+		starColor = store.DefaultMemberStarColor(member.ID)
+	}
+	if err := s.store.UpdateMember(ctx, member.ID, displayName, starColor); err != nil {
 		return nil, mapStoreError(err)
 	}
 	member, _ = s.store.GetMemberByID(ctx, member.ID)

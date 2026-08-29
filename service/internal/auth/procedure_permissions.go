@@ -99,6 +99,22 @@ func RequiredPermission(procedureName string) string {
 
 	case apiv1connect.StarAppServiceGetChildHomeSummaryProcedure:
 		return rbac.PermissionStarsViewOwn
+
+	case apiv1connect.StarAppServiceListChoresProcedure,
+		apiv1connect.StarAppServiceListChorePausesProcedure,
+		apiv1connect.StarAppServiceGetWeeklyStarChartProcedure:
+		return rbac.PermissionChoresViewFamily
+
+	case apiv1connect.StarAppServiceCreateChoreProcedure,
+		apiv1connect.StarAppServiceUpdateChoreProcedure,
+		apiv1connect.StarAppServiceDeleteChoreProcedure,
+		apiv1connect.StarAppServiceCreateChorePauseProcedure,
+		apiv1connect.StarAppServiceDeleteChorePauseProcedure:
+		return rbac.PermissionChoresManage
+
+	case apiv1connect.StarAppServiceCompleteChoreProcedure,
+		apiv1connect.StarAppServiceUncompleteChoreProcedure:
+		return rbac.PermissionChoresComplete
 	}
 	return rbac.PermissionAppAccess
 }

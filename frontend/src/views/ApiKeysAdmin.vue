@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import Section from 'picocrank/vue/components/Section.vue'
+import FormField from 'picocrank/vue/components/FormField.vue'
+import FormLayout from 'picocrank/vue/components/FormLayout.vue'
+import RadioGroup from 'picocrank/vue/components/RadioGroup.vue'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { starapp, type ApiKey } from '../api/client'
@@ -11,6 +14,11 @@ const name = ref('')
 const readOnly = ref(false)
 const newSecret = ref('')
 const error = ref('')
+
+const booleanOptions = [
+  { label: 'Read-only', value: true },
+  { label: 'Read/write', value: false },
+]
 
 async function load() {
   const res = await starapp.listApiKeys()
@@ -47,11 +55,17 @@ onMounted(async () => {
       </button>
     </template>
     <p v-if="error" class="inline-notification error">{{ error }}</p>
-    <div class="toolbar-pad">
-      <input v-model="name" placeholder="Key name" />
-      <label><input v-model="readOnly" type="checkbox" /> Read-only</label>
-      <button type="button" class="good" @click="createKey">Create key</button>
-    </div>
+    <FormLayout class="toolbar-pad" @submit.prevent="createKey">
+      <FormField label="Key name" for="api-key-name">
+        <input id="api-key-name" v-model="name" type="text" placeholder="API key" />
+      </FormField>
+      <FormField label="Access" fake>
+        <RadioGroup v-model="readOnly" name="api-key-readonly" :options="booleanOptions" />
+      </FormField>
+      <template #actions>
+        <button type="submit" class="good">Create key</button>
+      </template>
+    </FormLayout>
     <p v-if="newSecret" class="inline-notification note">Copy this secret now — it will not be shown again: <code>{{ newSecret }}</code></p>
     <ul>
       <li v-for="k in keys" :key="k.id">
@@ -64,10 +78,6 @@ onMounted(async () => {
 
 <style scoped>
 .toolbar-pad {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  align-items: center;
   margin-bottom: 1rem;
 }
 </style>

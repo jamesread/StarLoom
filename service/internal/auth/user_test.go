@@ -35,5 +35,6 @@ func TestCanAccessIamAndSettings(t *testing.T) {
 	settingsOnly := userWith(rbac.PermissionSystemSettings)
 	require.False(t, settingsOnly.CanAccessIam())
 	require.True(t, settingsOnly.CanAccessSettings())
+	require.True(t, settingsOnly.CanAccessWebhooks())
 	require.True(t, settingsOnly.CanAccessControlPanel())
 }

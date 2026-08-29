@@ -6,15 +6,21 @@ export type SidebarNavigation = {
 
 export function setupSidebarNavigation(
   navigation: SidebarNavigation,
-  { showControlPanel = false, showFamilyNav = false } = {},
+  { showControlPanel = false, showFamilyNav = false, showChoreChart = false } = {},
 ) {
   navigation.clearNavigationLinks()
 
   navigation.addRouterLink('home')
 
+  if (showChoreChart && !showFamilyNav) {
+    navigation.addRouterLink('familyStarChart', null, { description: 'Weekly star chart' })
+  }
+
   if (showFamilyNav) {
     navigation.addSection('Family', { name: 'nav-family' })
     navigation.addRouterLink('familyChildren', null, { description: 'Manage children' })
+    navigation.addRouterLink('familyStarChart', null, { description: 'Weekly star chart' })
+    navigation.addRouterLink('familyChores', null, { description: 'Chore definitions' })
     navigation.addRouterLink('familyRewards', null, { description: 'Reward catalog' })
     navigation.addRouterLink('familyRedemptions', null, { description: 'Approval queue' })
   }

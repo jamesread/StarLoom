@@ -176,6 +176,64 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/CompleteChore": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "CompleteChore",
+        "operationId": "starapp.api.v1.StarAppService.CompleteChore",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.CompleteChoreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.CompleteChoreResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/CreateApiKey": {
       "post": {
         "tags": [
@@ -285,6 +343,122 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/starapp.api.v1.CreateChildMemberResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/CreateChore": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "CreateChore",
+        "operationId": "starapp.api.v1.StarAppService.CreateChore",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.CreateChoreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.CreateChoreResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/CreateChorePause": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "CreateChorePause",
+        "operationId": "starapp.api.v1.StarAppService.CreateChorePause",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.CreateChorePauseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.CreateChorePauseResponse"
                 }
               }
             }
@@ -691,6 +865,122 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/starapp.api.v1.DeleteApiKeyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/DeleteChore": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "DeleteChore",
+        "operationId": "starapp.api.v1.StarAppService.DeleteChore",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.DeleteChoreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.DeleteChoreResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/DeleteChorePause": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "DeleteChorePause",
+        "operationId": "starapp.api.v1.StarAppService.DeleteChorePause",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.DeleteChorePauseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.DeleteChorePauseResponse"
                 }
               }
             }
@@ -1916,6 +2206,64 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/GetWeeklyStarChart": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetWeeklyStarChart",
+        "operationId": "starapp.api.v1.StarAppService.GetWeeklyStarChart",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetWeeklyStarChartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetWeeklyStarChartResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/ImpersonateUser": {
       "post": {
         "tags": [
@@ -2083,6 +2431,122 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/starapp.api.v1.ListApiKeysResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ListChorePauses": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListChorePauses",
+        "operationId": "starapp.api.v1.StarAppService.ListChorePauses",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListChorePausesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListChorePausesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ListChores": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListChores",
+        "operationId": "starapp.api.v1.StarAppService.ListChores",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListChoresRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListChoresResponse"
                 }
               }
             }
@@ -3192,6 +3656,122 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/UncompleteChore": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "UncompleteChore",
+        "operationId": "starapp.api.v1.StarAppService.UncompleteChore",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.UncompleteChoreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.UncompleteChoreResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/UpdateChore": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "UpdateChore",
+        "operationId": "starapp.api.v1.StarAppService.UpdateChore",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.UpdateChoreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.UpdateChoreResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/UpdateCvar": {
       "post": {
         "tags": [
@@ -3774,6 +4354,126 @@
         "title": "ChildHomeSummary",
         "additionalProperties": false
       },
+      "starapp.api.v1.Chore": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "familyId": {
+            "type": "integer",
+            "title": "family_id",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string",
+            "title": "title"
+          },
+          "starReward": {
+            "type": "integer",
+            "title": "star_reward",
+            "format": "int32"
+          },
+          "weekdays": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "weekdays"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "active"
+          },
+          "childMemberIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "child_member_ids"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "created_at"
+          }
+        },
+        "title": "Chore",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ChorePause": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "familyId": {
+            "type": "integer",
+            "title": "family_id",
+            "format": "int32"
+          },
+          "startDate": {
+            "type": "string",
+            "title": "start_date"
+          },
+          "endDate": {
+            "type": "string",
+            "title": "end_date"
+          },
+          "reason": {
+            "type": "string",
+            "title": "reason"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "created_at"
+          }
+        },
+        "title": "ChorePause",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CompleteChoreRequest": {
+        "type": "object",
+        "properties": {
+          "choreId": {
+            "type": "integer",
+            "title": "chore_id",
+            "format": "int32"
+          },
+          "childMemberId": {
+            "type": "integer",
+            "title": "child_member_id",
+            "format": "int32"
+          },
+          "date": {
+            "type": "string",
+            "title": "date"
+          }
+        },
+        "title": "CompleteChoreRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CompleteChoreResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "newBalance": {
+            "type": "integer",
+            "title": "new_balance",
+            "format": "int32"
+          }
+        },
+        "title": "CompleteChoreResponse",
+        "additionalProperties": false
+      },
       "starapp.api.v1.CreateApiKeyRequest": {
         "type": "object",
         "properties": {
@@ -3836,6 +4536,87 @@
           }
         },
         "title": "CreateChildMemberResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateChorePauseRequest": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "title": "start_date"
+          },
+          "endDate": {
+            "type": "string",
+            "title": "end_date"
+          },
+          "reason": {
+            "type": "string",
+            "title": "reason"
+          }
+        },
+        "title": "CreateChorePauseRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateChorePauseResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "pause": {
+            "title": "pause",
+            "$ref": "#/components/schemas/starapp.api.v1.ChorePause"
+          }
+        },
+        "title": "CreateChorePauseResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateChoreRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "title"
+          },
+          "starReward": {
+            "type": "integer",
+            "title": "star_reward",
+            "format": "int32"
+          },
+          "weekdays": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "weekdays"
+          },
+          "childMemberIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "child_member_ids"
+          }
+        },
+        "title": "CreateChoreRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateChoreResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "chore": {
+            "title": "chore",
+            "$ref": "#/components/schemas/starapp.api.v1.Chore"
+          }
+        },
+        "title": "CreateChoreResponse",
         "additionalProperties": false
       },
       "starapp.api.v1.CreateFamilyRequest": {
@@ -4088,6 +4869,52 @@
         "title": "DeleteApiKeyResponse",
         "additionalProperties": false
       },
+      "starapp.api.v1.DeleteChorePauseRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          }
+        },
+        "title": "DeleteChorePauseRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteChorePauseResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "DeleteChorePauseResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteChoreRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          }
+        },
+        "title": "DeleteChoreRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteChoreResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "DeleteChoreResponse",
+        "additionalProperties": false
+      },
       "starapp.api.v1.DeleteMemberAvatarRequest": {
         "type": "object",
         "properties": {
@@ -4292,6 +5119,10 @@
           "username": {
             "type": "string",
             "title": "username"
+          },
+          "starColor": {
+            "type": "string",
+            "title": "star_color"
           }
         },
         "title": "FamilyMember",
@@ -4748,6 +5579,46 @@
         "title": "GetUsersResponse",
         "additionalProperties": false
       },
+      "starapp.api.v1.GetWeeklyStarChartRequest": {
+        "type": "object",
+        "properties": {
+          "weekStart": {
+            "type": "string",
+            "title": "week_start"
+          }
+        },
+        "title": "GetWeeklyStarChartRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetWeeklyStarChartResponse": {
+        "type": "object",
+        "properties": {
+          "weekStart": {
+            "type": "string",
+            "title": "week_start"
+          },
+          "weekEnd": {
+            "type": "string",
+            "title": "week_end"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.WeeklyStarChartRow"
+            },
+            "title": "rows"
+          },
+          "bonusDays": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.WeeklyStarChartBonusDay"
+            },
+            "title": "bonus_days"
+          }
+        },
+        "title": "GetWeeklyStarChartResponse",
+        "additionalProperties": false
+      },
       "starapp.api.v1.ImpersonateUserRequest": {
         "type": "object",
         "properties": {
@@ -4839,6 +5710,50 @@
           }
         },
         "title": "ListApiKeysResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListChorePausesRequest": {
+        "type": "object",
+        "title": "ListChorePausesRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListChorePausesResponse": {
+        "type": "object",
+        "properties": {
+          "pauses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.ChorePause"
+            },
+            "title": "pauses"
+          }
+        },
+        "title": "ListChorePausesResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListChoresRequest": {
+        "type": "object",
+        "properties": {
+          "includeInactive": {
+            "type": "boolean",
+            "title": "include_inactive"
+          }
+        },
+        "title": "ListChoresRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListChoresResponse": {
+        "type": "object",
+        "properties": {
+          "chores": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.Chore"
+            },
+            "title": "chores"
+          }
+        },
+        "title": "ListChoresResponse",
         "additionalProperties": false
       },
       "starapp.api.v1.ListCvarsRequest": {
@@ -5571,6 +6486,99 @@
         "title": "StopImpersonationResponse",
         "additionalProperties": false
       },
+      "starapp.api.v1.UncompleteChoreRequest": {
+        "type": "object",
+        "properties": {
+          "choreId": {
+            "type": "integer",
+            "title": "chore_id",
+            "format": "int32"
+          },
+          "childMemberId": {
+            "type": "integer",
+            "title": "child_member_id",
+            "format": "int32"
+          },
+          "date": {
+            "type": "string",
+            "title": "date"
+          }
+        },
+        "title": "UncompleteChoreRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.UncompleteChoreResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "newBalance": {
+            "type": "integer",
+            "title": "new_balance",
+            "format": "int32"
+          }
+        },
+        "title": "UncompleteChoreResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.UpdateChoreRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string",
+            "title": "title"
+          },
+          "starReward": {
+            "type": "integer",
+            "title": "star_reward",
+            "format": "int32"
+          },
+          "weekdays": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "weekdays"
+          },
+          "childMemberIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "child_member_ids"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "active"
+          }
+        },
+        "title": "UpdateChoreRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.UpdateChoreResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "chore": {
+            "title": "chore",
+            "$ref": "#/components/schemas/starapp.api.v1.Chore"
+          }
+        },
+        "title": "UpdateChoreResponse",
+        "additionalProperties": false
+      },
       "starapp.api.v1.UpdateCvarRequest": {
         "type": "object",
         "properties": {
@@ -5602,6 +6610,10 @@
           "displayName": {
             "type": "string",
             "title": "display_name"
+          },
+          "starColor": {
+            "type": "string",
+            "title": "star_color"
           }
         },
         "title": "UpdateMemberRequest",
@@ -5843,6 +6855,109 @@
           }
         },
         "title": "Webhook",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.WeeklyStarChartBonusDay": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "date"
+          },
+          "stars": {
+            "type": "integer",
+            "title": "stars",
+            "format": "int32"
+          }
+        },
+        "title": "WeeklyStarChartBonusDay",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.WeeklyStarChartChild": {
+        "type": "object",
+        "properties": {
+          "assignmentId": {
+            "type": "integer",
+            "title": "assignment_id",
+            "format": "int32"
+          },
+          "child": {
+            "title": "child",
+            "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.WeeklyStarChartDay"
+            },
+            "title": "days"
+          }
+        },
+        "title": "WeeklyStarChartChild",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.WeeklyStarChartDay": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "date"
+          },
+          "scheduled": {
+            "type": "boolean",
+            "title": "scheduled"
+          },
+          "completed": {
+            "type": "boolean",
+            "title": "completed"
+          },
+          "starsEarned": {
+            "type": "integer",
+            "title": "stars_earned",
+            "format": "int32"
+          },
+          "paused": {
+            "type": "boolean",
+            "title": "paused"
+          }
+        },
+        "title": "WeeklyStarChartDay",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.WeeklyStarChartRow": {
+        "type": "object",
+        "properties": {
+          "choreId": {
+            "type": "integer",
+            "title": "chore_id",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string",
+            "title": "title"
+          },
+          "starReward": {
+            "type": "integer",
+            "title": "star_reward",
+            "format": "int32"
+          },
+          "weekdays": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "weekdays"
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.WeeklyStarChartChild"
+            },
+            "title": "children"
+          }
+        },
+        "title": "WeeklyStarChartRow",
         "additionalProperties": false
       }
     }

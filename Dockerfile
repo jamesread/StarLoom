@@ -1,4 +1,6 @@
 FROM golang:1.25-alpine AS sqlmigrate
+RUN apk add --no-cache gcc musl-dev sqlite-dev
+ENV CGO_ENABLED=1
 RUN go install github.com/rubenv/sql-migrate/sql-migrate@v1.8.1
 
 FROM golang:1.25-alpine AS build

@@ -329,7 +329,7 @@ export const starapp = {
       body,
     )
   },
-  updateMember(body: { memberId: number; displayName: string }) {
+  updateMember(body: { memberId: number; displayName: string; starColor?: string }) {
     return connectFetch<{ standardResponse?: StandardResponse; member?: FamilyMember }>(
       '/starapp.api.v1.StarAppService/UpdateMember',
       body,
@@ -446,6 +446,78 @@ export const starapp = {
       {},
     )
   },
+  listChores(body: { includeInactive?: boolean } = {}) {
+    return connectFetch<{ chores: Chore[] }>(
+      '/starapp.api.v1.StarAppService/ListChores',
+      body,
+    )
+  },
+  createChore(body: {
+    title: string
+    starReward: number
+    weekdays: number[]
+    childMemberIds: number[]
+  }) {
+    return connectFetch<{ standardResponse?: StandardResponse; chore?: Chore }>(
+      '/starapp.api.v1.StarAppService/CreateChore',
+      body,
+    )
+  },
+  updateChore(body: {
+    id: number
+    title: string
+    starReward: number
+    weekdays: number[]
+    childMemberIds: number[]
+    active: boolean
+  }) {
+    return connectFetch<{ standardResponse?: StandardResponse; chore?: Chore }>(
+      '/starapp.api.v1.StarAppService/UpdateChore',
+      body,
+    )
+  },
+  deleteChore(body: { id: number }) {
+    return connectFetch<{ standardResponse?: StandardResponse }>(
+      '/starapp.api.v1.StarAppService/DeleteChore',
+      body,
+    )
+  },
+  listChorePauses() {
+    return connectFetch<{ pauses: ChorePause[] }>(
+      '/starapp.api.v1.StarAppService/ListChorePauses',
+      {},
+    )
+  },
+  createChorePause(body: { startDate: string; endDate: string; reason?: string }) {
+    return connectFetch<{ standardResponse?: StandardResponse; pause?: ChorePause }>(
+      '/starapp.api.v1.StarAppService/CreateChorePause',
+      body,
+    )
+  },
+  deleteChorePause(body: { id: number }) {
+    return connectFetch<{ standardResponse?: StandardResponse }>(
+      '/starapp.api.v1.StarAppService/DeleteChorePause',
+      body,
+    )
+  },
+  getWeeklyStarChart(body: { weekStart?: string } = {}) {
+    return connectFetch<WeeklyStarChart>(
+      '/starapp.api.v1.StarAppService/GetWeeklyStarChart',
+      body,
+    )
+  },
+  completeChore(body: { choreId: number; childMemberId: number; date: string }) {
+    return connectFetch<{ standardResponse?: StandardResponse; newBalance?: number }>(
+      '/starapp.api.v1.StarAppService/CompleteChore',
+      body,
+    )
+  },
+  uncompleteChore(body: { choreId: number; childMemberId: number; date: string }) {
+    return connectFetch<{ standardResponse?: StandardResponse; newBalance?: number }>(
+      '/starapp.api.v1.StarAppService/UncompleteChore',
+      body,
+    )
+  },
 }
 
 export type Family = {
@@ -463,6 +535,7 @@ export type FamilyMember = {
   hasAvatar?: boolean
   createdAt?: string
   username?: string
+  starColor?: string
 }
 
 export type StarLedgerEntry = {
@@ -515,6 +588,60 @@ export type ParentHomeSummary = {
     lastAward?: StarLedgerEntry
   }>
   pendingRedemptions?: number
+}
+
+export type Chore = {
+  id: number
+  familyId: number
+  title: string
+  starReward: number
+  weekdays?: number[]
+  active?: boolean
+  childMemberIds?: number[]
+  createdAt?: string
+}
+
+export type ChorePause = {
+  id: number
+  familyId: number
+  startDate: string
+  endDate: string
+  reason?: string
+  createdAt?: string
+}
+
+export type WeeklyStarChartDay = {
+  date?: string
+  scheduled?: boolean
+  completed?: boolean
+  starsEarned?: number
+  paused?: boolean
+}
+
+export type WeeklyStarChartChild = {
+  assignmentId?: number
+  child?: FamilyMember
+  days?: WeeklyStarChartDay[]
+}
+
+export type WeeklyStarChartRow = {
+  choreId?: number
+  title?: string
+  starReward?: number
+  weekdays?: number[]
+  children?: WeeklyStarChartChild[]
+}
+
+export type WeeklyStarChartBonusDay = {
+  date?: string
+  stars?: number
+}
+
+export type WeeklyStarChart = {
+  weekStart?: string
+  weekEnd?: string
+  rows?: WeeklyStarChartRow[]
+  bonusDays?: WeeklyStarChartBonusDay[]
 }
 
 export function memberAvatarUrl(memberId: number, hasAvatar?: boolean): string {

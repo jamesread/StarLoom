@@ -1,15 +1,25 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref } from 'vue'
+import { RouterLink } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
+import Table from 'picocrank/vue/components/Table.vue'
 import FormField from 'picocrank/vue/components/FormField.vue'
 import RadioGroup from 'picocrank/vue/components/RadioGroup.vue'
-import { GiftIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
+import { GiftIcon, PlusSignIcon, Refresh01Icon } from '@hugeicons/core-free-icons'
 import { starapp, type Reward } from '../api/client'
+
+const iconStrokeWidth = 2.5
 
 const rewards = ref<Reward[]>([])
 const error = ref('')
-const showCreate = ref(false)
+const createError = ref('')
+const loading = ref(true)
 const creating = ref(false)
+
+const createDialog = ref<HTMLDialogElement | null>(null)
+const createTitleInput = ref<HTMLInputElement | null>(null)
+
 const form = reactive({
   title: '',
   description: '',
@@ -22,18 +32,60 @@ const booleanOptions = [
   { label: 'No', value: false },
 ]
 
+const tableHeaders = [
+  { key: 'title', label: 'Title', sortable: true },
+  { key: 'costStars', label: 'Cost', sortable: true, width: '6rem' },
+  { key: 'status', label: 'Status', sortable: true, width: '6rem' },
+  { key: 'approval', label: 'Approval', sortable: true, width: '8rem' },
+  { key: 'actions', label: 'Actions', sortable: false, width: '8rem' },
+]
+
+const listRows = computed(() =>
+  rewards.value.map((r) => ({
+    id: r.id,
+    title: r.title,
+    costStars: r.costStars,
+    status: r.active !== false ? 'Active' : 'Inactive',
+    approval: r.approvalRequired !== false ? 'Required' : 'Auto',
+    active: r.active !== false,
+    actions: '',
+  })),
+)
+
+function resetCreateForm() {
+  form.title = ''
+  form.description = ''
+  form.costStars = 5
+  form.approvalRequired = true
+}
+
 async function load() {
+  loading.value = true
   try {
     const res = await starapp.listRewards({ includeInactive: true })
     rewards.value = res.rewards || []
     error.value = ''
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
+  } finally {
+    loading.value = false
   }
+}
+
+function openCreateDialog() {
+  createError.value = ''
+  resetCreateForm()
+  createDialog.value?.showModal()
+  nextTick(() => createTitleInput.value?.focus())
+}
+
+function closeCreateDialog() {
+  createDialog.value?.close()
 }
 
 async function createReward() {
   creating.value = true
+  createError.value = ''
   try {
     await starapp.createReward({
       title: form.title.trim(),
@@ -41,13 +93,10 @@ async function createReward() {
       costStars: form.costStars,
       approvalRequired: form.approvalRequired,
     })
-    form.title = ''
-    form.description = ''
-    form.costStars = 5
-    showCreate.value = false
+    closeCreateDialog()
     await load()
   } catch (e) {
-    error.value = e instanceof Error ? e.message : String(e)
+    createError.value = e instanceof Error ? e.message : String(e)
   } finally {
     creating.value = false
   }
@@ -67,71 +116,170 @@ onMounted(load)
 </script>
 
 <template>
-  <Section title="Rewards" :icon="GiftIcon">
-    <p v-if="error" class="error">{{ error }}</p>
-    <div class="toolbar">
-      <button type="button" @click="load">Refresh</button>
-      <button type="button" @click="showCreate = true">Add reward</button>
-    </div>
+  <dialog ref="createDialog" class="dialog" @close="resetCreateForm">
+    <h2>Add reward</h2>
+    <p>Define a privilege children can redeem with stars.</p>
+    <form class="dialog-form" @submit.prevent="createReward">
+      <FormField label="Title" for="reward-title">
+        <input
+          id="reward-title"
+          ref="createTitleInput"
+          v-model="form.title"
+          type="text"
+          required
+          placeholder="Extra screen time"
+          :disabled="creating"
+        />
+      </FormField>
+      <FormField label="Description" for="reward-description">
+        <textarea id="reward-description" v-model="form.description" rows="2" :disabled="creating" />
+      </FormField>
+      <FormField label="Cost (stars)" for="reward-cost">
+        <input
+          id="reward-cost"
+          v-model.number="form.costStars"
+          type="number"
+          min="1"
+          required
+          :disabled="creating"
+        />
+      </FormField>
+      <FormField label="Requires approval" fake>
+        <RadioGroup v-model="form.approvalRequired" :options="booleanOptions" name="reward-approval" />
+      </FormField>
+      <p v-if="createError" class="inline-notification error">{{ createError }}</p>
+      <div class="dialog-actions">
+        <button type="button" class="neutral" :disabled="creating" @click="closeCreateDialog">Cancel</button>
+        <button type="submit" class="good" :disabled="creating || !form.title.trim()">
+          {{ creating ? 'Creating…' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </dialog>
 
-    <table v-if="rewards.length">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Cost</th>
-          <th>Status</th>
-          <th>Approval</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="r in rewards" :key="r.id">
-          <td>{{ r.title }}</td>
-          <td>{{ r.costStars }}</td>
-          <td>{{ r.active ? 'Active' : 'Inactive' }}</td>
-          <td>{{ r.approvalRequired ? 'Required' : 'Auto' }}</td>
-          <td>
-            <button v-if="r.active" type="button" class="secondary outline" @click="deactivate(r.id)">
+  <Section
+    subtitle="Privileges children can redeem with stars."
+    classes="rewards-list"
+    :padding="false"
+  >
+    <template #title>
+      <span class="section-title-with-icon">
+        <HugeiconsIcon :icon="GiftIcon" width="22" height="22" aria-hidden="true" />
+        Rewards
+      </span>
+    </template>
+
+    <template #toolbar>
+      <button
+        type="button"
+        class="inline-icon neutral"
+        aria-label="Refresh"
+        title="Refresh"
+        :disabled="loading"
+        @click="load"
+      >
+        <HugeiconsIcon
+          :icon="Refresh01Icon"
+          width="1em"
+          height="1em"
+          :strokeWidth="iconStrokeWidth"
+          aria-hidden="true"
+        />
+      </button>
+      <button
+        type="button"
+        class="inline-icon good"
+        aria-label="Add reward"
+        title="Add reward"
+        :disabled="loading"
+        @click="openCreateDialog"
+      >
+        <HugeiconsIcon
+          :icon="PlusSignIcon"
+          width="1em"
+          height="1em"
+          :strokeWidth="iconStrokeWidth"
+          aria-hidden="true"
+        />
+      </button>
+    </template>
+
+    <p v-if="error" class="inline-notification error list-banner-pad">{{ error }}</p>
+    <div v-if="loading && !rewards.length" class="list-banner-pad muted">Loading…</div>
+
+    <template v-else>
+      <p v-if="!rewards.length" class="inline-notification note list-banner-pad">
+        No rewards yet. Use <strong>+</strong> to add one.
+      </p>
+
+      <Table
+        v-else
+        class="list-table-wrap"
+        :data="listRows"
+        :headers="tableHeaders"
+        :show-pagination="rewards.length > 10"
+      >
+        <template #cell-title="{ value, row }">
+          <RouterLink :to="{ name: 'familyRewardEdit', params: { id: row.id } }" class="title-link">
+            <strong>{{ value }}</strong>
+          </RouterLink>
+        </template>
+        <template #cell-actions="{ row }">
+          <div class="actions-cell">
+            <RouterLink :to="{ name: 'familyRewardEdit', params: { id: row.id } }" class="button neutral small">
+              Edit
+            </RouterLink>
+            <button v-if="row.active" type="button" class="bad small" @click="deactivate(row.id)">
               Deactivate
             </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <p v-else class="subtle">No rewards yet.</p>
-
-    <div v-if="showCreate" class="create-form">
-      <FormField label="Title">
-        <input v-model="form.title" type="text" required />
-      </FormField>
-      <FormField label="Description">
-        <textarea v-model="form.description" rows="2" />
-      </FormField>
-      <FormField label="Cost (stars)">
-        <input v-model.number="form.costStars" type="number" min="1" required />
-      </FormField>
-      <FormField label="Requires approval">
-        <RadioGroup v-model="form.approvalRequired" :options="booleanOptions" name="approval" />
-      </FormField>
-      <button type="button" class="secondary" @click="showCreate = false">Cancel</button>
-      <button type="button" :disabled="creating" @click="createReward">Create</button>
-    </div>
+          </div>
+        </template>
+      </Table>
+    </template>
   </Section>
 </template>
 
 <style scoped>
-.toolbar {
+.section-title-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  vertical-align: middle;
+}
+
+.list-banner-pad {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+.list-table-wrap {
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.actions-cell {
+  text-align: right;
+}
+
+.title-link {
+  font: inherit;
+  color: var(--pico-primary);
+  text-decoration: none;
+}
+
+.title-link:hover {
+  text-decoration: underline;
+}
+
+.dialog-form {
   display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
   gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-.create-form {
-  margin-top: 1rem;
-  padding: 1rem;
-  border: 1px solid var(--pico-muted-border-color);
-  border-radius: var(--pico-border-radius);
-}
-.error {
-  color: var(--pico-del-color);
 }
 </style>

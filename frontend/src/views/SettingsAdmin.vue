@@ -9,6 +9,7 @@ import { HugeiconsIcon } from '@hugeicons/vue'
 import { ArrowLeft01Icon } from '@hugeicons/core-free-icons'
 import { starapp, type Cvar } from '../api/client'
 import { fetchAppStatus } from '../composables/useStatus'
+import { loadInit } from '../composables/useInit'
 
 const cvars = ref<Cvar[]>([])
 const edits = reactive<Record<string, {
@@ -103,7 +104,7 @@ async function saveSection(group: { name: string; cvars: Cvar[] }) {
     }
     success.value = `${group.name} settings saved.`
     await load()
-    await fetchAppStatus({ force: true })
+    await Promise.all([loadInit({ force: true }), fetchAppStatus({ force: true })])
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
   } finally {

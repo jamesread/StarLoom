@@ -35,6 +35,10 @@ export function canAccessSettingsFromStatus(st: StatusLike | null | undefined): 
   return (st.rbacPermissions || []).includes('system.settings')
 }
 
+export function canAccessWebhooksFromStatus(st: StatusLike | null | undefined): boolean {
+  return canAccessSettingsFromStatus(st)
+}
+
 export function canViewFamilyHomeFromStatus(st: StatusLike | null | undefined): boolean {
   if (!st?.isLoggedIn) return false
   return (
@@ -60,4 +64,17 @@ export function canManageRewardsFromStatus(st: StatusLike | null | undefined): b
 
 export function canApproveRedemptionsFromStatus(st: StatusLike | null | undefined): boolean {
   return hasPermission(st, 'redemptions.approve')
+}
+
+export function canManageChoresFromStatus(st: StatusLike | null | undefined): boolean {
+  return hasPermission(st, 'chores.manage')
+}
+
+export function canViewChoresFromStatus(st: StatusLike | null | undefined): boolean {
+  if (!st?.isLoggedIn) return false
+  return hasPermission(st, 'chores.view_family') || canViewFamilyHomeFromStatus(st)
+}
+
+export function canCompleteChoresFromStatus(st: StatusLike | null | undefined): boolean {
+  return hasPermission(st, 'chores.complete')
 }

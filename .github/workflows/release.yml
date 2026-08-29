@@ -98,6 +98,20 @@ jobs:
       - name: Build release artifacts
         run: make build
 
+      - name: Verify container image
+        run: |
+          docker build -t starloom-ci:smoke --build-arg VERSION=ci .
+          docker run --rm --entrypoint sh starloom-ci:smoke -c \
+            'cd /var/app/database/sqlite && sql-migrate up'
+          cid=$(docker run -d -v starloom-smoke-config:/config starloom-ci:smoke)
+          sleep 3
+          if docker logs "$cid" 2>&1 | grep -q 'CGO_ENABLED=0'; then
+            docker logs "$cid"
+            docker rm -f "$cid"
+            exit 1
+          fi
+          docker rm -f "$cid"
+
       - name: Login to ghcr
         uses: docker/login-action@v3
         with:

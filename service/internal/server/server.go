@@ -12,7 +12,6 @@ import (
 	apiv1 "github.com/jamesread/starapp/service/gen/starapp/api/v1"
 	"github.com/jamesread/starapp/service/gen/starapp/api/v1/apiv1connect"
 	"github.com/jamesread/starapp/service/internal/auth"
-	"github.com/jamesread/starapp/service/internal/buildinfo"
 	"github.com/jamesread/starapp/service/internal/config"
 	"github.com/jamesread/starapp/service/internal/store"
 	"github.com/jamesread/starapp/service/internal/webhook"
@@ -60,20 +59,5 @@ func (s *Server) Init(ctx context.Context, _ *connect.Request[apiv1.InitRequest]
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	title := s.siteTitle(ctx)
-	resp := &apiv1.InitResponse{
-		ShowFooter:        s.showFooter(ctx),
-		ShowNewVersions:   false,
-		AvailableVersion:  "",
-		CurrentVersion:    buildinfo.Version,
-		PageTitle:         title,
-		ShowVersionNumber: true,
-		SiteTitle:         title,
-		Features: &apiv1.Features{
-			RedemptionApprovalDefault: s.redemptionApprovalDefault(ctx),
-		},
-		WebhookEvents: append([]string(nil), webhook.SupportedEvents...),
-	}
-
-	return connect.NewResponse(resp), nil
+	return connect.NewResponse(s.initShell(ctx)), nil
 }

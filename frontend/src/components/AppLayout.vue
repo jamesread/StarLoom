@@ -6,7 +6,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import AppFooter from './AppFooter.vue'
 import { useStatus } from '../composables/useStatus'
-import { canAccessControlPanelFromStatus, canViewFamilyHomeFromStatus } from '../lib/rbacAccess'
+import { canAccessControlPanelFromStatus, canViewChoresFromStatus, canViewFamilyHomeFromStatus } from '../lib/rbacAccess'
 import { setupSidebarNavigation } from '../lib/sidebarNavigation'
 
 defineProps<{
@@ -20,7 +20,7 @@ const navigation = ref<InstanceType<typeof Navigation> | null>(null)
 const topBarNavigation = ref<InstanceType<typeof Navigation> | null>(null)
 const sidebar = ref<InstanceType<typeof Sidebar> | null>(null)
 
-const siteTitle = computed(() => status.status?.siteTitle || 'StarApp')
+const siteTitle = computed(() => status.status?.siteTitle || 'StarLoom')
 const username = computed(() => (status.status?.isLoggedIn ? status.status.username || '' : ''))
 const isLoggedIn = computed(() => Boolean(status.status?.isLoggedIn))
 
@@ -38,9 +38,10 @@ watch(
     await nextTick()
     const showControlPanel = canAccessControlPanelFromStatus(status.status)
     const showFamilyNav = canViewFamilyHomeFromStatus(status.status)
+    const showChoreChart = canViewChoresFromStatus(status.status)
     for (const nav of [navigation.value, topBarNavigation.value]) {
       if (!nav) continue
-      setupSidebarNavigation(nav, { showControlPanel, showFamilyNav })
+      setupSidebarNavigation(nav, { showControlPanel, showFamilyNav, showChoreChart })
     }
   },
   { immediate: true },
@@ -90,13 +91,7 @@ function goToUserControlPanel() {
           <slot />
         </main>
 
-        <AppFooter
-          v-if="status.status?.showFooter !== false"
-          app-name="StarApp"
-          logo-url="/favicon.svg"
-          docs-url="../docs/"
-          :version="status.status?.currentVersion"
-        />
+        <AppFooter logo-url="/favicon.svg" />
       </div>
     </div>
   </Navigation>

@@ -12,11 +12,9 @@ import (
 
 	apiv1 "github.com/jamesread/starapp/service/gen/starapp/api/v1"
 	"github.com/jamesread/starapp/service/internal/auth"
-	"github.com/jamesread/starapp/service/internal/buildinfo"
 	"github.com/jamesread/starapp/service/internal/password"
 	"github.com/jamesread/starapp/service/internal/rbac"
 	"github.com/jamesread/starapp/service/internal/store"
-	"github.com/jamesread/starapp/service/internal/webhook"
 )
 
 func (s *Server) BootstrapIAM(ctx context.Context) error {
@@ -52,20 +50,8 @@ func (s *Server) bootstrapIAM(ctx context.Context) error {
 }
 
 func (s *Server) shellFields(ctx context.Context) (title string, resp *apiv1.InitResponse) {
-	title = s.siteTitle(ctx)
-	return title, &apiv1.InitResponse{
-		ShowFooter:        s.showFooter(ctx),
-		ShowNewVersions:   false,
-		AvailableVersion:  "",
-		CurrentVersion:    buildinfo.Version,
-		PageTitle:         title,
-		ShowVersionNumber: true,
-		SiteTitle:         title,
-		Features: &apiv1.Features{
-			RedemptionApprovalDefault: s.redemptionApprovalDefault(ctx),
-		},
-		WebhookEvents: append([]string(nil), webhook.SupportedEvents...),
-	}
+	init := s.initShell(ctx)
+	return init.SiteTitle, init
 }
 
 func (s *Server) GetStatus(ctx context.Context, req *connect.Request[apiv1.GetStatusRequest]) (*connect.Response[apiv1.GetStatusResponse], error) {

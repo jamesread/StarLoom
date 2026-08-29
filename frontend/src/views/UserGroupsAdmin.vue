@@ -2,6 +2,7 @@
 import Section from 'picocrank/vue/components/Section.vue'
 import CheckGroup from 'picocrank/vue/components/CheckGroup.vue'
 import FormField from 'picocrank/vue/components/FormField.vue'
+import FormLayout from 'picocrank/vue/components/FormLayout.vue'
 import { onMounted, ref } from 'vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { ArrowLeft01Icon } from '@hugeicons/core-free-icons'
@@ -68,27 +69,34 @@ onMounted(async () => {
       </router-link>
     </template>
     <p v-if="error" class="inline-notification error">{{ error }}</p>
-    <label>
-      Group
-      <select v-model="selectedGroupId" @change="loadGroupDetails">
-        <option v-for="g in groups" :key="g.id" :value="g.id">{{ g.name }} ({{ g.memberCount }} members)</option>
-      </select>
-    </label>
-    <FormField label="Members" fake>
-      <CheckGroup
-        v-model="memberIds"
-        name="group-members"
-        :options="users.map((u) => ({ value: u.id, label: u.username }))"
-      />
-      <button type="button" class="good" @click="saveMembers">Save members</button>
-    </FormField>
-    <FormField label="Roles for this group" fake>
-      <CheckGroup
-        v-model="roleIds"
-        name="group-roles"
-        :options="allRoles.map((r) => ({ value: r.id, label: r.name }))"
-      />
-      <button type="button" class="good" @click="saveRoles">Save roles</button>
-    </FormField>
+    <FormLayout @submit.prevent="saveMembers">
+      <FormField label="Group" for="user-group-select">
+        <select id="user-group-select" v-model="selectedGroupId" @change="loadGroupDetails">
+          <option v-for="g in groups" :key="g.id" :value="g.id">{{ g.name }} ({{ g.memberCount }} members)</option>
+        </select>
+      </FormField>
+      <FormField label="Members" fake>
+        <CheckGroup
+          v-model="memberIds"
+          name="group-members"
+          :options="users.map((u) => ({ value: u.id, label: u.username }))"
+        />
+      </FormField>
+      <template #actions>
+        <button type="submit" class="good">Save members</button>
+      </template>
+    </FormLayout>
+    <FormLayout @submit.prevent="saveRoles">
+      <FormField label="Roles for this group" fake>
+        <CheckGroup
+          v-model="roleIds"
+          name="group-roles"
+          :options="allRoles.map((r) => ({ value: r.id, label: r.name }))"
+        />
+      </FormField>
+      <template #actions>
+        <button type="submit" class="good">Save roles</button>
+      </template>
+    </FormLayout>
   </Section>
 </template>

@@ -15,6 +15,7 @@ type Memory struct {
 	webhooks *memoryWebhook
 	iam      *memoryIAM
 	family   *memoryFamily
+	chores   *memoryChore
 }
 
 // OpenMemory returns a new in-memory store.

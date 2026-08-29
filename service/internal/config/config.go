@@ -12,7 +12,7 @@ import (
 )
 
 // RequiredMigration is the sql-migrate id this binary expects to be applied.
-const RequiredMigration = "6.domain-rbac.sql"
+const RequiredMigration = "8.member-star-color.sql"
 
 // Config holds StarApp service configuration.
 type Config struct {

@@ -4407,6 +4407,7 @@ type FamilyMember struct {
 	HasAvatar     bool                   `protobuf:"varint,6,opt,name=has_avatar,json=hasAvatar,proto3" json:"has_avatar,omitempty"`
 	CreatedAt     string                 `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	Username      string                 `protobuf:"bytes,8,opt,name=username,proto3" json:"username,omitempty"`
+	StarColor     string                 `protobuf:"bytes,9,opt,name=star_color,json=starColor,proto3" json:"star_color,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4493,6 +4494,13 @@ func (x *FamilyMember) GetCreatedAt() string {
 func (x *FamilyMember) GetUsername() string {
 	if x != nil {
 		return x.Username
+	}
+	return ""
+}
+
+func (x *FamilyMember) GetStarColor() string {
+	if x != nil {
+		return x.StarColor
 	}
 	return ""
 }
@@ -5217,6 +5225,7 @@ type UpdateMemberRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	MemberId      int32                  `protobuf:"varint,1,opt,name=member_id,json=memberId,proto3" json:"member_id,omitempty"`
 	DisplayName   string                 `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	StarColor     string                 `protobuf:"bytes,3,opt,name=star_color,json=starColor,proto3" json:"star_color,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5261,6 +5270,13 @@ func (x *UpdateMemberRequest) GetMemberId() int32 {
 func (x *UpdateMemberRequest) GetDisplayName() string {
 	if x != nil {
 		return x.DisplayName
+	}
+	return ""
+}
+
+func (x *UpdateMemberRequest) GetStarColor() string {
+	if x != nil {
+		return x.StarColor
 	}
 	return ""
 }
@@ -7113,6 +7129,1502 @@ func (x *GetChildHomeSummaryResponse) GetRewards() []*Reward {
 	return nil
 }
 
+type Chore struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Id             int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	FamilyId       int32                  `protobuf:"varint,2,opt,name=family_id,json=familyId,proto3" json:"family_id,omitempty"`
+	Title          string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	StarReward     int32                  `protobuf:"varint,4,opt,name=star_reward,json=starReward,proto3" json:"star_reward,omitempty"`
+	Weekdays       []int32                `protobuf:"varint,5,rep,packed,name=weekdays,proto3" json:"weekdays,omitempty"`
+	Active         bool                   `protobuf:"varint,6,opt,name=active,proto3" json:"active,omitempty"`
+	ChildMemberIds []int32                `protobuf:"varint,7,rep,packed,name=child_member_ids,json=childMemberIds,proto3" json:"child_member_ids,omitempty"`
+	CreatedAt      string                 `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *Chore) Reset() {
+	*x = Chore{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[135]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Chore) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Chore) ProtoMessage() {}
+
+func (x *Chore) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[135]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Chore.ProtoReflect.Descriptor instead.
+func (*Chore) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{135}
+}
+
+func (x *Chore) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *Chore) GetFamilyId() int32 {
+	if x != nil {
+		return x.FamilyId
+	}
+	return 0
+}
+
+func (x *Chore) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *Chore) GetStarReward() int32 {
+	if x != nil {
+		return x.StarReward
+	}
+	return 0
+}
+
+func (x *Chore) GetWeekdays() []int32 {
+	if x != nil {
+		return x.Weekdays
+	}
+	return nil
+}
+
+func (x *Chore) GetActive() bool {
+	if x != nil {
+		return x.Active
+	}
+	return false
+}
+
+func (x *Chore) GetChildMemberIds() []int32 {
+	if x != nil {
+		return x.ChildMemberIds
+	}
+	return nil
+}
+
+func (x *Chore) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+type ChorePause struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	FamilyId      int32                  `protobuf:"varint,2,opt,name=family_id,json=familyId,proto3" json:"family_id,omitempty"`
+	StartDate     string                 `protobuf:"bytes,3,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`
+	EndDate       string                 `protobuf:"bytes,4,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`
+	Reason        string                 `protobuf:"bytes,5,opt,name=reason,proto3" json:"reason,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChorePause) Reset() {
+	*x = ChorePause{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[136]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChorePause) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChorePause) ProtoMessage() {}
+
+func (x *ChorePause) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[136]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChorePause.ProtoReflect.Descriptor instead.
+func (*ChorePause) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{136}
+}
+
+func (x *ChorePause) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *ChorePause) GetFamilyId() int32 {
+	if x != nil {
+		return x.FamilyId
+	}
+	return 0
+}
+
+func (x *ChorePause) GetStartDate() string {
+	if x != nil {
+		return x.StartDate
+	}
+	return ""
+}
+
+func (x *ChorePause) GetEndDate() string {
+	if x != nil {
+		return x.EndDate
+	}
+	return ""
+}
+
+func (x *ChorePause) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+func (x *ChorePause) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+type ListChoresRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	IncludeInactive bool                   `protobuf:"varint,1,opt,name=include_inactive,json=includeInactive,proto3" json:"include_inactive,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ListChoresRequest) Reset() {
+	*x = ListChoresRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[137]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListChoresRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListChoresRequest) ProtoMessage() {}
+
+func (x *ListChoresRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[137]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListChoresRequest.ProtoReflect.Descriptor instead.
+func (*ListChoresRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{137}
+}
+
+func (x *ListChoresRequest) GetIncludeInactive() bool {
+	if x != nil {
+		return x.IncludeInactive
+	}
+	return false
+}
+
+type ListChoresResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Chores        []*Chore               `protobuf:"bytes,1,rep,name=chores,proto3" json:"chores,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListChoresResponse) Reset() {
+	*x = ListChoresResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[138]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListChoresResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListChoresResponse) ProtoMessage() {}
+
+func (x *ListChoresResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[138]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListChoresResponse.ProtoReflect.Descriptor instead.
+func (*ListChoresResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{138}
+}
+
+func (x *ListChoresResponse) GetChores() []*Chore {
+	if x != nil {
+		return x.Chores
+	}
+	return nil
+}
+
+type CreateChoreRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Title          string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	StarReward     int32                  `protobuf:"varint,2,opt,name=star_reward,json=starReward,proto3" json:"star_reward,omitempty"`
+	Weekdays       []int32                `protobuf:"varint,3,rep,packed,name=weekdays,proto3" json:"weekdays,omitempty"`
+	ChildMemberIds []int32                `protobuf:"varint,4,rep,packed,name=child_member_ids,json=childMemberIds,proto3" json:"child_member_ids,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *CreateChoreRequest) Reset() {
+	*x = CreateChoreRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[139]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateChoreRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateChoreRequest) ProtoMessage() {}
+
+func (x *CreateChoreRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[139]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateChoreRequest.ProtoReflect.Descriptor instead.
+func (*CreateChoreRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{139}
+}
+
+func (x *CreateChoreRequest) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *CreateChoreRequest) GetStarReward() int32 {
+	if x != nil {
+		return x.StarReward
+	}
+	return 0
+}
+
+func (x *CreateChoreRequest) GetWeekdays() []int32 {
+	if x != nil {
+		return x.Weekdays
+	}
+	return nil
+}
+
+func (x *CreateChoreRequest) GetChildMemberIds() []int32 {
+	if x != nil {
+		return x.ChildMemberIds
+	}
+	return nil
+}
+
+type CreateChoreResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	StandardResponse *StandardResponse      `protobuf:"bytes,1,opt,name=standard_response,json=standardResponse,proto3" json:"standard_response,omitempty"`
+	Chore            *Chore                 `protobuf:"bytes,2,opt,name=chore,proto3" json:"chore,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *CreateChoreResponse) Reset() {
+	*x = CreateChoreResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[140]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateChoreResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateChoreResponse) ProtoMessage() {}
+
+func (x *CreateChoreResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[140]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateChoreResponse.ProtoReflect.Descriptor instead.
+func (*CreateChoreResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{140}
+}
+
+func (x *CreateChoreResponse) GetStandardResponse() *StandardResponse {
+	if x != nil {
+		return x.StandardResponse
+	}
+	return nil
+}
+
+func (x *CreateChoreResponse) GetChore() *Chore {
+	if x != nil {
+		return x.Chore
+	}
+	return nil
+}
+
+type UpdateChoreRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Id             int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Title          string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	StarReward     int32                  `protobuf:"varint,3,opt,name=star_reward,json=starReward,proto3" json:"star_reward,omitempty"`
+	Weekdays       []int32                `protobuf:"varint,4,rep,packed,name=weekdays,proto3" json:"weekdays,omitempty"`
+	ChildMemberIds []int32                `protobuf:"varint,5,rep,packed,name=child_member_ids,json=childMemberIds,proto3" json:"child_member_ids,omitempty"`
+	Active         bool                   `protobuf:"varint,6,opt,name=active,proto3" json:"active,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *UpdateChoreRequest) Reset() {
+	*x = UpdateChoreRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[141]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateChoreRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateChoreRequest) ProtoMessage() {}
+
+func (x *UpdateChoreRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[141]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateChoreRequest.ProtoReflect.Descriptor instead.
+func (*UpdateChoreRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{141}
+}
+
+func (x *UpdateChoreRequest) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *UpdateChoreRequest) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *UpdateChoreRequest) GetStarReward() int32 {
+	if x != nil {
+		return x.StarReward
+	}
+	return 0
+}
+
+func (x *UpdateChoreRequest) GetWeekdays() []int32 {
+	if x != nil {
+		return x.Weekdays
+	}
+	return nil
+}
+
+func (x *UpdateChoreRequest) GetChildMemberIds() []int32 {
+	if x != nil {
+		return x.ChildMemberIds
+	}
+	return nil
+}
+
+func (x *UpdateChoreRequest) GetActive() bool {
+	if x != nil {
+		return x.Active
+	}
+	return false
+}
+
+type UpdateChoreResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	StandardResponse *StandardResponse      `protobuf:"bytes,1,opt,name=standard_response,json=standardResponse,proto3" json:"standard_response,omitempty"`
+	Chore            *Chore                 `protobuf:"bytes,2,opt,name=chore,proto3" json:"chore,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *UpdateChoreResponse) Reset() {
+	*x = UpdateChoreResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[142]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateChoreResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateChoreResponse) ProtoMessage() {}
+
+func (x *UpdateChoreResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[142]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateChoreResponse.ProtoReflect.Descriptor instead.
+func (*UpdateChoreResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{142}
+}
+
+func (x *UpdateChoreResponse) GetStandardResponse() *StandardResponse {
+	if x != nil {
+		return x.StandardResponse
+	}
+	return nil
+}
+
+func (x *UpdateChoreResponse) GetChore() *Chore {
+	if x != nil {
+		return x.Chore
+	}
+	return nil
+}
+
+type DeleteChoreRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteChoreRequest) Reset() {
+	*x = DeleteChoreRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[143]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteChoreRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteChoreRequest) ProtoMessage() {}
+
+func (x *DeleteChoreRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[143]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteChoreRequest.ProtoReflect.Descriptor instead.
+func (*DeleteChoreRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{143}
+}
+
+func (x *DeleteChoreRequest) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type DeleteChoreResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	StandardResponse *StandardResponse      `protobuf:"bytes,1,opt,name=standard_response,json=standardResponse,proto3" json:"standard_response,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *DeleteChoreResponse) Reset() {
+	*x = DeleteChoreResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[144]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteChoreResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteChoreResponse) ProtoMessage() {}
+
+func (x *DeleteChoreResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[144]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteChoreResponse.ProtoReflect.Descriptor instead.
+func (*DeleteChoreResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{144}
+}
+
+func (x *DeleteChoreResponse) GetStandardResponse() *StandardResponse {
+	if x != nil {
+		return x.StandardResponse
+	}
+	return nil
+}
+
+type ListChorePausesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListChorePausesRequest) Reset() {
+	*x = ListChorePausesRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[145]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListChorePausesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListChorePausesRequest) ProtoMessage() {}
+
+func (x *ListChorePausesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[145]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListChorePausesRequest.ProtoReflect.Descriptor instead.
+func (*ListChorePausesRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{145}
+}
+
+type ListChorePausesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Pauses        []*ChorePause          `protobuf:"bytes,1,rep,name=pauses,proto3" json:"pauses,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListChorePausesResponse) Reset() {
+	*x = ListChorePausesResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[146]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListChorePausesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListChorePausesResponse) ProtoMessage() {}
+
+func (x *ListChorePausesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[146]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListChorePausesResponse.ProtoReflect.Descriptor instead.
+func (*ListChorePausesResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{146}
+}
+
+func (x *ListChorePausesResponse) GetPauses() []*ChorePause {
+	if x != nil {
+		return x.Pauses
+	}
+	return nil
+}
+
+type CreateChorePauseRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	StartDate     string                 `protobuf:"bytes,1,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`
+	EndDate       string                 `protobuf:"bytes,2,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`
+	Reason        string                 `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateChorePauseRequest) Reset() {
+	*x = CreateChorePauseRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[147]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateChorePauseRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateChorePauseRequest) ProtoMessage() {}
+
+func (x *CreateChorePauseRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[147]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateChorePauseRequest.ProtoReflect.Descriptor instead.
+func (*CreateChorePauseRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{147}
+}
+
+func (x *CreateChorePauseRequest) GetStartDate() string {
+	if x != nil {
+		return x.StartDate
+	}
+	return ""
+}
+
+func (x *CreateChorePauseRequest) GetEndDate() string {
+	if x != nil {
+		return x.EndDate
+	}
+	return ""
+}
+
+func (x *CreateChorePauseRequest) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+type CreateChorePauseResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	StandardResponse *StandardResponse      `protobuf:"bytes,1,opt,name=standard_response,json=standardResponse,proto3" json:"standard_response,omitempty"`
+	Pause            *ChorePause            `protobuf:"bytes,2,opt,name=pause,proto3" json:"pause,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *CreateChorePauseResponse) Reset() {
+	*x = CreateChorePauseResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[148]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateChorePauseResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateChorePauseResponse) ProtoMessage() {}
+
+func (x *CreateChorePauseResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[148]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateChorePauseResponse.ProtoReflect.Descriptor instead.
+func (*CreateChorePauseResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{148}
+}
+
+func (x *CreateChorePauseResponse) GetStandardResponse() *StandardResponse {
+	if x != nil {
+		return x.StandardResponse
+	}
+	return nil
+}
+
+func (x *CreateChorePauseResponse) GetPause() *ChorePause {
+	if x != nil {
+		return x.Pause
+	}
+	return nil
+}
+
+type DeleteChorePauseRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteChorePauseRequest) Reset() {
+	*x = DeleteChorePauseRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[149]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteChorePauseRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteChorePauseRequest) ProtoMessage() {}
+
+func (x *DeleteChorePauseRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[149]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteChorePauseRequest.ProtoReflect.Descriptor instead.
+func (*DeleteChorePauseRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{149}
+}
+
+func (x *DeleteChorePauseRequest) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type DeleteChorePauseResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	StandardResponse *StandardResponse      `protobuf:"bytes,1,opt,name=standard_response,json=standardResponse,proto3" json:"standard_response,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *DeleteChorePauseResponse) Reset() {
+	*x = DeleteChorePauseResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[150]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteChorePauseResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteChorePauseResponse) ProtoMessage() {}
+
+func (x *DeleteChorePauseResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[150]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteChorePauseResponse.ProtoReflect.Descriptor instead.
+func (*DeleteChorePauseResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{150}
+}
+
+func (x *DeleteChorePauseResponse) GetStandardResponse() *StandardResponse {
+	if x != nil {
+		return x.StandardResponse
+	}
+	return nil
+}
+
+type WeeklyStarChartDay struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Date          string                 `protobuf:"bytes,1,opt,name=date,proto3" json:"date,omitempty"`
+	Scheduled     bool                   `protobuf:"varint,2,opt,name=scheduled,proto3" json:"scheduled,omitempty"`
+	Completed     bool                   `protobuf:"varint,3,opt,name=completed,proto3" json:"completed,omitempty"`
+	StarsEarned   int32                  `protobuf:"varint,4,opt,name=stars_earned,json=starsEarned,proto3" json:"stars_earned,omitempty"`
+	Paused        bool                   `protobuf:"varint,5,opt,name=paused,proto3" json:"paused,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WeeklyStarChartDay) Reset() {
+	*x = WeeklyStarChartDay{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[151]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WeeklyStarChartDay) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WeeklyStarChartDay) ProtoMessage() {}
+
+func (x *WeeklyStarChartDay) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[151]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WeeklyStarChartDay.ProtoReflect.Descriptor instead.
+func (*WeeklyStarChartDay) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{151}
+}
+
+func (x *WeeklyStarChartDay) GetDate() string {
+	if x != nil {
+		return x.Date
+	}
+	return ""
+}
+
+func (x *WeeklyStarChartDay) GetScheduled() bool {
+	if x != nil {
+		return x.Scheduled
+	}
+	return false
+}
+
+func (x *WeeklyStarChartDay) GetCompleted() bool {
+	if x != nil {
+		return x.Completed
+	}
+	return false
+}
+
+func (x *WeeklyStarChartDay) GetStarsEarned() int32 {
+	if x != nil {
+		return x.StarsEarned
+	}
+	return 0
+}
+
+func (x *WeeklyStarChartDay) GetPaused() bool {
+	if x != nil {
+		return x.Paused
+	}
+	return false
+}
+
+type WeeklyStarChartChild struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AssignmentId  int32                  `protobuf:"varint,1,opt,name=assignment_id,json=assignmentId,proto3" json:"assignment_id,omitempty"`
+	Child         *FamilyMember          `protobuf:"bytes,2,opt,name=child,proto3" json:"child,omitempty"`
+	Days          []*WeeklyStarChartDay  `protobuf:"bytes,3,rep,name=days,proto3" json:"days,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WeeklyStarChartChild) Reset() {
+	*x = WeeklyStarChartChild{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[152]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WeeklyStarChartChild) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WeeklyStarChartChild) ProtoMessage() {}
+
+func (x *WeeklyStarChartChild) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[152]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WeeklyStarChartChild.ProtoReflect.Descriptor instead.
+func (*WeeklyStarChartChild) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{152}
+}
+
+func (x *WeeklyStarChartChild) GetAssignmentId() int32 {
+	if x != nil {
+		return x.AssignmentId
+	}
+	return 0
+}
+
+func (x *WeeklyStarChartChild) GetChild() *FamilyMember {
+	if x != nil {
+		return x.Child
+	}
+	return nil
+}
+
+func (x *WeeklyStarChartChild) GetDays() []*WeeklyStarChartDay {
+	if x != nil {
+		return x.Days
+	}
+	return nil
+}
+
+type WeeklyStarChartRow struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	ChoreId       int32                   `protobuf:"varint,1,opt,name=chore_id,json=choreId,proto3" json:"chore_id,omitempty"`
+	Title         string                  `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	StarReward    int32                   `protobuf:"varint,3,opt,name=star_reward,json=starReward,proto3" json:"star_reward,omitempty"`
+	Weekdays      []int32                 `protobuf:"varint,4,rep,packed,name=weekdays,proto3" json:"weekdays,omitempty"`
+	Children      []*WeeklyStarChartChild `protobuf:"bytes,5,rep,name=children,proto3" json:"children,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WeeklyStarChartRow) Reset() {
+	*x = WeeklyStarChartRow{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[153]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WeeklyStarChartRow) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WeeklyStarChartRow) ProtoMessage() {}
+
+func (x *WeeklyStarChartRow) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[153]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WeeklyStarChartRow.ProtoReflect.Descriptor instead.
+func (*WeeklyStarChartRow) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{153}
+}
+
+func (x *WeeklyStarChartRow) GetChoreId() int32 {
+	if x != nil {
+		return x.ChoreId
+	}
+	return 0
+}
+
+func (x *WeeklyStarChartRow) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *WeeklyStarChartRow) GetStarReward() int32 {
+	if x != nil {
+		return x.StarReward
+	}
+	return 0
+}
+
+func (x *WeeklyStarChartRow) GetWeekdays() []int32 {
+	if x != nil {
+		return x.Weekdays
+	}
+	return nil
+}
+
+func (x *WeeklyStarChartRow) GetChildren() []*WeeklyStarChartChild {
+	if x != nil {
+		return x.Children
+	}
+	return nil
+}
+
+type WeeklyStarChartBonusDay struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Date          string                 `protobuf:"bytes,1,opt,name=date,proto3" json:"date,omitempty"`
+	Stars         int32                  `protobuf:"varint,2,opt,name=stars,proto3" json:"stars,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WeeklyStarChartBonusDay) Reset() {
+	*x = WeeklyStarChartBonusDay{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[154]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WeeklyStarChartBonusDay) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WeeklyStarChartBonusDay) ProtoMessage() {}
+
+func (x *WeeklyStarChartBonusDay) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[154]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WeeklyStarChartBonusDay.ProtoReflect.Descriptor instead.
+func (*WeeklyStarChartBonusDay) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{154}
+}
+
+func (x *WeeklyStarChartBonusDay) GetDate() string {
+	if x != nil {
+		return x.Date
+	}
+	return ""
+}
+
+func (x *WeeklyStarChartBonusDay) GetStars() int32 {
+	if x != nil {
+		return x.Stars
+	}
+	return 0
+}
+
+type GetWeeklyStarChartRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	WeekStart     string                 `protobuf:"bytes,1,opt,name=week_start,json=weekStart,proto3" json:"week_start,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetWeeklyStarChartRequest) Reset() {
+	*x = GetWeeklyStarChartRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[155]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetWeeklyStarChartRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetWeeklyStarChartRequest) ProtoMessage() {}
+
+func (x *GetWeeklyStarChartRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[155]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetWeeklyStarChartRequest.ProtoReflect.Descriptor instead.
+func (*GetWeeklyStarChartRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{155}
+}
+
+func (x *GetWeeklyStarChartRequest) GetWeekStart() string {
+	if x != nil {
+		return x.WeekStart
+	}
+	return ""
+}
+
+type GetWeeklyStarChartResponse struct {
+	state         protoimpl.MessageState     `protogen:"open.v1"`
+	WeekStart     string                     `protobuf:"bytes,1,opt,name=week_start,json=weekStart,proto3" json:"week_start,omitempty"`
+	WeekEnd       string                     `protobuf:"bytes,2,opt,name=week_end,json=weekEnd,proto3" json:"week_end,omitempty"`
+	Rows          []*WeeklyStarChartRow      `protobuf:"bytes,3,rep,name=rows,proto3" json:"rows,omitempty"`
+	BonusDays     []*WeeklyStarChartBonusDay `protobuf:"bytes,4,rep,name=bonus_days,json=bonusDays,proto3" json:"bonus_days,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetWeeklyStarChartResponse) Reset() {
+	*x = GetWeeklyStarChartResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[156]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetWeeklyStarChartResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetWeeklyStarChartResponse) ProtoMessage() {}
+
+func (x *GetWeeklyStarChartResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[156]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetWeeklyStarChartResponse.ProtoReflect.Descriptor instead.
+func (*GetWeeklyStarChartResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{156}
+}
+
+func (x *GetWeeklyStarChartResponse) GetWeekStart() string {
+	if x != nil {
+		return x.WeekStart
+	}
+	return ""
+}
+
+func (x *GetWeeklyStarChartResponse) GetWeekEnd() string {
+	if x != nil {
+		return x.WeekEnd
+	}
+	return ""
+}
+
+func (x *GetWeeklyStarChartResponse) GetRows() []*WeeklyStarChartRow {
+	if x != nil {
+		return x.Rows
+	}
+	return nil
+}
+
+func (x *GetWeeklyStarChartResponse) GetBonusDays() []*WeeklyStarChartBonusDay {
+	if x != nil {
+		return x.BonusDays
+	}
+	return nil
+}
+
+type CompleteChoreRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ChoreId       int32                  `protobuf:"varint,1,opt,name=chore_id,json=choreId,proto3" json:"chore_id,omitempty"`
+	ChildMemberId int32                  `protobuf:"varint,2,opt,name=child_member_id,json=childMemberId,proto3" json:"child_member_id,omitempty"`
+	Date          string                 `protobuf:"bytes,3,opt,name=date,proto3" json:"date,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CompleteChoreRequest) Reset() {
+	*x = CompleteChoreRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[157]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompleteChoreRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompleteChoreRequest) ProtoMessage() {}
+
+func (x *CompleteChoreRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[157]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompleteChoreRequest.ProtoReflect.Descriptor instead.
+func (*CompleteChoreRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{157}
+}
+
+func (x *CompleteChoreRequest) GetChoreId() int32 {
+	if x != nil {
+		return x.ChoreId
+	}
+	return 0
+}
+
+func (x *CompleteChoreRequest) GetChildMemberId() int32 {
+	if x != nil {
+		return x.ChildMemberId
+	}
+	return 0
+}
+
+func (x *CompleteChoreRequest) GetDate() string {
+	if x != nil {
+		return x.Date
+	}
+	return ""
+}
+
+type CompleteChoreResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	StandardResponse *StandardResponse      `protobuf:"bytes,1,opt,name=standard_response,json=standardResponse,proto3" json:"standard_response,omitempty"`
+	NewBalance       int32                  `protobuf:"varint,2,opt,name=new_balance,json=newBalance,proto3" json:"new_balance,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *CompleteChoreResponse) Reset() {
+	*x = CompleteChoreResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[158]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompleteChoreResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompleteChoreResponse) ProtoMessage() {}
+
+func (x *CompleteChoreResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[158]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompleteChoreResponse.ProtoReflect.Descriptor instead.
+func (*CompleteChoreResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{158}
+}
+
+func (x *CompleteChoreResponse) GetStandardResponse() *StandardResponse {
+	if x != nil {
+		return x.StandardResponse
+	}
+	return nil
+}
+
+func (x *CompleteChoreResponse) GetNewBalance() int32 {
+	if x != nil {
+		return x.NewBalance
+	}
+	return 0
+}
+
+type UncompleteChoreRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ChoreId       int32                  `protobuf:"varint,1,opt,name=chore_id,json=choreId,proto3" json:"chore_id,omitempty"`
+	ChildMemberId int32                  `protobuf:"varint,2,opt,name=child_member_id,json=childMemberId,proto3" json:"child_member_id,omitempty"`
+	Date          string                 `protobuf:"bytes,3,opt,name=date,proto3" json:"date,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UncompleteChoreRequest) Reset() {
+	*x = UncompleteChoreRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[159]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UncompleteChoreRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UncompleteChoreRequest) ProtoMessage() {}
+
+func (x *UncompleteChoreRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[159]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UncompleteChoreRequest.ProtoReflect.Descriptor instead.
+func (*UncompleteChoreRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{159}
+}
+
+func (x *UncompleteChoreRequest) GetChoreId() int32 {
+	if x != nil {
+		return x.ChoreId
+	}
+	return 0
+}
+
+func (x *UncompleteChoreRequest) GetChildMemberId() int32 {
+	if x != nil {
+		return x.ChildMemberId
+	}
+	return 0
+}
+
+func (x *UncompleteChoreRequest) GetDate() string {
+	if x != nil {
+		return x.Date
+	}
+	return ""
+}
+
+type UncompleteChoreResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	StandardResponse *StandardResponse      `protobuf:"bytes,1,opt,name=standard_response,json=standardResponse,proto3" json:"standard_response,omitempty"`
+	NewBalance       int32                  `protobuf:"varint,2,opt,name=new_balance,json=newBalance,proto3" json:"new_balance,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *UncompleteChoreResponse) Reset() {
+	*x = UncompleteChoreResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[160]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UncompleteChoreResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UncompleteChoreResponse) ProtoMessage() {}
+
+func (x *UncompleteChoreResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[160]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UncompleteChoreResponse.ProtoReflect.Descriptor instead.
+func (*UncompleteChoreResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{160}
+}
+
+func (x *UncompleteChoreResponse) GetStandardResponse() *StandardResponse {
+	if x != nil {
+		return x.StandardResponse
+	}
+	return nil
+}
+
+func (x *UncompleteChoreResponse) GetNewBalance() int32 {
+	if x != nil {
+		return x.NewBalance
+	}
+	return 0
+}
+
 var File_starapp_api_v1_starapp_proto protoreflect.FileDescriptor
 
 const file_starapp_api_v1_starapp_proto_rawDesc = "" +
@@ -7385,7 +8897,7 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x03 \x01(\tR\tcreatedAt\"\xf4\x01\n" +
+	"created_at\x18\x03 \x01(\tR\tcreatedAt\"\x93\x02\n" +
 	"\fFamilyMember\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x1b\n" +
 	"\tfamily_id\x18\x02 \x01(\x05R\bfamilyId\x12&\n" +
@@ -7396,7 +8908,9 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"has_avatar\x18\x06 \x01(\bR\thasAvatar\x12\x1d\n" +
 	"\n" +
 	"created_at\x18\a \x01(\tR\tcreatedAt\x12\x1a\n" +
-	"\busername\x18\b \x01(\tR\busername\"\xad\x02\n" +
+	"\busername\x18\b \x01(\tR\busername\x12\x1d\n" +
+	"\n" +
+	"star_color\x18\t \x01(\tR\tstarColor\"\xad\x02\n" +
 	"\x0fStarLedgerEntry\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x1b\n" +
 	"\tfamily_id\x18\x02 \x01(\x05R\bfamilyId\x12&\n" +
@@ -7455,10 +8969,12 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"\bpassword\x18\x03 \x01(\tR\bpassword\"\xa0\x01\n" +
 	"\x19CreateChildMemberResponse\x12M\n" +
 	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x124\n" +
-	"\x06member\x18\x02 \x01(\v2\x1c.starapp.api.v1.FamilyMemberR\x06member\"U\n" +
+	"\x06member\x18\x02 \x01(\v2\x1c.starapp.api.v1.FamilyMemberR\x06member\"t\n" +
 	"\x13UpdateMemberRequest\x12\x1b\n" +
 	"\tmember_id\x18\x01 \x01(\x05R\bmemberId\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\"\x9b\x01\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1d\n" +
+	"\n" +
+	"star_color\x18\x03 \x01(\tR\tstarColor\"\x9b\x01\n" +
 	"\x14UpdateMemberResponse\x12M\n" +
 	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x124\n" +
 	"\x06member\x18\x02 \x01(\v2\x1c.starapp.api.v1.FamilyMemberR\x06member\"2\n" +
@@ -7574,7 +9090,117 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"\x06member\x18\x01 \x01(\v2\x1c.starapp.api.v1.FamilyMemberR\x06member\x12\x18\n" +
 	"\abalance\x18\x02 \x01(\x05R\abalance\x12D\n" +
 	"\rrecent_awards\x18\x03 \x03(\v2\x1f.starapp.api.v1.StarLedgerEntryR\frecentAwards\x120\n" +
-	"\arewards\x18\x04 \x03(\v2\x16.starapp.api.v1.RewardR\arewards2\xa2.\n" +
+	"\arewards\x18\x04 \x03(\v2\x16.starapp.api.v1.RewardR\arewards\"\xe8\x01\n" +
+	"\x05Chore\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x1b\n" +
+	"\tfamily_id\x18\x02 \x01(\x05R\bfamilyId\x12\x14\n" +
+	"\x05title\x18\x03 \x01(\tR\x05title\x12\x1f\n" +
+	"\vstar_reward\x18\x04 \x01(\x05R\n" +
+	"starReward\x12\x1a\n" +
+	"\bweekdays\x18\x05 \x03(\x05R\bweekdays\x12\x16\n" +
+	"\x06active\x18\x06 \x01(\bR\x06active\x12(\n" +
+	"\x10child_member_ids\x18\a \x03(\x05R\x0echildMemberIds\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\b \x01(\tR\tcreatedAt\"\xaa\x01\n" +
+	"\n" +
+	"ChorePause\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x1b\n" +
+	"\tfamily_id\x18\x02 \x01(\x05R\bfamilyId\x12\x1d\n" +
+	"\n" +
+	"start_date\x18\x03 \x01(\tR\tstartDate\x12\x19\n" +
+	"\bend_date\x18\x04 \x01(\tR\aendDate\x12\x16\n" +
+	"\x06reason\x18\x05 \x01(\tR\x06reason\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\tR\tcreatedAt\">\n" +
+	"\x11ListChoresRequest\x12)\n" +
+	"\x10include_inactive\x18\x01 \x01(\bR\x0fincludeInactive\"C\n" +
+	"\x12ListChoresResponse\x12-\n" +
+	"\x06chores\x18\x01 \x03(\v2\x15.starapp.api.v1.ChoreR\x06chores\"\x91\x01\n" +
+	"\x12CreateChoreRequest\x12\x14\n" +
+	"\x05title\x18\x01 \x01(\tR\x05title\x12\x1f\n" +
+	"\vstar_reward\x18\x02 \x01(\x05R\n" +
+	"starReward\x12\x1a\n" +
+	"\bweekdays\x18\x03 \x03(\x05R\bweekdays\x12(\n" +
+	"\x10child_member_ids\x18\x04 \x03(\x05R\x0echildMemberIds\"\x91\x01\n" +
+	"\x13CreateChoreResponse\x12M\n" +
+	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x12+\n" +
+	"\x05chore\x18\x02 \x01(\v2\x15.starapp.api.v1.ChoreR\x05chore\"\xb9\x01\n" +
+	"\x12UpdateChoreRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x1f\n" +
+	"\vstar_reward\x18\x03 \x01(\x05R\n" +
+	"starReward\x12\x1a\n" +
+	"\bweekdays\x18\x04 \x03(\x05R\bweekdays\x12(\n" +
+	"\x10child_member_ids\x18\x05 \x03(\x05R\x0echildMemberIds\x12\x16\n" +
+	"\x06active\x18\x06 \x01(\bR\x06active\"\x91\x01\n" +
+	"\x13UpdateChoreResponse\x12M\n" +
+	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x12+\n" +
+	"\x05chore\x18\x02 \x01(\v2\x15.starapp.api.v1.ChoreR\x05chore\"$\n" +
+	"\x12DeleteChoreRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\"d\n" +
+	"\x13DeleteChoreResponse\x12M\n" +
+	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\"\x18\n" +
+	"\x16ListChorePausesRequest\"M\n" +
+	"\x17ListChorePausesResponse\x122\n" +
+	"\x06pauses\x18\x01 \x03(\v2\x1a.starapp.api.v1.ChorePauseR\x06pauses\"k\n" +
+	"\x17CreateChorePauseRequest\x12\x1d\n" +
+	"\n" +
+	"start_date\x18\x01 \x01(\tR\tstartDate\x12\x19\n" +
+	"\bend_date\x18\x02 \x01(\tR\aendDate\x12\x16\n" +
+	"\x06reason\x18\x03 \x01(\tR\x06reason\"\x9b\x01\n" +
+	"\x18CreateChorePauseResponse\x12M\n" +
+	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x120\n" +
+	"\x05pause\x18\x02 \x01(\v2\x1a.starapp.api.v1.ChorePauseR\x05pause\")\n" +
+	"\x17DeleteChorePauseRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\"i\n" +
+	"\x18DeleteChorePauseResponse\x12M\n" +
+	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\"\x9f\x01\n" +
+	"\x12WeeklyStarChartDay\x12\x12\n" +
+	"\x04date\x18\x01 \x01(\tR\x04date\x12\x1c\n" +
+	"\tscheduled\x18\x02 \x01(\bR\tscheduled\x12\x1c\n" +
+	"\tcompleted\x18\x03 \x01(\bR\tcompleted\x12!\n" +
+	"\fstars_earned\x18\x04 \x01(\x05R\vstarsEarned\x12\x16\n" +
+	"\x06paused\x18\x05 \x01(\bR\x06paused\"\xa7\x01\n" +
+	"\x14WeeklyStarChartChild\x12#\n" +
+	"\rassignment_id\x18\x01 \x01(\x05R\fassignmentId\x122\n" +
+	"\x05child\x18\x02 \x01(\v2\x1c.starapp.api.v1.FamilyMemberR\x05child\x126\n" +
+	"\x04days\x18\x03 \x03(\v2\".starapp.api.v1.WeeklyStarChartDayR\x04days\"\xc4\x01\n" +
+	"\x12WeeklyStarChartRow\x12\x19\n" +
+	"\bchore_id\x18\x01 \x01(\x05R\achoreId\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x1f\n" +
+	"\vstar_reward\x18\x03 \x01(\x05R\n" +
+	"starReward\x12\x1a\n" +
+	"\bweekdays\x18\x04 \x03(\x05R\bweekdays\x12@\n" +
+	"\bchildren\x18\x05 \x03(\v2$.starapp.api.v1.WeeklyStarChartChildR\bchildren\"C\n" +
+	"\x17WeeklyStarChartBonusDay\x12\x12\n" +
+	"\x04date\x18\x01 \x01(\tR\x04date\x12\x14\n" +
+	"\x05stars\x18\x02 \x01(\x05R\x05stars\":\n" +
+	"\x19GetWeeklyStarChartRequest\x12\x1d\n" +
+	"\n" +
+	"week_start\x18\x01 \x01(\tR\tweekStart\"\xd6\x01\n" +
+	"\x1aGetWeeklyStarChartResponse\x12\x1d\n" +
+	"\n" +
+	"week_start\x18\x01 \x01(\tR\tweekStart\x12\x19\n" +
+	"\bweek_end\x18\x02 \x01(\tR\aweekEnd\x126\n" +
+	"\x04rows\x18\x03 \x03(\v2\".starapp.api.v1.WeeklyStarChartRowR\x04rows\x12F\n" +
+	"\n" +
+	"bonus_days\x18\x04 \x03(\v2'.starapp.api.v1.WeeklyStarChartBonusDayR\tbonusDays\"m\n" +
+	"\x14CompleteChoreRequest\x12\x19\n" +
+	"\bchore_id\x18\x01 \x01(\x05R\achoreId\x12&\n" +
+	"\x0fchild_member_id\x18\x02 \x01(\x05R\rchildMemberId\x12\x12\n" +
+	"\x04date\x18\x03 \x01(\tR\x04date\"\x87\x01\n" +
+	"\x15CompleteChoreResponse\x12M\n" +
+	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x12\x1f\n" +
+	"\vnew_balance\x18\x02 \x01(\x05R\n" +
+	"newBalance\"o\n" +
+	"\x16UncompleteChoreRequest\x12\x19\n" +
+	"\bchore_id\x18\x01 \x01(\x05R\achoreId\x12&\n" +
+	"\x0fchild_member_id\x18\x02 \x01(\x05R\rchildMemberId\x12\x12\n" +
+	"\x04date\x18\x03 \x01(\tR\x04date\"\x89\x01\n" +
+	"\x17UncompleteChoreResponse\x12M\n" +
+	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x12\x1f\n" +
+	"\vnew_balance\x18\x02 \x01(\x05R\n" +
+	"newBalance2\xe05\n" +
 	"\x0eStarAppService\x12A\n" +
 	"\x04Init\x12\x1b.starapp.api.v1.InitRequest\x1a\x1c.starapp.api.v1.InitResponse\x12P\n" +
 	"\tGetStatus\x12 .starapp.api.v1.GetStatusRequest\x1a!.starapp.api.v1.GetStatusResponse\x12\x89\x01\n" +
@@ -7641,7 +9267,18 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"\x10RejectRedemption\x12'.starapp.api.v1.RejectRedemptionRequest\x1a(.starapp.api.v1.RejectRedemptionResponse\x12b\n" +
 	"\x0fListRedemptions\x12&.starapp.api.v1.ListRedemptionsRequest\x1a'.starapp.api.v1.ListRedemptionsResponse\x12q\n" +
 	"\x14GetParentHomeSummary\x12+.starapp.api.v1.GetParentHomeSummaryRequest\x1a,.starapp.api.v1.GetParentHomeSummaryResponse\x12n\n" +
-	"\x13GetChildHomeSummary\x12*.starapp.api.v1.GetChildHomeSummaryRequest\x1a+.starapp.api.v1.GetChildHomeSummaryResponseB?Z=github.com/jamesread/starapp/service/gen/starapp/api/v1;apiv1b\x06proto3"
+	"\x13GetChildHomeSummary\x12*.starapp.api.v1.GetChildHomeSummaryRequest\x1a+.starapp.api.v1.GetChildHomeSummaryResponse\x12S\n" +
+	"\n" +
+	"ListChores\x12!.starapp.api.v1.ListChoresRequest\x1a\".starapp.api.v1.ListChoresResponse\x12V\n" +
+	"\vCreateChore\x12\".starapp.api.v1.CreateChoreRequest\x1a#.starapp.api.v1.CreateChoreResponse\x12V\n" +
+	"\vUpdateChore\x12\".starapp.api.v1.UpdateChoreRequest\x1a#.starapp.api.v1.UpdateChoreResponse\x12V\n" +
+	"\vDeleteChore\x12\".starapp.api.v1.DeleteChoreRequest\x1a#.starapp.api.v1.DeleteChoreResponse\x12b\n" +
+	"\x0fListChorePauses\x12&.starapp.api.v1.ListChorePausesRequest\x1a'.starapp.api.v1.ListChorePausesResponse\x12e\n" +
+	"\x10CreateChorePause\x12'.starapp.api.v1.CreateChorePauseRequest\x1a(.starapp.api.v1.CreateChorePauseResponse\x12e\n" +
+	"\x10DeleteChorePause\x12'.starapp.api.v1.DeleteChorePauseRequest\x1a(.starapp.api.v1.DeleteChorePauseResponse\x12k\n" +
+	"\x12GetWeeklyStarChart\x12).starapp.api.v1.GetWeeklyStarChartRequest\x1a*.starapp.api.v1.GetWeeklyStarChartResponse\x12\\\n" +
+	"\rCompleteChore\x12$.starapp.api.v1.CompleteChoreRequest\x1a%.starapp.api.v1.CompleteChoreResponse\x12b\n" +
+	"\x0fUncompleteChore\x12&.starapp.api.v1.UncompleteChoreRequest\x1a'.starapp.api.v1.UncompleteChoreResponseB?Z=github.com/jamesread/starapp/service/gen/starapp/api/v1;apiv1b\x06proto3"
 
 var (
 	file_starapp_api_v1_starapp_proto_rawDescOnce sync.Once
@@ -7655,7 +9292,7 @@ func file_starapp_api_v1_starapp_proto_rawDescGZIP() []byte {
 	return file_starapp_api_v1_starapp_proto_rawDescData
 }
 
-var file_starapp_api_v1_starapp_proto_msgTypes = make([]protoimpl.MessageInfo, 135)
+var file_starapp_api_v1_starapp_proto_msgTypes = make([]protoimpl.MessageInfo, 161)
 var file_starapp_api_v1_starapp_proto_goTypes = []any{
 	(*StandardResponse)(nil),                     // 0: starapp.api.v1.StandardResponse
 	(*Features)(nil),                             // 1: starapp.api.v1.Features
@@ -7792,6 +9429,32 @@ var file_starapp_api_v1_starapp_proto_goTypes = []any{
 	(*GetParentHomeSummaryResponse)(nil),         // 132: starapp.api.v1.GetParentHomeSummaryResponse
 	(*GetChildHomeSummaryRequest)(nil),           // 133: starapp.api.v1.GetChildHomeSummaryRequest
 	(*GetChildHomeSummaryResponse)(nil),          // 134: starapp.api.v1.GetChildHomeSummaryResponse
+	(*Chore)(nil),                                // 135: starapp.api.v1.Chore
+	(*ChorePause)(nil),                           // 136: starapp.api.v1.ChorePause
+	(*ListChoresRequest)(nil),                    // 137: starapp.api.v1.ListChoresRequest
+	(*ListChoresResponse)(nil),                   // 138: starapp.api.v1.ListChoresResponse
+	(*CreateChoreRequest)(nil),                   // 139: starapp.api.v1.CreateChoreRequest
+	(*CreateChoreResponse)(nil),                  // 140: starapp.api.v1.CreateChoreResponse
+	(*UpdateChoreRequest)(nil),                   // 141: starapp.api.v1.UpdateChoreRequest
+	(*UpdateChoreResponse)(nil),                  // 142: starapp.api.v1.UpdateChoreResponse
+	(*DeleteChoreRequest)(nil),                   // 143: starapp.api.v1.DeleteChoreRequest
+	(*DeleteChoreResponse)(nil),                  // 144: starapp.api.v1.DeleteChoreResponse
+	(*ListChorePausesRequest)(nil),               // 145: starapp.api.v1.ListChorePausesRequest
+	(*ListChorePausesResponse)(nil),              // 146: starapp.api.v1.ListChorePausesResponse
+	(*CreateChorePauseRequest)(nil),              // 147: starapp.api.v1.CreateChorePauseRequest
+	(*CreateChorePauseResponse)(nil),             // 148: starapp.api.v1.CreateChorePauseResponse
+	(*DeleteChorePauseRequest)(nil),              // 149: starapp.api.v1.DeleteChorePauseRequest
+	(*DeleteChorePauseResponse)(nil),             // 150: starapp.api.v1.DeleteChorePauseResponse
+	(*WeeklyStarChartDay)(nil),                   // 151: starapp.api.v1.WeeklyStarChartDay
+	(*WeeklyStarChartChild)(nil),                 // 152: starapp.api.v1.WeeklyStarChartChild
+	(*WeeklyStarChartRow)(nil),                   // 153: starapp.api.v1.WeeklyStarChartRow
+	(*WeeklyStarChartBonusDay)(nil),              // 154: starapp.api.v1.WeeklyStarChartBonusDay
+	(*GetWeeklyStarChartRequest)(nil),            // 155: starapp.api.v1.GetWeeklyStarChartRequest
+	(*GetWeeklyStarChartResponse)(nil),           // 156: starapp.api.v1.GetWeeklyStarChartResponse
+	(*CompleteChoreRequest)(nil),                 // 157: starapp.api.v1.CompleteChoreRequest
+	(*CompleteChoreResponse)(nil),                // 158: starapp.api.v1.CompleteChoreResponse
+	(*UncompleteChoreRequest)(nil),               // 159: starapp.api.v1.UncompleteChoreRequest
+	(*UncompleteChoreResponse)(nil),              // 160: starapp.api.v1.UncompleteChoreResponse
 }
 var file_starapp_api_v1_starapp_proto_depIdxs = []int32{
 	1,   // 0: starapp.api.v1.InitResponse.features:type_name -> starapp.api.v1.Features
@@ -7863,133 +9526,170 @@ var file_starapp_api_v1_starapp_proto_depIdxs = []int32{
 	86,  // 66: starapp.api.v1.GetChildHomeSummaryResponse.member:type_name -> starapp.api.v1.FamilyMember
 	87,  // 67: starapp.api.v1.GetChildHomeSummaryResponse.recent_awards:type_name -> starapp.api.v1.StarLedgerEntry
 	88,  // 68: starapp.api.v1.GetChildHomeSummaryResponse.rewards:type_name -> starapp.api.v1.Reward
-	2,   // 69: starapp.api.v1.StarAppService.Init:input_type -> starapp.api.v1.InitRequest
-	4,   // 70: starapp.api.v1.StarAppService.GetStatus:input_type -> starapp.api.v1.GetStatusRequest
-	6,   // 71: starapp.api.v1.StarAppService.LoginWithUsernameAndPassword:input_type -> starapp.api.v1.LoginWithUsernameAndPasswordRequest
-	8,   // 72: starapp.api.v1.StarAppService.Logout:input_type -> starapp.api.v1.LogoutRequest
-	10,  // 73: starapp.api.v1.StarAppService.ChangePassword:input_type -> starapp.api.v1.ChangePasswordRequest
-	12,  // 74: starapp.api.v1.StarAppService.GetUserPreferences:input_type -> starapp.api.v1.GetUserPreferencesRequest
-	14,  // 75: starapp.api.v1.StarAppService.SaveUserPreferences:input_type -> starapp.api.v1.SaveUserPreferencesRequest
-	17,  // 76: starapp.api.v1.StarAppService.GetUsers:input_type -> starapp.api.v1.GetUsersRequest
-	19,  // 77: starapp.api.v1.StarAppService.GetUser:input_type -> starapp.api.v1.GetUserRequest
-	21,  // 78: starapp.api.v1.StarAppService.CreateUser:input_type -> starapp.api.v1.CreateUserRequest
-	23,  // 79: starapp.api.v1.StarAppService.DeleteUser:input_type -> starapp.api.v1.DeleteUserRequest
-	25,  // 80: starapp.api.v1.StarAppService.ResetUserPassword:input_type -> starapp.api.v1.ResetUserPasswordRequest
-	29,  // 81: starapp.api.v1.StarAppService.ListRbacPermissions:input_type -> starapp.api.v1.ListRbacPermissionsRequest
-	31,  // 82: starapp.api.v1.StarAppService.ListRbacRoles:input_type -> starapp.api.v1.ListRbacRolesRequest
-	33,  // 83: starapp.api.v1.StarAppService.CreateRbacRole:input_type -> starapp.api.v1.CreateRbacRoleRequest
-	35,  // 84: starapp.api.v1.StarAppService.UpdateRbacRole:input_type -> starapp.api.v1.UpdateRbacRoleRequest
-	36,  // 85: starapp.api.v1.StarAppService.DeleteRbacRole:input_type -> starapp.api.v1.DeleteRbacRoleRequest
-	38,  // 86: starapp.api.v1.StarAppService.GetUserRbacRoles:input_type -> starapp.api.v1.GetUserRbacRolesRequest
-	40,  // 87: starapp.api.v1.StarAppService.GetUserGroupRbacRoles:input_type -> starapp.api.v1.GetUserGroupRbacRolesRequest
-	42,  // 88: starapp.api.v1.StarAppService.SetUserGroupRbacRoles:input_type -> starapp.api.v1.SetUserGroupRbacRolesRequest
-	44,  // 89: starapp.api.v1.StarAppService.GetRbacRoleUsers:input_type -> starapp.api.v1.GetRbacRoleUsersRequest
-	46,  // 90: starapp.api.v1.StarAppService.GetRbacRoleGroups:input_type -> starapp.api.v1.GetRbacRoleGroupsRequest
-	49,  // 91: starapp.api.v1.StarAppService.GetMyPermissionsAudit:input_type -> starapp.api.v1.GetMyPermissionsAuditRequest
-	52,  // 92: starapp.api.v1.StarAppService.ListUserGroups:input_type -> starapp.api.v1.ListUserGroupsRequest
-	54,  // 93: starapp.api.v1.StarAppService.CreateUserGroup:input_type -> starapp.api.v1.CreateUserGroupRequest
-	56,  // 94: starapp.api.v1.StarAppService.DeleteUserGroup:input_type -> starapp.api.v1.DeleteUserGroupRequest
-	58,  // 95: starapp.api.v1.StarAppService.GetUserGroupMembers:input_type -> starapp.api.v1.GetUserGroupMembersRequest
-	60,  // 96: starapp.api.v1.StarAppService.SetUserGroupMembers:input_type -> starapp.api.v1.SetUserGroupMembersRequest
-	62,  // 97: starapp.api.v1.StarAppService.ImpersonateUser:input_type -> starapp.api.v1.ImpersonateUserRequest
-	64,  // 98: starapp.api.v1.StarAppService.StopImpersonation:input_type -> starapp.api.v1.StopImpersonationRequest
-	67,  // 99: starapp.api.v1.StarAppService.ListApiKeys:input_type -> starapp.api.v1.ListApiKeysRequest
-	69,  // 100: starapp.api.v1.StarAppService.CreateApiKey:input_type -> starapp.api.v1.CreateApiKeyRequest
-	71,  // 101: starapp.api.v1.StarAppService.DeleteApiKey:input_type -> starapp.api.v1.DeleteApiKeyRequest
-	74,  // 102: starapp.api.v1.StarAppService.ListCvars:input_type -> starapp.api.v1.ListCvarsRequest
-	76,  // 103: starapp.api.v1.StarAppService.UpdateCvar:input_type -> starapp.api.v1.UpdateCvarRequest
-	78,  // 104: starapp.api.v1.StarAppService.ListWebhooks:input_type -> starapp.api.v1.ListWebhooksRequest
-	80,  // 105: starapp.api.v1.StarAppService.CreateWebhook:input_type -> starapp.api.v1.CreateWebhookRequest
-	82,  // 106: starapp.api.v1.StarAppService.UpdateWebhook:input_type -> starapp.api.v1.UpdateWebhookRequest
-	83,  // 107: starapp.api.v1.StarAppService.DeleteWebhook:input_type -> starapp.api.v1.DeleteWebhookRequest
-	90,  // 108: starapp.api.v1.StarAppService.GetMyFamily:input_type -> starapp.api.v1.GetMyFamilyRequest
-	92,  // 109: starapp.api.v1.StarAppService.CreateFamily:input_type -> starapp.api.v1.CreateFamilyRequest
-	94,  // 110: starapp.api.v1.StarAppService.ListMembers:input_type -> starapp.api.v1.ListMembersRequest
-	96,  // 111: starapp.api.v1.StarAppService.CreateChildMember:input_type -> starapp.api.v1.CreateChildMemberRequest
-	98,  // 112: starapp.api.v1.StarAppService.UpdateMember:input_type -> starapp.api.v1.UpdateMemberRequest
-	100, // 113: starapp.api.v1.StarAppService.DeleteMember:input_type -> starapp.api.v1.DeleteMemberRequest
-	102, // 114: starapp.api.v1.StarAppService.UploadMemberAvatar:input_type -> starapp.api.v1.UploadMemberAvatarRequest
-	104, // 115: starapp.api.v1.StarAppService.DeleteMemberAvatar:input_type -> starapp.api.v1.DeleteMemberAvatarRequest
-	106, // 116: starapp.api.v1.StarAppService.AwardStars:input_type -> starapp.api.v1.AwardStarsRequest
-	108, // 117: starapp.api.v1.StarAppService.RevokeStars:input_type -> starapp.api.v1.RevokeStarsRequest
-	110, // 118: starapp.api.v1.StarAppService.GetMemberBalance:input_type -> starapp.api.v1.GetMemberBalanceRequest
-	112, // 119: starapp.api.v1.StarAppService.ListLedger:input_type -> starapp.api.v1.ListLedgerRequest
-	114, // 120: starapp.api.v1.StarAppService.ListRewards:input_type -> starapp.api.v1.ListRewardsRequest
-	116, // 121: starapp.api.v1.StarAppService.CreateReward:input_type -> starapp.api.v1.CreateRewardRequest
-	118, // 122: starapp.api.v1.StarAppService.UpdateReward:input_type -> starapp.api.v1.UpdateRewardRequest
-	120, // 123: starapp.api.v1.StarAppService.DeleteReward:input_type -> starapp.api.v1.DeleteRewardRequest
-	122, // 124: starapp.api.v1.StarAppService.RequestRedemption:input_type -> starapp.api.v1.RequestRedemptionRequest
-	124, // 125: starapp.api.v1.StarAppService.ApproveRedemption:input_type -> starapp.api.v1.ApproveRedemptionRequest
-	126, // 126: starapp.api.v1.StarAppService.RejectRedemption:input_type -> starapp.api.v1.RejectRedemptionRequest
-	128, // 127: starapp.api.v1.StarAppService.ListRedemptions:input_type -> starapp.api.v1.ListRedemptionsRequest
-	131, // 128: starapp.api.v1.StarAppService.GetParentHomeSummary:input_type -> starapp.api.v1.GetParentHomeSummaryRequest
-	133, // 129: starapp.api.v1.StarAppService.GetChildHomeSummary:input_type -> starapp.api.v1.GetChildHomeSummaryRequest
-	3,   // 130: starapp.api.v1.StarAppService.Init:output_type -> starapp.api.v1.InitResponse
-	5,   // 131: starapp.api.v1.StarAppService.GetStatus:output_type -> starapp.api.v1.GetStatusResponse
-	7,   // 132: starapp.api.v1.StarAppService.LoginWithUsernameAndPassword:output_type -> starapp.api.v1.LoginWithUsernameAndPasswordResponse
-	9,   // 133: starapp.api.v1.StarAppService.Logout:output_type -> starapp.api.v1.LogoutResponse
-	11,  // 134: starapp.api.v1.StarAppService.ChangePassword:output_type -> starapp.api.v1.ChangePasswordResponse
-	13,  // 135: starapp.api.v1.StarAppService.GetUserPreferences:output_type -> starapp.api.v1.GetUserPreferencesResponse
-	15,  // 136: starapp.api.v1.StarAppService.SaveUserPreferences:output_type -> starapp.api.v1.SaveUserPreferencesResponse
-	18,  // 137: starapp.api.v1.StarAppService.GetUsers:output_type -> starapp.api.v1.GetUsersResponse
-	20,  // 138: starapp.api.v1.StarAppService.GetUser:output_type -> starapp.api.v1.GetUserResponse
-	22,  // 139: starapp.api.v1.StarAppService.CreateUser:output_type -> starapp.api.v1.CreateUserResponse
-	24,  // 140: starapp.api.v1.StarAppService.DeleteUser:output_type -> starapp.api.v1.DeleteUserResponse
-	26,  // 141: starapp.api.v1.StarAppService.ResetUserPassword:output_type -> starapp.api.v1.ResetUserPasswordResponse
-	30,  // 142: starapp.api.v1.StarAppService.ListRbacPermissions:output_type -> starapp.api.v1.ListRbacPermissionsResponse
-	32,  // 143: starapp.api.v1.StarAppService.ListRbacRoles:output_type -> starapp.api.v1.ListRbacRolesResponse
-	34,  // 144: starapp.api.v1.StarAppService.CreateRbacRole:output_type -> starapp.api.v1.CreateRbacRoleResponse
-	28,  // 145: starapp.api.v1.StarAppService.UpdateRbacRole:output_type -> starapp.api.v1.RbacRole
-	37,  // 146: starapp.api.v1.StarAppService.DeleteRbacRole:output_type -> starapp.api.v1.DeleteRbacRoleResponse
-	39,  // 147: starapp.api.v1.StarAppService.GetUserRbacRoles:output_type -> starapp.api.v1.GetUserRbacRolesResponse
-	41,  // 148: starapp.api.v1.StarAppService.GetUserGroupRbacRoles:output_type -> starapp.api.v1.GetUserGroupRbacRolesResponse
-	43,  // 149: starapp.api.v1.StarAppService.SetUserGroupRbacRoles:output_type -> starapp.api.v1.SetUserGroupRbacRolesResponse
-	45,  // 150: starapp.api.v1.StarAppService.GetRbacRoleUsers:output_type -> starapp.api.v1.GetRbacRoleUsersResponse
-	47,  // 151: starapp.api.v1.StarAppService.GetRbacRoleGroups:output_type -> starapp.api.v1.GetRbacRoleGroupsResponse
-	50,  // 152: starapp.api.v1.StarAppService.GetMyPermissionsAudit:output_type -> starapp.api.v1.GetMyPermissionsAuditResponse
-	53,  // 153: starapp.api.v1.StarAppService.ListUserGroups:output_type -> starapp.api.v1.ListUserGroupsResponse
-	55,  // 154: starapp.api.v1.StarAppService.CreateUserGroup:output_type -> starapp.api.v1.CreateUserGroupResponse
-	57,  // 155: starapp.api.v1.StarAppService.DeleteUserGroup:output_type -> starapp.api.v1.DeleteUserGroupResponse
-	59,  // 156: starapp.api.v1.StarAppService.GetUserGroupMembers:output_type -> starapp.api.v1.GetUserGroupMembersResponse
-	61,  // 157: starapp.api.v1.StarAppService.SetUserGroupMembers:output_type -> starapp.api.v1.SetUserGroupMembersResponse
-	63,  // 158: starapp.api.v1.StarAppService.ImpersonateUser:output_type -> starapp.api.v1.ImpersonateUserResponse
-	65,  // 159: starapp.api.v1.StarAppService.StopImpersonation:output_type -> starapp.api.v1.StopImpersonationResponse
-	68,  // 160: starapp.api.v1.StarAppService.ListApiKeys:output_type -> starapp.api.v1.ListApiKeysResponse
-	70,  // 161: starapp.api.v1.StarAppService.CreateApiKey:output_type -> starapp.api.v1.CreateApiKeyResponse
-	72,  // 162: starapp.api.v1.StarAppService.DeleteApiKey:output_type -> starapp.api.v1.DeleteApiKeyResponse
-	75,  // 163: starapp.api.v1.StarAppService.ListCvars:output_type -> starapp.api.v1.ListCvarsResponse
-	73,  // 164: starapp.api.v1.StarAppService.UpdateCvar:output_type -> starapp.api.v1.Cvar
-	79,  // 165: starapp.api.v1.StarAppService.ListWebhooks:output_type -> starapp.api.v1.ListWebhooksResponse
-	81,  // 166: starapp.api.v1.StarAppService.CreateWebhook:output_type -> starapp.api.v1.CreateWebhookResponse
-	77,  // 167: starapp.api.v1.StarAppService.UpdateWebhook:output_type -> starapp.api.v1.Webhook
-	84,  // 168: starapp.api.v1.StarAppService.DeleteWebhook:output_type -> starapp.api.v1.DeleteWebhookResponse
-	91,  // 169: starapp.api.v1.StarAppService.GetMyFamily:output_type -> starapp.api.v1.GetMyFamilyResponse
-	93,  // 170: starapp.api.v1.StarAppService.CreateFamily:output_type -> starapp.api.v1.CreateFamilyResponse
-	95,  // 171: starapp.api.v1.StarAppService.ListMembers:output_type -> starapp.api.v1.ListMembersResponse
-	97,  // 172: starapp.api.v1.StarAppService.CreateChildMember:output_type -> starapp.api.v1.CreateChildMemberResponse
-	99,  // 173: starapp.api.v1.StarAppService.UpdateMember:output_type -> starapp.api.v1.UpdateMemberResponse
-	101, // 174: starapp.api.v1.StarAppService.DeleteMember:output_type -> starapp.api.v1.DeleteMemberResponse
-	103, // 175: starapp.api.v1.StarAppService.UploadMemberAvatar:output_type -> starapp.api.v1.UploadMemberAvatarResponse
-	105, // 176: starapp.api.v1.StarAppService.DeleteMemberAvatar:output_type -> starapp.api.v1.DeleteMemberAvatarResponse
-	107, // 177: starapp.api.v1.StarAppService.AwardStars:output_type -> starapp.api.v1.AwardStarsResponse
-	109, // 178: starapp.api.v1.StarAppService.RevokeStars:output_type -> starapp.api.v1.RevokeStarsResponse
-	111, // 179: starapp.api.v1.StarAppService.GetMemberBalance:output_type -> starapp.api.v1.GetMemberBalanceResponse
-	113, // 180: starapp.api.v1.StarAppService.ListLedger:output_type -> starapp.api.v1.ListLedgerResponse
-	115, // 181: starapp.api.v1.StarAppService.ListRewards:output_type -> starapp.api.v1.ListRewardsResponse
-	117, // 182: starapp.api.v1.StarAppService.CreateReward:output_type -> starapp.api.v1.CreateRewardResponse
-	119, // 183: starapp.api.v1.StarAppService.UpdateReward:output_type -> starapp.api.v1.UpdateRewardResponse
-	121, // 184: starapp.api.v1.StarAppService.DeleteReward:output_type -> starapp.api.v1.DeleteRewardResponse
-	123, // 185: starapp.api.v1.StarAppService.RequestRedemption:output_type -> starapp.api.v1.RequestRedemptionResponse
-	125, // 186: starapp.api.v1.StarAppService.ApproveRedemption:output_type -> starapp.api.v1.ApproveRedemptionResponse
-	127, // 187: starapp.api.v1.StarAppService.RejectRedemption:output_type -> starapp.api.v1.RejectRedemptionResponse
-	129, // 188: starapp.api.v1.StarAppService.ListRedemptions:output_type -> starapp.api.v1.ListRedemptionsResponse
-	132, // 189: starapp.api.v1.StarAppService.GetParentHomeSummary:output_type -> starapp.api.v1.GetParentHomeSummaryResponse
-	134, // 190: starapp.api.v1.StarAppService.GetChildHomeSummary:output_type -> starapp.api.v1.GetChildHomeSummaryResponse
-	130, // [130:191] is the sub-list for method output_type
-	69,  // [69:130] is the sub-list for method input_type
-	69,  // [69:69] is the sub-list for extension type_name
-	69,  // [69:69] is the sub-list for extension extendee
-	0,   // [0:69] is the sub-list for field type_name
+	135, // 69: starapp.api.v1.ListChoresResponse.chores:type_name -> starapp.api.v1.Chore
+	0,   // 70: starapp.api.v1.CreateChoreResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	135, // 71: starapp.api.v1.CreateChoreResponse.chore:type_name -> starapp.api.v1.Chore
+	0,   // 72: starapp.api.v1.UpdateChoreResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	135, // 73: starapp.api.v1.UpdateChoreResponse.chore:type_name -> starapp.api.v1.Chore
+	0,   // 74: starapp.api.v1.DeleteChoreResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	136, // 75: starapp.api.v1.ListChorePausesResponse.pauses:type_name -> starapp.api.v1.ChorePause
+	0,   // 76: starapp.api.v1.CreateChorePauseResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	136, // 77: starapp.api.v1.CreateChorePauseResponse.pause:type_name -> starapp.api.v1.ChorePause
+	0,   // 78: starapp.api.v1.DeleteChorePauseResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	86,  // 79: starapp.api.v1.WeeklyStarChartChild.child:type_name -> starapp.api.v1.FamilyMember
+	151, // 80: starapp.api.v1.WeeklyStarChartChild.days:type_name -> starapp.api.v1.WeeklyStarChartDay
+	152, // 81: starapp.api.v1.WeeklyStarChartRow.children:type_name -> starapp.api.v1.WeeklyStarChartChild
+	153, // 82: starapp.api.v1.GetWeeklyStarChartResponse.rows:type_name -> starapp.api.v1.WeeklyStarChartRow
+	154, // 83: starapp.api.v1.GetWeeklyStarChartResponse.bonus_days:type_name -> starapp.api.v1.WeeklyStarChartBonusDay
+	0,   // 84: starapp.api.v1.CompleteChoreResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	0,   // 85: starapp.api.v1.UncompleteChoreResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	2,   // 86: starapp.api.v1.StarAppService.Init:input_type -> starapp.api.v1.InitRequest
+	4,   // 87: starapp.api.v1.StarAppService.GetStatus:input_type -> starapp.api.v1.GetStatusRequest
+	6,   // 88: starapp.api.v1.StarAppService.LoginWithUsernameAndPassword:input_type -> starapp.api.v1.LoginWithUsernameAndPasswordRequest
+	8,   // 89: starapp.api.v1.StarAppService.Logout:input_type -> starapp.api.v1.LogoutRequest
+	10,  // 90: starapp.api.v1.StarAppService.ChangePassword:input_type -> starapp.api.v1.ChangePasswordRequest
+	12,  // 91: starapp.api.v1.StarAppService.GetUserPreferences:input_type -> starapp.api.v1.GetUserPreferencesRequest
+	14,  // 92: starapp.api.v1.StarAppService.SaveUserPreferences:input_type -> starapp.api.v1.SaveUserPreferencesRequest
+	17,  // 93: starapp.api.v1.StarAppService.GetUsers:input_type -> starapp.api.v1.GetUsersRequest
+	19,  // 94: starapp.api.v1.StarAppService.GetUser:input_type -> starapp.api.v1.GetUserRequest
+	21,  // 95: starapp.api.v1.StarAppService.CreateUser:input_type -> starapp.api.v1.CreateUserRequest
+	23,  // 96: starapp.api.v1.StarAppService.DeleteUser:input_type -> starapp.api.v1.DeleteUserRequest
+	25,  // 97: starapp.api.v1.StarAppService.ResetUserPassword:input_type -> starapp.api.v1.ResetUserPasswordRequest
+	29,  // 98: starapp.api.v1.StarAppService.ListRbacPermissions:input_type -> starapp.api.v1.ListRbacPermissionsRequest
+	31,  // 99: starapp.api.v1.StarAppService.ListRbacRoles:input_type -> starapp.api.v1.ListRbacRolesRequest
+	33,  // 100: starapp.api.v1.StarAppService.CreateRbacRole:input_type -> starapp.api.v1.CreateRbacRoleRequest
+	35,  // 101: starapp.api.v1.StarAppService.UpdateRbacRole:input_type -> starapp.api.v1.UpdateRbacRoleRequest
+	36,  // 102: starapp.api.v1.StarAppService.DeleteRbacRole:input_type -> starapp.api.v1.DeleteRbacRoleRequest
+	38,  // 103: starapp.api.v1.StarAppService.GetUserRbacRoles:input_type -> starapp.api.v1.GetUserRbacRolesRequest
+	40,  // 104: starapp.api.v1.StarAppService.GetUserGroupRbacRoles:input_type -> starapp.api.v1.GetUserGroupRbacRolesRequest
+	42,  // 105: starapp.api.v1.StarAppService.SetUserGroupRbacRoles:input_type -> starapp.api.v1.SetUserGroupRbacRolesRequest
+	44,  // 106: starapp.api.v1.StarAppService.GetRbacRoleUsers:input_type -> starapp.api.v1.GetRbacRoleUsersRequest
+	46,  // 107: starapp.api.v1.StarAppService.GetRbacRoleGroups:input_type -> starapp.api.v1.GetRbacRoleGroupsRequest
+	49,  // 108: starapp.api.v1.StarAppService.GetMyPermissionsAudit:input_type -> starapp.api.v1.GetMyPermissionsAuditRequest
+	52,  // 109: starapp.api.v1.StarAppService.ListUserGroups:input_type -> starapp.api.v1.ListUserGroupsRequest
+	54,  // 110: starapp.api.v1.StarAppService.CreateUserGroup:input_type -> starapp.api.v1.CreateUserGroupRequest
+	56,  // 111: starapp.api.v1.StarAppService.DeleteUserGroup:input_type -> starapp.api.v1.DeleteUserGroupRequest
+	58,  // 112: starapp.api.v1.StarAppService.GetUserGroupMembers:input_type -> starapp.api.v1.GetUserGroupMembersRequest
+	60,  // 113: starapp.api.v1.StarAppService.SetUserGroupMembers:input_type -> starapp.api.v1.SetUserGroupMembersRequest
+	62,  // 114: starapp.api.v1.StarAppService.ImpersonateUser:input_type -> starapp.api.v1.ImpersonateUserRequest
+	64,  // 115: starapp.api.v1.StarAppService.StopImpersonation:input_type -> starapp.api.v1.StopImpersonationRequest
+	67,  // 116: starapp.api.v1.StarAppService.ListApiKeys:input_type -> starapp.api.v1.ListApiKeysRequest
+	69,  // 117: starapp.api.v1.StarAppService.CreateApiKey:input_type -> starapp.api.v1.CreateApiKeyRequest
+	71,  // 118: starapp.api.v1.StarAppService.DeleteApiKey:input_type -> starapp.api.v1.DeleteApiKeyRequest
+	74,  // 119: starapp.api.v1.StarAppService.ListCvars:input_type -> starapp.api.v1.ListCvarsRequest
+	76,  // 120: starapp.api.v1.StarAppService.UpdateCvar:input_type -> starapp.api.v1.UpdateCvarRequest
+	78,  // 121: starapp.api.v1.StarAppService.ListWebhooks:input_type -> starapp.api.v1.ListWebhooksRequest
+	80,  // 122: starapp.api.v1.StarAppService.CreateWebhook:input_type -> starapp.api.v1.CreateWebhookRequest
+	82,  // 123: starapp.api.v1.StarAppService.UpdateWebhook:input_type -> starapp.api.v1.UpdateWebhookRequest
+	83,  // 124: starapp.api.v1.StarAppService.DeleteWebhook:input_type -> starapp.api.v1.DeleteWebhookRequest
+	90,  // 125: starapp.api.v1.StarAppService.GetMyFamily:input_type -> starapp.api.v1.GetMyFamilyRequest
+	92,  // 126: starapp.api.v1.StarAppService.CreateFamily:input_type -> starapp.api.v1.CreateFamilyRequest
+	94,  // 127: starapp.api.v1.StarAppService.ListMembers:input_type -> starapp.api.v1.ListMembersRequest
+	96,  // 128: starapp.api.v1.StarAppService.CreateChildMember:input_type -> starapp.api.v1.CreateChildMemberRequest
+	98,  // 129: starapp.api.v1.StarAppService.UpdateMember:input_type -> starapp.api.v1.UpdateMemberRequest
+	100, // 130: starapp.api.v1.StarAppService.DeleteMember:input_type -> starapp.api.v1.DeleteMemberRequest
+	102, // 131: starapp.api.v1.StarAppService.UploadMemberAvatar:input_type -> starapp.api.v1.UploadMemberAvatarRequest
+	104, // 132: starapp.api.v1.StarAppService.DeleteMemberAvatar:input_type -> starapp.api.v1.DeleteMemberAvatarRequest
+	106, // 133: starapp.api.v1.StarAppService.AwardStars:input_type -> starapp.api.v1.AwardStarsRequest
+	108, // 134: starapp.api.v1.StarAppService.RevokeStars:input_type -> starapp.api.v1.RevokeStarsRequest
+	110, // 135: starapp.api.v1.StarAppService.GetMemberBalance:input_type -> starapp.api.v1.GetMemberBalanceRequest
+	112, // 136: starapp.api.v1.StarAppService.ListLedger:input_type -> starapp.api.v1.ListLedgerRequest
+	114, // 137: starapp.api.v1.StarAppService.ListRewards:input_type -> starapp.api.v1.ListRewardsRequest
+	116, // 138: starapp.api.v1.StarAppService.CreateReward:input_type -> starapp.api.v1.CreateRewardRequest
+	118, // 139: starapp.api.v1.StarAppService.UpdateReward:input_type -> starapp.api.v1.UpdateRewardRequest
+	120, // 140: starapp.api.v1.StarAppService.DeleteReward:input_type -> starapp.api.v1.DeleteRewardRequest
+	122, // 141: starapp.api.v1.StarAppService.RequestRedemption:input_type -> starapp.api.v1.RequestRedemptionRequest
+	124, // 142: starapp.api.v1.StarAppService.ApproveRedemption:input_type -> starapp.api.v1.ApproveRedemptionRequest
+	126, // 143: starapp.api.v1.StarAppService.RejectRedemption:input_type -> starapp.api.v1.RejectRedemptionRequest
+	128, // 144: starapp.api.v1.StarAppService.ListRedemptions:input_type -> starapp.api.v1.ListRedemptionsRequest
+	131, // 145: starapp.api.v1.StarAppService.GetParentHomeSummary:input_type -> starapp.api.v1.GetParentHomeSummaryRequest
+	133, // 146: starapp.api.v1.StarAppService.GetChildHomeSummary:input_type -> starapp.api.v1.GetChildHomeSummaryRequest
+	137, // 147: starapp.api.v1.StarAppService.ListChores:input_type -> starapp.api.v1.ListChoresRequest
+	139, // 148: starapp.api.v1.StarAppService.CreateChore:input_type -> starapp.api.v1.CreateChoreRequest
+	141, // 149: starapp.api.v1.StarAppService.UpdateChore:input_type -> starapp.api.v1.UpdateChoreRequest
+	143, // 150: starapp.api.v1.StarAppService.DeleteChore:input_type -> starapp.api.v1.DeleteChoreRequest
+	145, // 151: starapp.api.v1.StarAppService.ListChorePauses:input_type -> starapp.api.v1.ListChorePausesRequest
+	147, // 152: starapp.api.v1.StarAppService.CreateChorePause:input_type -> starapp.api.v1.CreateChorePauseRequest
+	149, // 153: starapp.api.v1.StarAppService.DeleteChorePause:input_type -> starapp.api.v1.DeleteChorePauseRequest
+	155, // 154: starapp.api.v1.StarAppService.GetWeeklyStarChart:input_type -> starapp.api.v1.GetWeeklyStarChartRequest
+	157, // 155: starapp.api.v1.StarAppService.CompleteChore:input_type -> starapp.api.v1.CompleteChoreRequest
+	159, // 156: starapp.api.v1.StarAppService.UncompleteChore:input_type -> starapp.api.v1.UncompleteChoreRequest
+	3,   // 157: starapp.api.v1.StarAppService.Init:output_type -> starapp.api.v1.InitResponse
+	5,   // 158: starapp.api.v1.StarAppService.GetStatus:output_type -> starapp.api.v1.GetStatusResponse
+	7,   // 159: starapp.api.v1.StarAppService.LoginWithUsernameAndPassword:output_type -> starapp.api.v1.LoginWithUsernameAndPasswordResponse
+	9,   // 160: starapp.api.v1.StarAppService.Logout:output_type -> starapp.api.v1.LogoutResponse
+	11,  // 161: starapp.api.v1.StarAppService.ChangePassword:output_type -> starapp.api.v1.ChangePasswordResponse
+	13,  // 162: starapp.api.v1.StarAppService.GetUserPreferences:output_type -> starapp.api.v1.GetUserPreferencesResponse
+	15,  // 163: starapp.api.v1.StarAppService.SaveUserPreferences:output_type -> starapp.api.v1.SaveUserPreferencesResponse
+	18,  // 164: starapp.api.v1.StarAppService.GetUsers:output_type -> starapp.api.v1.GetUsersResponse
+	20,  // 165: starapp.api.v1.StarAppService.GetUser:output_type -> starapp.api.v1.GetUserResponse
+	22,  // 166: starapp.api.v1.StarAppService.CreateUser:output_type -> starapp.api.v1.CreateUserResponse
+	24,  // 167: starapp.api.v1.StarAppService.DeleteUser:output_type -> starapp.api.v1.DeleteUserResponse
+	26,  // 168: starapp.api.v1.StarAppService.ResetUserPassword:output_type -> starapp.api.v1.ResetUserPasswordResponse
+	30,  // 169: starapp.api.v1.StarAppService.ListRbacPermissions:output_type -> starapp.api.v1.ListRbacPermissionsResponse
+	32,  // 170: starapp.api.v1.StarAppService.ListRbacRoles:output_type -> starapp.api.v1.ListRbacRolesResponse
+	34,  // 171: starapp.api.v1.StarAppService.CreateRbacRole:output_type -> starapp.api.v1.CreateRbacRoleResponse
+	28,  // 172: starapp.api.v1.StarAppService.UpdateRbacRole:output_type -> starapp.api.v1.RbacRole
+	37,  // 173: starapp.api.v1.StarAppService.DeleteRbacRole:output_type -> starapp.api.v1.DeleteRbacRoleResponse
+	39,  // 174: starapp.api.v1.StarAppService.GetUserRbacRoles:output_type -> starapp.api.v1.GetUserRbacRolesResponse
+	41,  // 175: starapp.api.v1.StarAppService.GetUserGroupRbacRoles:output_type -> starapp.api.v1.GetUserGroupRbacRolesResponse
+	43,  // 176: starapp.api.v1.StarAppService.SetUserGroupRbacRoles:output_type -> starapp.api.v1.SetUserGroupRbacRolesResponse
+	45,  // 177: starapp.api.v1.StarAppService.GetRbacRoleUsers:output_type -> starapp.api.v1.GetRbacRoleUsersResponse
+	47,  // 178: starapp.api.v1.StarAppService.GetRbacRoleGroups:output_type -> starapp.api.v1.GetRbacRoleGroupsResponse
+	50,  // 179: starapp.api.v1.StarAppService.GetMyPermissionsAudit:output_type -> starapp.api.v1.GetMyPermissionsAuditResponse
+	53,  // 180: starapp.api.v1.StarAppService.ListUserGroups:output_type -> starapp.api.v1.ListUserGroupsResponse
+	55,  // 181: starapp.api.v1.StarAppService.CreateUserGroup:output_type -> starapp.api.v1.CreateUserGroupResponse
+	57,  // 182: starapp.api.v1.StarAppService.DeleteUserGroup:output_type -> starapp.api.v1.DeleteUserGroupResponse
+	59,  // 183: starapp.api.v1.StarAppService.GetUserGroupMembers:output_type -> starapp.api.v1.GetUserGroupMembersResponse
+	61,  // 184: starapp.api.v1.StarAppService.SetUserGroupMembers:output_type -> starapp.api.v1.SetUserGroupMembersResponse
+	63,  // 185: starapp.api.v1.StarAppService.ImpersonateUser:output_type -> starapp.api.v1.ImpersonateUserResponse
+	65,  // 186: starapp.api.v1.StarAppService.StopImpersonation:output_type -> starapp.api.v1.StopImpersonationResponse
+	68,  // 187: starapp.api.v1.StarAppService.ListApiKeys:output_type -> starapp.api.v1.ListApiKeysResponse
+	70,  // 188: starapp.api.v1.StarAppService.CreateApiKey:output_type -> starapp.api.v1.CreateApiKeyResponse
+	72,  // 189: starapp.api.v1.StarAppService.DeleteApiKey:output_type -> starapp.api.v1.DeleteApiKeyResponse
+	75,  // 190: starapp.api.v1.StarAppService.ListCvars:output_type -> starapp.api.v1.ListCvarsResponse
+	73,  // 191: starapp.api.v1.StarAppService.UpdateCvar:output_type -> starapp.api.v1.Cvar
+	79,  // 192: starapp.api.v1.StarAppService.ListWebhooks:output_type -> starapp.api.v1.ListWebhooksResponse
+	81,  // 193: starapp.api.v1.StarAppService.CreateWebhook:output_type -> starapp.api.v1.CreateWebhookResponse
+	77,  // 194: starapp.api.v1.StarAppService.UpdateWebhook:output_type -> starapp.api.v1.Webhook
+	84,  // 195: starapp.api.v1.StarAppService.DeleteWebhook:output_type -> starapp.api.v1.DeleteWebhookResponse
+	91,  // 196: starapp.api.v1.StarAppService.GetMyFamily:output_type -> starapp.api.v1.GetMyFamilyResponse
+	93,  // 197: starapp.api.v1.StarAppService.CreateFamily:output_type -> starapp.api.v1.CreateFamilyResponse
+	95,  // 198: starapp.api.v1.StarAppService.ListMembers:output_type -> starapp.api.v1.ListMembersResponse
+	97,  // 199: starapp.api.v1.StarAppService.CreateChildMember:output_type -> starapp.api.v1.CreateChildMemberResponse
+	99,  // 200: starapp.api.v1.StarAppService.UpdateMember:output_type -> starapp.api.v1.UpdateMemberResponse
+	101, // 201: starapp.api.v1.StarAppService.DeleteMember:output_type -> starapp.api.v1.DeleteMemberResponse
+	103, // 202: starapp.api.v1.StarAppService.UploadMemberAvatar:output_type -> starapp.api.v1.UploadMemberAvatarResponse
+	105, // 203: starapp.api.v1.StarAppService.DeleteMemberAvatar:output_type -> starapp.api.v1.DeleteMemberAvatarResponse
+	107, // 204: starapp.api.v1.StarAppService.AwardStars:output_type -> starapp.api.v1.AwardStarsResponse
+	109, // 205: starapp.api.v1.StarAppService.RevokeStars:output_type -> starapp.api.v1.RevokeStarsResponse
+	111, // 206: starapp.api.v1.StarAppService.GetMemberBalance:output_type -> starapp.api.v1.GetMemberBalanceResponse
+	113, // 207: starapp.api.v1.StarAppService.ListLedger:output_type -> starapp.api.v1.ListLedgerResponse
+	115, // 208: starapp.api.v1.StarAppService.ListRewards:output_type -> starapp.api.v1.ListRewardsResponse
+	117, // 209: starapp.api.v1.StarAppService.CreateReward:output_type -> starapp.api.v1.CreateRewardResponse
+	119, // 210: starapp.api.v1.StarAppService.UpdateReward:output_type -> starapp.api.v1.UpdateRewardResponse
+	121, // 211: starapp.api.v1.StarAppService.DeleteReward:output_type -> starapp.api.v1.DeleteRewardResponse
+	123, // 212: starapp.api.v1.StarAppService.RequestRedemption:output_type -> starapp.api.v1.RequestRedemptionResponse
+	125, // 213: starapp.api.v1.StarAppService.ApproveRedemption:output_type -> starapp.api.v1.ApproveRedemptionResponse
+	127, // 214: starapp.api.v1.StarAppService.RejectRedemption:output_type -> starapp.api.v1.RejectRedemptionResponse
+	129, // 215: starapp.api.v1.StarAppService.ListRedemptions:output_type -> starapp.api.v1.ListRedemptionsResponse
+	132, // 216: starapp.api.v1.StarAppService.GetParentHomeSummary:output_type -> starapp.api.v1.GetParentHomeSummaryResponse
+	134, // 217: starapp.api.v1.StarAppService.GetChildHomeSummary:output_type -> starapp.api.v1.GetChildHomeSummaryResponse
+	138, // 218: starapp.api.v1.StarAppService.ListChores:output_type -> starapp.api.v1.ListChoresResponse
+	140, // 219: starapp.api.v1.StarAppService.CreateChore:output_type -> starapp.api.v1.CreateChoreResponse
+	142, // 220: starapp.api.v1.StarAppService.UpdateChore:output_type -> starapp.api.v1.UpdateChoreResponse
+	144, // 221: starapp.api.v1.StarAppService.DeleteChore:output_type -> starapp.api.v1.DeleteChoreResponse
+	146, // 222: starapp.api.v1.StarAppService.ListChorePauses:output_type -> starapp.api.v1.ListChorePausesResponse
+	148, // 223: starapp.api.v1.StarAppService.CreateChorePause:output_type -> starapp.api.v1.CreateChorePauseResponse
+	150, // 224: starapp.api.v1.StarAppService.DeleteChorePause:output_type -> starapp.api.v1.DeleteChorePauseResponse
+	156, // 225: starapp.api.v1.StarAppService.GetWeeklyStarChart:output_type -> starapp.api.v1.GetWeeklyStarChartResponse
+	158, // 226: starapp.api.v1.StarAppService.CompleteChore:output_type -> starapp.api.v1.CompleteChoreResponse
+	160, // 227: starapp.api.v1.StarAppService.UncompleteChore:output_type -> starapp.api.v1.UncompleteChoreResponse
+	157, // [157:228] is the sub-list for method output_type
+	86,  // [86:157] is the sub-list for method input_type
+	86,  // [86:86] is the sub-list for extension type_name
+	86,  // [86:86] is the sub-list for extension extendee
+	0,   // [0:86] is the sub-list for field type_name
 }
 
 func init() { file_starapp_api_v1_starapp_proto_init() }
@@ -8004,7 +9704,7 @@ func file_starapp_api_v1_starapp_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_starapp_api_v1_starapp_proto_rawDesc), len(file_starapp_api_v1_starapp_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   135,
+			NumMessages:   161,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

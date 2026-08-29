@@ -8,22 +8,41 @@ const state = reactive({
   init: null as InitResponse | null,
 })
 
+let inflight: Promise<InitResponse> | null = null
+
 export function useInit() {
   return readonly(state)
 }
 
-export async function loadInit() {
-  if (state.loading) {
-    return
+export function invalidateInit() {
+  state.loaded = false
+  state.init = null
+  inflight = null
+}
+
+export async function loadInit(opts?: { force?: boolean }) {
+  if (!opts?.force && state.loaded && state.init) {
+    return state.init
+  }
+  if (!opts?.force && inflight) {
+    return inflight
   }
   state.loading = true
   state.error = null
-  try {
-    state.init = await starapp.init()
-    state.loaded = true
-  } catch (err) {
-    state.error = err instanceof Error ? err.message : 'Init failed'
-  } finally {
-    state.loading = false
-  }
+  inflight = starapp
+    .init()
+    .then((init) => {
+      state.init = init
+      state.loaded = true
+      return init
+    })
+    .catch((err: unknown) => {
+      state.error = err instanceof Error ? err.message : 'Init failed'
+      throw err
+    })
+    .finally(() => {
+      state.loading = false
+      inflight = null
+    })
+  return inflight
 }

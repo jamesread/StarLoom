@@ -9,7 +9,7 @@ import (
 )
 
 func TestRequiredMigration(t *testing.T) {
-	if RequiredMigration != "6.domain-rbac.sql" {
+	if RequiredMigration != "8.member-star-color.sql" {
 		t.Fatalf("migration=%s", RequiredMigration)
 	}
 }

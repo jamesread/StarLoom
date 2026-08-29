@@ -1,0 +1,8 @@
+service/starapp
+.git
+.cursor
+**/node_modules
+docs/site
+integration-tests/node_modules
+integration-tests/tests/*.db
+integration-tests/tests/*.db-*
