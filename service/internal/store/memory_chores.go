@@ -282,13 +282,13 @@ func (m *Memory) ListBonusStarsForWeek(ctx context.Context, familyID int, weekSt
 type memoryChore struct {
 	mu sync.Mutex
 
-	nextChoreID       int
-	chores            map[int]ChoreWithAssignments
-	nextAssignmentID  int
-	nextPauseID       int
-	pauses            map[int]ChorePauseRow
-	nextCompletionID  int
-	completions       map[int]ChoreCompletionRow
+	nextChoreID      int
+	chores           map[int]ChoreWithAssignments
+	nextAssignmentID int
+	nextPauseID      int
+	pauses           map[int]ChorePauseRow
+	nextCompletionID int
+	completions      map[int]ChoreCompletionRow
 }
 
 func (m *Memory) choreState() *memoryChore {

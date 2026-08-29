@@ -29,11 +29,24 @@ comment on success.
 
 ## CI
 
-The **Release Pipeline** workflow (`.github/workflows/release.yml`) runs `make
-build`, `make test`, and `make lint` on every push and pull request. On pushes to
-`main`, semantic-release creates a GitHub Release when commits warrant a version
-bump, then GoReleaser builds and publishes multi-arch container images to
-`ghcr.io/jamesread/starloom`.
+The **Release Pipeline** workflow (`.github/workflows/release.yml`) runs on every
+push and pull request (except tag-only pushes, which reuse the tested main
+commit):
+
+- `make build`
+- `make test` (unit tests)
+- `make lint`
+- `make integration-test`
+
+On pushes to `main`, when commits warrant a version bump:
+
+1. **release** — semantic-release creates a single GitHub Release and git tag.
+2. **publish-image** — native `linux/amd64` and `linux/arm64` images are built in
+   parallel on `ubuntu-latest` and `ubuntu-24.04-arm`, then pushed to GHCR.
+3. **publish-manifest** — combines the per-arch images into `{{version}}` and
+   `latest` manifest tags (runs after both arch jobs succeed).
+
+When there is nothing to release, image jobs are skipped.
 
 ### Container images
 
@@ -45,23 +58,19 @@ docker pull ghcr.io/jamesread/starloom:latest
 docker pull ghcr.io/jamesread/starloom:1.2.3
 ```
 
+Per-arch tags are also published (`1.2.3-amd64`, `1.2.3-arm64`).
+
 The image serves the built SPA from `/usr/share/starapp/webui`, stores SQLite
 data under `/config` (volume), and runs migrations on startup.
 
 ### GitHub Actions permissions
 
-The **release** job sets `packages: write` so the built-in `GITHUB_TOKEN` can
-push container images to GHCR. No extra repository secrets are required.
+The **publish-image** and **publish-manifest** jobs set `packages: write` so the
+built-in `GITHUB_TOKEN` can push container images to GHCR. No extra repository
+secrets are required.
 
 If releases fail to create tags (e.g. branch protection on `main`), allow GitHub
 Actions to bypass protection or adjust protection rules for the release bot.
-
-## GoReleaser
-
-Container images are built via `.goreleaser.yaml` (multi-arch `linux/amd64` and
-`linux/arm64`, manifest tags `{{version}}` and `latest`). GoReleaser is invoked
-from semantic-release's `@semantic-release/exec` `publishCmd` after the GitHub
-Release is created.
 
 ## First release
 

@@ -2,6 +2,7 @@ site_name: StarApp
 site_description: Family star rewards — Vue frontend with a ConnectRPC Go backend.
 docs_dir: content
 site_dir: site
+repo_url: https://github.com/jamesread/StarLoom/
 
 theme:
   name: material

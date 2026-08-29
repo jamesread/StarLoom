@@ -1,6 +1,13 @@
-# StarApp
+<div align="center">
+  <img alt="StarApp logo" src="logo.svg" width="128" />
+  <h1>StarApp</h1>
 
-Family star rewards — parents award stars for good behavior; children redeem them for privileges like screen time.
+  Family star rewards — parents award stars for good behavior; children redeem them for privileges like screen time.
+
+[![Maturity Badge](https://img.shields.io/badge/maturity-Beta-yellow)](#none)
+[![Discord](https://img.shields.io/discord/846737624960860180?label=Discord%20Server)](https://discord.gg/jhYWWpNJ3v)
+
+</div>
 
 ## Documentation
 
@@ -27,4 +34,4 @@ See [Releases](docs/content/releases.md) for commit message format and CI behavi
 
 ## Status
 
-jwr-soa-2.0 skeleton in place: Connect RPC backend with Init, Vue + PicoCrank SPA, integration-test harness, and MkDocs. Domain features (ledger, rewards) are specified but not yet implemented.
+StarApp implements the jwr-soa-2.0 stack: Connect RPC backend, Vue + PicoCrank SPA, family ledger, rewards, chores, webhooks, and integration tests. See the [product spec](docs/SPEC.md) for the full roadmap.

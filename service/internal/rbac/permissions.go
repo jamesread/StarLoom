@@ -27,8 +27,8 @@ const (
 	PermissionRedemptionsApprove = "redemptions.approve"
 	PermissionRedemptionsRequest = "redemptions.request"
 
-	PermissionChoresManage    = "chores.manage"
-	PermissionChoresComplete  = "chores.complete"
+	PermissionChoresManage     = "chores.manage"
+	PermissionChoresComplete   = "chores.complete"
 	PermissionChoresViewFamily = "chores.view_family"
 )
 

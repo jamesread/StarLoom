@@ -13,6 +13,8 @@ on:
 
 jobs:
   build:
+    # Tag pushes reuse the commit already tested on main; skip duplicate runs.
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -41,7 +43,7 @@ jobs:
       - name: Build
         run: make build
 
-      - name: Test
+      - name: Unit tests
         env:
           CGO_ENABLED: '1'
         run: make test
@@ -51,6 +53,11 @@ jobs:
           CGO_ENABLED: '1'
         run: make lint
 
+      - name: Integration tests
+        env:
+          CGO_ENABLED: '1'
+        run: make integration-test
+
   release:
     runs-on: ubuntu-latest
     needs: [build]
@@ -59,30 +66,51 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
-      packages: write
+    outputs:
+      published: ${{ steps.semrel.outputs.new_release_published }}
+      version: ${{ steps.semrel.outputs.new_release_version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      - name: Create GitHub release
+        id: semrel
+        uses: cycjimmy/semantic-release-action@v6.0.0
         with:
-          cache-image: true
-          platforms: arm64,amd64
+          semantic_version: 24.2.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+  publish-image:
+    needs: [release]
+    if: needs.release.outputs.published == 'true'
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            platform: linux/amd64
+            suffix: amd64
+            buf_arch: x86_64
+          - runner: ubuntu-24.04-arm
+            platform: linux/arm64
+            suffix: arm64
+            buf_arch: aarch64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ needs.release.outputs.version }}
 
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
-
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: service/go.mod
-          cache: true
-          cache-dependency-path: service/go.sum
 
       - uses: actions/setup-node@v7
         with:
@@ -92,25 +120,14 @@ jobs:
 
       - name: Install buf
         run: |
-          curl -sSL "https://github.com/bufbuild/buf/releases/download/v1.50.0/buf-Linux-x86_64" -o /usr/local/bin/buf
+          curl -sSL "https://github.com/bufbuild/buf/releases/download/v1.50.0/buf-Linux-${{ matrix.buf_arch }}" -o /usr/local/bin/buf
           chmod +x /usr/local/bin/buf
 
-      - name: Build release artifacts
-        run: make build
+      - name: Build release inputs
+        run: make protocol frontend
 
-      - name: Verify container image
-        run: |
-          docker build -t starloom-ci:smoke --build-arg VERSION=ci .
-          docker run --rm --entrypoint sh starloom-ci:smoke -c \
-            'cd /var/app/database/sqlite && sql-migrate up'
-          cid=$(docker run -d -v starloom-smoke-config:/config starloom-ci:smoke)
-          sleep 3
-          if docker logs "$cid" 2>&1 | grep -q 'CGO_ENABLED=0'; then
-            docker logs "$cid"
-            docker rm -f "$cid"
-            exit 1
-          fi
-          docker rm -f "$cid"
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to ghcr
         uses: docker/login-action@v3
@@ -119,18 +136,48 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install goreleaser
-        uses: goreleaser/goreleaser-action@v6
+      - name: Build and push image
+        uses: docker/build-push-action@v6
         with:
-          install-only: true
+          context: .
+          file: Dockerfile
+          platforms: ${{ matrix.platform }}
+          push: true
+          tags: ghcr.io/jamesread/starloom:${{ needs.release.outputs.version }}-${{ matrix.suffix }}
+          build-args: |
+            VERSION=${{ needs.release.outputs.version }}
+          cache-from: type=gha,scope=starloom-${{ matrix.suffix }}
+          cache-to: type=gha,mode=max,scope=starloom-${{ matrix.suffix }}
+          labels: |
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ needs.release.outputs.version }}
 
-      - name: Release
-        if: github.ref_type != 'tag'
-        uses: cycjimmy/semantic-release-action@v6.0.0
+  publish-manifest:
+    needs: [release, publish-image]
+    if: needs.release.outputs.published == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Login to ghcr
+        uses: docker/login-action@v3
         with:
-          semantic_version: 24.2.3
-          extra_plugins: |
-            @semantic-release/exec
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Publish multi-arch manifest tags
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.release.outputs.version }}
+        run: |
+          docker buildx imagetools create \
+            -t "ghcr.io/jamesread/starloom:${VERSION}" \
+            "ghcr.io/jamesread/starloom:${VERSION}-amd64" \
+            "ghcr.io/jamesread/starloom:${VERSION}-arm64"
+          docker buildx imagetools create \
+            -t "ghcr.io/jamesread/starloom:latest" \
+            "ghcr.io/jamesread/starloom:${VERSION}-amd64" \
+            "ghcr.io/jamesread/starloom:${VERSION}-arm64"
