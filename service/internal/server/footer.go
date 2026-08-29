@@ -15,7 +15,7 @@ func (s *Server) showVersionNumber(ctx context.Context) bool {
 }
 
 func (s *Server) showNewVersions(ctx context.Context) bool {
-	return s.boolCvar(ctx, cvar.KeyShowNewVersions, false)
+	return s.boolCvar(ctx, cvar.KeyShowNewVersions, true)
 }
 
 func (s *Server) availableVersion(_ context.Context) string {

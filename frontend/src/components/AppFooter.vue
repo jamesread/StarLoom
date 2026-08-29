@@ -2,19 +2,18 @@
 import { computed } from 'vue'
 import { useInit } from '../composables/useInit'
 
-const DOCS_URL = 'https://github.com/jamesread/StarLoom/tree/main/docs'
+const DOCS_URL = 'https://jamesread.github.io/StarLoom/'
 const ISSUES_URL = 'https://github.com/jamesread/StarLoom/issues'
 const RELEASES_URL = 'https://github.com/jamesread/StarLoom/releases'
 
-const props = defineProps<{
+defineProps<{
   logoUrl?: string
 }>()
 
 const init = useInit()
 
-const showFooter = computed(() => init.init?.showFooter !== false)
 const showVersionNumber = computed(() => init.init?.showVersionNumber !== false)
-const appName = computed(() => init.init?.siteTitle?.trim() || 'StarLoom')
+const appName = computed(() => init.init?.siteTitle?.trim() || 'StarApp')
 const currentVersion = computed(() => init.init?.currentVersion?.trim() || '')
 const showNewVersions = computed(() => init.init?.showNewVersions === true)
 const availableVersion = computed(() => init.init?.availableVersion?.trim() || '')
@@ -30,7 +29,7 @@ const showUpdateLink = computed(() => {
 </script>
 
 <template>
-  <footer v-if="showFooter" title="footer">
+  <footer title="footer">
     <p>
       <img
         v-if="logoUrl"
@@ -41,9 +40,9 @@ const showUpdateLink = computed(() => {
         style="height: 1em;"
       >
       {{ appName }}
-      <span v-if="showVersionNumber && currentVersion">{{ currentVersion }}</span>
     </p>
     <p>
+      <span v-if="showVersionNumber && currentVersion">{{ currentVersion }}</span>
       <span>
         <a :href="DOCS_URL" target="_blank" rel="noopener noreferrer">Docs</a>
       </span>

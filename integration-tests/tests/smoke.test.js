@@ -29,6 +29,40 @@ async function waitForReady(timeoutMs = 20000) {
   throw new Error('backend did not become ready')
 }
 
+async function loginSession() {
+  const loginRes = await fetch(`${baseURL}/starapp.api.v1.StarAppService/LoginWithUsernameAndPassword`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ username: 'admin', password: 'admin' }),
+  })
+  assert.equal(loginRes.status, 200)
+  const loginBody = await loginRes.json()
+  assert.equal(loginBody.standardResponse?.success, true)
+}
+
+async function fetchInit() {
+  const res = await fetch(`${baseURL}/starapp.api.v1.StarAppService/Init`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: '{}',
+  })
+  assert.equal(res.status, 200)
+  return res.json()
+}
+
+async function updateCvar(key, valueInt) {
+  const res = await fetch(`${baseURL}/starapp.api.v1.StarAppService/UpdateCvar`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ key, valueInt }),
+  })
+  assert.equal(res.status, 200)
+  return res.json()
+}
+
 describe('starapp smoke', function () {
   this.timeout(120000)
 
@@ -88,26 +122,31 @@ describe('starapp smoke', function () {
   })
 
   it('Init returns StarApp metadata', async function () {
-    const loginRes = await fetch(`${baseURL}/starapp.api.v1.StarAppService/LoginWithUsernameAndPassword`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ username: 'admin', password: 'admin' }),
-    })
-    assert.equal(loginRes.status, 200)
-    const loginBody = await loginRes.json()
-    assert.equal(loginBody.standardResponse?.success, true)
-
-    const res = await fetch(`${baseURL}/starapp.api.v1.StarAppService/Init`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: '{}',
-    })
-    assert.equal(res.status, 200)
-    const body = await res.json()
+    await loginSession()
+    const body = await fetchInit()
     assert.equal(body.siteTitle, 'StarApp')
     assert.equal(body.showFooter, true)
+    assert.equal(body.showVersionNumber, true)
+    assert.equal(body.currentVersion, 'dev')
+  })
+
+  it('Init redacts version when show_version_number is off', async function () {
+    await loginSession()
+    await updateCvar('show_version_number', 0)
+    const body = await fetchInit()
+    assert.equal(body.showVersionNumber, false)
+    assert.equal(body.currentVersion, '')
+    assert.equal(body.availableVersion, '')
+    assert.equal(body.showNewVersions, false)
+    await updateCvar('show_version_number', 1)
+  })
+
+  it('Init hides footer when show_footer is off', async function () {
+    await loginSession()
+    await updateCvar('show_footer', 0)
+    const body = await fetchInit()
+    assert.equal(body.showFooter, false)
+    await updateCvar('show_footer', 1)
   })
 
   it('renders the home page in the browser', async function () {
@@ -121,5 +160,11 @@ describe('starapp smoke', function () {
     await driver.wait(until.elementLocated(By.css('main')), 10000)
     const text = await driver.findElement(By.css('main')).getText()
     assert.match(text, /StarApp/)
+
+    await driver.wait(until.elementLocated(By.css('footer')), 10000)
+    const footerText = await driver.findElement(By.css('footer')).getText()
+    assert.match(footerText, /StarApp/)
+    assert.match(footerText, /dev/)
+    assert.match(footerText, /Docs/)
   })
 })

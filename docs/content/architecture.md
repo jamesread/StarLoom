@@ -15,9 +15,9 @@ StarApp/
 ## Request flow
 
 1. The SPA calls `Init` on load for shell metadata (title, footer, version).
-2. Future domain RPCs (families, stars, rewards) will follow the same Connect
-   JSON-over-HTTP pattern under `/api` during development (Vite proxy) and
-   directly when served from the backend.
+2. Authenticated routes use `GetStatus` for session and RBAC; it repeats the
+   same footer fields as Init.
+3. Domain RPCs use Connect JSON-over-HTTP under `/api` (Vite proxy in dev).
 
 ## Storage
 

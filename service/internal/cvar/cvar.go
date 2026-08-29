@@ -59,7 +59,7 @@ func Defaults(siteTitle string, showFooter bool) []Def {
 			Category: CategorySite, Ordinal: 25,
 		},
 		{
-			Key: KeyShowNewVersions, MainType: TypeBool, ValueInt: 0,
+			Key: KeyShowNewVersions, MainType: TypeBool, ValueInt: 1,
 			Title: "Show new versions", Description: "Offer a link when a newer release is available.",
 			Category: CategorySite, Ordinal: 26,
 		},

@@ -5,6 +5,7 @@ import Sidebar from 'picocrank/vue/components/Sidebar.vue'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import AppFooter from './AppFooter.vue'
+import { useInit } from '../composables/useInit'
 import { useStatus } from '../composables/useStatus'
 import { canAccessControlPanelFromStatus, canViewChoresFromStatus, canViewFamilyHomeFromStatus } from '../lib/rbacAccess'
 import { setupSidebarNavigation } from '../lib/sidebarNavigation'
@@ -16,11 +17,13 @@ defineProps<{
 
 const router = useRouter()
 const status = useStatus()
+const init = useInit()
 const navigation = ref<InstanceType<typeof Navigation> | null>(null)
 const topBarNavigation = ref<InstanceType<typeof Navigation> | null>(null)
 const sidebar = ref<InstanceType<typeof Sidebar> | null>(null)
 
-const siteTitle = computed(() => status.status?.siteTitle || 'StarLoom')
+const siteTitle = computed(() => status.status?.siteTitle || 'StarApp')
+const showFooter = computed(() => init.init?.showFooter !== false)
 const username = computed(() => (status.status?.isLoggedIn ? status.status.username || '' : ''))
 const isLoggedIn = computed(() => Boolean(status.status?.isLoggedIn))
 
@@ -91,7 +94,7 @@ function goToUserControlPanel() {
           <slot />
         </main>
 
-        <AppFooter logo-url="/favicon.svg" />
+        <AppFooter v-if="showFooter" logo-url="/favicon.svg" />
       </div>
     </div>
   </Navigation>
