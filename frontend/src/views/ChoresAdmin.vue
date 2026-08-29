@@ -4,6 +4,7 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
 import Table from 'picocrank/vue/components/Table.vue'
 import FormField from 'picocrank/vue/components/FormField.vue'
+import FormLayout from 'picocrank/vue/components/FormLayout.vue'
 import CheckGroup from 'picocrank/vue/components/CheckGroup.vue'
 import RadioGroup from 'picocrank/vue/components/RadioGroup.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
@@ -244,7 +245,7 @@ onMounted(async () => {
   <dialog ref="createDialog" class="dialog" @close="resetCreateForm">
     <h2>Add chore</h2>
     <p>Define a recurring task, its star reward, schedule, and which people can complete it.</p>
-    <form class="dialog-form" @submit.prevent="createChore">
+    <FormLayout @submit.prevent="createChore">
       <FormField label="Title" for="chore-title">
         <input
           id="chore-title"
@@ -267,7 +268,12 @@ onMounted(async () => {
         />
       </FormField>
       <FormField v-if="starChartOptions.length > 1" label="Star chart" fake>
-        <RadioGroup v-model="form.starChartId" :options="starChartOptions" name="chore-star-chart" />
+        <RadioGroup
+          v-model="form.starChartId"
+          variant="list"
+          :options="starChartOptions"
+          name="chore-star-chart"
+        />
       </FormField>
       <FormField label="Days of week" fake>
         <CheckGroup v-model="form.weekdays" :options="weekdayOptions" name="chore-weekdays" />
@@ -276,13 +282,13 @@ onMounted(async () => {
         <CheckGroup v-model="form.childMemberIds" :options="personOptions" name="chore-people" />
       </FormField>
       <p v-if="createError" class="inline-notification error">{{ createError }}</p>
-      <div class="dialog-actions">
-        <button type="button" class="neutral" :disabled="creating" @click="closeCreateDialog">Cancel</button>
+      <template #actions>
         <button type="submit" class="good" :disabled="creating || !form.title.trim()">
           {{ creating ? 'Creating…' : 'Create' }}
         </button>
-      </div>
-    </form>
+        <button type="button" class="neutral" :disabled="creating" @click="closeCreateDialog">Cancel</button>
+      </template>
+    </FormLayout>
   </dialog>
 
   <dialog ref="pauseDialog" class="dialog" @close="resetPauseForm">
@@ -317,7 +323,7 @@ onMounted(async () => {
   <Section
     subtitle="Recurring tasks and star rewards. Mark completions on the Star Chart."
     classes="chores-list"
-    :padding="false"
+    :padding="!chores.length"
   >
     <template #title>
       <span class="section-title-with-icon">

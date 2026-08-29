@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import { RouterLink } from 'vue-router'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
+import Navigation from 'picocrank/vue/components/Navigation.vue'
+import NavigationGrid from 'picocrank/vue/components/NavigationGrid.vue'
 import FormField from 'picocrank/vue/components/FormField.vue'
 import FormLayout from 'picocrank/vue/components/FormLayout.vue'
 import { StarIcon } from '@hugeicons/core-free-icons'
-import { starapp, type ParentHomeSummary, type ChildHomeSummary } from '../api/client'
+import { starapp, type ParentHomeSummary, type ChildHomeSummary, type StarChart } from '../api/client'
 import MemberAvatar from '../components/MemberAvatar.vue'
 import { fetchAppStatus, useStatus } from '../composables/useStatus'
 import {
@@ -16,6 +18,7 @@ import {
 import { memberStarStyle } from '../lib/memberStarColor'
 
 const statusState = useStatus()
+const router = useRouter()
 const error = ref('')
 const loading = ref(true)
 const familyName = ref('')
@@ -23,6 +26,8 @@ const creating = ref(false)
 
 const parentSummary = ref<ParentHomeSummary | null>(null)
 const childSummary = ref<ChildHomeSummary | null>(null)
+const starCharts = ref<StarChart[]>([])
+const starChartNavRef = ref<InstanceType<typeof Navigation> | null>(null)
 
 const isParentHome = computed(
   () =>
@@ -47,17 +52,55 @@ async function loadParent() {
   error.value = ''
   try {
     parentSummary.value = await starapp.getParentHomeSummary()
+    if (parentSummary.value?.family?.id) {
+      await loadStarCharts()
+    } else {
+      starCharts.value = []
+    }
     return
   } catch {
     parentSummary.value = null
+    starCharts.value = []
   }
   try {
     const fam = await starapp.getMyFamily()
     if (fam.family?.id) {
       parentSummary.value = { family: fam.family, children: [] }
+      await loadStarCharts()
     }
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
+  }
+}
+
+async function loadStarCharts() {
+  try {
+    const res = await starapp.listStarCharts()
+    starCharts.value = (res.starCharts || []).filter((chart) => chart.active !== false)
+  } catch {
+    starCharts.value = []
+  }
+  await nextTick()
+  setupStarChartNav()
+}
+
+function setupStarChartNav() {
+  const nav = starChartNavRef.value
+  if (!nav) return
+  nav.clearNavigationLinks()
+  for (const chart of starCharts.value) {
+    const count = chart.choreCount ?? 0
+    nav.addCallback(
+      chart.name,
+      () => {
+        void router.push({ name: 'familyStarChartView', params: { id: chart.id } })
+      },
+      {
+        name: `star-chart-${chart.id}`,
+        icon: StarIcon,
+        description: count === 1 ? '1 chore' : `${count} chores`,
+      },
+    )
   }
 }
 
@@ -127,6 +170,9 @@ async function redeem(rewardId: number) {
 onMounted(load)
 watch(() => statusState.status?.isLoggedIn, () => {
   void load()
+})
+watch(starChartNavRef, () => {
+  setupStarChartNav()
 })
 </script>
 
@@ -219,6 +265,21 @@ watch(() => statusState.status?.isLoggedIn, () => {
       </ul>
       <p v-else class="subtle">No rewards available.</p>
     </template>
+  </Section>
+
+  <Section
+    v-if="isParentHome && !needsFamily && !loading"
+    title="Star charts"
+    subtitle="Open a weekly chart to mark chore completions."
+    :padding="true"
+  >
+    <Navigation v-if="starCharts.length" ref="starChartNavRef">
+      <NavigationGrid />
+    </Navigation>
+    <p v-else class="subtle">
+      No star charts yet.
+      <RouterLink :to="{ name: 'familyStarCharts' }">Manage star charts</RouterLink>
+    </p>
   </Section>
 </template>
 

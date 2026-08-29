@@ -6,27 +6,42 @@ export type SidebarNavigation = {
 
 export function setupSidebarNavigation(
   navigation: SidebarNavigation,
-  { showControlPanel = false, showFamilyNav = false, showChoreChart = false } = {},
+  {
+    showControlPanel = false,
+    showFamilyNav = false,
+    excludeRoutes = [],
+  }: {
+    showControlPanel?: boolean
+    showFamilyNav?: boolean
+    excludeRoutes?: string[]
+  } = {},
 ) {
+  const excluded = new Set(excludeRoutes)
+
   navigation.clearNavigationLinks()
 
   navigation.addRouterLink('home')
 
-  if (showChoreChart && !showFamilyNav) {
-    navigation.addRouterLink('familyStarChart', null, { description: 'Weekly star chart' })
-  }
-
   if (showFamilyNav) {
     navigation.addSection('Family', { name: 'nav-family' })
-    navigation.addRouterLink('familyPeople', null, { description: 'Manage people' })
-    navigation.addRouterLink('familyStarChart', null, { description: 'Weekly star chart' })
-    navigation.addRouterLink('familyStarCharts', null, { description: 'Manage star charts' })
-    navigation.addRouterLink('familyChores', null, { description: 'Chore definitions' })
-    navigation.addRouterLink('familyRewards', null, { description: 'Reward catalog' })
-    navigation.addRouterLink('familyRedemptions', null, { description: 'Approval queue' })
+    if (!excluded.has('familyPeople')) {
+      navigation.addRouterLink('familyPeople', null, { description: 'Manage people' })
+    }
+    if (!excluded.has('familyStarCharts')) {
+      navigation.addRouterLink('familyStarCharts', null, { description: 'Manage star charts' })
+    }
+    if (!excluded.has('familyChores')) {
+      navigation.addRouterLink('familyChores', null, { description: 'Chore definitions' })
+    }
+    if (!excluded.has('familyRewards')) {
+      navigation.addRouterLink('familyRewards', null, { description: 'Reward catalog' })
+    }
+    if (!excluded.has('familyRedemptions')) {
+      navigation.addRouterLink('familyRedemptions', null, { description: 'Approval queue' })
+    }
   }
 
-  if (showControlPanel) {
+  if (showControlPanel && !excluded.has('controlPanel')) {
     navigation.addSection('Control Panel', { name: 'nav-control-panel' })
     navigation.addRouterLink('controlPanel', null, {
       description: 'System administration',

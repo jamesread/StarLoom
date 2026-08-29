@@ -218,15 +218,19 @@ router.beforeEach(async (to, _from, next) => {
   try {
     st = await fetchAppStatus()
   } catch {
-    if (to.meta.requiresAuth) {
-      next('/')
+    if (to.meta.requiresAuth && to.name !== 'home') {
+      next({ name: 'home' })
     } else {
       next()
     }
     return
   }
   if (to.meta.requiresAuth && !st?.isLoggedIn) {
-    next('/')
+    if (to.name !== 'home') {
+      next({ name: 'home' })
+    } else {
+      next()
+    }
     return
   }
   if (to.meta.requiresControlPanel && !canAccessControlPanelFromStatus(st)) {

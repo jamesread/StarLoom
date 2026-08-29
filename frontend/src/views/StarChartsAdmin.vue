@@ -116,10 +116,46 @@ onMounted(load)
           </RouterLink>
         </template>
         <template #cell-actions="{ row }">
-          <RouterLink :to="{ name: 'familyStarChartEdit', params: { id: row.id } }">Edit</RouterLink>
-          <RouterLink :to="{ name: 'familyStarChartView', params: { id: row.id } }">View</RouterLink>
+          <div class="actions-cell">
+            <RouterLink :to="{ name: 'familyStarChartEdit', params: { id: row.id } }" class="button neutral small">
+              Edit
+            </RouterLink>
+          </div>
         </template>
       </Table>
     </template>
   </Section>
 </template>
+
+<style scoped>
+.section-title-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  vertical-align: middle;
+}
+
+.list-banner-pad {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+.list-table-wrap {
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.actions-cell {
+  text-align: right;
+}
+
+.title-link {
+  font: inherit;
+  color: var(--pico-primary);
+  text-decoration: none;
+}
+
+.title-link:hover {
+  text-decoration: underline;
+}
+</style>

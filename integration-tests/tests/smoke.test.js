@@ -13,6 +13,34 @@ const configDir = __dirname
 const baseURL = 'http://127.0.0.1:18080'
 const dbPath = path.join(configDir, 'starapp-test.db')
 
+const session = { cookie: '' }
+
+function storeCookies(response) {
+  const setCookies = response.headers.getSetCookie?.() ?? []
+  if (setCookies.length === 0) {
+    const single = response.headers.get('set-cookie')
+    if (single) {
+      setCookies.push(single)
+    }
+  }
+  if (setCookies.length > 0) {
+    session.cookie = setCookies.map((entry) => entry.split(';')[0]).join('; ')
+  }
+}
+
+async function apiFetch(url, options = {}) {
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  }
+  if (session.cookie) {
+    headers.Cookie = session.cookie
+  }
+  const res = await fetch(url, { ...options, headers })
+  storeCookies(res)
+  return res
+}
+
 async function waitForReady(timeoutMs = 20000) {
   const deadline = Date.now() + timeoutMs
   while (Date.now() < deadline) {
@@ -30,22 +58,19 @@ async function waitForReady(timeoutMs = 20000) {
 }
 
 async function loginSession() {
-  const loginRes = await fetch(`${baseURL}/starapp.api.v1.StarAppService/LoginWithUsernameAndPassword`, {
+  const loginRes = await apiFetch(`${baseURL}/starapp.api.v1.StarAppService/LoginWithUsernameAndPassword`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify({ username: 'admin', password: 'admin' }),
   })
   assert.equal(loginRes.status, 200)
   const loginBody = await loginRes.json()
   assert.equal(loginBody.standardResponse?.success, true)
+  assert.notEqual(session.cookie, '')
 }
 
 async function fetchInit() {
-  const res = await fetch(`${baseURL}/starapp.api.v1.StarAppService/Init`, {
+  const res = await apiFetch(`${baseURL}/starapp.api.v1.StarAppService/Init`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: '{}',
   })
   assert.equal(res.status, 200)
@@ -53,14 +78,26 @@ async function fetchInit() {
 }
 
 async function updateCvar(key, valueInt) {
-  const res = await fetch(`${baseURL}/starapp.api.v1.StarAppService/UpdateCvar`, {
+  const res = await apiFetch(`${baseURL}/starapp.api.v1.StarAppService/UpdateCvar`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
     body: JSON.stringify({ key, valueInt }),
   })
   assert.equal(res.status, 200)
   return res.json()
+}
+
+async function resetSiteDisplayCvars() {
+  await loginSession()
+  await updateCvar('show_version_number', 1)
+  await updateCvar('show_footer', 1)
+}
+
+function expectFalse(value, message) {
+  assert.equal(value ?? false, false, message)
+}
+
+function expectEmpty(value, message) {
+  assert.equal(value ?? '', '', message)
 }
 
 describe('starapp smoke', function () {
@@ -95,6 +132,10 @@ describe('starapp smoke', function () {
     backend = spawn('./starapp', ['-configdir', configDir], {
       cwd: path.join(root, 'service'),
       stdio: 'inherit',
+      env: {
+        ...process.env,
+        STARAPP_SECURE_COOKIES: 'false',
+      },
     })
 
     await waitForReady()
@@ -104,7 +145,9 @@ describe('starapp smoke', function () {
       '--disable-gpu',
       '--no-sandbox',
     )
+    options.setPageLoadStrategy('none')
     driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build()
+    await driver.manage().setTimeouts({ implicit: 0, pageLoad: 30000, script: 30000 })
   })
 
   after(async function () {
@@ -132,36 +175,47 @@ describe('starapp smoke', function () {
 
   it('Init redacts version when show_version_number is off', async function () {
     await loginSession()
-    await updateCvar('show_version_number', 0)
-    const body = await fetchInit()
-    assert.equal(body.showVersionNumber, false)
-    assert.equal(body.currentVersion, '')
-    assert.equal(body.availableVersion, '')
-    assert.equal(body.showNewVersions, false)
-    await updateCvar('show_version_number', 1)
+    try {
+      await updateCvar('show_version_number', 0)
+      const body = await fetchInit()
+      expectFalse(body.showVersionNumber, 'showVersionNumber')
+      expectEmpty(body.currentVersion, 'currentVersion')
+      expectEmpty(body.availableVersion, 'availableVersion')
+      expectFalse(body.showNewVersions, 'showNewVersions')
+    } finally {
+      await updateCvar('show_version_number', 1)
+    }
   })
 
   it('Init hides footer when show_footer is off', async function () {
     await loginSession()
-    await updateCvar('show_footer', 0)
-    const body = await fetchInit()
-    assert.equal(body.showFooter, false)
-    await updateCvar('show_footer', 1)
+    try {
+      await updateCvar('show_footer', 0)
+      const body = await fetchInit()
+      expectFalse(body.showFooter, 'showFooter')
+    } finally {
+      await updateCvar('show_footer', 1)
+    }
   })
 
   it('renders the home page in the browser', async function () {
+    await resetSiteDisplayCvars()
+    await driver.manage().deleteAllCookies()
     await driver.get(baseURL)
-    const userField = await driver.wait(until.elementLocated(By.css('input[autocomplete="username"], #username, input[placeholder="Username"]')), 10000)
+    const userField = await driver.wait(
+      until.elementLocated(By.css('#username, input[autocomplete="username"]')),
+      15000,
+    )
     await userField.sendKeys('admin')
-    const passField = await driver.findElement(By.css('input[type="password"]'))
+    const passField = await driver.findElement(By.css('#password, input[type="password"]'))
     await passField.sendKeys('admin')
     const submit = await driver.findElement(By.css('button[type="submit"]'))
     await submit.click()
-    await driver.wait(until.elementLocated(By.css('main')), 10000)
-    const text = await driver.findElement(By.css('main')).getText()
-    assert.match(text, /StarApp/)
-
-    await driver.wait(until.elementLocated(By.css('footer')), 10000)
+    await driver.wait(until.elementLocated(By.css('#layout')), 15000)
+    await driver.navigate().refresh()
+    await driver.wait(until.elementLocated(By.css('footer')), 15000)
+    const headerTitle = await driver.findElement(By.css('header h1')).getText()
+    assert.match(headerTitle, /StarApp/)
     const footerText = await driver.findElement(By.css('footer')).getText()
     assert.match(footerText, /StarApp/)
     assert.match(footerText, /dev/)

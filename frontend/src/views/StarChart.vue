@@ -162,7 +162,7 @@ watch(starChartId, () => {
 </script>
 
 <template>
-  <Section :title="sectionTitle" :icon="StarIcon" :padding="false">
+  <Section :title="sectionTitle" :icon="StarIcon" :padding="!hasChores">
     <template #toolbar>
       <label v-if="activeStarCharts.length > 1" class="chart-select">
         <span class="visually-hidden">Star chart</span>
@@ -200,6 +200,20 @@ watch(starChartId, () => {
           aria-hidden="true"
         />
       </button>
+      <RouterLink
+        v-if="canAddChores"
+        :to="{ name: 'familyChores', query: createChoreQuery }"
+        class="button inline-icon good"
+      >
+        <HugeiconsIcon
+          :icon="PlusSignIcon"
+          width="1em"
+          height="1em"
+          :strokeWidth="iconStrokeWidth"
+          aria-hidden="true"
+        />
+        <span>Add chore</span>
+      </RouterLink>
     </template>
 
     <p v-if="error" class="inline-notification error list-banner-pad">{{ error }}</p>

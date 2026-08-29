@@ -7,7 +7,7 @@ import { useRouter } from 'vue-router'
 import AppFooter from './AppFooter.vue'
 import { useInit } from '../composables/useInit'
 import { useStatus } from '../composables/useStatus'
-import { canAccessControlPanelFromStatus, canViewChoresFromStatus, canViewFamilyHomeFromStatus } from '../lib/rbacAccess'
+import { canAccessControlPanelFromStatus, canViewFamilyHomeFromStatus } from '../lib/rbacAccess'
 import { setupSidebarNavigation } from '../lib/sidebarNavigation'
 
 defineProps<{
@@ -41,10 +41,15 @@ watch(
     await nextTick()
     const showControlPanel = canAccessControlPanelFromStatus(status.status)
     const showFamilyNav = canViewFamilyHomeFromStatus(status.status)
-    const showChoreChart = canViewChoresFromStatus(status.status)
-    for (const nav of [navigation.value, topBarNavigation.value]) {
-      if (!nav) continue
-      setupSidebarNavigation(nav, { showControlPanel, showFamilyNav, showChoreChart })
+    if (navigation.value) {
+      setupSidebarNavigation(navigation.value, { showControlPanel, showFamilyNav })
+    }
+    if (topBarNavigation.value) {
+      setupSidebarNavigation(topBarNavigation.value, {
+        showControlPanel,
+        showFamilyNav,
+        excludeRoutes: ['familyChores', 'controlPanel'],
+      })
     }
   },
   { immediate: true },

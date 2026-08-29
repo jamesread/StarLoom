@@ -44,3 +44,23 @@ test('sidebar adds control panel as its own root section', () => {
     },
   ])
 })
+
+test('top bar can exclude chores and control panel', () => {
+  const nav = fakeNav()
+  setupSidebarNavigation(nav, {
+    showControlPanel: true,
+    showFamilyNav: true,
+    excludeRoutes: ['familyChores', 'controlPanel'],
+  })
+  assert.deepEqual(
+    nav.links.map((l) => l && typeof l === 'object' && 'name' in l ? l.name : null),
+    [
+      'home',
+      'nav-family',
+      'familyPeople',
+      'familyStarCharts',
+      'familyRewards',
+      'familyRedemptions',
+    ],
+  )
+})

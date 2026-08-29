@@ -4,8 +4,10 @@ import NavigationGrid from 'picocrank/vue/components/NavigationGrid.vue'
 import Section from 'picocrank/vue/components/Section.vue'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { DashboardSquareSettingIcon } from '@hugeicons/core-free-icons'
 import { fetchAppStatus, invalidateAppStatus, useStatus } from '../composables/useStatus'
 import { starapp } from '../api/client'
+import { canAccessControlPanelFromStatus } from '../lib/rbacAccess'
 
 const router = useRouter()
 const status = useStatus()
@@ -19,6 +21,8 @@ async function refreshUserData() {
   error.value = ''
   try {
     await fetchAppStatus({ force: true })
+    await nextTick()
+    setupQuickActions()
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Refresh failed'
   }
@@ -27,6 +31,7 @@ async function refreshUserData() {
 function setupQuickActions() {
   const nav = navRef.value
   if (!nav) return
+  nav.clearNavigationLinks()
   nav.addCallback('User Preferences', () => router.push({ name: 'userPreferences' }), {
     name: 'user-preferences',
     description: 'Language and personal settings',
@@ -43,6 +48,13 @@ function setupQuickActions() {
     name: 'my-permissions',
     description: 'Review groups, roles, and effective access',
   })
+  if (canAccessControlPanelFromStatus(status.status)) {
+    nav.addCallback('Control Panel', () => router.push({ name: 'controlPanel' }), {
+      name: 'control-panel',
+      icon: DashboardSquareSettingIcon,
+      description: 'System administration',
+    })
+  }
 }
 
 async function logout() {

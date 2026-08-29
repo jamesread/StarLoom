@@ -19,6 +19,7 @@ const member = ref<FamilyMember | null>(null)
 const error = ref('')
 const loading = ref(true)
 const savingProfile = ref(false)
+const displayName = ref('')
 const starColor = ref('#3498db')
 const avatarHistory = ref<MemberAvatarEntry[]>([])
 const avatarLoading = ref(false)
@@ -40,6 +41,7 @@ async function load() {
       error.value = 'Person not found'
       return
     }
+    displayName.value = member.value.displayName
     starColor.value = memberStarColor(member.value)
     await loadAvatarHistory()
   } catch (e) {
@@ -68,7 +70,7 @@ async function saveProfile() {
   try {
     const res = await starapp.updateMember({
       memberId: memberId.value,
-      displayName: member.value.displayName,
+      displayName: displayName.value.trim(),
       starColor: starColor.value,
     })
     member.value = res.member || member.value
@@ -193,11 +195,20 @@ onMounted(load)
       </FormField>
 
       <FormLayout class="profile-form" @submit.prevent="saveProfile">
+        <FormField label="Display name" for="person-edit-display-name">
+          <input
+            id="person-edit-display-name"
+            v-model="displayName"
+            type="text"
+            required
+            :disabled="savingProfile"
+          />
+        </FormField>
         <FormField label="Star color" for="star-color" description="Used for stars on the chart and avatar border.">
           <input id="star-color" v-model="starColor" type="color" :disabled="savingProfile" />
         </FormField>
         <template #actions>
-          <button type="submit" class="good" :disabled="savingProfile">
+          <button type="submit" class="good" :disabled="savingProfile || !displayName.trim()">
             {{ savingProfile ? 'Saving…' : 'Save' }}
           </button>
           <RouterLink
