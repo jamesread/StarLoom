@@ -5,14 +5,15 @@ import Section from 'picocrank/vue/components/Section.vue'
 import FormField from 'picocrank/vue/components/FormField.vue'
 import FormLayout from 'picocrank/vue/components/FormLayout.vue'
 import { StarIcon } from '@hugeicons/core-free-icons'
-import { starapp, memberAvatarUrl, type ParentHomeSummary, type ChildHomeSummary } from '../api/client'
+import { starapp, type ParentHomeSummary, type ChildHomeSummary } from '../api/client'
+import MemberAvatar from '../components/MemberAvatar.vue'
 import { fetchAppStatus, useStatus } from '../composables/useStatus'
 import {
   canViewChildHomeFromStatus,
   canViewFamilyHomeFromStatus,
   hasPermission,
 } from '../lib/rbacAccess'
-import { memberAvatarStyle, memberStarStyle } from '../lib/memberStarColor'
+import { memberStarStyle } from '../lib/memberStarColor'
 
 const statusState = useStatus()
 const error = ref('')
@@ -66,7 +67,7 @@ async function loadChild() {
     error.value = ''
   } catch (e) {
     error.value =
-      'Your child account is not linked to a family profile. A parent must add you via Family → Children (not IAM → Users).'
+      'Your account is not linked to a family profile. A parent must add you via Family → People (not IAM → Users).'
     if (e instanceof Error && !e.message.includes('failed_precondition')) {
       error.value = e.message
     }
@@ -87,7 +88,7 @@ async function load() {
       await loadParent()
     } else {
       error.value =
-        'Your account is not linked to a family. Sign in as a parent, create the family on Home, then add children from Family → Children.'
+        'Your account is not linked to a family. Sign in as a parent, create the family on Home, then add people from Family → People.'
     }
   } finally {
     loading.value = false
@@ -159,30 +160,21 @@ watch(() => statusState.status?.isLoggedIn, () => {
         </p>
 
         <div v-if="!parentSummary?.children?.length" class="subtle">
-          <p>No children yet.</p>
-          <RouterLink :to="{ name: 'familyChildren' }">Add your first child</RouterLink>
+          <p>No people yet.</p>
+          <RouterLink :to="{ name: 'familyPersonCreate' }">Add your first person</RouterLink>
         </div>
 
-        <div v-else class="child-grid">
+        <div v-else class="people-grid">
           <RouterLink
-            v-for="child in parentSummary?.children"
-            :key="child.member?.id"
-            class="child-card"
-            :to="{ name: 'familyChildDetail', params: { id: child.member?.id } }"
+            v-for="person in parentSummary?.children"
+            :key="person.member?.id"
+            class="people-card"
+            :to="{ name: 'familyPersonDetail', params: { id: person.member?.id } }"
           >
-            <img
-              v-if="child.member?.hasAvatar"
-              class="avatar"
-              :style="memberAvatarStyle(child.member)"
-              :src="memberAvatarUrl(child.member!.id, true)"
-              :alt="child.member?.displayName"
-            />
-            <div v-else class="avatar avatar-placeholder" :style="memberAvatarStyle(child.member)">
-              {{ child.member?.displayName?.charAt(0) }}
-            </div>
-            <strong>{{ child.member?.displayName }}</strong>
-            <div class="balance" :style="memberStarStyle(child.member)">★ {{ child.balance ?? 0 }}</div>
-            <div class="subtle last-award">{{ formatAward(child.lastAward) }}</div>
+            <MemberAvatar v-if="person.member" :member="person.member" size="lg" />
+            <strong>{{ person.member?.displayName }}</strong>
+            <div class="balance" :style="memberStarStyle(person.member)">★ {{ person.balance ?? 0 }}</div>
+            <div class="subtle last-award">{{ formatAward(person.lastAward) }}</div>
           </RouterLink>
         </div>
       </template>
@@ -191,16 +183,11 @@ watch(() => statusState.status?.isLoggedIn, () => {
     <template v-else>
       <p v-if="error" class="error">{{ error }}</p>
       <div class="child-home-header">
-        <img
-          v-if="childSummary?.member?.hasAvatar"
-          class="avatar large"
-          :style="memberAvatarStyle(childSummary?.member)"
-          :src="memberAvatarUrl(childSummary!.member!.id, true)"
-          :alt="childSummary?.member?.displayName"
+        <MemberAvatar
+          v-if="childSummary?.member"
+          :member="childSummary.member"
+          size="xl"
         />
-        <div v-else class="avatar large avatar-placeholder" :style="memberAvatarStyle(childSummary?.member)">
-          {{ childSummary?.member?.displayName?.charAt(0) }}
-        </div>
         <div class="balance large" :style="memberStarStyle(childSummary?.member)">
           ★ {{ childSummary?.balance ?? 0 }} stars
         </div>
@@ -236,12 +223,12 @@ watch(() => statusState.status?.isLoggedIn, () => {
 </template>
 
 <style scoped>
-.child-grid {
+.people-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
   gap: 1rem;
 }
-.child-card {
+.people-card {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -252,27 +239,8 @@ watch(() => statusState.status?.isLoggedIn, () => {
   text-decoration: none;
   color: inherit;
 }
-.child-card:hover {
+.people-card:hover {
   border-color: var(--pico-primary);
-}
-.avatar {
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-  object-fit: cover;
-  box-sizing: border-box;
-}
-.avatar.large {
-  width: 5rem;
-  height: 5rem;
-}
-.avatar-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--pico-muted-border-color);
-  font-size: 1.5rem;
-  font-weight: bold;
 }
 .balance {
   font-size: 1.25rem;

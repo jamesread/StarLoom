@@ -23,9 +23,9 @@ func (s *Server) AwardStars(ctx context.Context, req *connect.Request[apiv1.Awar
 	if _, err := s.requirePermission(ctx, rbac.PermissionStarsAward); err != nil {
 		return nil, err
 	}
-	child, err := s.store.GetMemberByID(ctx, int(req.Msg.ChildMemberId))
-	if err != nil || child == nil || child.FamilyID != fc.family.ID || child.Role != store.MemberRoleChild {
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("child not found"))
+	member, err := s.store.GetMemberByID(ctx, int(req.Msg.ChildMemberId))
+	if err != nil || !isFamilyStarMember(member, fc.family.ID) {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("member not found"))
 	}
 	amount := int(req.Msg.Amount)
 	if amount <= 0 {
@@ -36,19 +36,19 @@ func (s *Server) AwardStars(ctx context.Context, req *connect.Request[apiv1.Awar
 	}
 	createdBy := fc.member.ID
 	entryID, err := s.store.InsertLedgerEntry(ctx, store.StarLedgerRow{
-		FamilyID: fc.family.ID, ChildMemberID: child.ID, Amount: amount,
+		FamilyID: fc.family.ID, ChildMemberID: member.ID, Amount: amount,
 		EntryType: store.LedgerTypeAward, Note: req.Msg.Note, CreatedByMemberID: &createdBy,
 	})
 	if err != nil {
 		return nil, mapStoreError(err)
 	}
-	balance, _ := s.store.GetMemberBalance(ctx, child.ID)
+	balance, _ := s.store.GetMemberBalance(ctx, member.ID)
 	ledger := &store.StarLedgerRow{
-		ID: entryID, FamilyID: fc.family.ID, ChildMemberID: child.ID, Amount: amount,
+		ID: entryID, FamilyID: fc.family.ID, ChildMemberID: member.ID, Amount: amount,
 		EntryType: store.LedgerTypeAward, Note: req.Msg.Note, CreatedByMemberID: &createdBy,
 	}
 	s.webhooks.Dispatch(ctx, "stars.awarded", map[string]any{
-		"family_id": fc.family.ID, "child_member_id": child.ID, "amount": amount,
+		"family_id": fc.family.ID, "child_member_id": member.ID, "amount": amount,
 		"note": req.Msg.Note, "created_by_member_id": createdBy,
 	})
 	return connect.NewResponse(&apiv1.AwardStarsResponse{
@@ -69,15 +69,15 @@ func (s *Server) RevokeStars(ctx context.Context, req *connect.Request[apiv1.Rev
 	if _, err := s.requirePermission(ctx, rbac.PermissionStarsRevoke); err != nil {
 		return nil, err
 	}
-	child, err := s.store.GetMemberByID(ctx, int(req.Msg.ChildMemberId))
-	if err != nil || child == nil || child.FamilyID != fc.family.ID || child.Role != store.MemberRoleChild {
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("child not found"))
+	member, err := s.store.GetMemberByID(ctx, int(req.Msg.ChildMemberId))
+	if err != nil || !isFamilyStarMember(member, fc.family.ID) {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("member not found"))
 	}
 	amount := int(req.Msg.Amount)
 	if amount <= 0 {
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("amount must be positive"))
 	}
-	balance, err := s.store.GetMemberBalance(ctx, child.ID)
+	balance, err := s.store.GetMemberBalance(ctx, member.ID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
@@ -90,16 +90,16 @@ func (s *Server) RevokeStars(ctx context.Context, req *connect.Request[apiv1.Rev
 	createdBy := fc.member.ID
 	neg := -amount
 	entryID, err := s.store.InsertLedgerEntry(ctx, store.StarLedgerRow{
-		FamilyID: fc.family.ID, ChildMemberID: child.ID, Amount: neg,
+		FamilyID: fc.family.ID, ChildMemberID: member.ID, Amount: neg,
 		EntryType: store.LedgerTypeRevoke, Note: req.Msg.Note, CreatedByMemberID: &createdBy,
 	})
 	if err != nil {
 		return nil, mapStoreError(err)
 	}
-	balance, _ = s.store.GetMemberBalance(ctx, child.ID)
+	balance, _ = s.store.GetMemberBalance(ctx, member.ID)
 	return connect.NewResponse(&apiv1.RevokeStarsResponse{
 		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Stars revoked"},
-		Entry:            toProtoLedger(&store.StarLedgerRow{ID: entryID, FamilyID: fc.family.ID, ChildMemberID: child.ID, Amount: neg, EntryType: store.LedgerTypeRevoke, Note: req.Msg.Note, CreatedByMemberID: &createdBy}),
+		Entry:            toProtoLedger(&store.StarLedgerRow{ID: entryID, FamilyID: fc.family.ID, ChildMemberID: member.ID, Amount: neg, EntryType: store.LedgerTypeRevoke, Note: req.Msg.Note, CreatedByMemberID: &createdBy}),
 		NewBalance:       int32(balance),
 	}), nil
 }

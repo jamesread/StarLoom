@@ -65,7 +65,9 @@ func RequiredPermission(procedureName string) string {
 		return rbac.PermissionMembersManage
 
 	case apiv1connect.StarAppServiceUploadMemberAvatarProcedure,
-		apiv1connect.StarAppServiceDeleteMemberAvatarProcedure:
+		apiv1connect.StarAppServiceDeleteMemberAvatarProcedure,
+		apiv1connect.StarAppServiceListMemberAvatarsProcedure,
+		apiv1connect.StarAppServiceSelectMemberAvatarProcedure:
 		return rbac.PermissionMembersAvatar
 
 	case apiv1connect.StarAppServiceAwardStarsProcedure:
@@ -102,14 +104,18 @@ func RequiredPermission(procedureName string) string {
 
 	case apiv1connect.StarAppServiceListChoresProcedure,
 		apiv1connect.StarAppServiceListChorePausesProcedure,
-		apiv1connect.StarAppServiceGetWeeklyStarChartProcedure:
+		apiv1connect.StarAppServiceGetWeeklyStarChartProcedure,
+		apiv1connect.StarAppServiceListStarChartsProcedure:
 		return rbac.PermissionChoresViewFamily
 
 	case apiv1connect.StarAppServiceCreateChoreProcedure,
 		apiv1connect.StarAppServiceUpdateChoreProcedure,
 		apiv1connect.StarAppServiceDeleteChoreProcedure,
 		apiv1connect.StarAppServiceCreateChorePauseProcedure,
-		apiv1connect.StarAppServiceDeleteChorePauseProcedure:
+		apiv1connect.StarAppServiceDeleteChorePauseProcedure,
+		apiv1connect.StarAppServiceCreateStarChartProcedure,
+		apiv1connect.StarAppServiceUpdateStarChartProcedure,
+		apiv1connect.StarAppServiceDeleteStarChartProcedure:
 		return rbac.PermissionChoresManage
 
 	case apiv1connect.StarAppServiceCompleteChoreProcedure,

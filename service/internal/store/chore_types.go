@@ -5,6 +5,7 @@ import "time"
 type ChoreRow struct {
 	ID          int
 	FamilyID    int
+	StarChartID int
 	Title       string
 	StarReward  int
 	WeekdayMask int

@@ -23,7 +23,13 @@ async function onLocalLogin(payload: { username: string; password: string }) {
 </script>
 
 <template>
-  <Section title="Login to StarLoom" subtitle="Sign in with your username and password" :padding="true">
+  <Section subtitle="Sign in with your username and password" :padding="true">
+    <template #title>
+      <span class="section-title-with-icon">
+        <img src="/favicon.svg" alt="" class="section-title-logo" aria-hidden="true" />
+        <span>Login to StarLoom</span>
+      </span>
+    </template>
     <Login
       ref="loginRef"
       :show-default-tabs="false"
@@ -32,3 +38,18 @@ async function onLocalLogin(payload: { username: string; password: string }) {
     />
   </Section>
 </template>
+
+<style scoped>
+.section-title-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  vertical-align: middle;
+}
+
+.section-title-logo {
+  width: 1.1em;
+  height: 1.1em;
+  flex-shrink: 0;
+}
+</style>

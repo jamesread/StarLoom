@@ -1,19 +1,25 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
 import Table from 'picocrank/vue/components/Table.vue'
 import FormField from 'picocrank/vue/components/FormField.vue'
 import CheckGroup from 'picocrank/vue/components/CheckGroup.vue'
+import RadioGroup from 'picocrank/vue/components/RadioGroup.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { PauseIcon, PlusSignIcon, Refresh01Icon, Task01Icon } from '@hugeicons/core-free-icons'
-import { starapp, type Chore, type ChorePause, type FamilyMember } from '../api/client'
+import { starapp, type Chore, type ChorePause, type FamilyMember, type StarChart } from '../api/client'
+import MemberAvatar from '../components/MemberAvatar.vue'
 
 const iconStrokeWidth = 2.5
 
+const route = useRoute()
+const router = useRouter()
+
 const chores = ref<Chore[]>([])
+const starCharts = ref<StarChart[]>([])
 const pauses = ref<ChorePause[]>([])
-const children = ref<FamilyMember[]>([])
+const people = ref<FamilyMember[]>([])
 const error = ref('')
 const createError = ref('')
 const pauseError = ref('')
@@ -40,6 +46,7 @@ const form = reactive({
   starReward: 1,
   weekdays: [1, 2, 3, 4, 5, 6, 7] as number[],
   childMemberIds: [] as number[],
+  starChartId: 0,
 })
 
 const pauseForm = reactive({
@@ -48,15 +55,30 @@ const pauseForm = reactive({
   reason: '',
 })
 
-const childOptions = computed(() =>
-  children.value.map((c) => ({ label: c.displayName, value: c.id })),
+const personOptions = computed(() =>
+  people.value.map((m) => ({ label: m.displayName, value: m.id })),
 )
+
+const starChartOptions = computed(() =>
+  starCharts.value
+    .filter((c) => c.active !== false)
+    .map((c) => ({ label: c.name, value: c.id })),
+)
+
+const starChartNames = computed(() => {
+  const map = new Map<number, string>()
+  for (const chart of starCharts.value) {
+    map.set(chart.id, chart.name)
+  }
+  return map
+})
 
 const tableHeaders = [
   { key: 'title', label: 'Title', sortable: true },
+  { key: 'starChart', label: 'Star chart', sortable: true },
   { key: 'starReward', label: 'Stars', sortable: true, width: '6rem' },
   { key: 'days', label: 'Days', sortable: false },
-  { key: 'children', label: 'Children', sortable: false },
+  { key: 'people', label: 'People', sortable: false },
   { key: 'status', label: 'Status', sortable: true, width: '6rem' },
   { key: 'actions', label: 'Actions', sortable: false, width: '8rem' },
 ]
@@ -67,20 +89,21 @@ function formatWeekdays(days?: number[]) {
   return days.map((d) => labels[d - 1]).join(', ')
 }
 
-function childNames(ids?: number[]) {
-  if (!ids?.length) return '—'
+function membersForChore(ids?: number[]) {
+  if (!ids?.length) return []
   return ids
-    .map((id) => children.value.find((c) => c.id === id)?.displayName || `#${id}`)
-    .join(', ')
+    .map((id) => people.value.find((m) => m.id === id))
+    .filter((member): member is FamilyMember => !!member)
 }
 
 const listRows = computed(() =>
   chores.value.map((c) => ({
     id: c.id,
     title: c.title,
+    starChart: starChartNames.value.get(c.starChartId || 0) || '—',
     starReward: c.starReward,
     days: formatWeekdays(c.weekdays),
-    children: childNames(c.childMemberIds),
+    people: membersForChore(c.childMemberIds),
     status: c.active ? 'Active' : 'Inactive',
     active: c.active,
     actions: '',
@@ -92,6 +115,7 @@ function resetCreateForm() {
   form.starReward = 1
   form.weekdays = [1, 2, 3, 4, 5, 6, 7]
   form.childMemberIds = []
+  form.starChartId = starChartOptions.value[0]?.value || 0
 }
 
 function resetPauseForm() {
@@ -103,14 +127,19 @@ function resetPauseForm() {
 async function load() {
   loading.value = true
   try {
-    const [choreRes, pauseRes, memberRes] = await Promise.all([
+    const [choreRes, pauseRes, memberRes, chartRes] = await Promise.all([
       starapp.listChores({ includeInactive: true }),
       starapp.listChorePauses(),
       starapp.listMembers(),
+      starapp.listStarCharts({ includeInactive: true }),
     ])
     chores.value = choreRes.chores || []
     pauses.value = pauseRes.pauses || []
-    children.value = (memberRes.members || []).filter((m) => m.role === 'child')
+    people.value = memberRes.members || []
+    starCharts.value = chartRes.starCharts || []
+    if (!form.starChartId && starChartOptions.value.length) {
+      form.starChartId = starChartOptions.value[0].value
+    }
     error.value = ''
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
@@ -119,9 +148,12 @@ async function load() {
   }
 }
 
-function openCreateDialog() {
+function openCreateDialog(preferredChartId?: number) {
   createError.value = ''
   resetCreateForm()
+  if (preferredChartId && starCharts.value.some((c) => c.id === preferredChartId)) {
+    form.starChartId = preferredChartId
+  }
   createDialog.value?.showModal()
   nextTick(() => createTitleInput.value?.focus())
 }
@@ -149,6 +181,7 @@ async function createChore() {
       starReward: form.starReward,
       weekdays: form.weekdays,
       childMemberIds: form.childMemberIds,
+      starChartId: form.starChartId || undefined,
     })
     closeCreateDialog()
     await load()
@@ -197,13 +230,20 @@ async function removePause(id: number) {
   }
 }
 
-onMounted(load)
+onMounted(async () => {
+  await load()
+  if (route.query.create === '1') {
+    const chartId = Number(route.query.starChartId)
+    openCreateDialog(Number.isFinite(chartId) && chartId > 0 ? chartId : undefined)
+    await router.replace({ name: 'familyChores' })
+  }
+})
 </script>
 
 <template>
   <dialog ref="createDialog" class="dialog" @close="resetCreateForm">
     <h2>Add chore</h2>
-    <p>Define a recurring task, its star reward, schedule, and which children can complete it.</p>
+    <p>Define a recurring task, its star reward, schedule, and which people can complete it.</p>
     <form class="dialog-form" @submit.prevent="createChore">
       <FormField label="Title" for="chore-title">
         <input
@@ -226,11 +266,14 @@ onMounted(load)
           :disabled="creating"
         />
       </FormField>
+      <FormField v-if="starChartOptions.length > 1" label="Star chart" fake>
+        <RadioGroup v-model="form.starChartId" :options="starChartOptions" name="chore-star-chart" />
+      </FormField>
       <FormField label="Days of week" fake>
         <CheckGroup v-model="form.weekdays" :options="weekdayOptions" name="chore-weekdays" />
       </FormField>
-      <FormField label="Assigned children" fake>
-        <CheckGroup v-model="form.childMemberIds" :options="childOptions" name="chore-children" />
+      <FormField label="Assigned people" fake>
+        <CheckGroup v-model="form.childMemberIds" :options="personOptions" name="chore-people" />
       </FormField>
       <p v-if="createError" class="inline-notification error">{{ createError }}</p>
       <div class="dialog-actions">
@@ -355,6 +398,18 @@ onMounted(load)
             <strong>{{ value }}</strong>
           </RouterLink>
         </template>
+        <template #cell-people="{ row }">
+          <span v-if="!row.people.length" class="muted">—</span>
+          <span v-else class="child-avatars">
+            <MemberAvatar
+              v-for="person in row.people"
+              :key="person.id"
+              :member="person"
+              size="md"
+              :to="{ name: 'familyPersonDetail', params: { id: person.id } }"
+            />
+          </span>
+        </template>
         <template #cell-actions="{ row }">
           <div class="actions-cell">
             <RouterLink :to="{ name: 'familyChoreEdit', params: { id: row.id } }" class="button neutral small">
@@ -424,6 +479,13 @@ onMounted(load)
 
 .title-link:hover {
   text-decoration: underline;
+}
+
+.child-avatars {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .dialog-form {

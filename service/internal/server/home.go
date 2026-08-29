@@ -28,7 +28,7 @@ func (s *Server) GetParentHomeSummary(ctx context.Context, _ *connect.Request[ap
 		PendingRedemptions: int32(pending),
 	}
 	for i := range members {
-		if members[i].Role != store.MemberRoleChild {
+		if !isFamilyStarMember(&members[i], fc.family.ID) {
 			continue
 		}
 		balance, _ := s.store.GetMemberBalance(ctx, members[i].ID)

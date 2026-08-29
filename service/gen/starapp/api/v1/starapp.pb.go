@@ -5629,6 +5629,250 @@ func (x *DeleteMemberAvatarResponse) GetMember() *FamilyMember {
 	return nil
 }
 
+type MemberAvatarEntry struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Filename      string                 `protobuf:"bytes,1,opt,name=filename,proto3" json:"filename,omitempty"`
+	IsCurrent     bool                   `protobuf:"varint,2,opt,name=is_current,json=isCurrent,proto3" json:"is_current,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MemberAvatarEntry) Reset() {
+	*x = MemberAvatarEntry{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[106]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MemberAvatarEntry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MemberAvatarEntry) ProtoMessage() {}
+
+func (x *MemberAvatarEntry) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[106]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MemberAvatarEntry.ProtoReflect.Descriptor instead.
+func (*MemberAvatarEntry) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{106}
+}
+
+func (x *MemberAvatarEntry) GetFilename() string {
+	if x != nil {
+		return x.Filename
+	}
+	return ""
+}
+
+func (x *MemberAvatarEntry) GetIsCurrent() bool {
+	if x != nil {
+		return x.IsCurrent
+	}
+	return false
+}
+
+type ListMemberAvatarsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MemberId      int32                  `protobuf:"varint,1,opt,name=member_id,json=memberId,proto3" json:"member_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListMemberAvatarsRequest) Reset() {
+	*x = ListMemberAvatarsRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[107]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListMemberAvatarsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListMemberAvatarsRequest) ProtoMessage() {}
+
+func (x *ListMemberAvatarsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[107]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListMemberAvatarsRequest.ProtoReflect.Descriptor instead.
+func (*ListMemberAvatarsRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{107}
+}
+
+func (x *ListMemberAvatarsRequest) GetMemberId() int32 {
+	if x != nil {
+		return x.MemberId
+	}
+	return 0
+}
+
+type ListMemberAvatarsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Avatars       []*MemberAvatarEntry   `protobuf:"bytes,1,rep,name=avatars,proto3" json:"avatars,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListMemberAvatarsResponse) Reset() {
+	*x = ListMemberAvatarsResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[108]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListMemberAvatarsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListMemberAvatarsResponse) ProtoMessage() {}
+
+func (x *ListMemberAvatarsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[108]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListMemberAvatarsResponse.ProtoReflect.Descriptor instead.
+func (*ListMemberAvatarsResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{108}
+}
+
+func (x *ListMemberAvatarsResponse) GetAvatars() []*MemberAvatarEntry {
+	if x != nil {
+		return x.Avatars
+	}
+	return nil
+}
+
+type SelectMemberAvatarRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MemberId      int32                  `protobuf:"varint,1,opt,name=member_id,json=memberId,proto3" json:"member_id,omitempty"`
+	Filename      string                 `protobuf:"bytes,2,opt,name=filename,proto3" json:"filename,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SelectMemberAvatarRequest) Reset() {
+	*x = SelectMemberAvatarRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[109]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SelectMemberAvatarRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SelectMemberAvatarRequest) ProtoMessage() {}
+
+func (x *SelectMemberAvatarRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[109]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SelectMemberAvatarRequest.ProtoReflect.Descriptor instead.
+func (*SelectMemberAvatarRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{109}
+}
+
+func (x *SelectMemberAvatarRequest) GetMemberId() int32 {
+	if x != nil {
+		return x.MemberId
+	}
+	return 0
+}
+
+func (x *SelectMemberAvatarRequest) GetFilename() string {
+	if x != nil {
+		return x.Filename
+	}
+	return ""
+}
+
+type SelectMemberAvatarResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	StandardResponse *StandardResponse      `protobuf:"bytes,1,opt,name=standard_response,json=standardResponse,proto3" json:"standard_response,omitempty"`
+	Member           *FamilyMember          `protobuf:"bytes,2,opt,name=member,proto3" json:"member,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *SelectMemberAvatarResponse) Reset() {
+	*x = SelectMemberAvatarResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[110]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SelectMemberAvatarResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SelectMemberAvatarResponse) ProtoMessage() {}
+
+func (x *SelectMemberAvatarResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[110]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SelectMemberAvatarResponse.ProtoReflect.Descriptor instead.
+func (*SelectMemberAvatarResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{110}
+}
+
+func (x *SelectMemberAvatarResponse) GetStandardResponse() *StandardResponse {
+	if x != nil {
+		return x.StandardResponse
+	}
+	return nil
+}
+
+func (x *SelectMemberAvatarResponse) GetMember() *FamilyMember {
+	if x != nil {
+		return x.Member
+	}
+	return nil
+}
+
 type AwardStarsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ChildMemberId int32                  `protobuf:"varint,1,opt,name=child_member_id,json=childMemberId,proto3" json:"child_member_id,omitempty"`
@@ -5640,7 +5884,7 @@ type AwardStarsRequest struct {
 
 func (x *AwardStarsRequest) Reset() {
 	*x = AwardStarsRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[106]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[111]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5652,7 +5896,7 @@ func (x *AwardStarsRequest) String() string {
 func (*AwardStarsRequest) ProtoMessage() {}
 
 func (x *AwardStarsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[106]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[111]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5665,7 +5909,7 @@ func (x *AwardStarsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AwardStarsRequest.ProtoReflect.Descriptor instead.
 func (*AwardStarsRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{106}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *AwardStarsRequest) GetChildMemberId() int32 {
@@ -5700,7 +5944,7 @@ type AwardStarsResponse struct {
 
 func (x *AwardStarsResponse) Reset() {
 	*x = AwardStarsResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[107]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[112]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5712,7 +5956,7 @@ func (x *AwardStarsResponse) String() string {
 func (*AwardStarsResponse) ProtoMessage() {}
 
 func (x *AwardStarsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[107]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[112]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5725,7 +5969,7 @@ func (x *AwardStarsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AwardStarsResponse.ProtoReflect.Descriptor instead.
 func (*AwardStarsResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{107}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{112}
 }
 
 func (x *AwardStarsResponse) GetStandardResponse() *StandardResponse {
@@ -5760,7 +6004,7 @@ type RevokeStarsRequest struct {
 
 func (x *RevokeStarsRequest) Reset() {
 	*x = RevokeStarsRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[108]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[113]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5772,7 +6016,7 @@ func (x *RevokeStarsRequest) String() string {
 func (*RevokeStarsRequest) ProtoMessage() {}
 
 func (x *RevokeStarsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[108]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[113]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5785,7 +6029,7 @@ func (x *RevokeStarsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeStarsRequest.ProtoReflect.Descriptor instead.
 func (*RevokeStarsRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{108}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{113}
 }
 
 func (x *RevokeStarsRequest) GetChildMemberId() int32 {
@@ -5820,7 +6064,7 @@ type RevokeStarsResponse struct {
 
 func (x *RevokeStarsResponse) Reset() {
 	*x = RevokeStarsResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[109]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5832,7 +6076,7 @@ func (x *RevokeStarsResponse) String() string {
 func (*RevokeStarsResponse) ProtoMessage() {}
 
 func (x *RevokeStarsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[109]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5845,7 +6089,7 @@ func (x *RevokeStarsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeStarsResponse.ProtoReflect.Descriptor instead.
 func (*RevokeStarsResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{109}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{114}
 }
 
 func (x *RevokeStarsResponse) GetStandardResponse() *StandardResponse {
@@ -5878,7 +6122,7 @@ type GetMemberBalanceRequest struct {
 
 func (x *GetMemberBalanceRequest) Reset() {
 	*x = GetMemberBalanceRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[110]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5890,7 +6134,7 @@ func (x *GetMemberBalanceRequest) String() string {
 func (*GetMemberBalanceRequest) ProtoMessage() {}
 
 func (x *GetMemberBalanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[110]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5903,7 +6147,7 @@ func (x *GetMemberBalanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMemberBalanceRequest.ProtoReflect.Descriptor instead.
 func (*GetMemberBalanceRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{110}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{115}
 }
 
 func (x *GetMemberBalanceRequest) GetMemberId() int32 {
@@ -5922,7 +6166,7 @@ type GetMemberBalanceResponse struct {
 
 func (x *GetMemberBalanceResponse) Reset() {
 	*x = GetMemberBalanceResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[111]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[116]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5934,7 +6178,7 @@ func (x *GetMemberBalanceResponse) String() string {
 func (*GetMemberBalanceResponse) ProtoMessage() {}
 
 func (x *GetMemberBalanceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[111]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[116]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5947,7 +6191,7 @@ func (x *GetMemberBalanceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMemberBalanceResponse.ProtoReflect.Descriptor instead.
 func (*GetMemberBalanceResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{111}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{116}
 }
 
 func (x *GetMemberBalanceResponse) GetBalance() int32 {
@@ -5967,7 +6211,7 @@ type ListLedgerRequest struct {
 
 func (x *ListLedgerRequest) Reset() {
 	*x = ListLedgerRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[112]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[117]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5979,7 +6223,7 @@ func (x *ListLedgerRequest) String() string {
 func (*ListLedgerRequest) ProtoMessage() {}
 
 func (x *ListLedgerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[112]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[117]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5992,7 +6236,7 @@ func (x *ListLedgerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListLedgerRequest.ProtoReflect.Descriptor instead.
 func (*ListLedgerRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{112}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{117}
 }
 
 func (x *ListLedgerRequest) GetMemberId() int32 {
@@ -6018,7 +6262,7 @@ type ListLedgerResponse struct {
 
 func (x *ListLedgerResponse) Reset() {
 	*x = ListLedgerResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[113]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[118]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6030,7 +6274,7 @@ func (x *ListLedgerResponse) String() string {
 func (*ListLedgerResponse) ProtoMessage() {}
 
 func (x *ListLedgerResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[113]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[118]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6043,7 +6287,7 @@ func (x *ListLedgerResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListLedgerResponse.ProtoReflect.Descriptor instead.
 func (*ListLedgerResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{113}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{118}
 }
 
 func (x *ListLedgerResponse) GetEntries() []*StarLedgerEntry {
@@ -6062,7 +6306,7 @@ type ListRewardsRequest struct {
 
 func (x *ListRewardsRequest) Reset() {
 	*x = ListRewardsRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[114]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[119]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6074,7 +6318,7 @@ func (x *ListRewardsRequest) String() string {
 func (*ListRewardsRequest) ProtoMessage() {}
 
 func (x *ListRewardsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[114]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[119]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6087,7 +6331,7 @@ func (x *ListRewardsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRewardsRequest.ProtoReflect.Descriptor instead.
 func (*ListRewardsRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{114}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{119}
 }
 
 func (x *ListRewardsRequest) GetIncludeInactive() bool {
@@ -6106,7 +6350,7 @@ type ListRewardsResponse struct {
 
 func (x *ListRewardsResponse) Reset() {
 	*x = ListRewardsResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[115]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[120]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6118,7 +6362,7 @@ func (x *ListRewardsResponse) String() string {
 func (*ListRewardsResponse) ProtoMessage() {}
 
 func (x *ListRewardsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[115]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[120]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6131,7 +6375,7 @@ func (x *ListRewardsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRewardsResponse.ProtoReflect.Descriptor instead.
 func (*ListRewardsResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{115}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{120}
 }
 
 func (x *ListRewardsResponse) GetRewards() []*Reward {
@@ -6153,7 +6397,7 @@ type CreateRewardRequest struct {
 
 func (x *CreateRewardRequest) Reset() {
 	*x = CreateRewardRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[116]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[121]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6165,7 +6409,7 @@ func (x *CreateRewardRequest) String() string {
 func (*CreateRewardRequest) ProtoMessage() {}
 
 func (x *CreateRewardRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[116]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[121]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6178,7 +6422,7 @@ func (x *CreateRewardRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRewardRequest.ProtoReflect.Descriptor instead.
 func (*CreateRewardRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{116}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{121}
 }
 
 func (x *CreateRewardRequest) GetTitle() string {
@@ -6219,7 +6463,7 @@ type CreateRewardResponse struct {
 
 func (x *CreateRewardResponse) Reset() {
 	*x = CreateRewardResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[117]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[122]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6231,7 +6475,7 @@ func (x *CreateRewardResponse) String() string {
 func (*CreateRewardResponse) ProtoMessage() {}
 
 func (x *CreateRewardResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[117]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[122]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6244,7 +6488,7 @@ func (x *CreateRewardResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRewardResponse.ProtoReflect.Descriptor instead.
 func (*CreateRewardResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{117}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{122}
 }
 
 func (x *CreateRewardResponse) GetStandardResponse() *StandardResponse {
@@ -6275,7 +6519,7 @@ type UpdateRewardRequest struct {
 
 func (x *UpdateRewardRequest) Reset() {
 	*x = UpdateRewardRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[118]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[123]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6287,7 +6531,7 @@ func (x *UpdateRewardRequest) String() string {
 func (*UpdateRewardRequest) ProtoMessage() {}
 
 func (x *UpdateRewardRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[118]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[123]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6300,7 +6544,7 @@ func (x *UpdateRewardRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRewardRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRewardRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{118}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{123}
 }
 
 func (x *UpdateRewardRequest) GetId() int32 {
@@ -6355,7 +6599,7 @@ type UpdateRewardResponse struct {
 
 func (x *UpdateRewardResponse) Reset() {
 	*x = UpdateRewardResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[119]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[124]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6367,7 +6611,7 @@ func (x *UpdateRewardResponse) String() string {
 func (*UpdateRewardResponse) ProtoMessage() {}
 
 func (x *UpdateRewardResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[119]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[124]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6380,7 +6624,7 @@ func (x *UpdateRewardResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRewardResponse.ProtoReflect.Descriptor instead.
 func (*UpdateRewardResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{119}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{124}
 }
 
 func (x *UpdateRewardResponse) GetStandardResponse() *StandardResponse {
@@ -6406,7 +6650,7 @@ type DeleteRewardRequest struct {
 
 func (x *DeleteRewardRequest) Reset() {
 	*x = DeleteRewardRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[120]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[125]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6418,7 +6662,7 @@ func (x *DeleteRewardRequest) String() string {
 func (*DeleteRewardRequest) ProtoMessage() {}
 
 func (x *DeleteRewardRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[120]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[125]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6431,7 +6675,7 @@ func (x *DeleteRewardRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRewardRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRewardRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{120}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{125}
 }
 
 func (x *DeleteRewardRequest) GetId() int32 {
@@ -6450,7 +6694,7 @@ type DeleteRewardResponse struct {
 
 func (x *DeleteRewardResponse) Reset() {
 	*x = DeleteRewardResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[121]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[126]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6462,7 +6706,7 @@ func (x *DeleteRewardResponse) String() string {
 func (*DeleteRewardResponse) ProtoMessage() {}
 
 func (x *DeleteRewardResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[121]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[126]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6475,7 +6719,7 @@ func (x *DeleteRewardResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRewardResponse.ProtoReflect.Descriptor instead.
 func (*DeleteRewardResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{121}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{126}
 }
 
 func (x *DeleteRewardResponse) GetStandardResponse() *StandardResponse {
@@ -6495,7 +6739,7 @@ type RequestRedemptionRequest struct {
 
 func (x *RequestRedemptionRequest) Reset() {
 	*x = RequestRedemptionRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[122]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[127]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6507,7 +6751,7 @@ func (x *RequestRedemptionRequest) String() string {
 func (*RequestRedemptionRequest) ProtoMessage() {}
 
 func (x *RequestRedemptionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[122]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[127]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6520,7 +6764,7 @@ func (x *RequestRedemptionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RequestRedemptionRequest.ProtoReflect.Descriptor instead.
 func (*RequestRedemptionRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{122}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{127}
 }
 
 func (x *RequestRedemptionRequest) GetRewardId() int32 {
@@ -6547,7 +6791,7 @@ type RequestRedemptionResponse struct {
 
 func (x *RequestRedemptionResponse) Reset() {
 	*x = RequestRedemptionResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[123]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[128]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6559,7 +6803,7 @@ func (x *RequestRedemptionResponse) String() string {
 func (*RequestRedemptionResponse) ProtoMessage() {}
 
 func (x *RequestRedemptionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[123]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[128]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6572,7 +6816,7 @@ func (x *RequestRedemptionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RequestRedemptionResponse.ProtoReflect.Descriptor instead.
 func (*RequestRedemptionResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{123}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{128}
 }
 
 func (x *RequestRedemptionResponse) GetStandardResponse() *StandardResponse {
@@ -6598,7 +6842,7 @@ type ApproveRedemptionRequest struct {
 
 func (x *ApproveRedemptionRequest) Reset() {
 	*x = ApproveRedemptionRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[124]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[129]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6610,7 +6854,7 @@ func (x *ApproveRedemptionRequest) String() string {
 func (*ApproveRedemptionRequest) ProtoMessage() {}
 
 func (x *ApproveRedemptionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[124]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[129]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6623,7 +6867,7 @@ func (x *ApproveRedemptionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApproveRedemptionRequest.ProtoReflect.Descriptor instead.
 func (*ApproveRedemptionRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{124}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{129}
 }
 
 func (x *ApproveRedemptionRequest) GetRedemptionId() int32 {
@@ -6643,7 +6887,7 @@ type ApproveRedemptionResponse struct {
 
 func (x *ApproveRedemptionResponse) Reset() {
 	*x = ApproveRedemptionResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[125]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[130]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6655,7 +6899,7 @@ func (x *ApproveRedemptionResponse) String() string {
 func (*ApproveRedemptionResponse) ProtoMessage() {}
 
 func (x *ApproveRedemptionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[125]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[130]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6668,7 +6912,7 @@ func (x *ApproveRedemptionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApproveRedemptionResponse.ProtoReflect.Descriptor instead.
 func (*ApproveRedemptionResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{125}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{130}
 }
 
 func (x *ApproveRedemptionResponse) GetStandardResponse() *StandardResponse {
@@ -6694,7 +6938,7 @@ type RejectRedemptionRequest struct {
 
 func (x *RejectRedemptionRequest) Reset() {
 	*x = RejectRedemptionRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[126]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[131]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6706,7 +6950,7 @@ func (x *RejectRedemptionRequest) String() string {
 func (*RejectRedemptionRequest) ProtoMessage() {}
 
 func (x *RejectRedemptionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[126]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[131]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6719,7 +6963,7 @@ func (x *RejectRedemptionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RejectRedemptionRequest.ProtoReflect.Descriptor instead.
 func (*RejectRedemptionRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{126}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{131}
 }
 
 func (x *RejectRedemptionRequest) GetRedemptionId() int32 {
@@ -6739,7 +6983,7 @@ type RejectRedemptionResponse struct {
 
 func (x *RejectRedemptionResponse) Reset() {
 	*x = RejectRedemptionResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[127]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[132]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6751,7 +6995,7 @@ func (x *RejectRedemptionResponse) String() string {
 func (*RejectRedemptionResponse) ProtoMessage() {}
 
 func (x *RejectRedemptionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[127]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[132]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6764,7 +7008,7 @@ func (x *RejectRedemptionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RejectRedemptionResponse.ProtoReflect.Descriptor instead.
 func (*RejectRedemptionResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{127}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{132}
 }
 
 func (x *RejectRedemptionResponse) GetStandardResponse() *StandardResponse {
@@ -6790,7 +7034,7 @@ type ListRedemptionsRequest struct {
 
 func (x *ListRedemptionsRequest) Reset() {
 	*x = ListRedemptionsRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[128]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[133]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6802,7 +7046,7 @@ func (x *ListRedemptionsRequest) String() string {
 func (*ListRedemptionsRequest) ProtoMessage() {}
 
 func (x *ListRedemptionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[128]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[133]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6815,7 +7059,7 @@ func (x *ListRedemptionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRedemptionsRequest.ProtoReflect.Descriptor instead.
 func (*ListRedemptionsRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{128}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{133}
 }
 
 func (x *ListRedemptionsRequest) GetStatus() string {
@@ -6834,7 +7078,7 @@ type ListRedemptionsResponse struct {
 
 func (x *ListRedemptionsResponse) Reset() {
 	*x = ListRedemptionsResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[129]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[134]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6846,7 +7090,7 @@ func (x *ListRedemptionsResponse) String() string {
 func (*ListRedemptionsResponse) ProtoMessage() {}
 
 func (x *ListRedemptionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[129]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[134]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6859,7 +7103,7 @@ func (x *ListRedemptionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRedemptionsResponse.ProtoReflect.Descriptor instead.
 func (*ListRedemptionsResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{129}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{134}
 }
 
 func (x *ListRedemptionsResponse) GetRedemptions() []*Redemption {
@@ -6880,7 +7124,7 @@ type ChildHomeSummary struct {
 
 func (x *ChildHomeSummary) Reset() {
 	*x = ChildHomeSummary{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[130]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[135]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6892,7 +7136,7 @@ func (x *ChildHomeSummary) String() string {
 func (*ChildHomeSummary) ProtoMessage() {}
 
 func (x *ChildHomeSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[130]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[135]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6905,7 +7149,7 @@ func (x *ChildHomeSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChildHomeSummary.ProtoReflect.Descriptor instead.
 func (*ChildHomeSummary) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{130}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{135}
 }
 
 func (x *ChildHomeSummary) GetMember() *FamilyMember {
@@ -6937,7 +7181,7 @@ type GetParentHomeSummaryRequest struct {
 
 func (x *GetParentHomeSummaryRequest) Reset() {
 	*x = GetParentHomeSummaryRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[131]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[136]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6949,7 +7193,7 @@ func (x *GetParentHomeSummaryRequest) String() string {
 func (*GetParentHomeSummaryRequest) ProtoMessage() {}
 
 func (x *GetParentHomeSummaryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[131]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[136]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6962,7 +7206,7 @@ func (x *GetParentHomeSummaryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetParentHomeSummaryRequest.ProtoReflect.Descriptor instead.
 func (*GetParentHomeSummaryRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{131}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{136}
 }
 
 type GetParentHomeSummaryResponse struct {
@@ -6976,7 +7220,7 @@ type GetParentHomeSummaryResponse struct {
 
 func (x *GetParentHomeSummaryResponse) Reset() {
 	*x = GetParentHomeSummaryResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[132]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[137]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6988,7 +7232,7 @@ func (x *GetParentHomeSummaryResponse) String() string {
 func (*GetParentHomeSummaryResponse) ProtoMessage() {}
 
 func (x *GetParentHomeSummaryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[132]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[137]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7001,7 +7245,7 @@ func (x *GetParentHomeSummaryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetParentHomeSummaryResponse.ProtoReflect.Descriptor instead.
 func (*GetParentHomeSummaryResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{132}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{137}
 }
 
 func (x *GetParentHomeSummaryResponse) GetFamily() *Family {
@@ -7033,7 +7277,7 @@ type GetChildHomeSummaryRequest struct {
 
 func (x *GetChildHomeSummaryRequest) Reset() {
 	*x = GetChildHomeSummaryRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[133]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[138]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7045,7 +7289,7 @@ func (x *GetChildHomeSummaryRequest) String() string {
 func (*GetChildHomeSummaryRequest) ProtoMessage() {}
 
 func (x *GetChildHomeSummaryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[133]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[138]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7058,7 +7302,7 @@ func (x *GetChildHomeSummaryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetChildHomeSummaryRequest.ProtoReflect.Descriptor instead.
 func (*GetChildHomeSummaryRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{133}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{138}
 }
 
 type GetChildHomeSummaryResponse struct {
@@ -7073,7 +7317,7 @@ type GetChildHomeSummaryResponse struct {
 
 func (x *GetChildHomeSummaryResponse) Reset() {
 	*x = GetChildHomeSummaryResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[134]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[139]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7085,7 +7329,7 @@ func (x *GetChildHomeSummaryResponse) String() string {
 func (*GetChildHomeSummaryResponse) ProtoMessage() {}
 
 func (x *GetChildHomeSummaryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[134]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[139]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7098,7 +7342,7 @@ func (x *GetChildHomeSummaryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetChildHomeSummaryResponse.ProtoReflect.Descriptor instead.
 func (*GetChildHomeSummaryResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{134}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{139}
 }
 
 func (x *GetChildHomeSummaryResponse) GetMember() *FamilyMember {
@@ -7139,13 +7383,14 @@ type Chore struct {
 	Active         bool                   `protobuf:"varint,6,opt,name=active,proto3" json:"active,omitempty"`
 	ChildMemberIds []int32                `protobuf:"varint,7,rep,packed,name=child_member_ids,json=childMemberIds,proto3" json:"child_member_ids,omitempty"`
 	CreatedAt      string                 `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	StarChartId    int32                  `protobuf:"varint,9,opt,name=star_chart_id,json=starChartId,proto3" json:"star_chart_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
 
 func (x *Chore) Reset() {
 	*x = Chore{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[135]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[140]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7157,7 +7402,7 @@ func (x *Chore) String() string {
 func (*Chore) ProtoMessage() {}
 
 func (x *Chore) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[135]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[140]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7170,7 +7415,7 @@ func (x *Chore) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Chore.ProtoReflect.Descriptor instead.
 func (*Chore) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{135}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{140}
 }
 
 func (x *Chore) GetId() int32 {
@@ -7229,6 +7474,505 @@ func (x *Chore) GetCreatedAt() string {
 	return ""
 }
 
+func (x *Chore) GetStarChartId() int32 {
+	if x != nil {
+		return x.StarChartId
+	}
+	return 0
+}
+
+type StarChart struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	FamilyId      int32                  `protobuf:"varint,2,opt,name=family_id,json=familyId,proto3" json:"family_id,omitempty"`
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	SortOrder     int32                  `protobuf:"varint,4,opt,name=sort_order,json=sortOrder,proto3" json:"sort_order,omitempty"`
+	Active        bool                   `protobuf:"varint,5,opt,name=active,proto3" json:"active,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	ChoreCount    int32                  `protobuf:"varint,7,opt,name=chore_count,json=choreCount,proto3" json:"chore_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StarChart) Reset() {
+	*x = StarChart{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[141]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StarChart) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StarChart) ProtoMessage() {}
+
+func (x *StarChart) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[141]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StarChart.ProtoReflect.Descriptor instead.
+func (*StarChart) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{141}
+}
+
+func (x *StarChart) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *StarChart) GetFamilyId() int32 {
+	if x != nil {
+		return x.FamilyId
+	}
+	return 0
+}
+
+func (x *StarChart) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *StarChart) GetSortOrder() int32 {
+	if x != nil {
+		return x.SortOrder
+	}
+	return 0
+}
+
+func (x *StarChart) GetActive() bool {
+	if x != nil {
+		return x.Active
+	}
+	return false
+}
+
+func (x *StarChart) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *StarChart) GetChoreCount() int32 {
+	if x != nil {
+		return x.ChoreCount
+	}
+	return 0
+}
+
+type ListStarChartsRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	IncludeInactive bool                   `protobuf:"varint,1,opt,name=include_inactive,json=includeInactive,proto3" json:"include_inactive,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ListStarChartsRequest) Reset() {
+	*x = ListStarChartsRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[142]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListStarChartsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListStarChartsRequest) ProtoMessage() {}
+
+func (x *ListStarChartsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[142]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListStarChartsRequest.ProtoReflect.Descriptor instead.
+func (*ListStarChartsRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{142}
+}
+
+func (x *ListStarChartsRequest) GetIncludeInactive() bool {
+	if x != nil {
+		return x.IncludeInactive
+	}
+	return false
+}
+
+type ListStarChartsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	StarCharts    []*StarChart           `protobuf:"bytes,1,rep,name=star_charts,json=starCharts,proto3" json:"star_charts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListStarChartsResponse) Reset() {
+	*x = ListStarChartsResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[143]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListStarChartsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListStarChartsResponse) ProtoMessage() {}
+
+func (x *ListStarChartsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[143]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListStarChartsResponse.ProtoReflect.Descriptor instead.
+func (*ListStarChartsResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{143}
+}
+
+func (x *ListStarChartsResponse) GetStarCharts() []*StarChart {
+	if x != nil {
+		return x.StarCharts
+	}
+	return nil
+}
+
+type CreateStarChartRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	SortOrder     int32                  `protobuf:"varint,2,opt,name=sort_order,json=sortOrder,proto3" json:"sort_order,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateStarChartRequest) Reset() {
+	*x = CreateStarChartRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[144]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateStarChartRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateStarChartRequest) ProtoMessage() {}
+
+func (x *CreateStarChartRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[144]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateStarChartRequest.ProtoReflect.Descriptor instead.
+func (*CreateStarChartRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{144}
+}
+
+func (x *CreateStarChartRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateStarChartRequest) GetSortOrder() int32 {
+	if x != nil {
+		return x.SortOrder
+	}
+	return 0
+}
+
+type CreateStarChartResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	StandardResponse *StandardResponse      `protobuf:"bytes,1,opt,name=standard_response,json=standardResponse,proto3" json:"standard_response,omitempty"`
+	StarChart        *StarChart             `protobuf:"bytes,2,opt,name=star_chart,json=starChart,proto3" json:"star_chart,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *CreateStarChartResponse) Reset() {
+	*x = CreateStarChartResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[145]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateStarChartResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateStarChartResponse) ProtoMessage() {}
+
+func (x *CreateStarChartResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[145]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateStarChartResponse.ProtoReflect.Descriptor instead.
+func (*CreateStarChartResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{145}
+}
+
+func (x *CreateStarChartResponse) GetStandardResponse() *StandardResponse {
+	if x != nil {
+		return x.StandardResponse
+	}
+	return nil
+}
+
+func (x *CreateStarChartResponse) GetStarChart() *StarChart {
+	if x != nil {
+		return x.StarChart
+	}
+	return nil
+}
+
+type UpdateStarChartRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	SortOrder     int32                  `protobuf:"varint,3,opt,name=sort_order,json=sortOrder,proto3" json:"sort_order,omitempty"`
+	Active        bool                   `protobuf:"varint,4,opt,name=active,proto3" json:"active,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateStarChartRequest) Reset() {
+	*x = UpdateStarChartRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[146]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateStarChartRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateStarChartRequest) ProtoMessage() {}
+
+func (x *UpdateStarChartRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[146]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateStarChartRequest.ProtoReflect.Descriptor instead.
+func (*UpdateStarChartRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{146}
+}
+
+func (x *UpdateStarChartRequest) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *UpdateStarChartRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *UpdateStarChartRequest) GetSortOrder() int32 {
+	if x != nil {
+		return x.SortOrder
+	}
+	return 0
+}
+
+func (x *UpdateStarChartRequest) GetActive() bool {
+	if x != nil {
+		return x.Active
+	}
+	return false
+}
+
+type UpdateStarChartResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	StandardResponse *StandardResponse      `protobuf:"bytes,1,opt,name=standard_response,json=standardResponse,proto3" json:"standard_response,omitempty"`
+	StarChart        *StarChart             `protobuf:"bytes,2,opt,name=star_chart,json=starChart,proto3" json:"star_chart,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *UpdateStarChartResponse) Reset() {
+	*x = UpdateStarChartResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[147]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateStarChartResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateStarChartResponse) ProtoMessage() {}
+
+func (x *UpdateStarChartResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[147]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateStarChartResponse.ProtoReflect.Descriptor instead.
+func (*UpdateStarChartResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{147}
+}
+
+func (x *UpdateStarChartResponse) GetStandardResponse() *StandardResponse {
+	if x != nil {
+		return x.StandardResponse
+	}
+	return nil
+}
+
+func (x *UpdateStarChartResponse) GetStarChart() *StarChart {
+	if x != nil {
+		return x.StarChart
+	}
+	return nil
+}
+
+type DeleteStarChartRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteStarChartRequest) Reset() {
+	*x = DeleteStarChartRequest{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[148]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteStarChartRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteStarChartRequest) ProtoMessage() {}
+
+func (x *DeleteStarChartRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[148]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteStarChartRequest.ProtoReflect.Descriptor instead.
+func (*DeleteStarChartRequest) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{148}
+}
+
+func (x *DeleteStarChartRequest) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type DeleteStarChartResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	StandardResponse *StandardResponse      `protobuf:"bytes,1,opt,name=standard_response,json=standardResponse,proto3" json:"standard_response,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *DeleteStarChartResponse) Reset() {
+	*x = DeleteStarChartResponse{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[149]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteStarChartResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteStarChartResponse) ProtoMessage() {}
+
+func (x *DeleteStarChartResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[149]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteStarChartResponse.ProtoReflect.Descriptor instead.
+func (*DeleteStarChartResponse) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{149}
+}
+
+func (x *DeleteStarChartResponse) GetStandardResponse() *StandardResponse {
+	if x != nil {
+		return x.StandardResponse
+	}
+	return nil
+}
+
 type ChorePause struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -7243,7 +7987,7 @@ type ChorePause struct {
 
 func (x *ChorePause) Reset() {
 	*x = ChorePause{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[136]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[150]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7255,7 +7999,7 @@ func (x *ChorePause) String() string {
 func (*ChorePause) ProtoMessage() {}
 
 func (x *ChorePause) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[136]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[150]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7268,7 +8012,7 @@ func (x *ChorePause) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChorePause.ProtoReflect.Descriptor instead.
 func (*ChorePause) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{136}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{150}
 }
 
 func (x *ChorePause) GetId() int32 {
@@ -7316,13 +8060,14 @@ func (x *ChorePause) GetCreatedAt() string {
 type ListChoresRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	IncludeInactive bool                   `protobuf:"varint,1,opt,name=include_inactive,json=includeInactive,proto3" json:"include_inactive,omitempty"`
+	StarChartId     int32                  `protobuf:"varint,2,opt,name=star_chart_id,json=starChartId,proto3" json:"star_chart_id,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
 
 func (x *ListChoresRequest) Reset() {
 	*x = ListChoresRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[137]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[151]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7334,7 +8079,7 @@ func (x *ListChoresRequest) String() string {
 func (*ListChoresRequest) ProtoMessage() {}
 
 func (x *ListChoresRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[137]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[151]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7347,7 +8092,7 @@ func (x *ListChoresRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListChoresRequest.ProtoReflect.Descriptor instead.
 func (*ListChoresRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{137}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{151}
 }
 
 func (x *ListChoresRequest) GetIncludeInactive() bool {
@@ -7355,6 +8100,13 @@ func (x *ListChoresRequest) GetIncludeInactive() bool {
 		return x.IncludeInactive
 	}
 	return false
+}
+
+func (x *ListChoresRequest) GetStarChartId() int32 {
+	if x != nil {
+		return x.StarChartId
+	}
+	return 0
 }
 
 type ListChoresResponse struct {
@@ -7366,7 +8118,7 @@ type ListChoresResponse struct {
 
 func (x *ListChoresResponse) Reset() {
 	*x = ListChoresResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[138]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[152]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7378,7 +8130,7 @@ func (x *ListChoresResponse) String() string {
 func (*ListChoresResponse) ProtoMessage() {}
 
 func (x *ListChoresResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[138]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[152]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7391,7 +8143,7 @@ func (x *ListChoresResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListChoresResponse.ProtoReflect.Descriptor instead.
 func (*ListChoresResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{138}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{152}
 }
 
 func (x *ListChoresResponse) GetChores() []*Chore {
@@ -7407,13 +8159,14 @@ type CreateChoreRequest struct {
 	StarReward     int32                  `protobuf:"varint,2,opt,name=star_reward,json=starReward,proto3" json:"star_reward,omitempty"`
 	Weekdays       []int32                `protobuf:"varint,3,rep,packed,name=weekdays,proto3" json:"weekdays,omitempty"`
 	ChildMemberIds []int32                `protobuf:"varint,4,rep,packed,name=child_member_ids,json=childMemberIds,proto3" json:"child_member_ids,omitempty"`
+	StarChartId    int32                  `protobuf:"varint,5,opt,name=star_chart_id,json=starChartId,proto3" json:"star_chart_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
 
 func (x *CreateChoreRequest) Reset() {
 	*x = CreateChoreRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[139]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[153]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7425,7 +8178,7 @@ func (x *CreateChoreRequest) String() string {
 func (*CreateChoreRequest) ProtoMessage() {}
 
 func (x *CreateChoreRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[139]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[153]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7438,7 +8191,7 @@ func (x *CreateChoreRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateChoreRequest.ProtoReflect.Descriptor instead.
 func (*CreateChoreRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{139}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{153}
 }
 
 func (x *CreateChoreRequest) GetTitle() string {
@@ -7469,6 +8222,13 @@ func (x *CreateChoreRequest) GetChildMemberIds() []int32 {
 	return nil
 }
 
+func (x *CreateChoreRequest) GetStarChartId() int32 {
+	if x != nil {
+		return x.StarChartId
+	}
+	return 0
+}
+
 type CreateChoreResponse struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	StandardResponse *StandardResponse      `protobuf:"bytes,1,opt,name=standard_response,json=standardResponse,proto3" json:"standard_response,omitempty"`
@@ -7479,7 +8239,7 @@ type CreateChoreResponse struct {
 
 func (x *CreateChoreResponse) Reset() {
 	*x = CreateChoreResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[140]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[154]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7491,7 +8251,7 @@ func (x *CreateChoreResponse) String() string {
 func (*CreateChoreResponse) ProtoMessage() {}
 
 func (x *CreateChoreResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[140]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[154]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7504,7 +8264,7 @@ func (x *CreateChoreResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateChoreResponse.ProtoReflect.Descriptor instead.
 func (*CreateChoreResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{140}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{154}
 }
 
 func (x *CreateChoreResponse) GetStandardResponse() *StandardResponse {
@@ -7529,13 +8289,14 @@ type UpdateChoreRequest struct {
 	Weekdays       []int32                `protobuf:"varint,4,rep,packed,name=weekdays,proto3" json:"weekdays,omitempty"`
 	ChildMemberIds []int32                `protobuf:"varint,5,rep,packed,name=child_member_ids,json=childMemberIds,proto3" json:"child_member_ids,omitempty"`
 	Active         bool                   `protobuf:"varint,6,opt,name=active,proto3" json:"active,omitempty"`
+	StarChartId    int32                  `protobuf:"varint,7,opt,name=star_chart_id,json=starChartId,proto3" json:"star_chart_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
 
 func (x *UpdateChoreRequest) Reset() {
 	*x = UpdateChoreRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[141]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[155]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7547,7 +8308,7 @@ func (x *UpdateChoreRequest) String() string {
 func (*UpdateChoreRequest) ProtoMessage() {}
 
 func (x *UpdateChoreRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[141]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[155]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7560,7 +8321,7 @@ func (x *UpdateChoreRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateChoreRequest.ProtoReflect.Descriptor instead.
 func (*UpdateChoreRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{141}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{155}
 }
 
 func (x *UpdateChoreRequest) GetId() int32 {
@@ -7605,6 +8366,13 @@ func (x *UpdateChoreRequest) GetActive() bool {
 	return false
 }
 
+func (x *UpdateChoreRequest) GetStarChartId() int32 {
+	if x != nil {
+		return x.StarChartId
+	}
+	return 0
+}
+
 type UpdateChoreResponse struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	StandardResponse *StandardResponse      `protobuf:"bytes,1,opt,name=standard_response,json=standardResponse,proto3" json:"standard_response,omitempty"`
@@ -7615,7 +8383,7 @@ type UpdateChoreResponse struct {
 
 func (x *UpdateChoreResponse) Reset() {
 	*x = UpdateChoreResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[142]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[156]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7627,7 +8395,7 @@ func (x *UpdateChoreResponse) String() string {
 func (*UpdateChoreResponse) ProtoMessage() {}
 
 func (x *UpdateChoreResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[142]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[156]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7640,7 +8408,7 @@ func (x *UpdateChoreResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateChoreResponse.ProtoReflect.Descriptor instead.
 func (*UpdateChoreResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{142}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{156}
 }
 
 func (x *UpdateChoreResponse) GetStandardResponse() *StandardResponse {
@@ -7666,7 +8434,7 @@ type DeleteChoreRequest struct {
 
 func (x *DeleteChoreRequest) Reset() {
 	*x = DeleteChoreRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[143]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[157]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7678,7 +8446,7 @@ func (x *DeleteChoreRequest) String() string {
 func (*DeleteChoreRequest) ProtoMessage() {}
 
 func (x *DeleteChoreRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[143]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[157]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7691,7 +8459,7 @@ func (x *DeleteChoreRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteChoreRequest.ProtoReflect.Descriptor instead.
 func (*DeleteChoreRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{143}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{157}
 }
 
 func (x *DeleteChoreRequest) GetId() int32 {
@@ -7710,7 +8478,7 @@ type DeleteChoreResponse struct {
 
 func (x *DeleteChoreResponse) Reset() {
 	*x = DeleteChoreResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[144]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[158]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7722,7 +8490,7 @@ func (x *DeleteChoreResponse) String() string {
 func (*DeleteChoreResponse) ProtoMessage() {}
 
 func (x *DeleteChoreResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[144]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[158]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7735,7 +8503,7 @@ func (x *DeleteChoreResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteChoreResponse.ProtoReflect.Descriptor instead.
 func (*DeleteChoreResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{144}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{158}
 }
 
 func (x *DeleteChoreResponse) GetStandardResponse() *StandardResponse {
@@ -7753,7 +8521,7 @@ type ListChorePausesRequest struct {
 
 func (x *ListChorePausesRequest) Reset() {
 	*x = ListChorePausesRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[145]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[159]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7765,7 +8533,7 @@ func (x *ListChorePausesRequest) String() string {
 func (*ListChorePausesRequest) ProtoMessage() {}
 
 func (x *ListChorePausesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[145]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[159]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7778,7 +8546,7 @@ func (x *ListChorePausesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListChorePausesRequest.ProtoReflect.Descriptor instead.
 func (*ListChorePausesRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{145}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{159}
 }
 
 type ListChorePausesResponse struct {
@@ -7790,7 +8558,7 @@ type ListChorePausesResponse struct {
 
 func (x *ListChorePausesResponse) Reset() {
 	*x = ListChorePausesResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[146]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[160]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7802,7 +8570,7 @@ func (x *ListChorePausesResponse) String() string {
 func (*ListChorePausesResponse) ProtoMessage() {}
 
 func (x *ListChorePausesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[146]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[160]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7815,7 +8583,7 @@ func (x *ListChorePausesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListChorePausesResponse.ProtoReflect.Descriptor instead.
 func (*ListChorePausesResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{146}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{160}
 }
 
 func (x *ListChorePausesResponse) GetPauses() []*ChorePause {
@@ -7836,7 +8604,7 @@ type CreateChorePauseRequest struct {
 
 func (x *CreateChorePauseRequest) Reset() {
 	*x = CreateChorePauseRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[147]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[161]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7848,7 +8616,7 @@ func (x *CreateChorePauseRequest) String() string {
 func (*CreateChorePauseRequest) ProtoMessage() {}
 
 func (x *CreateChorePauseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[147]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[161]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7861,7 +8629,7 @@ func (x *CreateChorePauseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateChorePauseRequest.ProtoReflect.Descriptor instead.
 func (*CreateChorePauseRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{147}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{161}
 }
 
 func (x *CreateChorePauseRequest) GetStartDate() string {
@@ -7895,7 +8663,7 @@ type CreateChorePauseResponse struct {
 
 func (x *CreateChorePauseResponse) Reset() {
 	*x = CreateChorePauseResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[148]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[162]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7907,7 +8675,7 @@ func (x *CreateChorePauseResponse) String() string {
 func (*CreateChorePauseResponse) ProtoMessage() {}
 
 func (x *CreateChorePauseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[148]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[162]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7920,7 +8688,7 @@ func (x *CreateChorePauseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateChorePauseResponse.ProtoReflect.Descriptor instead.
 func (*CreateChorePauseResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{148}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{162}
 }
 
 func (x *CreateChorePauseResponse) GetStandardResponse() *StandardResponse {
@@ -7946,7 +8714,7 @@ type DeleteChorePauseRequest struct {
 
 func (x *DeleteChorePauseRequest) Reset() {
 	*x = DeleteChorePauseRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[149]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[163]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7958,7 +8726,7 @@ func (x *DeleteChorePauseRequest) String() string {
 func (*DeleteChorePauseRequest) ProtoMessage() {}
 
 func (x *DeleteChorePauseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[149]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[163]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7971,7 +8739,7 @@ func (x *DeleteChorePauseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteChorePauseRequest.ProtoReflect.Descriptor instead.
 func (*DeleteChorePauseRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{149}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{163}
 }
 
 func (x *DeleteChorePauseRequest) GetId() int32 {
@@ -7990,7 +8758,7 @@ type DeleteChorePauseResponse struct {
 
 func (x *DeleteChorePauseResponse) Reset() {
 	*x = DeleteChorePauseResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[150]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[164]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8002,7 +8770,7 @@ func (x *DeleteChorePauseResponse) String() string {
 func (*DeleteChorePauseResponse) ProtoMessage() {}
 
 func (x *DeleteChorePauseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[150]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[164]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8015,7 +8783,7 @@ func (x *DeleteChorePauseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteChorePauseResponse.ProtoReflect.Descriptor instead.
 func (*DeleteChorePauseResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{150}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{164}
 }
 
 func (x *DeleteChorePauseResponse) GetStandardResponse() *StandardResponse {
@@ -8038,7 +8806,7 @@ type WeeklyStarChartDay struct {
 
 func (x *WeeklyStarChartDay) Reset() {
 	*x = WeeklyStarChartDay{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[151]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[165]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8050,7 +8818,7 @@ func (x *WeeklyStarChartDay) String() string {
 func (*WeeklyStarChartDay) ProtoMessage() {}
 
 func (x *WeeklyStarChartDay) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[151]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[165]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8063,7 +8831,7 @@ func (x *WeeklyStarChartDay) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WeeklyStarChartDay.ProtoReflect.Descriptor instead.
 func (*WeeklyStarChartDay) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{151}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{165}
 }
 
 func (x *WeeklyStarChartDay) GetDate() string {
@@ -8112,7 +8880,7 @@ type WeeklyStarChartChild struct {
 
 func (x *WeeklyStarChartChild) Reset() {
 	*x = WeeklyStarChartChild{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[152]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[166]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8124,7 +8892,7 @@ func (x *WeeklyStarChartChild) String() string {
 func (*WeeklyStarChartChild) ProtoMessage() {}
 
 func (x *WeeklyStarChartChild) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[152]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[166]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8137,7 +8905,7 @@ func (x *WeeklyStarChartChild) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WeeklyStarChartChild.ProtoReflect.Descriptor instead.
 func (*WeeklyStarChartChild) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{152}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{166}
 }
 
 func (x *WeeklyStarChartChild) GetAssignmentId() int32 {
@@ -8174,7 +8942,7 @@ type WeeklyStarChartRow struct {
 
 func (x *WeeklyStarChartRow) Reset() {
 	*x = WeeklyStarChartRow{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[153]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[167]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8186,7 +8954,7 @@ func (x *WeeklyStarChartRow) String() string {
 func (*WeeklyStarChartRow) ProtoMessage() {}
 
 func (x *WeeklyStarChartRow) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[153]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[167]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8199,7 +8967,7 @@ func (x *WeeklyStarChartRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WeeklyStarChartRow.ProtoReflect.Descriptor instead.
 func (*WeeklyStarChartRow) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{153}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{167}
 }
 
 func (x *WeeklyStarChartRow) GetChoreId() int32 {
@@ -8237,29 +9005,29 @@ func (x *WeeklyStarChartRow) GetChildren() []*WeeklyStarChartChild {
 	return nil
 }
 
-type WeeklyStarChartBonusDay struct {
+type WeeklyStarChartBonusChild struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Date          string                 `protobuf:"bytes,1,opt,name=date,proto3" json:"date,omitempty"`
-	Stars         int32                  `protobuf:"varint,2,opt,name=stars,proto3" json:"stars,omitempty"`
+	Child         *FamilyMember          `protobuf:"bytes,1,opt,name=child,proto3" json:"child,omitempty"`
+	Days          []*WeeklyStarChartDay  `protobuf:"bytes,2,rep,name=days,proto3" json:"days,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *WeeklyStarChartBonusDay) Reset() {
-	*x = WeeklyStarChartBonusDay{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[154]
+func (x *WeeklyStarChartBonusChild) Reset() {
+	*x = WeeklyStarChartBonusChild{}
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[168]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *WeeklyStarChartBonusDay) String() string {
+func (x *WeeklyStarChartBonusChild) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*WeeklyStarChartBonusDay) ProtoMessage() {}
+func (*WeeklyStarChartBonusChild) ProtoMessage() {}
 
-func (x *WeeklyStarChartBonusDay) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[154]
+func (x *WeeklyStarChartBonusChild) ProtoReflect() protoreflect.Message {
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[168]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8270,35 +9038,36 @@ func (x *WeeklyStarChartBonusDay) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use WeeklyStarChartBonusDay.ProtoReflect.Descriptor instead.
-func (*WeeklyStarChartBonusDay) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{154}
+// Deprecated: Use WeeklyStarChartBonusChild.ProtoReflect.Descriptor instead.
+func (*WeeklyStarChartBonusChild) Descriptor() ([]byte, []int) {
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{168}
 }
 
-func (x *WeeklyStarChartBonusDay) GetDate() string {
+func (x *WeeklyStarChartBonusChild) GetChild() *FamilyMember {
 	if x != nil {
-		return x.Date
+		return x.Child
 	}
-	return ""
+	return nil
 }
 
-func (x *WeeklyStarChartBonusDay) GetStars() int32 {
+func (x *WeeklyStarChartBonusChild) GetDays() []*WeeklyStarChartDay {
 	if x != nil {
-		return x.Stars
+		return x.Days
 	}
-	return 0
+	return nil
 }
 
 type GetWeeklyStarChartRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	WeekStart     string                 `protobuf:"bytes,1,opt,name=week_start,json=weekStart,proto3" json:"week_start,omitempty"`
+	StarChartId   int32                  `protobuf:"varint,2,opt,name=star_chart_id,json=starChartId,proto3" json:"star_chart_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetWeeklyStarChartRequest) Reset() {
 	*x = GetWeeklyStarChartRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[155]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[169]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8310,7 +9079,7 @@ func (x *GetWeeklyStarChartRequest) String() string {
 func (*GetWeeklyStarChartRequest) ProtoMessage() {}
 
 func (x *GetWeeklyStarChartRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[155]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[169]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8323,7 +9092,7 @@ func (x *GetWeeklyStarChartRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWeeklyStarChartRequest.ProtoReflect.Descriptor instead.
 func (*GetWeeklyStarChartRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{155}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{169}
 }
 
 func (x *GetWeeklyStarChartRequest) GetWeekStart() string {
@@ -8333,19 +9102,28 @@ func (x *GetWeeklyStarChartRequest) GetWeekStart() string {
 	return ""
 }
 
+func (x *GetWeeklyStarChartRequest) GetStarChartId() int32 {
+	if x != nil {
+		return x.StarChartId
+	}
+	return 0
+}
+
 type GetWeeklyStarChartResponse struct {
-	state         protoimpl.MessageState     `protogen:"open.v1"`
-	WeekStart     string                     `protobuf:"bytes,1,opt,name=week_start,json=weekStart,proto3" json:"week_start,omitempty"`
-	WeekEnd       string                     `protobuf:"bytes,2,opt,name=week_end,json=weekEnd,proto3" json:"week_end,omitempty"`
-	Rows          []*WeeklyStarChartRow      `protobuf:"bytes,3,rep,name=rows,proto3" json:"rows,omitempty"`
-	BonusDays     []*WeeklyStarChartBonusDay `protobuf:"bytes,4,rep,name=bonus_days,json=bonusDays,proto3" json:"bonus_days,omitempty"`
+	state         protoimpl.MessageState       `protogen:"open.v1"`
+	WeekStart     string                       `protobuf:"bytes,1,opt,name=week_start,json=weekStart,proto3" json:"week_start,omitempty"`
+	WeekEnd       string                       `protobuf:"bytes,2,opt,name=week_end,json=weekEnd,proto3" json:"week_end,omitempty"`
+	Rows          []*WeeklyStarChartRow        `protobuf:"bytes,3,rep,name=rows,proto3" json:"rows,omitempty"`
+	BonusChildren []*WeeklyStarChartBonusChild `protobuf:"bytes,4,rep,name=bonus_children,json=bonusChildren,proto3" json:"bonus_children,omitempty"`
+	StarChartId   int32                        `protobuf:"varint,5,opt,name=star_chart_id,json=starChartId,proto3" json:"star_chart_id,omitempty"`
+	StarChartName string                       `protobuf:"bytes,6,opt,name=star_chart_name,json=starChartName,proto3" json:"star_chart_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetWeeklyStarChartResponse) Reset() {
 	*x = GetWeeklyStarChartResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[156]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[170]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8357,7 +9135,7 @@ func (x *GetWeeklyStarChartResponse) String() string {
 func (*GetWeeklyStarChartResponse) ProtoMessage() {}
 
 func (x *GetWeeklyStarChartResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[156]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[170]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8370,7 +9148,7 @@ func (x *GetWeeklyStarChartResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWeeklyStarChartResponse.ProtoReflect.Descriptor instead.
 func (*GetWeeklyStarChartResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{156}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{170}
 }
 
 func (x *GetWeeklyStarChartResponse) GetWeekStart() string {
@@ -8394,11 +9172,25 @@ func (x *GetWeeklyStarChartResponse) GetRows() []*WeeklyStarChartRow {
 	return nil
 }
 
-func (x *GetWeeklyStarChartResponse) GetBonusDays() []*WeeklyStarChartBonusDay {
+func (x *GetWeeklyStarChartResponse) GetBonusChildren() []*WeeklyStarChartBonusChild {
 	if x != nil {
-		return x.BonusDays
+		return x.BonusChildren
 	}
 	return nil
+}
+
+func (x *GetWeeklyStarChartResponse) GetStarChartId() int32 {
+	if x != nil {
+		return x.StarChartId
+	}
+	return 0
+}
+
+func (x *GetWeeklyStarChartResponse) GetStarChartName() string {
+	if x != nil {
+		return x.StarChartName
+	}
+	return ""
 }
 
 type CompleteChoreRequest struct {
@@ -8412,7 +9204,7 @@ type CompleteChoreRequest struct {
 
 func (x *CompleteChoreRequest) Reset() {
 	*x = CompleteChoreRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[157]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[171]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8424,7 +9216,7 @@ func (x *CompleteChoreRequest) String() string {
 func (*CompleteChoreRequest) ProtoMessage() {}
 
 func (x *CompleteChoreRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[157]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[171]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8437,7 +9229,7 @@ func (x *CompleteChoreRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompleteChoreRequest.ProtoReflect.Descriptor instead.
 func (*CompleteChoreRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{157}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{171}
 }
 
 func (x *CompleteChoreRequest) GetChoreId() int32 {
@@ -8471,7 +9263,7 @@ type CompleteChoreResponse struct {
 
 func (x *CompleteChoreResponse) Reset() {
 	*x = CompleteChoreResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[158]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[172]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8483,7 +9275,7 @@ func (x *CompleteChoreResponse) String() string {
 func (*CompleteChoreResponse) ProtoMessage() {}
 
 func (x *CompleteChoreResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[158]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[172]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8496,7 +9288,7 @@ func (x *CompleteChoreResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompleteChoreResponse.ProtoReflect.Descriptor instead.
 func (*CompleteChoreResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{158}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{172}
 }
 
 func (x *CompleteChoreResponse) GetStandardResponse() *StandardResponse {
@@ -8524,7 +9316,7 @@ type UncompleteChoreRequest struct {
 
 func (x *UncompleteChoreRequest) Reset() {
 	*x = UncompleteChoreRequest{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[159]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[173]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8536,7 +9328,7 @@ func (x *UncompleteChoreRequest) String() string {
 func (*UncompleteChoreRequest) ProtoMessage() {}
 
 func (x *UncompleteChoreRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[159]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[173]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8549,7 +9341,7 @@ func (x *UncompleteChoreRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UncompleteChoreRequest.ProtoReflect.Descriptor instead.
 func (*UncompleteChoreRequest) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{159}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{173}
 }
 
 func (x *UncompleteChoreRequest) GetChoreId() int32 {
@@ -8583,7 +9375,7 @@ type UncompleteChoreResponse struct {
 
 func (x *UncompleteChoreResponse) Reset() {
 	*x = UncompleteChoreResponse{}
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[160]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[174]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8595,7 +9387,7 @@ func (x *UncompleteChoreResponse) String() string {
 func (*UncompleteChoreResponse) ProtoMessage() {}
 
 func (x *UncompleteChoreResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_starapp_api_v1_starapp_proto_msgTypes[160]
+	mi := &file_starapp_api_v1_starapp_proto_msgTypes[174]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8608,7 +9400,7 @@ func (x *UncompleteChoreResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UncompleteChoreResponse.ProtoReflect.Descriptor instead.
 func (*UncompleteChoreResponse) Descriptor() ([]byte, []int) {
-	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{160}
+	return file_starapp_api_v1_starapp_proto_rawDescGZIP(), []int{174}
 }
 
 func (x *UncompleteChoreResponse) GetStandardResponse() *StandardResponse {
@@ -8993,6 +9785,20 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"\tmember_id\x18\x01 \x01(\x05R\bmemberId\"\xa1\x01\n" +
 	"\x1aDeleteMemberAvatarResponse\x12M\n" +
 	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x124\n" +
+	"\x06member\x18\x02 \x01(\v2\x1c.starapp.api.v1.FamilyMemberR\x06member\"N\n" +
+	"\x11MemberAvatarEntry\x12\x1a\n" +
+	"\bfilename\x18\x01 \x01(\tR\bfilename\x12\x1d\n" +
+	"\n" +
+	"is_current\x18\x02 \x01(\bR\tisCurrent\"7\n" +
+	"\x18ListMemberAvatarsRequest\x12\x1b\n" +
+	"\tmember_id\x18\x01 \x01(\x05R\bmemberId\"X\n" +
+	"\x19ListMemberAvatarsResponse\x12;\n" +
+	"\aavatars\x18\x01 \x03(\v2!.starapp.api.v1.MemberAvatarEntryR\aavatars\"T\n" +
+	"\x19SelectMemberAvatarRequest\x12\x1b\n" +
+	"\tmember_id\x18\x01 \x01(\x05R\bmemberId\x12\x1a\n" +
+	"\bfilename\x18\x02 \x01(\tR\bfilename\"\xa1\x01\n" +
+	"\x1aSelectMemberAvatarResponse\x12M\n" +
+	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x124\n" +
 	"\x06member\x18\x02 \x01(\v2\x1c.starapp.api.v1.FamilyMemberR\x06member\"g\n" +
 	"\x11AwardStarsRequest\x12&\n" +
 	"\x0fchild_member_id\x18\x01 \x01(\x05R\rchildMemberId\x12\x16\n" +
@@ -9090,7 +9896,7 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"\x06member\x18\x01 \x01(\v2\x1c.starapp.api.v1.FamilyMemberR\x06member\x12\x18\n" +
 	"\abalance\x18\x02 \x01(\x05R\abalance\x12D\n" +
 	"\rrecent_awards\x18\x03 \x03(\v2\x1f.starapp.api.v1.StarLedgerEntryR\frecentAwards\x120\n" +
-	"\arewards\x18\x04 \x03(\v2\x16.starapp.api.v1.RewardR\arewards\"\xe8\x01\n" +
+	"\arewards\x18\x04 \x03(\v2\x16.starapp.api.v1.RewardR\arewards\"\x8c\x02\n" +
 	"\x05Chore\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x1b\n" +
 	"\tfamily_id\x18\x02 \x01(\x05R\bfamilyId\x12\x14\n" +
@@ -9101,7 +9907,46 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"\x06active\x18\x06 \x01(\bR\x06active\x12(\n" +
 	"\x10child_member_ids\x18\a \x03(\x05R\x0echildMemberIds\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\b \x01(\tR\tcreatedAt\"\xaa\x01\n" +
+	"created_at\x18\b \x01(\tR\tcreatedAt\x12\"\n" +
+	"\rstar_chart_id\x18\t \x01(\x05R\vstarChartId\"\xc3\x01\n" +
+	"\tStarChart\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x1b\n" +
+	"\tfamily_id\x18\x02 \x01(\x05R\bfamilyId\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x1d\n" +
+	"\n" +
+	"sort_order\x18\x04 \x01(\x05R\tsortOrder\x12\x16\n" +
+	"\x06active\x18\x05 \x01(\bR\x06active\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\tR\tcreatedAt\x12\x1f\n" +
+	"\vchore_count\x18\a \x01(\x05R\n" +
+	"choreCount\"B\n" +
+	"\x15ListStarChartsRequest\x12)\n" +
+	"\x10include_inactive\x18\x01 \x01(\bR\x0fincludeInactive\"T\n" +
+	"\x16ListStarChartsResponse\x12:\n" +
+	"\vstar_charts\x18\x01 \x03(\v2\x19.starapp.api.v1.StarChartR\n" +
+	"starCharts\"K\n" +
+	"\x16CreateStarChartRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1d\n" +
+	"\n" +
+	"sort_order\x18\x02 \x01(\x05R\tsortOrder\"\xa2\x01\n" +
+	"\x17CreateStarChartResponse\x12M\n" +
+	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x128\n" +
+	"\n" +
+	"star_chart\x18\x02 \x01(\v2\x19.starapp.api.v1.StarChartR\tstarChart\"s\n" +
+	"\x16UpdateStarChartRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1d\n" +
+	"\n" +
+	"sort_order\x18\x03 \x01(\x05R\tsortOrder\x12\x16\n" +
+	"\x06active\x18\x04 \x01(\bR\x06active\"\xa2\x01\n" +
+	"\x17UpdateStarChartResponse\x12M\n" +
+	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x128\n" +
+	"\n" +
+	"star_chart\x18\x02 \x01(\v2\x19.starapp.api.v1.StarChartR\tstarChart\"(\n" +
+	"\x16DeleteStarChartRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\"h\n" +
+	"\x17DeleteStarChartResponse\x12M\n" +
+	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\"\xaa\x01\n" +
 	"\n" +
 	"ChorePause\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x1b\n" +
@@ -9111,20 +9956,22 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"\bend_date\x18\x04 \x01(\tR\aendDate\x12\x16\n" +
 	"\x06reason\x18\x05 \x01(\tR\x06reason\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x06 \x01(\tR\tcreatedAt\">\n" +
+	"created_at\x18\x06 \x01(\tR\tcreatedAt\"b\n" +
 	"\x11ListChoresRequest\x12)\n" +
-	"\x10include_inactive\x18\x01 \x01(\bR\x0fincludeInactive\"C\n" +
+	"\x10include_inactive\x18\x01 \x01(\bR\x0fincludeInactive\x12\"\n" +
+	"\rstar_chart_id\x18\x02 \x01(\x05R\vstarChartId\"C\n" +
 	"\x12ListChoresResponse\x12-\n" +
-	"\x06chores\x18\x01 \x03(\v2\x15.starapp.api.v1.ChoreR\x06chores\"\x91\x01\n" +
+	"\x06chores\x18\x01 \x03(\v2\x15.starapp.api.v1.ChoreR\x06chores\"\xb5\x01\n" +
 	"\x12CreateChoreRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x1f\n" +
 	"\vstar_reward\x18\x02 \x01(\x05R\n" +
 	"starReward\x12\x1a\n" +
 	"\bweekdays\x18\x03 \x03(\x05R\bweekdays\x12(\n" +
-	"\x10child_member_ids\x18\x04 \x03(\x05R\x0echildMemberIds\"\x91\x01\n" +
+	"\x10child_member_ids\x18\x04 \x03(\x05R\x0echildMemberIds\x12\"\n" +
+	"\rstar_chart_id\x18\x05 \x01(\x05R\vstarChartId\"\x91\x01\n" +
 	"\x13CreateChoreResponse\x12M\n" +
 	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x12+\n" +
-	"\x05chore\x18\x02 \x01(\v2\x15.starapp.api.v1.ChoreR\x05chore\"\xb9\x01\n" +
+	"\x05chore\x18\x02 \x01(\v2\x15.starapp.api.v1.ChoreR\x05chore\"\xdd\x01\n" +
 	"\x12UpdateChoreRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x1f\n" +
@@ -9132,7 +9979,8 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"starReward\x12\x1a\n" +
 	"\bweekdays\x18\x04 \x03(\x05R\bweekdays\x12(\n" +
 	"\x10child_member_ids\x18\x05 \x03(\x05R\x0echildMemberIds\x12\x16\n" +
-	"\x06active\x18\x06 \x01(\bR\x06active\"\x91\x01\n" +
+	"\x06active\x18\x06 \x01(\bR\x06active\x12\"\n" +
+	"\rstar_chart_id\x18\a \x01(\x05R\vstarChartId\"\x91\x01\n" +
 	"\x13UpdateChoreResponse\x12M\n" +
 	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x12+\n" +
 	"\x05chore\x18\x02 \x01(\v2\x15.starapp.api.v1.ChoreR\x05chore\"$\n" +
@@ -9171,20 +10019,22 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"\vstar_reward\x18\x03 \x01(\x05R\n" +
 	"starReward\x12\x1a\n" +
 	"\bweekdays\x18\x04 \x03(\x05R\bweekdays\x12@\n" +
-	"\bchildren\x18\x05 \x03(\v2$.starapp.api.v1.WeeklyStarChartChildR\bchildren\"C\n" +
-	"\x17WeeklyStarChartBonusDay\x12\x12\n" +
-	"\x04date\x18\x01 \x01(\tR\x04date\x12\x14\n" +
-	"\x05stars\x18\x02 \x01(\x05R\x05stars\":\n" +
+	"\bchildren\x18\x05 \x03(\v2$.starapp.api.v1.WeeklyStarChartChildR\bchildren\"\x87\x01\n" +
+	"\x19WeeklyStarChartBonusChild\x122\n" +
+	"\x05child\x18\x01 \x01(\v2\x1c.starapp.api.v1.FamilyMemberR\x05child\x126\n" +
+	"\x04days\x18\x02 \x03(\v2\".starapp.api.v1.WeeklyStarChartDayR\x04days\"^\n" +
 	"\x19GetWeeklyStarChartRequest\x12\x1d\n" +
 	"\n" +
-	"week_start\x18\x01 \x01(\tR\tweekStart\"\xd6\x01\n" +
+	"week_start\x18\x01 \x01(\tR\tweekStart\x12\"\n" +
+	"\rstar_chart_id\x18\x02 \x01(\x05R\vstarChartId\"\xac\x02\n" +
 	"\x1aGetWeeklyStarChartResponse\x12\x1d\n" +
 	"\n" +
 	"week_start\x18\x01 \x01(\tR\tweekStart\x12\x19\n" +
 	"\bweek_end\x18\x02 \x01(\tR\aweekEnd\x126\n" +
-	"\x04rows\x18\x03 \x03(\v2\".starapp.api.v1.WeeklyStarChartRowR\x04rows\x12F\n" +
-	"\n" +
-	"bonus_days\x18\x04 \x03(\v2'.starapp.api.v1.WeeklyStarChartBonusDayR\tbonusDays\"m\n" +
+	"\x04rows\x18\x03 \x03(\v2\".starapp.api.v1.WeeklyStarChartRowR\x04rows\x12P\n" +
+	"\x0ebonus_children\x18\x04 \x03(\v2).starapp.api.v1.WeeklyStarChartBonusChildR\rbonusChildren\x12\"\n" +
+	"\rstar_chart_id\x18\x05 \x01(\x05R\vstarChartId\x12&\n" +
+	"\x0fstar_chart_name\x18\x06 \x01(\tR\rstarChartName\"m\n" +
 	"\x14CompleteChoreRequest\x12\x19\n" +
 	"\bchore_id\x18\x01 \x01(\x05R\achoreId\x12&\n" +
 	"\x0fchild_member_id\x18\x02 \x01(\x05R\rchildMemberId\x12\x12\n" +
@@ -9200,7 +10050,7 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"\x17UncompleteChoreResponse\x12M\n" +
 	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x12\x1f\n" +
 	"\vnew_balance\x18\x02 \x01(\x05R\n" +
-	"newBalance2\xe05\n" +
+	"newBalance2\xc4:\n" +
 	"\x0eStarAppService\x12A\n" +
 	"\x04Init\x12\x1b.starapp.api.v1.InitRequest\x1a\x1c.starapp.api.v1.InitResponse\x12P\n" +
 	"\tGetStatus\x12 .starapp.api.v1.GetStatusRequest\x1a!.starapp.api.v1.GetStatusResponse\x12\x89\x01\n" +
@@ -9251,7 +10101,9 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"\fUpdateMember\x12#.starapp.api.v1.UpdateMemberRequest\x1a$.starapp.api.v1.UpdateMemberResponse\x12Y\n" +
 	"\fDeleteMember\x12#.starapp.api.v1.DeleteMemberRequest\x1a$.starapp.api.v1.DeleteMemberResponse\x12k\n" +
 	"\x12UploadMemberAvatar\x12).starapp.api.v1.UploadMemberAvatarRequest\x1a*.starapp.api.v1.UploadMemberAvatarResponse\x12k\n" +
-	"\x12DeleteMemberAvatar\x12).starapp.api.v1.DeleteMemberAvatarRequest\x1a*.starapp.api.v1.DeleteMemberAvatarResponse\x12S\n" +
+	"\x12DeleteMemberAvatar\x12).starapp.api.v1.DeleteMemberAvatarRequest\x1a*.starapp.api.v1.DeleteMemberAvatarResponse\x12h\n" +
+	"\x11ListMemberAvatars\x12(.starapp.api.v1.ListMemberAvatarsRequest\x1a).starapp.api.v1.ListMemberAvatarsResponse\x12k\n" +
+	"\x12SelectMemberAvatar\x12).starapp.api.v1.SelectMemberAvatarRequest\x1a*.starapp.api.v1.SelectMemberAvatarResponse\x12S\n" +
 	"\n" +
 	"AwardStars\x12!.starapp.api.v1.AwardStarsRequest\x1a\".starapp.api.v1.AwardStarsResponse\x12V\n" +
 	"\vRevokeStars\x12\".starapp.api.v1.RevokeStarsRequest\x1a#.starapp.api.v1.RevokeStarsResponse\x12e\n" +
@@ -9267,7 +10119,11 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"\x10RejectRedemption\x12'.starapp.api.v1.RejectRedemptionRequest\x1a(.starapp.api.v1.RejectRedemptionResponse\x12b\n" +
 	"\x0fListRedemptions\x12&.starapp.api.v1.ListRedemptionsRequest\x1a'.starapp.api.v1.ListRedemptionsResponse\x12q\n" +
 	"\x14GetParentHomeSummary\x12+.starapp.api.v1.GetParentHomeSummaryRequest\x1a,.starapp.api.v1.GetParentHomeSummaryResponse\x12n\n" +
-	"\x13GetChildHomeSummary\x12*.starapp.api.v1.GetChildHomeSummaryRequest\x1a+.starapp.api.v1.GetChildHomeSummaryResponse\x12S\n" +
+	"\x13GetChildHomeSummary\x12*.starapp.api.v1.GetChildHomeSummaryRequest\x1a+.starapp.api.v1.GetChildHomeSummaryResponse\x12_\n" +
+	"\x0eListStarCharts\x12%.starapp.api.v1.ListStarChartsRequest\x1a&.starapp.api.v1.ListStarChartsResponse\x12b\n" +
+	"\x0fCreateStarChart\x12&.starapp.api.v1.CreateStarChartRequest\x1a'.starapp.api.v1.CreateStarChartResponse\x12b\n" +
+	"\x0fUpdateStarChart\x12&.starapp.api.v1.UpdateStarChartRequest\x1a'.starapp.api.v1.UpdateStarChartResponse\x12b\n" +
+	"\x0fDeleteStarChart\x12&.starapp.api.v1.DeleteStarChartRequest\x1a'.starapp.api.v1.DeleteStarChartResponse\x12S\n" +
 	"\n" +
 	"ListChores\x12!.starapp.api.v1.ListChoresRequest\x1a\".starapp.api.v1.ListChoresResponse\x12V\n" +
 	"\vCreateChore\x12\".starapp.api.v1.CreateChoreRequest\x1a#.starapp.api.v1.CreateChoreResponse\x12V\n" +
@@ -9292,7 +10148,7 @@ func file_starapp_api_v1_starapp_proto_rawDescGZIP() []byte {
 	return file_starapp_api_v1_starapp_proto_rawDescData
 }
 
-var file_starapp_api_v1_starapp_proto_msgTypes = make([]protoimpl.MessageInfo, 161)
+var file_starapp_api_v1_starapp_proto_msgTypes = make([]protoimpl.MessageInfo, 175)
 var file_starapp_api_v1_starapp_proto_goTypes = []any{
 	(*StandardResponse)(nil),                     // 0: starapp.api.v1.StandardResponse
 	(*Features)(nil),                             // 1: starapp.api.v1.Features
@@ -9400,61 +10256,75 @@ var file_starapp_api_v1_starapp_proto_goTypes = []any{
 	(*UploadMemberAvatarResponse)(nil),           // 103: starapp.api.v1.UploadMemberAvatarResponse
 	(*DeleteMemberAvatarRequest)(nil),            // 104: starapp.api.v1.DeleteMemberAvatarRequest
 	(*DeleteMemberAvatarResponse)(nil),           // 105: starapp.api.v1.DeleteMemberAvatarResponse
-	(*AwardStarsRequest)(nil),                    // 106: starapp.api.v1.AwardStarsRequest
-	(*AwardStarsResponse)(nil),                   // 107: starapp.api.v1.AwardStarsResponse
-	(*RevokeStarsRequest)(nil),                   // 108: starapp.api.v1.RevokeStarsRequest
-	(*RevokeStarsResponse)(nil),                  // 109: starapp.api.v1.RevokeStarsResponse
-	(*GetMemberBalanceRequest)(nil),              // 110: starapp.api.v1.GetMemberBalanceRequest
-	(*GetMemberBalanceResponse)(nil),             // 111: starapp.api.v1.GetMemberBalanceResponse
-	(*ListLedgerRequest)(nil),                    // 112: starapp.api.v1.ListLedgerRequest
-	(*ListLedgerResponse)(nil),                   // 113: starapp.api.v1.ListLedgerResponse
-	(*ListRewardsRequest)(nil),                   // 114: starapp.api.v1.ListRewardsRequest
-	(*ListRewardsResponse)(nil),                  // 115: starapp.api.v1.ListRewardsResponse
-	(*CreateRewardRequest)(nil),                  // 116: starapp.api.v1.CreateRewardRequest
-	(*CreateRewardResponse)(nil),                 // 117: starapp.api.v1.CreateRewardResponse
-	(*UpdateRewardRequest)(nil),                  // 118: starapp.api.v1.UpdateRewardRequest
-	(*UpdateRewardResponse)(nil),                 // 119: starapp.api.v1.UpdateRewardResponse
-	(*DeleteRewardRequest)(nil),                  // 120: starapp.api.v1.DeleteRewardRequest
-	(*DeleteRewardResponse)(nil),                 // 121: starapp.api.v1.DeleteRewardResponse
-	(*RequestRedemptionRequest)(nil),             // 122: starapp.api.v1.RequestRedemptionRequest
-	(*RequestRedemptionResponse)(nil),            // 123: starapp.api.v1.RequestRedemptionResponse
-	(*ApproveRedemptionRequest)(nil),             // 124: starapp.api.v1.ApproveRedemptionRequest
-	(*ApproveRedemptionResponse)(nil),            // 125: starapp.api.v1.ApproveRedemptionResponse
-	(*RejectRedemptionRequest)(nil),              // 126: starapp.api.v1.RejectRedemptionRequest
-	(*RejectRedemptionResponse)(nil),             // 127: starapp.api.v1.RejectRedemptionResponse
-	(*ListRedemptionsRequest)(nil),               // 128: starapp.api.v1.ListRedemptionsRequest
-	(*ListRedemptionsResponse)(nil),              // 129: starapp.api.v1.ListRedemptionsResponse
-	(*ChildHomeSummary)(nil),                     // 130: starapp.api.v1.ChildHomeSummary
-	(*GetParentHomeSummaryRequest)(nil),          // 131: starapp.api.v1.GetParentHomeSummaryRequest
-	(*GetParentHomeSummaryResponse)(nil),         // 132: starapp.api.v1.GetParentHomeSummaryResponse
-	(*GetChildHomeSummaryRequest)(nil),           // 133: starapp.api.v1.GetChildHomeSummaryRequest
-	(*GetChildHomeSummaryResponse)(nil),          // 134: starapp.api.v1.GetChildHomeSummaryResponse
-	(*Chore)(nil),                                // 135: starapp.api.v1.Chore
-	(*ChorePause)(nil),                           // 136: starapp.api.v1.ChorePause
-	(*ListChoresRequest)(nil),                    // 137: starapp.api.v1.ListChoresRequest
-	(*ListChoresResponse)(nil),                   // 138: starapp.api.v1.ListChoresResponse
-	(*CreateChoreRequest)(nil),                   // 139: starapp.api.v1.CreateChoreRequest
-	(*CreateChoreResponse)(nil),                  // 140: starapp.api.v1.CreateChoreResponse
-	(*UpdateChoreRequest)(nil),                   // 141: starapp.api.v1.UpdateChoreRequest
-	(*UpdateChoreResponse)(nil),                  // 142: starapp.api.v1.UpdateChoreResponse
-	(*DeleteChoreRequest)(nil),                   // 143: starapp.api.v1.DeleteChoreRequest
-	(*DeleteChoreResponse)(nil),                  // 144: starapp.api.v1.DeleteChoreResponse
-	(*ListChorePausesRequest)(nil),               // 145: starapp.api.v1.ListChorePausesRequest
-	(*ListChorePausesResponse)(nil),              // 146: starapp.api.v1.ListChorePausesResponse
-	(*CreateChorePauseRequest)(nil),              // 147: starapp.api.v1.CreateChorePauseRequest
-	(*CreateChorePauseResponse)(nil),             // 148: starapp.api.v1.CreateChorePauseResponse
-	(*DeleteChorePauseRequest)(nil),              // 149: starapp.api.v1.DeleteChorePauseRequest
-	(*DeleteChorePauseResponse)(nil),             // 150: starapp.api.v1.DeleteChorePauseResponse
-	(*WeeklyStarChartDay)(nil),                   // 151: starapp.api.v1.WeeklyStarChartDay
-	(*WeeklyStarChartChild)(nil),                 // 152: starapp.api.v1.WeeklyStarChartChild
-	(*WeeklyStarChartRow)(nil),                   // 153: starapp.api.v1.WeeklyStarChartRow
-	(*WeeklyStarChartBonusDay)(nil),              // 154: starapp.api.v1.WeeklyStarChartBonusDay
-	(*GetWeeklyStarChartRequest)(nil),            // 155: starapp.api.v1.GetWeeklyStarChartRequest
-	(*GetWeeklyStarChartResponse)(nil),           // 156: starapp.api.v1.GetWeeklyStarChartResponse
-	(*CompleteChoreRequest)(nil),                 // 157: starapp.api.v1.CompleteChoreRequest
-	(*CompleteChoreResponse)(nil),                // 158: starapp.api.v1.CompleteChoreResponse
-	(*UncompleteChoreRequest)(nil),               // 159: starapp.api.v1.UncompleteChoreRequest
-	(*UncompleteChoreResponse)(nil),              // 160: starapp.api.v1.UncompleteChoreResponse
+	(*MemberAvatarEntry)(nil),                    // 106: starapp.api.v1.MemberAvatarEntry
+	(*ListMemberAvatarsRequest)(nil),             // 107: starapp.api.v1.ListMemberAvatarsRequest
+	(*ListMemberAvatarsResponse)(nil),            // 108: starapp.api.v1.ListMemberAvatarsResponse
+	(*SelectMemberAvatarRequest)(nil),            // 109: starapp.api.v1.SelectMemberAvatarRequest
+	(*SelectMemberAvatarResponse)(nil),           // 110: starapp.api.v1.SelectMemberAvatarResponse
+	(*AwardStarsRequest)(nil),                    // 111: starapp.api.v1.AwardStarsRequest
+	(*AwardStarsResponse)(nil),                   // 112: starapp.api.v1.AwardStarsResponse
+	(*RevokeStarsRequest)(nil),                   // 113: starapp.api.v1.RevokeStarsRequest
+	(*RevokeStarsResponse)(nil),                  // 114: starapp.api.v1.RevokeStarsResponse
+	(*GetMemberBalanceRequest)(nil),              // 115: starapp.api.v1.GetMemberBalanceRequest
+	(*GetMemberBalanceResponse)(nil),             // 116: starapp.api.v1.GetMemberBalanceResponse
+	(*ListLedgerRequest)(nil),                    // 117: starapp.api.v1.ListLedgerRequest
+	(*ListLedgerResponse)(nil),                   // 118: starapp.api.v1.ListLedgerResponse
+	(*ListRewardsRequest)(nil),                   // 119: starapp.api.v1.ListRewardsRequest
+	(*ListRewardsResponse)(nil),                  // 120: starapp.api.v1.ListRewardsResponse
+	(*CreateRewardRequest)(nil),                  // 121: starapp.api.v1.CreateRewardRequest
+	(*CreateRewardResponse)(nil),                 // 122: starapp.api.v1.CreateRewardResponse
+	(*UpdateRewardRequest)(nil),                  // 123: starapp.api.v1.UpdateRewardRequest
+	(*UpdateRewardResponse)(nil),                 // 124: starapp.api.v1.UpdateRewardResponse
+	(*DeleteRewardRequest)(nil),                  // 125: starapp.api.v1.DeleteRewardRequest
+	(*DeleteRewardResponse)(nil),                 // 126: starapp.api.v1.DeleteRewardResponse
+	(*RequestRedemptionRequest)(nil),             // 127: starapp.api.v1.RequestRedemptionRequest
+	(*RequestRedemptionResponse)(nil),            // 128: starapp.api.v1.RequestRedemptionResponse
+	(*ApproveRedemptionRequest)(nil),             // 129: starapp.api.v1.ApproveRedemptionRequest
+	(*ApproveRedemptionResponse)(nil),            // 130: starapp.api.v1.ApproveRedemptionResponse
+	(*RejectRedemptionRequest)(nil),              // 131: starapp.api.v1.RejectRedemptionRequest
+	(*RejectRedemptionResponse)(nil),             // 132: starapp.api.v1.RejectRedemptionResponse
+	(*ListRedemptionsRequest)(nil),               // 133: starapp.api.v1.ListRedemptionsRequest
+	(*ListRedemptionsResponse)(nil),              // 134: starapp.api.v1.ListRedemptionsResponse
+	(*ChildHomeSummary)(nil),                     // 135: starapp.api.v1.ChildHomeSummary
+	(*GetParentHomeSummaryRequest)(nil),          // 136: starapp.api.v1.GetParentHomeSummaryRequest
+	(*GetParentHomeSummaryResponse)(nil),         // 137: starapp.api.v1.GetParentHomeSummaryResponse
+	(*GetChildHomeSummaryRequest)(nil),           // 138: starapp.api.v1.GetChildHomeSummaryRequest
+	(*GetChildHomeSummaryResponse)(nil),          // 139: starapp.api.v1.GetChildHomeSummaryResponse
+	(*Chore)(nil),                                // 140: starapp.api.v1.Chore
+	(*StarChart)(nil),                            // 141: starapp.api.v1.StarChart
+	(*ListStarChartsRequest)(nil),                // 142: starapp.api.v1.ListStarChartsRequest
+	(*ListStarChartsResponse)(nil),               // 143: starapp.api.v1.ListStarChartsResponse
+	(*CreateStarChartRequest)(nil),               // 144: starapp.api.v1.CreateStarChartRequest
+	(*CreateStarChartResponse)(nil),              // 145: starapp.api.v1.CreateStarChartResponse
+	(*UpdateStarChartRequest)(nil),               // 146: starapp.api.v1.UpdateStarChartRequest
+	(*UpdateStarChartResponse)(nil),              // 147: starapp.api.v1.UpdateStarChartResponse
+	(*DeleteStarChartRequest)(nil),               // 148: starapp.api.v1.DeleteStarChartRequest
+	(*DeleteStarChartResponse)(nil),              // 149: starapp.api.v1.DeleteStarChartResponse
+	(*ChorePause)(nil),                           // 150: starapp.api.v1.ChorePause
+	(*ListChoresRequest)(nil),                    // 151: starapp.api.v1.ListChoresRequest
+	(*ListChoresResponse)(nil),                   // 152: starapp.api.v1.ListChoresResponse
+	(*CreateChoreRequest)(nil),                   // 153: starapp.api.v1.CreateChoreRequest
+	(*CreateChoreResponse)(nil),                  // 154: starapp.api.v1.CreateChoreResponse
+	(*UpdateChoreRequest)(nil),                   // 155: starapp.api.v1.UpdateChoreRequest
+	(*UpdateChoreResponse)(nil),                  // 156: starapp.api.v1.UpdateChoreResponse
+	(*DeleteChoreRequest)(nil),                   // 157: starapp.api.v1.DeleteChoreRequest
+	(*DeleteChoreResponse)(nil),                  // 158: starapp.api.v1.DeleteChoreResponse
+	(*ListChorePausesRequest)(nil),               // 159: starapp.api.v1.ListChorePausesRequest
+	(*ListChorePausesResponse)(nil),              // 160: starapp.api.v1.ListChorePausesResponse
+	(*CreateChorePauseRequest)(nil),              // 161: starapp.api.v1.CreateChorePauseRequest
+	(*CreateChorePauseResponse)(nil),             // 162: starapp.api.v1.CreateChorePauseResponse
+	(*DeleteChorePauseRequest)(nil),              // 163: starapp.api.v1.DeleteChorePauseRequest
+	(*DeleteChorePauseResponse)(nil),             // 164: starapp.api.v1.DeleteChorePauseResponse
+	(*WeeklyStarChartDay)(nil),                   // 165: starapp.api.v1.WeeklyStarChartDay
+	(*WeeklyStarChartChild)(nil),                 // 166: starapp.api.v1.WeeklyStarChartChild
+	(*WeeklyStarChartRow)(nil),                   // 167: starapp.api.v1.WeeklyStarChartRow
+	(*WeeklyStarChartBonusChild)(nil),            // 168: starapp.api.v1.WeeklyStarChartBonusChild
+	(*GetWeeklyStarChartRequest)(nil),            // 169: starapp.api.v1.GetWeeklyStarChartRequest
+	(*GetWeeklyStarChartResponse)(nil),           // 170: starapp.api.v1.GetWeeklyStarChartResponse
+	(*CompleteChoreRequest)(nil),                 // 171: starapp.api.v1.CompleteChoreRequest
+	(*CompleteChoreResponse)(nil),                // 172: starapp.api.v1.CompleteChoreResponse
+	(*UncompleteChoreRequest)(nil),               // 173: starapp.api.v1.UncompleteChoreRequest
+	(*UncompleteChoreResponse)(nil),              // 174: starapp.api.v1.UncompleteChoreResponse
 }
 var file_starapp_api_v1_starapp_proto_depIdxs = []int32{
 	1,   // 0: starapp.api.v1.InitResponse.features:type_name -> starapp.api.v1.Features
@@ -9501,195 +10371,218 @@ var file_starapp_api_v1_starapp_proto_depIdxs = []int32{
 	86,  // 41: starapp.api.v1.UploadMemberAvatarResponse.member:type_name -> starapp.api.v1.FamilyMember
 	0,   // 42: starapp.api.v1.DeleteMemberAvatarResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
 	86,  // 43: starapp.api.v1.DeleteMemberAvatarResponse.member:type_name -> starapp.api.v1.FamilyMember
-	0,   // 44: starapp.api.v1.AwardStarsResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
-	87,  // 45: starapp.api.v1.AwardStarsResponse.entry:type_name -> starapp.api.v1.StarLedgerEntry
-	0,   // 46: starapp.api.v1.RevokeStarsResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
-	87,  // 47: starapp.api.v1.RevokeStarsResponse.entry:type_name -> starapp.api.v1.StarLedgerEntry
-	87,  // 48: starapp.api.v1.ListLedgerResponse.entries:type_name -> starapp.api.v1.StarLedgerEntry
-	88,  // 49: starapp.api.v1.ListRewardsResponse.rewards:type_name -> starapp.api.v1.Reward
-	0,   // 50: starapp.api.v1.CreateRewardResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
-	88,  // 51: starapp.api.v1.CreateRewardResponse.reward:type_name -> starapp.api.v1.Reward
-	0,   // 52: starapp.api.v1.UpdateRewardResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
-	88,  // 53: starapp.api.v1.UpdateRewardResponse.reward:type_name -> starapp.api.v1.Reward
-	0,   // 54: starapp.api.v1.DeleteRewardResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
-	0,   // 55: starapp.api.v1.RequestRedemptionResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
-	89,  // 56: starapp.api.v1.RequestRedemptionResponse.redemption:type_name -> starapp.api.v1.Redemption
-	0,   // 57: starapp.api.v1.ApproveRedemptionResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
-	89,  // 58: starapp.api.v1.ApproveRedemptionResponse.redemption:type_name -> starapp.api.v1.Redemption
-	0,   // 59: starapp.api.v1.RejectRedemptionResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
-	89,  // 60: starapp.api.v1.RejectRedemptionResponse.redemption:type_name -> starapp.api.v1.Redemption
-	89,  // 61: starapp.api.v1.ListRedemptionsResponse.redemptions:type_name -> starapp.api.v1.Redemption
-	86,  // 62: starapp.api.v1.ChildHomeSummary.member:type_name -> starapp.api.v1.FamilyMember
-	87,  // 63: starapp.api.v1.ChildHomeSummary.last_award:type_name -> starapp.api.v1.StarLedgerEntry
-	85,  // 64: starapp.api.v1.GetParentHomeSummaryResponse.family:type_name -> starapp.api.v1.Family
-	130, // 65: starapp.api.v1.GetParentHomeSummaryResponse.children:type_name -> starapp.api.v1.ChildHomeSummary
-	86,  // 66: starapp.api.v1.GetChildHomeSummaryResponse.member:type_name -> starapp.api.v1.FamilyMember
-	87,  // 67: starapp.api.v1.GetChildHomeSummaryResponse.recent_awards:type_name -> starapp.api.v1.StarLedgerEntry
-	88,  // 68: starapp.api.v1.GetChildHomeSummaryResponse.rewards:type_name -> starapp.api.v1.Reward
-	135, // 69: starapp.api.v1.ListChoresResponse.chores:type_name -> starapp.api.v1.Chore
-	0,   // 70: starapp.api.v1.CreateChoreResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
-	135, // 71: starapp.api.v1.CreateChoreResponse.chore:type_name -> starapp.api.v1.Chore
-	0,   // 72: starapp.api.v1.UpdateChoreResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
-	135, // 73: starapp.api.v1.UpdateChoreResponse.chore:type_name -> starapp.api.v1.Chore
-	0,   // 74: starapp.api.v1.DeleteChoreResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
-	136, // 75: starapp.api.v1.ListChorePausesResponse.pauses:type_name -> starapp.api.v1.ChorePause
-	0,   // 76: starapp.api.v1.CreateChorePauseResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
-	136, // 77: starapp.api.v1.CreateChorePauseResponse.pause:type_name -> starapp.api.v1.ChorePause
-	0,   // 78: starapp.api.v1.DeleteChorePauseResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
-	86,  // 79: starapp.api.v1.WeeklyStarChartChild.child:type_name -> starapp.api.v1.FamilyMember
-	151, // 80: starapp.api.v1.WeeklyStarChartChild.days:type_name -> starapp.api.v1.WeeklyStarChartDay
-	152, // 81: starapp.api.v1.WeeklyStarChartRow.children:type_name -> starapp.api.v1.WeeklyStarChartChild
-	153, // 82: starapp.api.v1.GetWeeklyStarChartResponse.rows:type_name -> starapp.api.v1.WeeklyStarChartRow
-	154, // 83: starapp.api.v1.GetWeeklyStarChartResponse.bonus_days:type_name -> starapp.api.v1.WeeklyStarChartBonusDay
-	0,   // 84: starapp.api.v1.CompleteChoreResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
-	0,   // 85: starapp.api.v1.UncompleteChoreResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
-	2,   // 86: starapp.api.v1.StarAppService.Init:input_type -> starapp.api.v1.InitRequest
-	4,   // 87: starapp.api.v1.StarAppService.GetStatus:input_type -> starapp.api.v1.GetStatusRequest
-	6,   // 88: starapp.api.v1.StarAppService.LoginWithUsernameAndPassword:input_type -> starapp.api.v1.LoginWithUsernameAndPasswordRequest
-	8,   // 89: starapp.api.v1.StarAppService.Logout:input_type -> starapp.api.v1.LogoutRequest
-	10,  // 90: starapp.api.v1.StarAppService.ChangePassword:input_type -> starapp.api.v1.ChangePasswordRequest
-	12,  // 91: starapp.api.v1.StarAppService.GetUserPreferences:input_type -> starapp.api.v1.GetUserPreferencesRequest
-	14,  // 92: starapp.api.v1.StarAppService.SaveUserPreferences:input_type -> starapp.api.v1.SaveUserPreferencesRequest
-	17,  // 93: starapp.api.v1.StarAppService.GetUsers:input_type -> starapp.api.v1.GetUsersRequest
-	19,  // 94: starapp.api.v1.StarAppService.GetUser:input_type -> starapp.api.v1.GetUserRequest
-	21,  // 95: starapp.api.v1.StarAppService.CreateUser:input_type -> starapp.api.v1.CreateUserRequest
-	23,  // 96: starapp.api.v1.StarAppService.DeleteUser:input_type -> starapp.api.v1.DeleteUserRequest
-	25,  // 97: starapp.api.v1.StarAppService.ResetUserPassword:input_type -> starapp.api.v1.ResetUserPasswordRequest
-	29,  // 98: starapp.api.v1.StarAppService.ListRbacPermissions:input_type -> starapp.api.v1.ListRbacPermissionsRequest
-	31,  // 99: starapp.api.v1.StarAppService.ListRbacRoles:input_type -> starapp.api.v1.ListRbacRolesRequest
-	33,  // 100: starapp.api.v1.StarAppService.CreateRbacRole:input_type -> starapp.api.v1.CreateRbacRoleRequest
-	35,  // 101: starapp.api.v1.StarAppService.UpdateRbacRole:input_type -> starapp.api.v1.UpdateRbacRoleRequest
-	36,  // 102: starapp.api.v1.StarAppService.DeleteRbacRole:input_type -> starapp.api.v1.DeleteRbacRoleRequest
-	38,  // 103: starapp.api.v1.StarAppService.GetUserRbacRoles:input_type -> starapp.api.v1.GetUserRbacRolesRequest
-	40,  // 104: starapp.api.v1.StarAppService.GetUserGroupRbacRoles:input_type -> starapp.api.v1.GetUserGroupRbacRolesRequest
-	42,  // 105: starapp.api.v1.StarAppService.SetUserGroupRbacRoles:input_type -> starapp.api.v1.SetUserGroupRbacRolesRequest
-	44,  // 106: starapp.api.v1.StarAppService.GetRbacRoleUsers:input_type -> starapp.api.v1.GetRbacRoleUsersRequest
-	46,  // 107: starapp.api.v1.StarAppService.GetRbacRoleGroups:input_type -> starapp.api.v1.GetRbacRoleGroupsRequest
-	49,  // 108: starapp.api.v1.StarAppService.GetMyPermissionsAudit:input_type -> starapp.api.v1.GetMyPermissionsAuditRequest
-	52,  // 109: starapp.api.v1.StarAppService.ListUserGroups:input_type -> starapp.api.v1.ListUserGroupsRequest
-	54,  // 110: starapp.api.v1.StarAppService.CreateUserGroup:input_type -> starapp.api.v1.CreateUserGroupRequest
-	56,  // 111: starapp.api.v1.StarAppService.DeleteUserGroup:input_type -> starapp.api.v1.DeleteUserGroupRequest
-	58,  // 112: starapp.api.v1.StarAppService.GetUserGroupMembers:input_type -> starapp.api.v1.GetUserGroupMembersRequest
-	60,  // 113: starapp.api.v1.StarAppService.SetUserGroupMembers:input_type -> starapp.api.v1.SetUserGroupMembersRequest
-	62,  // 114: starapp.api.v1.StarAppService.ImpersonateUser:input_type -> starapp.api.v1.ImpersonateUserRequest
-	64,  // 115: starapp.api.v1.StarAppService.StopImpersonation:input_type -> starapp.api.v1.StopImpersonationRequest
-	67,  // 116: starapp.api.v1.StarAppService.ListApiKeys:input_type -> starapp.api.v1.ListApiKeysRequest
-	69,  // 117: starapp.api.v1.StarAppService.CreateApiKey:input_type -> starapp.api.v1.CreateApiKeyRequest
-	71,  // 118: starapp.api.v1.StarAppService.DeleteApiKey:input_type -> starapp.api.v1.DeleteApiKeyRequest
-	74,  // 119: starapp.api.v1.StarAppService.ListCvars:input_type -> starapp.api.v1.ListCvarsRequest
-	76,  // 120: starapp.api.v1.StarAppService.UpdateCvar:input_type -> starapp.api.v1.UpdateCvarRequest
-	78,  // 121: starapp.api.v1.StarAppService.ListWebhooks:input_type -> starapp.api.v1.ListWebhooksRequest
-	80,  // 122: starapp.api.v1.StarAppService.CreateWebhook:input_type -> starapp.api.v1.CreateWebhookRequest
-	82,  // 123: starapp.api.v1.StarAppService.UpdateWebhook:input_type -> starapp.api.v1.UpdateWebhookRequest
-	83,  // 124: starapp.api.v1.StarAppService.DeleteWebhook:input_type -> starapp.api.v1.DeleteWebhookRequest
-	90,  // 125: starapp.api.v1.StarAppService.GetMyFamily:input_type -> starapp.api.v1.GetMyFamilyRequest
-	92,  // 126: starapp.api.v1.StarAppService.CreateFamily:input_type -> starapp.api.v1.CreateFamilyRequest
-	94,  // 127: starapp.api.v1.StarAppService.ListMembers:input_type -> starapp.api.v1.ListMembersRequest
-	96,  // 128: starapp.api.v1.StarAppService.CreateChildMember:input_type -> starapp.api.v1.CreateChildMemberRequest
-	98,  // 129: starapp.api.v1.StarAppService.UpdateMember:input_type -> starapp.api.v1.UpdateMemberRequest
-	100, // 130: starapp.api.v1.StarAppService.DeleteMember:input_type -> starapp.api.v1.DeleteMemberRequest
-	102, // 131: starapp.api.v1.StarAppService.UploadMemberAvatar:input_type -> starapp.api.v1.UploadMemberAvatarRequest
-	104, // 132: starapp.api.v1.StarAppService.DeleteMemberAvatar:input_type -> starapp.api.v1.DeleteMemberAvatarRequest
-	106, // 133: starapp.api.v1.StarAppService.AwardStars:input_type -> starapp.api.v1.AwardStarsRequest
-	108, // 134: starapp.api.v1.StarAppService.RevokeStars:input_type -> starapp.api.v1.RevokeStarsRequest
-	110, // 135: starapp.api.v1.StarAppService.GetMemberBalance:input_type -> starapp.api.v1.GetMemberBalanceRequest
-	112, // 136: starapp.api.v1.StarAppService.ListLedger:input_type -> starapp.api.v1.ListLedgerRequest
-	114, // 137: starapp.api.v1.StarAppService.ListRewards:input_type -> starapp.api.v1.ListRewardsRequest
-	116, // 138: starapp.api.v1.StarAppService.CreateReward:input_type -> starapp.api.v1.CreateRewardRequest
-	118, // 139: starapp.api.v1.StarAppService.UpdateReward:input_type -> starapp.api.v1.UpdateRewardRequest
-	120, // 140: starapp.api.v1.StarAppService.DeleteReward:input_type -> starapp.api.v1.DeleteRewardRequest
-	122, // 141: starapp.api.v1.StarAppService.RequestRedemption:input_type -> starapp.api.v1.RequestRedemptionRequest
-	124, // 142: starapp.api.v1.StarAppService.ApproveRedemption:input_type -> starapp.api.v1.ApproveRedemptionRequest
-	126, // 143: starapp.api.v1.StarAppService.RejectRedemption:input_type -> starapp.api.v1.RejectRedemptionRequest
-	128, // 144: starapp.api.v1.StarAppService.ListRedemptions:input_type -> starapp.api.v1.ListRedemptionsRequest
-	131, // 145: starapp.api.v1.StarAppService.GetParentHomeSummary:input_type -> starapp.api.v1.GetParentHomeSummaryRequest
-	133, // 146: starapp.api.v1.StarAppService.GetChildHomeSummary:input_type -> starapp.api.v1.GetChildHomeSummaryRequest
-	137, // 147: starapp.api.v1.StarAppService.ListChores:input_type -> starapp.api.v1.ListChoresRequest
-	139, // 148: starapp.api.v1.StarAppService.CreateChore:input_type -> starapp.api.v1.CreateChoreRequest
-	141, // 149: starapp.api.v1.StarAppService.UpdateChore:input_type -> starapp.api.v1.UpdateChoreRequest
-	143, // 150: starapp.api.v1.StarAppService.DeleteChore:input_type -> starapp.api.v1.DeleteChoreRequest
-	145, // 151: starapp.api.v1.StarAppService.ListChorePauses:input_type -> starapp.api.v1.ListChorePausesRequest
-	147, // 152: starapp.api.v1.StarAppService.CreateChorePause:input_type -> starapp.api.v1.CreateChorePauseRequest
-	149, // 153: starapp.api.v1.StarAppService.DeleteChorePause:input_type -> starapp.api.v1.DeleteChorePauseRequest
-	155, // 154: starapp.api.v1.StarAppService.GetWeeklyStarChart:input_type -> starapp.api.v1.GetWeeklyStarChartRequest
-	157, // 155: starapp.api.v1.StarAppService.CompleteChore:input_type -> starapp.api.v1.CompleteChoreRequest
-	159, // 156: starapp.api.v1.StarAppService.UncompleteChore:input_type -> starapp.api.v1.UncompleteChoreRequest
-	3,   // 157: starapp.api.v1.StarAppService.Init:output_type -> starapp.api.v1.InitResponse
-	5,   // 158: starapp.api.v1.StarAppService.GetStatus:output_type -> starapp.api.v1.GetStatusResponse
-	7,   // 159: starapp.api.v1.StarAppService.LoginWithUsernameAndPassword:output_type -> starapp.api.v1.LoginWithUsernameAndPasswordResponse
-	9,   // 160: starapp.api.v1.StarAppService.Logout:output_type -> starapp.api.v1.LogoutResponse
-	11,  // 161: starapp.api.v1.StarAppService.ChangePassword:output_type -> starapp.api.v1.ChangePasswordResponse
-	13,  // 162: starapp.api.v1.StarAppService.GetUserPreferences:output_type -> starapp.api.v1.GetUserPreferencesResponse
-	15,  // 163: starapp.api.v1.StarAppService.SaveUserPreferences:output_type -> starapp.api.v1.SaveUserPreferencesResponse
-	18,  // 164: starapp.api.v1.StarAppService.GetUsers:output_type -> starapp.api.v1.GetUsersResponse
-	20,  // 165: starapp.api.v1.StarAppService.GetUser:output_type -> starapp.api.v1.GetUserResponse
-	22,  // 166: starapp.api.v1.StarAppService.CreateUser:output_type -> starapp.api.v1.CreateUserResponse
-	24,  // 167: starapp.api.v1.StarAppService.DeleteUser:output_type -> starapp.api.v1.DeleteUserResponse
-	26,  // 168: starapp.api.v1.StarAppService.ResetUserPassword:output_type -> starapp.api.v1.ResetUserPasswordResponse
-	30,  // 169: starapp.api.v1.StarAppService.ListRbacPermissions:output_type -> starapp.api.v1.ListRbacPermissionsResponse
-	32,  // 170: starapp.api.v1.StarAppService.ListRbacRoles:output_type -> starapp.api.v1.ListRbacRolesResponse
-	34,  // 171: starapp.api.v1.StarAppService.CreateRbacRole:output_type -> starapp.api.v1.CreateRbacRoleResponse
-	28,  // 172: starapp.api.v1.StarAppService.UpdateRbacRole:output_type -> starapp.api.v1.RbacRole
-	37,  // 173: starapp.api.v1.StarAppService.DeleteRbacRole:output_type -> starapp.api.v1.DeleteRbacRoleResponse
-	39,  // 174: starapp.api.v1.StarAppService.GetUserRbacRoles:output_type -> starapp.api.v1.GetUserRbacRolesResponse
-	41,  // 175: starapp.api.v1.StarAppService.GetUserGroupRbacRoles:output_type -> starapp.api.v1.GetUserGroupRbacRolesResponse
-	43,  // 176: starapp.api.v1.StarAppService.SetUserGroupRbacRoles:output_type -> starapp.api.v1.SetUserGroupRbacRolesResponse
-	45,  // 177: starapp.api.v1.StarAppService.GetRbacRoleUsers:output_type -> starapp.api.v1.GetRbacRoleUsersResponse
-	47,  // 178: starapp.api.v1.StarAppService.GetRbacRoleGroups:output_type -> starapp.api.v1.GetRbacRoleGroupsResponse
-	50,  // 179: starapp.api.v1.StarAppService.GetMyPermissionsAudit:output_type -> starapp.api.v1.GetMyPermissionsAuditResponse
-	53,  // 180: starapp.api.v1.StarAppService.ListUserGroups:output_type -> starapp.api.v1.ListUserGroupsResponse
-	55,  // 181: starapp.api.v1.StarAppService.CreateUserGroup:output_type -> starapp.api.v1.CreateUserGroupResponse
-	57,  // 182: starapp.api.v1.StarAppService.DeleteUserGroup:output_type -> starapp.api.v1.DeleteUserGroupResponse
-	59,  // 183: starapp.api.v1.StarAppService.GetUserGroupMembers:output_type -> starapp.api.v1.GetUserGroupMembersResponse
-	61,  // 184: starapp.api.v1.StarAppService.SetUserGroupMembers:output_type -> starapp.api.v1.SetUserGroupMembersResponse
-	63,  // 185: starapp.api.v1.StarAppService.ImpersonateUser:output_type -> starapp.api.v1.ImpersonateUserResponse
-	65,  // 186: starapp.api.v1.StarAppService.StopImpersonation:output_type -> starapp.api.v1.StopImpersonationResponse
-	68,  // 187: starapp.api.v1.StarAppService.ListApiKeys:output_type -> starapp.api.v1.ListApiKeysResponse
-	70,  // 188: starapp.api.v1.StarAppService.CreateApiKey:output_type -> starapp.api.v1.CreateApiKeyResponse
-	72,  // 189: starapp.api.v1.StarAppService.DeleteApiKey:output_type -> starapp.api.v1.DeleteApiKeyResponse
-	75,  // 190: starapp.api.v1.StarAppService.ListCvars:output_type -> starapp.api.v1.ListCvarsResponse
-	73,  // 191: starapp.api.v1.StarAppService.UpdateCvar:output_type -> starapp.api.v1.Cvar
-	79,  // 192: starapp.api.v1.StarAppService.ListWebhooks:output_type -> starapp.api.v1.ListWebhooksResponse
-	81,  // 193: starapp.api.v1.StarAppService.CreateWebhook:output_type -> starapp.api.v1.CreateWebhookResponse
-	77,  // 194: starapp.api.v1.StarAppService.UpdateWebhook:output_type -> starapp.api.v1.Webhook
-	84,  // 195: starapp.api.v1.StarAppService.DeleteWebhook:output_type -> starapp.api.v1.DeleteWebhookResponse
-	91,  // 196: starapp.api.v1.StarAppService.GetMyFamily:output_type -> starapp.api.v1.GetMyFamilyResponse
-	93,  // 197: starapp.api.v1.StarAppService.CreateFamily:output_type -> starapp.api.v1.CreateFamilyResponse
-	95,  // 198: starapp.api.v1.StarAppService.ListMembers:output_type -> starapp.api.v1.ListMembersResponse
-	97,  // 199: starapp.api.v1.StarAppService.CreateChildMember:output_type -> starapp.api.v1.CreateChildMemberResponse
-	99,  // 200: starapp.api.v1.StarAppService.UpdateMember:output_type -> starapp.api.v1.UpdateMemberResponse
-	101, // 201: starapp.api.v1.StarAppService.DeleteMember:output_type -> starapp.api.v1.DeleteMemberResponse
-	103, // 202: starapp.api.v1.StarAppService.UploadMemberAvatar:output_type -> starapp.api.v1.UploadMemberAvatarResponse
-	105, // 203: starapp.api.v1.StarAppService.DeleteMemberAvatar:output_type -> starapp.api.v1.DeleteMemberAvatarResponse
-	107, // 204: starapp.api.v1.StarAppService.AwardStars:output_type -> starapp.api.v1.AwardStarsResponse
-	109, // 205: starapp.api.v1.StarAppService.RevokeStars:output_type -> starapp.api.v1.RevokeStarsResponse
-	111, // 206: starapp.api.v1.StarAppService.GetMemberBalance:output_type -> starapp.api.v1.GetMemberBalanceResponse
-	113, // 207: starapp.api.v1.StarAppService.ListLedger:output_type -> starapp.api.v1.ListLedgerResponse
-	115, // 208: starapp.api.v1.StarAppService.ListRewards:output_type -> starapp.api.v1.ListRewardsResponse
-	117, // 209: starapp.api.v1.StarAppService.CreateReward:output_type -> starapp.api.v1.CreateRewardResponse
-	119, // 210: starapp.api.v1.StarAppService.UpdateReward:output_type -> starapp.api.v1.UpdateRewardResponse
-	121, // 211: starapp.api.v1.StarAppService.DeleteReward:output_type -> starapp.api.v1.DeleteRewardResponse
-	123, // 212: starapp.api.v1.StarAppService.RequestRedemption:output_type -> starapp.api.v1.RequestRedemptionResponse
-	125, // 213: starapp.api.v1.StarAppService.ApproveRedemption:output_type -> starapp.api.v1.ApproveRedemptionResponse
-	127, // 214: starapp.api.v1.StarAppService.RejectRedemption:output_type -> starapp.api.v1.RejectRedemptionResponse
-	129, // 215: starapp.api.v1.StarAppService.ListRedemptions:output_type -> starapp.api.v1.ListRedemptionsResponse
-	132, // 216: starapp.api.v1.StarAppService.GetParentHomeSummary:output_type -> starapp.api.v1.GetParentHomeSummaryResponse
-	134, // 217: starapp.api.v1.StarAppService.GetChildHomeSummary:output_type -> starapp.api.v1.GetChildHomeSummaryResponse
-	138, // 218: starapp.api.v1.StarAppService.ListChores:output_type -> starapp.api.v1.ListChoresResponse
-	140, // 219: starapp.api.v1.StarAppService.CreateChore:output_type -> starapp.api.v1.CreateChoreResponse
-	142, // 220: starapp.api.v1.StarAppService.UpdateChore:output_type -> starapp.api.v1.UpdateChoreResponse
-	144, // 221: starapp.api.v1.StarAppService.DeleteChore:output_type -> starapp.api.v1.DeleteChoreResponse
-	146, // 222: starapp.api.v1.StarAppService.ListChorePauses:output_type -> starapp.api.v1.ListChorePausesResponse
-	148, // 223: starapp.api.v1.StarAppService.CreateChorePause:output_type -> starapp.api.v1.CreateChorePauseResponse
-	150, // 224: starapp.api.v1.StarAppService.DeleteChorePause:output_type -> starapp.api.v1.DeleteChorePauseResponse
-	156, // 225: starapp.api.v1.StarAppService.GetWeeklyStarChart:output_type -> starapp.api.v1.GetWeeklyStarChartResponse
-	158, // 226: starapp.api.v1.StarAppService.CompleteChore:output_type -> starapp.api.v1.CompleteChoreResponse
-	160, // 227: starapp.api.v1.StarAppService.UncompleteChore:output_type -> starapp.api.v1.UncompleteChoreResponse
-	157, // [157:228] is the sub-list for method output_type
-	86,  // [86:157] is the sub-list for method input_type
-	86,  // [86:86] is the sub-list for extension type_name
-	86,  // [86:86] is the sub-list for extension extendee
-	0,   // [0:86] is the sub-list for field type_name
+	106, // 44: starapp.api.v1.ListMemberAvatarsResponse.avatars:type_name -> starapp.api.v1.MemberAvatarEntry
+	0,   // 45: starapp.api.v1.SelectMemberAvatarResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	86,  // 46: starapp.api.v1.SelectMemberAvatarResponse.member:type_name -> starapp.api.v1.FamilyMember
+	0,   // 47: starapp.api.v1.AwardStarsResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	87,  // 48: starapp.api.v1.AwardStarsResponse.entry:type_name -> starapp.api.v1.StarLedgerEntry
+	0,   // 49: starapp.api.v1.RevokeStarsResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	87,  // 50: starapp.api.v1.RevokeStarsResponse.entry:type_name -> starapp.api.v1.StarLedgerEntry
+	87,  // 51: starapp.api.v1.ListLedgerResponse.entries:type_name -> starapp.api.v1.StarLedgerEntry
+	88,  // 52: starapp.api.v1.ListRewardsResponse.rewards:type_name -> starapp.api.v1.Reward
+	0,   // 53: starapp.api.v1.CreateRewardResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	88,  // 54: starapp.api.v1.CreateRewardResponse.reward:type_name -> starapp.api.v1.Reward
+	0,   // 55: starapp.api.v1.UpdateRewardResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	88,  // 56: starapp.api.v1.UpdateRewardResponse.reward:type_name -> starapp.api.v1.Reward
+	0,   // 57: starapp.api.v1.DeleteRewardResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	0,   // 58: starapp.api.v1.RequestRedemptionResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	89,  // 59: starapp.api.v1.RequestRedemptionResponse.redemption:type_name -> starapp.api.v1.Redemption
+	0,   // 60: starapp.api.v1.ApproveRedemptionResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	89,  // 61: starapp.api.v1.ApproveRedemptionResponse.redemption:type_name -> starapp.api.v1.Redemption
+	0,   // 62: starapp.api.v1.RejectRedemptionResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	89,  // 63: starapp.api.v1.RejectRedemptionResponse.redemption:type_name -> starapp.api.v1.Redemption
+	89,  // 64: starapp.api.v1.ListRedemptionsResponse.redemptions:type_name -> starapp.api.v1.Redemption
+	86,  // 65: starapp.api.v1.ChildHomeSummary.member:type_name -> starapp.api.v1.FamilyMember
+	87,  // 66: starapp.api.v1.ChildHomeSummary.last_award:type_name -> starapp.api.v1.StarLedgerEntry
+	85,  // 67: starapp.api.v1.GetParentHomeSummaryResponse.family:type_name -> starapp.api.v1.Family
+	135, // 68: starapp.api.v1.GetParentHomeSummaryResponse.children:type_name -> starapp.api.v1.ChildHomeSummary
+	86,  // 69: starapp.api.v1.GetChildHomeSummaryResponse.member:type_name -> starapp.api.v1.FamilyMember
+	87,  // 70: starapp.api.v1.GetChildHomeSummaryResponse.recent_awards:type_name -> starapp.api.v1.StarLedgerEntry
+	88,  // 71: starapp.api.v1.GetChildHomeSummaryResponse.rewards:type_name -> starapp.api.v1.Reward
+	141, // 72: starapp.api.v1.ListStarChartsResponse.star_charts:type_name -> starapp.api.v1.StarChart
+	0,   // 73: starapp.api.v1.CreateStarChartResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	141, // 74: starapp.api.v1.CreateStarChartResponse.star_chart:type_name -> starapp.api.v1.StarChart
+	0,   // 75: starapp.api.v1.UpdateStarChartResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	141, // 76: starapp.api.v1.UpdateStarChartResponse.star_chart:type_name -> starapp.api.v1.StarChart
+	0,   // 77: starapp.api.v1.DeleteStarChartResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	140, // 78: starapp.api.v1.ListChoresResponse.chores:type_name -> starapp.api.v1.Chore
+	0,   // 79: starapp.api.v1.CreateChoreResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	140, // 80: starapp.api.v1.CreateChoreResponse.chore:type_name -> starapp.api.v1.Chore
+	0,   // 81: starapp.api.v1.UpdateChoreResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	140, // 82: starapp.api.v1.UpdateChoreResponse.chore:type_name -> starapp.api.v1.Chore
+	0,   // 83: starapp.api.v1.DeleteChoreResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	150, // 84: starapp.api.v1.ListChorePausesResponse.pauses:type_name -> starapp.api.v1.ChorePause
+	0,   // 85: starapp.api.v1.CreateChorePauseResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	150, // 86: starapp.api.v1.CreateChorePauseResponse.pause:type_name -> starapp.api.v1.ChorePause
+	0,   // 87: starapp.api.v1.DeleteChorePauseResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	86,  // 88: starapp.api.v1.WeeklyStarChartChild.child:type_name -> starapp.api.v1.FamilyMember
+	165, // 89: starapp.api.v1.WeeklyStarChartChild.days:type_name -> starapp.api.v1.WeeklyStarChartDay
+	166, // 90: starapp.api.v1.WeeklyStarChartRow.children:type_name -> starapp.api.v1.WeeklyStarChartChild
+	86,  // 91: starapp.api.v1.WeeklyStarChartBonusChild.child:type_name -> starapp.api.v1.FamilyMember
+	165, // 92: starapp.api.v1.WeeklyStarChartBonusChild.days:type_name -> starapp.api.v1.WeeklyStarChartDay
+	167, // 93: starapp.api.v1.GetWeeklyStarChartResponse.rows:type_name -> starapp.api.v1.WeeklyStarChartRow
+	168, // 94: starapp.api.v1.GetWeeklyStarChartResponse.bonus_children:type_name -> starapp.api.v1.WeeklyStarChartBonusChild
+	0,   // 95: starapp.api.v1.CompleteChoreResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	0,   // 96: starapp.api.v1.UncompleteChoreResponse.standard_response:type_name -> starapp.api.v1.StandardResponse
+	2,   // 97: starapp.api.v1.StarAppService.Init:input_type -> starapp.api.v1.InitRequest
+	4,   // 98: starapp.api.v1.StarAppService.GetStatus:input_type -> starapp.api.v1.GetStatusRequest
+	6,   // 99: starapp.api.v1.StarAppService.LoginWithUsernameAndPassword:input_type -> starapp.api.v1.LoginWithUsernameAndPasswordRequest
+	8,   // 100: starapp.api.v1.StarAppService.Logout:input_type -> starapp.api.v1.LogoutRequest
+	10,  // 101: starapp.api.v1.StarAppService.ChangePassword:input_type -> starapp.api.v1.ChangePasswordRequest
+	12,  // 102: starapp.api.v1.StarAppService.GetUserPreferences:input_type -> starapp.api.v1.GetUserPreferencesRequest
+	14,  // 103: starapp.api.v1.StarAppService.SaveUserPreferences:input_type -> starapp.api.v1.SaveUserPreferencesRequest
+	17,  // 104: starapp.api.v1.StarAppService.GetUsers:input_type -> starapp.api.v1.GetUsersRequest
+	19,  // 105: starapp.api.v1.StarAppService.GetUser:input_type -> starapp.api.v1.GetUserRequest
+	21,  // 106: starapp.api.v1.StarAppService.CreateUser:input_type -> starapp.api.v1.CreateUserRequest
+	23,  // 107: starapp.api.v1.StarAppService.DeleteUser:input_type -> starapp.api.v1.DeleteUserRequest
+	25,  // 108: starapp.api.v1.StarAppService.ResetUserPassword:input_type -> starapp.api.v1.ResetUserPasswordRequest
+	29,  // 109: starapp.api.v1.StarAppService.ListRbacPermissions:input_type -> starapp.api.v1.ListRbacPermissionsRequest
+	31,  // 110: starapp.api.v1.StarAppService.ListRbacRoles:input_type -> starapp.api.v1.ListRbacRolesRequest
+	33,  // 111: starapp.api.v1.StarAppService.CreateRbacRole:input_type -> starapp.api.v1.CreateRbacRoleRequest
+	35,  // 112: starapp.api.v1.StarAppService.UpdateRbacRole:input_type -> starapp.api.v1.UpdateRbacRoleRequest
+	36,  // 113: starapp.api.v1.StarAppService.DeleteRbacRole:input_type -> starapp.api.v1.DeleteRbacRoleRequest
+	38,  // 114: starapp.api.v1.StarAppService.GetUserRbacRoles:input_type -> starapp.api.v1.GetUserRbacRolesRequest
+	40,  // 115: starapp.api.v1.StarAppService.GetUserGroupRbacRoles:input_type -> starapp.api.v1.GetUserGroupRbacRolesRequest
+	42,  // 116: starapp.api.v1.StarAppService.SetUserGroupRbacRoles:input_type -> starapp.api.v1.SetUserGroupRbacRolesRequest
+	44,  // 117: starapp.api.v1.StarAppService.GetRbacRoleUsers:input_type -> starapp.api.v1.GetRbacRoleUsersRequest
+	46,  // 118: starapp.api.v1.StarAppService.GetRbacRoleGroups:input_type -> starapp.api.v1.GetRbacRoleGroupsRequest
+	49,  // 119: starapp.api.v1.StarAppService.GetMyPermissionsAudit:input_type -> starapp.api.v1.GetMyPermissionsAuditRequest
+	52,  // 120: starapp.api.v1.StarAppService.ListUserGroups:input_type -> starapp.api.v1.ListUserGroupsRequest
+	54,  // 121: starapp.api.v1.StarAppService.CreateUserGroup:input_type -> starapp.api.v1.CreateUserGroupRequest
+	56,  // 122: starapp.api.v1.StarAppService.DeleteUserGroup:input_type -> starapp.api.v1.DeleteUserGroupRequest
+	58,  // 123: starapp.api.v1.StarAppService.GetUserGroupMembers:input_type -> starapp.api.v1.GetUserGroupMembersRequest
+	60,  // 124: starapp.api.v1.StarAppService.SetUserGroupMembers:input_type -> starapp.api.v1.SetUserGroupMembersRequest
+	62,  // 125: starapp.api.v1.StarAppService.ImpersonateUser:input_type -> starapp.api.v1.ImpersonateUserRequest
+	64,  // 126: starapp.api.v1.StarAppService.StopImpersonation:input_type -> starapp.api.v1.StopImpersonationRequest
+	67,  // 127: starapp.api.v1.StarAppService.ListApiKeys:input_type -> starapp.api.v1.ListApiKeysRequest
+	69,  // 128: starapp.api.v1.StarAppService.CreateApiKey:input_type -> starapp.api.v1.CreateApiKeyRequest
+	71,  // 129: starapp.api.v1.StarAppService.DeleteApiKey:input_type -> starapp.api.v1.DeleteApiKeyRequest
+	74,  // 130: starapp.api.v1.StarAppService.ListCvars:input_type -> starapp.api.v1.ListCvarsRequest
+	76,  // 131: starapp.api.v1.StarAppService.UpdateCvar:input_type -> starapp.api.v1.UpdateCvarRequest
+	78,  // 132: starapp.api.v1.StarAppService.ListWebhooks:input_type -> starapp.api.v1.ListWebhooksRequest
+	80,  // 133: starapp.api.v1.StarAppService.CreateWebhook:input_type -> starapp.api.v1.CreateWebhookRequest
+	82,  // 134: starapp.api.v1.StarAppService.UpdateWebhook:input_type -> starapp.api.v1.UpdateWebhookRequest
+	83,  // 135: starapp.api.v1.StarAppService.DeleteWebhook:input_type -> starapp.api.v1.DeleteWebhookRequest
+	90,  // 136: starapp.api.v1.StarAppService.GetMyFamily:input_type -> starapp.api.v1.GetMyFamilyRequest
+	92,  // 137: starapp.api.v1.StarAppService.CreateFamily:input_type -> starapp.api.v1.CreateFamilyRequest
+	94,  // 138: starapp.api.v1.StarAppService.ListMembers:input_type -> starapp.api.v1.ListMembersRequest
+	96,  // 139: starapp.api.v1.StarAppService.CreateChildMember:input_type -> starapp.api.v1.CreateChildMemberRequest
+	98,  // 140: starapp.api.v1.StarAppService.UpdateMember:input_type -> starapp.api.v1.UpdateMemberRequest
+	100, // 141: starapp.api.v1.StarAppService.DeleteMember:input_type -> starapp.api.v1.DeleteMemberRequest
+	102, // 142: starapp.api.v1.StarAppService.UploadMemberAvatar:input_type -> starapp.api.v1.UploadMemberAvatarRequest
+	104, // 143: starapp.api.v1.StarAppService.DeleteMemberAvatar:input_type -> starapp.api.v1.DeleteMemberAvatarRequest
+	107, // 144: starapp.api.v1.StarAppService.ListMemberAvatars:input_type -> starapp.api.v1.ListMemberAvatarsRequest
+	109, // 145: starapp.api.v1.StarAppService.SelectMemberAvatar:input_type -> starapp.api.v1.SelectMemberAvatarRequest
+	111, // 146: starapp.api.v1.StarAppService.AwardStars:input_type -> starapp.api.v1.AwardStarsRequest
+	113, // 147: starapp.api.v1.StarAppService.RevokeStars:input_type -> starapp.api.v1.RevokeStarsRequest
+	115, // 148: starapp.api.v1.StarAppService.GetMemberBalance:input_type -> starapp.api.v1.GetMemberBalanceRequest
+	117, // 149: starapp.api.v1.StarAppService.ListLedger:input_type -> starapp.api.v1.ListLedgerRequest
+	119, // 150: starapp.api.v1.StarAppService.ListRewards:input_type -> starapp.api.v1.ListRewardsRequest
+	121, // 151: starapp.api.v1.StarAppService.CreateReward:input_type -> starapp.api.v1.CreateRewardRequest
+	123, // 152: starapp.api.v1.StarAppService.UpdateReward:input_type -> starapp.api.v1.UpdateRewardRequest
+	125, // 153: starapp.api.v1.StarAppService.DeleteReward:input_type -> starapp.api.v1.DeleteRewardRequest
+	127, // 154: starapp.api.v1.StarAppService.RequestRedemption:input_type -> starapp.api.v1.RequestRedemptionRequest
+	129, // 155: starapp.api.v1.StarAppService.ApproveRedemption:input_type -> starapp.api.v1.ApproveRedemptionRequest
+	131, // 156: starapp.api.v1.StarAppService.RejectRedemption:input_type -> starapp.api.v1.RejectRedemptionRequest
+	133, // 157: starapp.api.v1.StarAppService.ListRedemptions:input_type -> starapp.api.v1.ListRedemptionsRequest
+	136, // 158: starapp.api.v1.StarAppService.GetParentHomeSummary:input_type -> starapp.api.v1.GetParentHomeSummaryRequest
+	138, // 159: starapp.api.v1.StarAppService.GetChildHomeSummary:input_type -> starapp.api.v1.GetChildHomeSummaryRequest
+	142, // 160: starapp.api.v1.StarAppService.ListStarCharts:input_type -> starapp.api.v1.ListStarChartsRequest
+	144, // 161: starapp.api.v1.StarAppService.CreateStarChart:input_type -> starapp.api.v1.CreateStarChartRequest
+	146, // 162: starapp.api.v1.StarAppService.UpdateStarChart:input_type -> starapp.api.v1.UpdateStarChartRequest
+	148, // 163: starapp.api.v1.StarAppService.DeleteStarChart:input_type -> starapp.api.v1.DeleteStarChartRequest
+	151, // 164: starapp.api.v1.StarAppService.ListChores:input_type -> starapp.api.v1.ListChoresRequest
+	153, // 165: starapp.api.v1.StarAppService.CreateChore:input_type -> starapp.api.v1.CreateChoreRequest
+	155, // 166: starapp.api.v1.StarAppService.UpdateChore:input_type -> starapp.api.v1.UpdateChoreRequest
+	157, // 167: starapp.api.v1.StarAppService.DeleteChore:input_type -> starapp.api.v1.DeleteChoreRequest
+	159, // 168: starapp.api.v1.StarAppService.ListChorePauses:input_type -> starapp.api.v1.ListChorePausesRequest
+	161, // 169: starapp.api.v1.StarAppService.CreateChorePause:input_type -> starapp.api.v1.CreateChorePauseRequest
+	163, // 170: starapp.api.v1.StarAppService.DeleteChorePause:input_type -> starapp.api.v1.DeleteChorePauseRequest
+	169, // 171: starapp.api.v1.StarAppService.GetWeeklyStarChart:input_type -> starapp.api.v1.GetWeeklyStarChartRequest
+	171, // 172: starapp.api.v1.StarAppService.CompleteChore:input_type -> starapp.api.v1.CompleteChoreRequest
+	173, // 173: starapp.api.v1.StarAppService.UncompleteChore:input_type -> starapp.api.v1.UncompleteChoreRequest
+	3,   // 174: starapp.api.v1.StarAppService.Init:output_type -> starapp.api.v1.InitResponse
+	5,   // 175: starapp.api.v1.StarAppService.GetStatus:output_type -> starapp.api.v1.GetStatusResponse
+	7,   // 176: starapp.api.v1.StarAppService.LoginWithUsernameAndPassword:output_type -> starapp.api.v1.LoginWithUsernameAndPasswordResponse
+	9,   // 177: starapp.api.v1.StarAppService.Logout:output_type -> starapp.api.v1.LogoutResponse
+	11,  // 178: starapp.api.v1.StarAppService.ChangePassword:output_type -> starapp.api.v1.ChangePasswordResponse
+	13,  // 179: starapp.api.v1.StarAppService.GetUserPreferences:output_type -> starapp.api.v1.GetUserPreferencesResponse
+	15,  // 180: starapp.api.v1.StarAppService.SaveUserPreferences:output_type -> starapp.api.v1.SaveUserPreferencesResponse
+	18,  // 181: starapp.api.v1.StarAppService.GetUsers:output_type -> starapp.api.v1.GetUsersResponse
+	20,  // 182: starapp.api.v1.StarAppService.GetUser:output_type -> starapp.api.v1.GetUserResponse
+	22,  // 183: starapp.api.v1.StarAppService.CreateUser:output_type -> starapp.api.v1.CreateUserResponse
+	24,  // 184: starapp.api.v1.StarAppService.DeleteUser:output_type -> starapp.api.v1.DeleteUserResponse
+	26,  // 185: starapp.api.v1.StarAppService.ResetUserPassword:output_type -> starapp.api.v1.ResetUserPasswordResponse
+	30,  // 186: starapp.api.v1.StarAppService.ListRbacPermissions:output_type -> starapp.api.v1.ListRbacPermissionsResponse
+	32,  // 187: starapp.api.v1.StarAppService.ListRbacRoles:output_type -> starapp.api.v1.ListRbacRolesResponse
+	34,  // 188: starapp.api.v1.StarAppService.CreateRbacRole:output_type -> starapp.api.v1.CreateRbacRoleResponse
+	28,  // 189: starapp.api.v1.StarAppService.UpdateRbacRole:output_type -> starapp.api.v1.RbacRole
+	37,  // 190: starapp.api.v1.StarAppService.DeleteRbacRole:output_type -> starapp.api.v1.DeleteRbacRoleResponse
+	39,  // 191: starapp.api.v1.StarAppService.GetUserRbacRoles:output_type -> starapp.api.v1.GetUserRbacRolesResponse
+	41,  // 192: starapp.api.v1.StarAppService.GetUserGroupRbacRoles:output_type -> starapp.api.v1.GetUserGroupRbacRolesResponse
+	43,  // 193: starapp.api.v1.StarAppService.SetUserGroupRbacRoles:output_type -> starapp.api.v1.SetUserGroupRbacRolesResponse
+	45,  // 194: starapp.api.v1.StarAppService.GetRbacRoleUsers:output_type -> starapp.api.v1.GetRbacRoleUsersResponse
+	47,  // 195: starapp.api.v1.StarAppService.GetRbacRoleGroups:output_type -> starapp.api.v1.GetRbacRoleGroupsResponse
+	50,  // 196: starapp.api.v1.StarAppService.GetMyPermissionsAudit:output_type -> starapp.api.v1.GetMyPermissionsAuditResponse
+	53,  // 197: starapp.api.v1.StarAppService.ListUserGroups:output_type -> starapp.api.v1.ListUserGroupsResponse
+	55,  // 198: starapp.api.v1.StarAppService.CreateUserGroup:output_type -> starapp.api.v1.CreateUserGroupResponse
+	57,  // 199: starapp.api.v1.StarAppService.DeleteUserGroup:output_type -> starapp.api.v1.DeleteUserGroupResponse
+	59,  // 200: starapp.api.v1.StarAppService.GetUserGroupMembers:output_type -> starapp.api.v1.GetUserGroupMembersResponse
+	61,  // 201: starapp.api.v1.StarAppService.SetUserGroupMembers:output_type -> starapp.api.v1.SetUserGroupMembersResponse
+	63,  // 202: starapp.api.v1.StarAppService.ImpersonateUser:output_type -> starapp.api.v1.ImpersonateUserResponse
+	65,  // 203: starapp.api.v1.StarAppService.StopImpersonation:output_type -> starapp.api.v1.StopImpersonationResponse
+	68,  // 204: starapp.api.v1.StarAppService.ListApiKeys:output_type -> starapp.api.v1.ListApiKeysResponse
+	70,  // 205: starapp.api.v1.StarAppService.CreateApiKey:output_type -> starapp.api.v1.CreateApiKeyResponse
+	72,  // 206: starapp.api.v1.StarAppService.DeleteApiKey:output_type -> starapp.api.v1.DeleteApiKeyResponse
+	75,  // 207: starapp.api.v1.StarAppService.ListCvars:output_type -> starapp.api.v1.ListCvarsResponse
+	73,  // 208: starapp.api.v1.StarAppService.UpdateCvar:output_type -> starapp.api.v1.Cvar
+	79,  // 209: starapp.api.v1.StarAppService.ListWebhooks:output_type -> starapp.api.v1.ListWebhooksResponse
+	81,  // 210: starapp.api.v1.StarAppService.CreateWebhook:output_type -> starapp.api.v1.CreateWebhookResponse
+	77,  // 211: starapp.api.v1.StarAppService.UpdateWebhook:output_type -> starapp.api.v1.Webhook
+	84,  // 212: starapp.api.v1.StarAppService.DeleteWebhook:output_type -> starapp.api.v1.DeleteWebhookResponse
+	91,  // 213: starapp.api.v1.StarAppService.GetMyFamily:output_type -> starapp.api.v1.GetMyFamilyResponse
+	93,  // 214: starapp.api.v1.StarAppService.CreateFamily:output_type -> starapp.api.v1.CreateFamilyResponse
+	95,  // 215: starapp.api.v1.StarAppService.ListMembers:output_type -> starapp.api.v1.ListMembersResponse
+	97,  // 216: starapp.api.v1.StarAppService.CreateChildMember:output_type -> starapp.api.v1.CreateChildMemberResponse
+	99,  // 217: starapp.api.v1.StarAppService.UpdateMember:output_type -> starapp.api.v1.UpdateMemberResponse
+	101, // 218: starapp.api.v1.StarAppService.DeleteMember:output_type -> starapp.api.v1.DeleteMemberResponse
+	103, // 219: starapp.api.v1.StarAppService.UploadMemberAvatar:output_type -> starapp.api.v1.UploadMemberAvatarResponse
+	105, // 220: starapp.api.v1.StarAppService.DeleteMemberAvatar:output_type -> starapp.api.v1.DeleteMemberAvatarResponse
+	108, // 221: starapp.api.v1.StarAppService.ListMemberAvatars:output_type -> starapp.api.v1.ListMemberAvatarsResponse
+	110, // 222: starapp.api.v1.StarAppService.SelectMemberAvatar:output_type -> starapp.api.v1.SelectMemberAvatarResponse
+	112, // 223: starapp.api.v1.StarAppService.AwardStars:output_type -> starapp.api.v1.AwardStarsResponse
+	114, // 224: starapp.api.v1.StarAppService.RevokeStars:output_type -> starapp.api.v1.RevokeStarsResponse
+	116, // 225: starapp.api.v1.StarAppService.GetMemberBalance:output_type -> starapp.api.v1.GetMemberBalanceResponse
+	118, // 226: starapp.api.v1.StarAppService.ListLedger:output_type -> starapp.api.v1.ListLedgerResponse
+	120, // 227: starapp.api.v1.StarAppService.ListRewards:output_type -> starapp.api.v1.ListRewardsResponse
+	122, // 228: starapp.api.v1.StarAppService.CreateReward:output_type -> starapp.api.v1.CreateRewardResponse
+	124, // 229: starapp.api.v1.StarAppService.UpdateReward:output_type -> starapp.api.v1.UpdateRewardResponse
+	126, // 230: starapp.api.v1.StarAppService.DeleteReward:output_type -> starapp.api.v1.DeleteRewardResponse
+	128, // 231: starapp.api.v1.StarAppService.RequestRedemption:output_type -> starapp.api.v1.RequestRedemptionResponse
+	130, // 232: starapp.api.v1.StarAppService.ApproveRedemption:output_type -> starapp.api.v1.ApproveRedemptionResponse
+	132, // 233: starapp.api.v1.StarAppService.RejectRedemption:output_type -> starapp.api.v1.RejectRedemptionResponse
+	134, // 234: starapp.api.v1.StarAppService.ListRedemptions:output_type -> starapp.api.v1.ListRedemptionsResponse
+	137, // 235: starapp.api.v1.StarAppService.GetParentHomeSummary:output_type -> starapp.api.v1.GetParentHomeSummaryResponse
+	139, // 236: starapp.api.v1.StarAppService.GetChildHomeSummary:output_type -> starapp.api.v1.GetChildHomeSummaryResponse
+	143, // 237: starapp.api.v1.StarAppService.ListStarCharts:output_type -> starapp.api.v1.ListStarChartsResponse
+	145, // 238: starapp.api.v1.StarAppService.CreateStarChart:output_type -> starapp.api.v1.CreateStarChartResponse
+	147, // 239: starapp.api.v1.StarAppService.UpdateStarChart:output_type -> starapp.api.v1.UpdateStarChartResponse
+	149, // 240: starapp.api.v1.StarAppService.DeleteStarChart:output_type -> starapp.api.v1.DeleteStarChartResponse
+	152, // 241: starapp.api.v1.StarAppService.ListChores:output_type -> starapp.api.v1.ListChoresResponse
+	154, // 242: starapp.api.v1.StarAppService.CreateChore:output_type -> starapp.api.v1.CreateChoreResponse
+	156, // 243: starapp.api.v1.StarAppService.UpdateChore:output_type -> starapp.api.v1.UpdateChoreResponse
+	158, // 244: starapp.api.v1.StarAppService.DeleteChore:output_type -> starapp.api.v1.DeleteChoreResponse
+	160, // 245: starapp.api.v1.StarAppService.ListChorePauses:output_type -> starapp.api.v1.ListChorePausesResponse
+	162, // 246: starapp.api.v1.StarAppService.CreateChorePause:output_type -> starapp.api.v1.CreateChorePauseResponse
+	164, // 247: starapp.api.v1.StarAppService.DeleteChorePause:output_type -> starapp.api.v1.DeleteChorePauseResponse
+	170, // 248: starapp.api.v1.StarAppService.GetWeeklyStarChart:output_type -> starapp.api.v1.GetWeeklyStarChartResponse
+	172, // 249: starapp.api.v1.StarAppService.CompleteChore:output_type -> starapp.api.v1.CompleteChoreResponse
+	174, // 250: starapp.api.v1.StarAppService.UncompleteChore:output_type -> starapp.api.v1.UncompleteChoreResponse
+	174, // [174:251] is the sub-list for method output_type
+	97,  // [97:174] is the sub-list for method input_type
+	97,  // [97:97] is the sub-list for extension type_name
+	97,  // [97:97] is the sub-list for extension extendee
+	0,   // [0:97] is the sub-list for field type_name
 }
 
 func init() { file_starapp_api_v1_starapp_proto_init() }
@@ -9704,7 +10597,7 @@ func file_starapp_api_v1_starapp_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_starapp_api_v1_starapp_proto_rawDesc), len(file_starapp_api_v1_starapp_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   161,
+			NumMessages:   175,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

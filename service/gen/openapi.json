@@ -640,6 +640,64 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/CreateStarChart": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "CreateStarChart",
+        "operationId": "starapp.api.v1.StarAppService.CreateStarChart",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.CreateStarChartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.CreateStarChartResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/CreateUser": {
       "post": {
         "tags": [
@@ -1213,6 +1271,64 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/starapp.api.v1.DeleteRewardResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/DeleteStarChart": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "DeleteStarChart",
+        "operationId": "starapp.api.v1.StarAppService.DeleteStarChart",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.DeleteStarChartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.DeleteStarChartResponse"
                 }
               }
             }
@@ -2670,6 +2786,64 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/ListMemberAvatars": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListMemberAvatars",
+        "operationId": "starapp.api.v1.StarAppService.ListMemberAvatars",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListMemberAvatarsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListMemberAvatarsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/ListMembers": {
       "post": {
         "tags": [
@@ -2953,6 +3127,64 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/starapp.api.v1.ListRewardsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ListStarCharts": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListStarCharts",
+        "operationId": "starapp.api.v1.StarAppService.ListStarCharts",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListStarChartsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListStarChartsResponse"
                 }
               }
             }
@@ -3482,6 +3714,64 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/SelectMemberAvatar": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "SelectMemberAvatar",
+        "operationId": "starapp.api.v1.StarAppService.SelectMemberAvatar",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.SelectMemberAvatarRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.SelectMemberAvatarResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/SetUserGroupMembers": {
       "post": {
         "tags": [
@@ -4004,6 +4294,64 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/UpdateStarChart": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "UpdateStarChart",
+        "operationId": "starapp.api.v1.StarAppService.UpdateStarChart",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.UpdateStarChartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.UpdateStarChartResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/UpdateWebhook": {
       "post": {
         "tags": [
@@ -4399,6 +4747,11 @@
           "createdAt": {
             "type": "string",
             "title": "created_at"
+          },
+          "starChartId": {
+            "type": "integer",
+            "title": "star_chart_id",
+            "format": "int32"
           }
         },
         "title": "Chore",
@@ -4599,6 +4952,11 @@
               "format": "int32"
             },
             "title": "child_member_ids"
+          },
+          "starChartId": {
+            "type": "integer",
+            "title": "star_chart_id",
+            "format": "int32"
           }
         },
         "title": "CreateChoreRequest",
@@ -4720,6 +5078,37 @@
           }
         },
         "title": "CreateRewardResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateStarChartRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "name"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "title": "sort_order",
+            "format": "int32"
+          }
+        },
+        "title": "CreateStarChartRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.CreateStarChartResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "starChart": {
+            "title": "star_chart",
+            "$ref": "#/components/schemas/starapp.api.v1.StarChart"
+          }
+        },
+        "title": "CreateStarChartResponse",
         "additionalProperties": false
       },
       "starapp.api.v1.CreateUserGroupRequest": {
@@ -5003,6 +5392,29 @@
           }
         },
         "title": "DeleteRewardResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteStarChartRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          }
+        },
+        "title": "DeleteStarChartRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.DeleteStarChartResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "DeleteStarChartResponse",
         "additionalProperties": false
       },
       "starapp.api.v1.DeleteUserGroupRequest": {
@@ -5585,6 +5997,11 @@
           "weekStart": {
             "type": "string",
             "title": "week_start"
+          },
+          "starChartId": {
+            "type": "integer",
+            "title": "star_chart_id",
+            "format": "int32"
           }
         },
         "title": "GetWeeklyStarChartRequest",
@@ -5608,12 +6025,21 @@
             },
             "title": "rows"
           },
-          "bonusDays": {
+          "bonusChildren": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/starapp.api.v1.WeeklyStarChartBonusDay"
+              "$ref": "#/components/schemas/starapp.api.v1.WeeklyStarChartBonusChild"
             },
-            "title": "bonus_days"
+            "title": "bonus_children"
+          },
+          "starChartId": {
+            "type": "integer",
+            "title": "star_chart_id",
+            "format": "int32"
+          },
+          "starChartName": {
+            "type": "string",
+            "title": "star_chart_name"
           }
         },
         "title": "GetWeeklyStarChartResponse",
@@ -5737,6 +6163,11 @@
           "includeInactive": {
             "type": "boolean",
             "title": "include_inactive"
+          },
+          "starChartId": {
+            "type": "integer",
+            "title": "star_chart_id",
+            "format": "int32"
           }
         },
         "title": "ListChoresRequest",
@@ -5804,6 +6235,32 @@
           }
         },
         "title": "ListLedgerResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListMemberAvatarsRequest": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "integer",
+            "title": "member_id",
+            "format": "int32"
+          }
+        },
+        "title": "ListMemberAvatarsRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListMemberAvatarsResponse": {
+        "type": "object",
+        "properties": {
+          "avatars": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.MemberAvatarEntry"
+            },
+            "title": "avatars"
+          }
+        },
+        "title": "ListMemberAvatarsResponse",
         "additionalProperties": false
       },
       "starapp.api.v1.ListMembersRequest": {
@@ -5913,6 +6370,31 @@
         "title": "ListRewardsResponse",
         "additionalProperties": false
       },
+      "starapp.api.v1.ListStarChartsRequest": {
+        "type": "object",
+        "properties": {
+          "includeInactive": {
+            "type": "boolean",
+            "title": "include_inactive"
+          }
+        },
+        "title": "ListStarChartsRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListStarChartsResponse": {
+        "type": "object",
+        "properties": {
+          "starCharts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.StarChart"
+            },
+            "title": "star_charts"
+          }
+        },
+        "title": "ListStarChartsResponse",
+        "additionalProperties": false
+      },
       "starapp.api.v1.ListUserGroupsRequest": {
         "type": "object",
         "title": "ListUserGroupsRequest",
@@ -6002,6 +6484,21 @@
           }
         },
         "title": "LogoutResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.MemberAvatarEntry": {
+        "type": "object",
+        "properties": {
+          "filename": {
+            "type": "string",
+            "title": "filename"
+          },
+          "isCurrent": {
+            "type": "boolean",
+            "title": "is_current"
+          }
+        },
+        "title": "MemberAvatarEntry",
         "additionalProperties": false
       },
       "starapp.api.v1.MyPermissionAuditRow": {
@@ -6344,6 +6841,37 @@
         "title": "SaveUserPreferencesResponse",
         "additionalProperties": false
       },
+      "starapp.api.v1.SelectMemberAvatarRequest": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "integer",
+            "title": "member_id",
+            "format": "int32"
+          },
+          "filename": {
+            "type": "string",
+            "title": "filename"
+          }
+        },
+        "title": "SelectMemberAvatarRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.SelectMemberAvatarResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "member": {
+            "title": "member",
+            "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
+          }
+        },
+        "title": "SelectMemberAvatarResponse",
+        "additionalProperties": false
+      },
       "starapp.api.v1.SetUserGroupMembersRequest": {
         "type": "object",
         "properties": {
@@ -6419,6 +6947,45 @@
           }
         },
         "title": "StandardResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.StarChart": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "familyId": {
+            "type": "integer",
+            "title": "family_id",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "title": "name"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "title": "sort_order",
+            "format": "int32"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "active"
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "created_at"
+          },
+          "choreCount": {
+            "type": "integer",
+            "title": "chore_count",
+            "format": "int32"
+          }
+        },
+        "title": "StarChart",
         "additionalProperties": false
       },
       "starapp.api.v1.StarLedgerEntry": {
@@ -6559,6 +7126,11 @@
           "active": {
             "type": "boolean",
             "title": "active"
+          },
+          "starChartId": {
+            "type": "integer",
+            "title": "star_chart_id",
+            "format": "int32"
           }
         },
         "title": "UpdateChoreRequest",
@@ -6710,6 +7282,46 @@
         "title": "UpdateRewardResponse",
         "additionalProperties": false
       },
+      "starapp.api.v1.UpdateStarChartRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "title": "name"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "title": "sort_order",
+            "format": "int32"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "active"
+          }
+        },
+        "title": "UpdateStarChartRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.UpdateStarChartResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "starChart": {
+            "title": "star_chart",
+            "$ref": "#/components/schemas/starapp.api.v1.StarChart"
+          }
+        },
+        "title": "UpdateStarChartResponse",
+        "additionalProperties": false
+      },
       "starapp.api.v1.UpdateWebhookRequest": {
         "type": "object",
         "properties": {
@@ -6857,20 +7469,22 @@
         "title": "Webhook",
         "additionalProperties": false
       },
-      "starapp.api.v1.WeeklyStarChartBonusDay": {
+      "starapp.api.v1.WeeklyStarChartBonusChild": {
         "type": "object",
         "properties": {
-          "date": {
-            "type": "string",
-            "title": "date"
+          "child": {
+            "title": "child",
+            "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
           },
-          "stars": {
-            "type": "integer",
-            "title": "stars",
-            "format": "int32"
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.WeeklyStarChartDay"
+            },
+            "title": "days"
           }
         },
-        "title": "WeeklyStarChartBonusDay",
+        "title": "WeeklyStarChartBonusChild",
         "additionalProperties": false
       },
       "starapp.api.v1.WeeklyStarChartChild": {

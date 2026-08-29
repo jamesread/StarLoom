@@ -47,6 +47,7 @@ func toProtoChore(cw *store.ChoreWithAssignments) *apiv1.Chore {
 		Active:         cw.Chore.Active,
 		ChildMemberIds: childIDs,
 		CreatedAt:      cw.Chore.CreatedAt,
+		StarChartId:    int32(cw.Chore.StarChartID),
 	}
 }
 
@@ -88,7 +89,7 @@ func (s *Server) ListChores(ctx context.Context, req *connect.Request[apiv1.List
 	if _, err := s.requirePermission(ctx, rbac.PermissionChoresViewFamily); err != nil {
 		return nil, err
 	}
-	rows, err := s.store.ListChores(ctx, fc.family.ID, req.Msg.IncludeInactive)
+	rows, err := s.store.ListChores(ctx, fc.family.ID, int(req.Msg.StarChartId), req.Msg.IncludeInactive)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
@@ -121,12 +122,16 @@ func (s *Server) CreateChore(ctx context.Context, req *connect.Request[apiv1.Cre
 	if reward > cvar.MaxAwardStars {
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("star_reward must be 1-%d", cvar.MaxAwardStars))
 	}
-	childIDs, err := s.validateChildIDs(ctx, fc.family.ID, req.Msg.ChildMemberIds)
+	childIDs, err := s.validateChoreMemberIDs(ctx, fc.family.ID, req.Msg.ChildMemberIds)
 	if err != nil {
 		return nil, err
 	}
 	mask := weekdaysToMask(req.Msg.Weekdays)
-	id, err := s.store.CreateChore(ctx, fc.family.ID, title, reward, mask, childIDs)
+	starChartID, _, err := s.resolveStarChartID(ctx, fc.family.ID, int(req.Msg.StarChartId))
+	if err != nil {
+		return nil, err
+	}
+	id, err := s.store.CreateChore(ctx, fc.family.ID, starChartID, title, reward, mask, childIDs)
 	if err != nil {
 		return nil, mapStoreError(err)
 	}
@@ -156,12 +161,27 @@ func (s *Server) UpdateChore(ctx context.Context, req *connect.Request[apiv1.Upd
 	if reward <= 0 {
 		reward = 1
 	}
-	childIDs, err := s.validateChildIDs(ctx, fc.family.ID, req.Msg.ChildMemberIds)
+	childIDs, err := s.validateChoreMemberIDs(ctx, fc.family.ID, req.Msg.ChildMemberIds)
 	if err != nil {
 		return nil, err
 	}
 	mask := weekdaysToMask(req.Msg.Weekdays)
-	if err := s.store.UpdateChore(ctx, cw.Chore.ID, req.Msg.Title, reward, mask, req.Msg.Active, childIDs); err != nil {
+	starChartID := cw.Chore.StarChartID
+	if req.Msg.StarChartId > 0 {
+		id, _, err := s.resolveStarChartID(ctx, fc.family.ID, int(req.Msg.StarChartId))
+		if err != nil {
+			return nil, err
+		}
+		starChartID = id
+	}
+	if starChartID == 0 {
+		id, _, err := s.resolveStarChartID(ctx, fc.family.ID, 0)
+		if err != nil {
+			return nil, err
+		}
+		starChartID = id
+	}
+	if err := s.store.UpdateChore(ctx, cw.Chore.ID, starChartID, req.Msg.Title, reward, mask, req.Msg.Active, childIDs); err != nil {
 		return nil, mapStoreError(err)
 	}
 	updated, _ := s.store.GetChoreByID(ctx, cw.Chore.ID)
@@ -302,7 +322,12 @@ func (s *Server) GetWeeklyStarChart(ctx context.Context, req *connect.Request[ap
 	}
 	weekEnd := dates[6]
 
-	chores, err := s.store.ListChores(ctx, fc.family.ID, false)
+	starChartID, starChart, err := s.resolveStarChartID(ctx, fc.family.ID, int(req.Msg.StarChartId))
+	if err != nil {
+		return nil, err
+	}
+
+	chores, err := s.store.ListChores(ctx, fc.family.ID, starChartID, false)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
@@ -323,7 +348,12 @@ func (s *Server) GetWeeklyStarChart(ctx context.Context, req *connect.Request[ap
 	}
 
 	childFilter := s.chartChildFilter(fc)
-	out := &apiv1.GetWeeklyStarChartResponse{WeekStart: weekStart, WeekEnd: weekEnd}
+	out := &apiv1.GetWeeklyStarChartResponse{
+		WeekStart:     weekStart,
+		WeekEnd:       weekEnd,
+		StarChartId:   int32(starChartID),
+		StarChartName: starChart.Name,
+	}
 
 	for _, cw := range chores {
 		row := &apiv1.WeeklyStarChartRow{
@@ -364,10 +394,23 @@ func (s *Server) GetWeeklyStarChart(ctx context.Context, req *connect.Request[ap
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	for _, date := range dates {
-		out.BonusDays = append(out.BonusDays, &apiv1.WeeklyStarChartBonusDay{
-			Date: date, Stars: int32(bonusMap[date]),
-		})
+	for _, m := range members {
+		if !isFamilyStarMember(&m, fc.family.ID) {
+			continue
+		}
+		if childFilter != 0 && m.ID != childFilter {
+			continue
+		}
+		childBonus := bonusMap[m.ID]
+		childRow := &apiv1.WeeklyStarChartBonusChild{
+			Child: toProtoMember(&m),
+		}
+		for _, date := range dates {
+			childRow.Days = append(childRow.Days, &apiv1.WeeklyStarChartDay{
+				Date: date, StarsEarned: int32(childBonus[date]),
+			})
+		}
+		out.BonusChildren = append(out.BonusChildren, childRow)
 	}
 	return connect.NewResponse(out), nil
 }
@@ -425,13 +468,13 @@ func (s *Server) toggleChoreCompletion(ctx context.Context, fc *familyContext, c
 	if err != nil || cw == nil || cw.Chore.FamilyID != fc.family.ID || !cw.Chore.Active {
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("chore not found"))
 	}
-	child, err := s.store.GetMemberByID(ctx, childMemberID)
-	if err != nil || child == nil || child.FamilyID != fc.family.ID || child.Role != store.MemberRoleChild {
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("child not found"))
+	member, err := s.store.GetMemberByID(ctx, childMemberID)
+	if err != nil || !isFamilyStarMember(member, fc.family.ID) {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("member not found"))
 	}
 	assign, err := s.store.GetAssignment(ctx, choreID, childMemberID)
 	if err != nil || assign == nil {
-		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("child not assigned to chore"))
+		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("member not assigned to chore"))
 	}
 	paused, _ := s.store.IsDatePaused(ctx, fc.family.ID, date)
 	if paused {
@@ -501,9 +544,9 @@ func (s *Server) toggleChoreCompletion(ctx context.Context, fc *familyContext, c
 	}), nil
 }
 
-func (s *Server) validateChildIDs(ctx context.Context, familyID int, ids []int32) ([]int, error) {
+func (s *Server) validateChoreMemberIDs(ctx context.Context, familyID int, ids []int32) ([]int, error) {
 	if len(ids) == 0 {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("at least one child required"))
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("at least one person required"))
 	}
 	out := make([]int, 0, len(ids))
 	seen := map[int]bool{}
@@ -512,8 +555,8 @@ func (s *Server) validateChildIDs(ctx context.Context, familyID int, ids []int32
 			continue
 		}
 		m, err := s.store.GetMemberByID(ctx, int(id))
-		if err != nil || m == nil || m.FamilyID != familyID || m.Role != store.MemberRoleChild {
-			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid child member id %d", id))
+		if err != nil || !isFamilyStarMember(m, familyID) {
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid member id %d", id))
 		}
 		seen[int(id)] = true
 		out = append(out, int(id))

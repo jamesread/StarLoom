@@ -13,13 +13,20 @@ import (
 
 func (s *Server) AvatarHandler(layer *auth.Layer) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		idStr := strings.TrimPrefix(r.URL.Path, "/avatars/")
-		idStr = strings.TrimSuffix(idStr, "/")
-		memberID, err := strconv.Atoi(idStr)
+		rest := strings.TrimPrefix(r.URL.Path, "/avatars/")
+		rest = strings.TrimSuffix(rest, "/")
+		if rest == "" {
+			http.NotFound(w, r)
+			return
+		}
+
+		parts := strings.Split(rest, "/")
+		memberID, err := strconv.Atoi(parts[0])
 		if err != nil || memberID <= 0 {
 			http.NotFound(w, r)
 			return
 		}
+
 		ctx := r.Context()
 		info, err := layer.Handle(ctx, r)
 		if err != nil || info == nil {
@@ -32,7 +39,7 @@ func (s *Server) AvatarHandler(layer *auth.Layer) http.Handler {
 			return
 		}
 		member, err := s.store.GetMemberByID(ctx, memberID)
-		if err != nil || member == nil || member.AvatarPath == "" {
+		if err != nil || member == nil {
 			http.NotFound(w, r)
 			return
 		}
@@ -44,16 +51,37 @@ func (s *Server) AvatarHandler(layer *auth.Layer) http.Handler {
 			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}
-		path := avatar.Path(s.cfg.ConfigDir, member.AvatarPath)
+
+		var relativePath string
+		switch len(parts) {
+		case 1:
+			relativePath = member.AvatarPath
+		case 2:
+			filename := parts[1]
+			if !avatar.BelongsToMember(memberID, filename) {
+				http.NotFound(w, r)
+				return
+			}
+			relativePath = filename
+		default:
+			http.NotFound(w, r)
+			return
+		}
+		if relativePath == "" {
+			http.NotFound(w, r)
+			return
+		}
+
+		path := avatar.Path(s.cfg.ConfigDir, relativePath)
 		data, err := os.ReadFile(path)
 		if err != nil {
 			http.NotFound(w, r)
 			return
 		}
 		ct := "image/jpeg"
-		if strings.HasSuffix(member.AvatarPath, ".png") {
+		if strings.HasSuffix(relativePath, ".png") {
 			ct = "image/png"
-		} else if strings.HasSuffix(member.AvatarPath, ".webp") {
+		} else if strings.HasSuffix(relativePath, ".webp") {
 			ct = "image/webp"
 		}
 		w.Header().Set("Content-Type", ct)

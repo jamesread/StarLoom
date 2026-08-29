@@ -25,7 +25,7 @@ func TestChoreCompletionFlow(t *testing.T) {
 	childID, err := st.CreateMember(ctx, familyID, "Child", MemberRoleChild, nil, "#3498db")
 	require.NoError(t, err)
 
-	choreID, err := st.CreateChore(ctx, familyID, "Make bed", 2, 127, []int{childID})
+	choreID, err := st.CreateChore(ctx, familyID, 0, "Make bed", 2, 127, []int{childID})
 	require.NoError(t, err)
 
 	assign, err := st.GetAssignment(ctx, choreID, childID)
@@ -36,10 +36,10 @@ func TestChoreCompletionFlow(t *testing.T) {
 	entryID, err := st.InsertLedgerEntry(ctx, StarLedgerRow{
 		FamilyID: familyID, ChildMemberID: childID, Amount: 2,
 		EntryType: LedgerTypeAward, Note: "Chore: Make bed",
-		CreatedByMemberID: &parentID,
+		CreatedByMemberID: &parentID, CreatedAt: date + "T09:00:00Z",
 	})
 	require.NoError(t, err)
-	_, err = st.InsertChoreCompletion(ctx, assign.ID, date, entryID)
+	completionID, err := st.InsertChoreCompletion(ctx, assign.ID, date, entryID)
 	require.NoError(t, err)
 
 	balance, err := st.GetMemberBalance(ctx, childID)
@@ -61,13 +61,56 @@ func TestChoreCompletionFlow(t *testing.T) {
 	_, err = st.InsertLedgerEntry(ctx, StarLedgerRow{
 		FamilyID: familyID, ChildMemberID: childID, Amount: 3,
 		EntryType: LedgerTypeAward, Note: "Great attitude",
-		CreatedByMemberID: &parentID,
+		CreatedByMemberID: &parentID, CreatedAt: date + "T10:00:00Z",
 	})
 	require.NoError(t, err)
 
 	bonus, err = st.ListBonusStarsForWeek(ctx, familyID, "2026-08-25", "2026-08-31", choreLedgerIDs)
 	require.NoError(t, err)
-	require.NotEmpty(t, bonus)
+	require.Equal(t, 3, bonus[childID][date])
+
+	require.NoError(t, st.DeleteChoreCompletion(ctx, completionID))
+	choreLedgerIDs, err = st.ListChoreLedgerEntryIDs(ctx, familyID)
+	require.NoError(t, err)
+	require.Empty(t, choreLedgerIDs)
+
+	bonus, err = st.ListBonusStarsForWeek(ctx, familyID, "2026-08-25", "2026-08-31", choreLedgerIDs)
+	require.NoError(t, err)
+	require.Equal(t, 3, bonus[childID][date])
+	require.Empty(t, bonus[childID]["2026-08-26"])
+}
+
+func TestBonusStarsPerChild(t *testing.T) {
+	st := OpenMemory()
+	ctx := context.Background()
+
+	familyID, err := st.CreateFamily(ctx, "Test")
+	require.NoError(t, err)
+	parentID, err := st.CreateMember(ctx, familyID, "Parent", MemberRoleParent, nil, "")
+	require.NoError(t, err)
+	childA, err := st.CreateMember(ctx, familyID, "Alex", MemberRoleChild, nil, "#3498db")
+	require.NoError(t, err)
+	childB, err := st.CreateMember(ctx, familyID, "Sam", MemberRoleChild, nil, "#e74c3c")
+	require.NoError(t, err)
+
+	date := "2026-08-25"
+	_, err = st.InsertLedgerEntry(ctx, StarLedgerRow{
+		FamilyID: familyID, ChildMemberID: childA, Amount: 2,
+		EntryType: LedgerTypeAward, Note: "Nice work",
+		CreatedByMemberID: &parentID, CreatedAt: date + "T10:00:00Z",
+	})
+	require.NoError(t, err)
+	_, err = st.InsertLedgerEntry(ctx, StarLedgerRow{
+		FamilyID: familyID, ChildMemberID: childB, Amount: 5,
+		EntryType: LedgerTypeAward, Note: "Extra help",
+		CreatedByMemberID: &parentID, CreatedAt: date + "T11:00:00Z",
+	})
+	require.NoError(t, err)
+
+	bonus, err := st.ListBonusStarsForWeek(ctx, familyID, "2026-08-25", "2026-08-31", nil)
+	require.NoError(t, err)
+	require.Equal(t, 2, bonus[childA][date])
+	require.Equal(t, 5, bonus[childB][date])
 }
 
 func TestChorePause(t *testing.T) {

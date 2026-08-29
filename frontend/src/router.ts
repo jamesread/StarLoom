@@ -37,33 +37,62 @@ import UserControlPanel from './views/UserControlPanel.vue'
 import UserPreferences from './views/UserPreferences.vue'
 import ChangePassword from './views/ChangePassword.vue'
 import ChildrenAdmin from './views/ChildrenAdmin.vue'
+import ChildCreate from './views/ChildCreate.vue'
 import ChildDetail from './views/ChildDetail.vue'
+import ChildEdit from './views/ChildEdit.vue'
 import RewardsAdmin from './views/RewardsAdmin.vue'
+import RewardCreate from './views/RewardCreate.vue'
 import RewardEdit from './views/RewardEdit.vue'
 import RedemptionsAdmin from './views/RedemptionsAdmin.vue'
 import ChoresAdmin from './views/ChoresAdmin.vue'
 import ChoreEdit from './views/ChoreEdit.vue'
 import StarChart from './views/StarChart.vue'
+import StarChartRedirect from './views/StarChartRedirect.vue'
+import StarChartsAdmin from './views/StarChartsAdmin.vue'
+import StarChartCreate from './views/StarChartCreate.vue'
+import StarChartEdit from './views/StarChartEdit.vue'
 
 const routes = [
   { path: '/', name: 'home', component: HomeView, meta: { title: 'Home', icon: Home01Icon, requiresAuth: true } },
   {
-    path: '/family/children',
-    name: 'familyChildren',
+    path: '/family/people',
+    name: 'familyPeople',
     component: ChildrenAdmin,
-    meta: { title: 'Children', icon: UserMultipleIcon, requiresAuth: true, requiresFamilyAdmin: true },
+    meta: { title: 'People', icon: UserMultipleIcon, requiresAuth: true, requiresFamilyAdmin: true },
   },
   {
-    path: '/family/children/:id',
-    name: 'familyChildDetail',
-    component: ChildDetail,
-    meta: { title: 'Child', requiresAuth: true, requiresFamilyAdmin: true },
+    path: '/family/people/create',
+    name: 'familyPersonCreate',
+    component: ChildCreate,
+    meta: { title: 'Add person', requiresAuth: true, requiresFamilyAdmin: true },
   },
+  {
+    path: '/family/people/:id',
+    name: 'familyPersonDetail',
+    component: ChildDetail,
+    meta: { title: 'Person', requiresAuth: true, requiresFamilyAdmin: true },
+  },
+  {
+    path: '/family/people/:id/edit',
+    name: 'familyPersonEdit',
+    component: ChildEdit,
+    meta: { title: 'Edit person', requiresAuth: true, requiresFamilyAdmin: true },
+  },
+  { path: '/family/children', redirect: { name: 'familyPeople' } },
+  { path: '/family/children/create', redirect: { name: 'familyPersonCreate' } },
+  { path: '/family/children/:id', redirect: (to) => ({ name: 'familyPersonDetail', params: { id: to.params.id } }) },
+  { path: '/family/children/:id/edit', redirect: (to) => ({ name: 'familyPersonEdit', params: { id: to.params.id } }) },
   {
     path: '/family/rewards',
     name: 'familyRewards',
     component: RewardsAdmin,
     meta: { title: 'Rewards', icon: GiftIcon, requiresAuth: true, requiresFamilyAdmin: true },
+  },
+  {
+    path: '/family/rewards/create',
+    name: 'familyRewardCreate',
+    component: RewardCreate,
+    meta: { title: 'Add reward', requiresAuth: true, requiresFamilyAdmin: true },
   },
   {
     path: '/family/rewards/:id',
@@ -90,8 +119,32 @@ const routes = [
     meta: { title: 'Edit chore', requiresAuth: true, requiresFamilyAdmin: true },
   },
   {
+    path: '/family/star-charts',
+    name: 'familyStarCharts',
+    component: StarChartsAdmin,
+    meta: { title: 'Star Charts', icon: StarIcon, requiresAuth: true, requiresFamilyAdmin: true },
+  },
+  {
+    path: '/family/star-charts/create',
+    name: 'familyStarChartCreate',
+    component: StarChartCreate,
+    meta: { title: 'Add star chart', requiresAuth: true, requiresFamilyAdmin: true },
+  },
+  {
+    path: '/family/star-charts/:id/edit',
+    name: 'familyStarChartEdit',
+    component: StarChartEdit,
+    meta: { title: 'Edit star chart', requiresAuth: true, requiresFamilyAdmin: true },
+  },
+  {
     path: '/family/star-chart',
     name: 'familyStarChart',
+    component: StarChartRedirect,
+    meta: { title: 'Star Chart', icon: StarIcon, requiresAuth: true, requiresChoresView: true },
+  },
+  {
+    path: '/family/star-chart/:id',
+    name: 'familyStarChartView',
     component: StarChart,
     meta: { title: 'Star Chart', icon: StarIcon, requiresAuth: true, requiresChoresView: true },
   },

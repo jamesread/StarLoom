@@ -11,11 +11,12 @@ var errCvarNotFound = errors.New("cvar not found")
 
 // Memory is an in-memory Store for tests that bypass migration checks.
 type Memory struct {
-	cvars    map[string]CvarRow
-	webhooks *memoryWebhook
-	iam      *memoryIAM
-	family   *memoryFamily
-	chores   *memoryChore
+	cvars      map[string]CvarRow
+	webhooks   *memoryWebhook
+	iam        *memoryIAM
+	family     *memoryFamily
+	chores     *memoryChore
+	starCharts *memoryStarChart
 }
 
 // OpenMemory returns a new in-memory store.

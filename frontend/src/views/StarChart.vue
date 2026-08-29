@@ -1,22 +1,29 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import { computed, onMounted, ref, watch } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { ArrowLeft01Icon, ArrowRight01Icon, Refresh01Icon, StarIcon } from '@hugeicons/core-free-icons'
+import { ArrowLeft01Icon, ArrowRight01Icon, PlusSignIcon, Refresh01Icon, StarIcon } from '@hugeicons/core-free-icons'
 import {
   starapp,
-  memberAvatarUrl,
+  type StarChart as StarChartMeta,
   type WeeklyStarChart,
+  type WeeklyStarChartBonusChild,
   type WeeklyStarChartChild,
   type WeeklyStarChartDay,
 } from '../api/client'
+import MemberAvatar from '../components/MemberAvatar.vue'
 import { fetchAppStatus, useStatus } from '../composables/useStatus'
-import { canCompleteChoresFromStatus } from '../lib/rbacAccess'
-import { memberAvatarStyle, memberStarStyle } from '../lib/memberStarColor'
+import { canCompleteChoresFromStatus, canViewFamilyHomeFromStatus } from '../lib/rbacAccess'
+import { memberStarStyle } from '../lib/memberStarColor'
 
 const statusState = useStatus()
+const route = useRoute()
+const router = useRouter()
+
+const starChartId = computed(() => Number(route.params.id))
 const chart = ref<WeeklyStarChart | null>(null)
+const starCharts = ref<StarChartMeta[]>([])
 const error = ref('')
 const loading = ref(false)
 const weekStart = ref('')
@@ -24,6 +31,14 @@ const weekStart = ref('')
 const iconStrokeWidth = 2.5
 
 const canComplete = computed(() => canCompleteChoresFromStatus(statusState.status))
+const canAddChores = computed(() => canViewFamilyHomeFromStatus(statusState.status))
+const hasChores = computed(() => (chart.value?.rows?.length ?? 0) > 0)
+const sectionTitle = computed(() => chart.value?.starChartName || 'Star Chart')
+const activeStarCharts = computed(() => starCharts.value.filter((c) => c.active !== false))
+const createChoreQuery = computed(() => ({
+  create: '1',
+  starChartId: String(starChartId.value),
+}))
 
 const dayLabels = computed(() => {
   if (!chart.value?.weekStart) return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -60,9 +75,15 @@ async function load() {
   loading.value = true
   try {
     await fetchAppStatus()
-    chart.value = await starapp.getWeeklyStarChart({
-      weekStart: weekStart.value || undefined,
-    })
+    const [chartRes, chartsRes] = await Promise.all([
+      starapp.getWeeklyStarChart({
+        weekStart: weekStart.value || undefined,
+        starChartId: starChartId.value,
+      }),
+      starapp.listStarCharts(),
+    ])
+    chart.value = chartRes
+    starCharts.value = chartsRes.starCharts || []
     if (!weekStart.value && chart.value?.weekStart) {
       weekStart.value = chart.value.weekStart
     }
@@ -74,9 +95,26 @@ async function load() {
   }
 }
 
+function switchChart(id: number) {
+  if (id === starChartId.value) return
+  router.push({ name: 'familyStarChartView', params: { id } })
+}
+
 function dayForChild(child: WeeklyStarChartChild, index: number): WeeklyStarChartDay | undefined {
   return child.days?.[index]
 }
+
+function bonusStarsForChild(child: WeeklyStarChartBonusChild, dayIndex: number): number {
+  return child.days?.[dayIndex]?.starsEarned || 0
+}
+
+function bonusChildHasStars(child: WeeklyStarChartBonusChild): boolean {
+  return (child.days || []).some((day) => (day.starsEarned || 0) > 0)
+}
+
+const visibleBonusChildren = computed(() =>
+  (chart.value?.bonusChildren || []).filter(bonusChildHasStars),
+)
 
 function starsForRow(children: WeeklyStarChartChild[] | undefined, index: number): number {
   let total = 0
@@ -117,11 +155,21 @@ async function toggleCell(
 }
 
 onMounted(load)
+watch(starChartId, () => {
+  weekStart.value = ''
+  load()
+})
 </script>
 
 <template>
-  <Section title="Star Chart" :icon="StarIcon" :padding="false">
+  <Section :title="sectionTitle" :icon="StarIcon" :padding="false">
     <template #toolbar>
+      <label v-if="activeStarCharts.length > 1" class="chart-select">
+        <span class="visually-hidden">Star chart</span>
+        <select :value="starChartId" @change="switchChart(Number(($event.target as HTMLSelectElement).value))">
+          <option v-for="sc in activeStarCharts" :key="sc.id" :value="sc.id">{{ sc.name }}</option>
+        </select>
+      </label>
       <button type="button" class="inline-icon neutral" :disabled="loading" @click="shiftWeek(-1)">
         <HugeiconsIcon
           :icon="ArrowLeft01Icon"
@@ -158,6 +206,29 @@ onMounted(load)
 
     <p v-if="loading" class="list-banner-pad muted">Loading…</p>
 
+    <div v-else-if="chart && !hasChores" class="list-banner-pad empty-chores">
+      <p class="inline-notification note">
+        <template v-if="canAddChores">
+          No chores are defined yet. Add chores to start tracking stars on the chart.
+        </template>
+        <template v-else>No chores are defined yet. Ask a parent to add people and assign chores.</template>
+      </p>
+      <RouterLink
+        v-if="canAddChores"
+        :to="{ name: 'familyChores', query: createChoreQuery }"
+        class="button inline-icon good"
+      >
+        <HugeiconsIcon
+          :icon="PlusSignIcon"
+          width="1em"
+          height="1em"
+          :strokeWidth="iconStrokeWidth"
+          aria-hidden="true"
+        />
+        <span>Add chore</span>
+      </RouterLink>
+    </div>
+
     <div v-else-if="chart" class="chart-wrap">
       <table class="star-chart">
         <thead>
@@ -173,23 +244,12 @@ onMounted(load)
               <span class="reward">★{{ row.starReward }}</span>
               <span class="child-icons">
                 <template v-for="child in row.children" :key="child.assignmentId">
-                  <RouterLink
+                  <MemberAvatar
                     v-if="child.child?.id"
-                    :to="{ name: 'familyChildDetail', params: { id: child.child.id } }"
-                    class="child-avatar-link"
-                    :title="child.child.displayName"
-                  >
-                    <img
-                      v-if="child.child.hasAvatar"
-                      :src="memberAvatarUrl(child.child.id, true)"
-                      :alt="child.child.displayName"
-                      class="child-avatar"
-                      :style="memberAvatarStyle(child.child)"
-                    />
-                    <span v-else class="child-initial" :style="memberAvatarStyle(child.child)">
-                      {{ (child.child.displayName || '?').charAt(0) }}
-                    </span>
-                  </RouterLink>
+                    :member="child.child"
+                    size="md"
+                    :to="{ name: 'familyPersonDetail', params: { id: child.child.id } }"
+                  />
                 </template>
               </span>
             </td>
@@ -234,11 +294,32 @@ onMounted(load)
               </template>
             </td>
           </tr>
-          <tr class="bonus-row">
-            <td class="chore-col"><strong>Bonus stars</strong></td>
-            <td v-for="(day, i) in chart.bonusDays" :key="i">
-              <span v-if="day.stars" class="star star-lg bonus-stars">★{{ day.stars }}</span>
-              <span v-else class="muted">·</span>
+          <tr v-if="visibleBonusChildren.length" class="bonus-row">
+            <td class="chore-col">
+              <strong>Bonus stars</strong>
+              <span class="child-icons">
+                <template v-for="child in visibleBonusChildren" :key="child.child?.id">
+                  <MemberAvatar
+                    v-if="child.child?.id"
+                    :member="child.child"
+                    size="md"
+                    :to="{ name: 'familyPersonDetail', params: { id: child.child.id } }"
+                  />
+                </template>
+              </span>
+            </td>
+            <td v-for="(_, dayIndex) in dayLabels" :key="dayIndex">
+              <div class="multi-child">
+                <span
+                  v-for="child in visibleBonusChildren"
+                  :key="`${child.child?.id}-${dayIndex}`"
+                  v-show="bonusStarsForChild(child, dayIndex) > 0"
+                  class="star star-md bonus-stars"
+                  :style="memberStarStyle(child.child)"
+                >
+                  ★{{ bonusStarsForChild(child, dayIndex) }}
+                </span>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -253,9 +334,31 @@ onMounted(load)
   font-weight: 600;
   white-space: nowrap;
 }
+.chart-select select {
+  min-width: 10rem;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 .list-banner-pad {
   padding-left: 1em;
   padding-right: 1em;
+}
+
+.empty-chores {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .chart-wrap {
@@ -286,37 +389,6 @@ onMounted(load)
   display: flex;
   gap: 0.25rem;
   margin-top: 0.25rem;
-}
-.child-avatar-link {
-  display: inline-flex;
-  text-decoration: none;
-  border-radius: 50%;
-  line-height: 0;
-}
-.child-avatar-link:hover {
-  opacity: 0.85;
-}
-.child-avatar {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  object-fit: cover;
-  box-sizing: border-box;
-}
-.child-avatar.placeholder {
-  display: none;
-}
-.child-initial {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  background: var(--pico-muted-border-color);
-  font-size: 1.25rem;
-  font-weight: 600;
-  box-sizing: border-box;
 }
 .cell-btn {
   background: none;

@@ -18,8 +18,9 @@ export function setupSidebarNavigation(
 
   if (showFamilyNav) {
     navigation.addSection('Family', { name: 'nav-family' })
-    navigation.addRouterLink('familyChildren', null, { description: 'Manage children' })
+    navigation.addRouterLink('familyPeople', null, { description: 'Manage people' })
     navigation.addRouterLink('familyStarChart', null, { description: 'Weekly star chart' })
+    navigation.addRouterLink('familyStarCharts', null, { description: 'Manage star charts' })
     navigation.addRouterLink('familyChores', null, { description: 'Chore definitions' })
     navigation.addRouterLink('familyRewards', null, { description: 'Reward catalog' })
     navigation.addRouterLink('familyRedemptions', null, { description: 'Approval queue' })

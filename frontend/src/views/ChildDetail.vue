@@ -1,26 +1,32 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
 import Table from 'picocrank/vue/components/Table.vue'
 import FormField from 'picocrank/vue/components/FormField.vue'
 import FormLayout from 'picocrank/vue/components/FormLayout.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { ArrowLeft01Icon, Clock01Icon, Refresh01Icon, StarIcon, UserIcon } from '@hugeicons/core-free-icons'
+import {
+  ArrowLeft01Icon,
+  Clock01Icon,
+  PencilEdit01Icon,
+  Refresh01Icon,
+  StarIcon,
+  UserIcon,
+} from '@hugeicons/core-free-icons'
 import {
   starapp,
-  memberAvatarUrl,
   type FamilyMember,
   type StarLedgerEntry,
 } from '../api/client'
+import MemberAvatar from '../components/MemberAvatar.vue'
 import { useStatus } from '../composables/useStatus'
 import { hasPermission } from '../lib/rbacAccess'
-import { memberAvatarStyle, memberStarColor, memberStarStyle } from '../lib/memberStarColor'
+import { memberStarStyle } from '../lib/memberStarColor'
 
 const iconStrokeWidth = 2.5
 
 const route = useRoute()
-const router = useRouter()
 const statusState = useStatus()
 const memberId = computed(() => Number(route.params.id))
 
@@ -32,12 +38,9 @@ const awardError = ref('')
 const ledgerError = ref('')
 const loading = ref(true)
 const awarding = ref(false)
-const savingProfile = ref(false)
 const revokingId = ref<number | null>(null)
 const awardForm = reactive({ amount: 1, note: '' })
-const starColor = ref('#3498db')
 
-const avatarStyle = computed(() => memberAvatarStyle(member.value))
 const starStyle = computed(() => memberStarStyle(member.value))
 const canRevoke = computed(() => hasPermission(statusState.status, 'stars.revoke'))
 
@@ -83,11 +86,10 @@ async function load() {
     const members = await starapp.listMembers()
     member.value = (members.members || []).find((m) => m.id === memberId.value) || null
     if (!member.value) {
-      error.value = 'Child not found'
+      error.value = 'Person not found'
       ledger.value = []
       return
     }
-    starColor.value = memberStarColor(member.value)
     const bal = await starapp.getMemberBalance({ memberId: memberId.value })
     balance.value = bal.balance ?? 0
     ledger.value = (await starapp.listLedger({ memberId: memberId.value, limit: 100 })).entries || []
@@ -95,25 +97,6 @@ async function load() {
     error.value = e instanceof Error ? e.message : String(e)
   } finally {
     loading.value = false
-  }
-}
-
-async function saveProfile() {
-  if (!member.value) return
-  savingProfile.value = true
-  error.value = ''
-  try {
-    const res = await starapp.updateMember({
-      memberId: memberId.value,
-      displayName: member.value.displayName,
-      starColor: starColor.value,
-    })
-    member.value = res.member || member.value
-    starColor.value = memberStarColor(member.value)
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : String(e)
-  } finally {
-    savingProfile.value = false
   }
 }
 
@@ -159,47 +142,28 @@ async function revokeEntry(entry: StarLedgerEntry) {
   }
 }
 
-async function onAvatarChange(ev: Event) {
-  const input = ev.target as HTMLInputElement
-  const file = input.files?.[0]
-  if (!file) return
-  try {
-    const res = await starapp.uploadMemberAvatar({ memberId: memberId.value, file })
-    member.value = res.member || member.value
-    starColor.value = memberStarColor(member.value)
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : String(e)
-  }
-}
-
-async function removeAvatar() {
-  try {
-    const res = await starapp.deleteMemberAvatar({ memberId: memberId.value })
-    member.value = res.member || member.value
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : String(e)
-  }
-}
-
-async function removeChild() {
-  if (!confirm(`Remove ${member.value?.displayName}?`)) return
-  try {
-    await starapp.deleteMember({ memberId: memberId.value })
-    router.push({ name: 'familyChildren' })
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : String(e)
-  }
-}
-
 onMounted(load)
 </script>
 
 <template>
-  <Section :title="member?.displayName || 'Child'" :icon="UserIcon">
+  <Section :title="member?.displayName || 'Person'" :icon="UserIcon">
     <template #toolbar>
-      <RouterLink :to="{ name: 'familyChildren' }" class="button inline-icon neutral">
+      <RouterLink :to="{ name: 'familyPeople' }" class="button inline-icon neutral">
         <HugeiconsIcon :icon="ArrowLeft01Icon" width="1em" height="1em" aria-hidden="true" />
-        <span>Children</span>
+        <span>People</span>
+      </RouterLink>
+      <RouterLink
+        :to="{ name: 'familyPersonEdit', params: { id: memberId } }"
+        class="button inline-icon good"
+      >
+        <HugeiconsIcon
+          :icon="PencilEdit01Icon"
+          width="1em"
+          height="1em"
+          :strokeWidth="iconStrokeWidth"
+          aria-hidden="true"
+        />
+        <span>Edit</span>
       </RouterLink>
     </template>
 
@@ -208,38 +172,9 @@ onMounted(load)
 
     <template v-if="member">
       <div class="profile-row">
-        <img
-          v-if="member.hasAvatar"
-          class="avatar"
-          :style="avatarStyle"
-          :src="memberAvatarUrl(member.id, true)"
-          :alt="member.displayName"
-        />
-        <div v-else class="avatar avatar-placeholder" :style="avatarStyle">{{ member.displayName.charAt(0) }}</div>
-        <div>
-          <div class="balance" :style="starStyle">★ {{ balance }}</div>
-          <label class="subtle">
-            Upload avatar (JPEG, PNG, or WebP)
-            <input type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" @change="onAvatarChange" />
-          </label>
-          <button v-if="member.hasAvatar" type="button" class="secondary outline small" @click="removeAvatar">
-            Remove avatar
-          </button>
-        </div>
+        <MemberAvatar :member="member" size="xl" />
+        <div class="balance" :style="starStyle">★ {{ balance }}</div>
       </div>
-
-      <FormLayout class="profile-form" @submit.prevent="saveProfile">
-        <FormField label="Star color" for="star-color" description="Used for stars on the chart and avatar border.">
-          <input id="star-color" v-model="starColor" type="color" :disabled="savingProfile" />
-        </FormField>
-        <template #actions>
-          <button type="submit" class="good" :disabled="savingProfile">
-            {{ savingProfile ? 'Saving…' : 'Save color' }}
-          </button>
-        </template>
-      </FormLayout>
-
-      <button type="button" class="outline contrast" @click="removeChild">Remove child</button>
     </template>
   </Section>
 
@@ -271,7 +206,7 @@ onMounted(load)
 
   <Section
     v-if="member"
-    subtitle="Awards, revokes, and redemptions for this child."
+    subtitle="Awards, revokes, and redemptions for this person."
     classes="ledger-list-section"
     :padding="false"
   >
@@ -360,32 +295,13 @@ onMounted(load)
 .profile-row {
   display: flex;
   gap: 1rem;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
-}
-.avatar {
-  width: 5rem;
-  height: 5rem;
-  border-radius: 50%;
-  object-fit: cover;
-  box-sizing: border-box;
-}
-.avatar-placeholder {
-  display: flex;
   align-items: center;
-  justify-content: center;
-  background: var(--pico-muted-border-color);
-  font-size: 2rem;
-  font-weight: bold;
+  margin-bottom: 1.5rem;
 }
 .balance {
   font-size: 1.75rem;
   margin-bottom: 0.5rem;
   font-weight: 700;
-}
-.profile-form {
-  max-width: 24rem;
-  margin-bottom: 1.5rem;
 }
 .award-form {
   max-width: 24rem;

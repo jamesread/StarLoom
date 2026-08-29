@@ -113,11 +113,19 @@ type Store interface {
 	ResolveRedemption(ctx context.Context, id int, status string, resolvedByMemberID int, ledgerEntryID *int) error
 	CountPendingRedemptions(ctx context.Context, familyID int) (int, error)
 
-	ListChores(ctx context.Context, familyID int, includeInactive bool) ([]ChoreWithAssignments, error)
+	ListChores(ctx context.Context, familyID int, starChartID int, includeInactive bool) ([]ChoreWithAssignments, error)
 	GetChoreByID(ctx context.Context, id int) (*ChoreWithAssignments, error)
-	CreateChore(ctx context.Context, familyID int, title string, starReward, weekdayMask int, childMemberIDs []int) (int, error)
-	UpdateChore(ctx context.Context, id int, title string, starReward, weekdayMask int, active bool, childMemberIDs []int) error
+	CreateChore(ctx context.Context, familyID, starChartID int, title string, starReward, weekdayMask int, childMemberIDs []int) (int, error)
+	UpdateChore(ctx context.Context, id int, starChartID int, title string, starReward, weekdayMask int, active bool, childMemberIDs []int) error
 	DeactivateChore(ctx context.Context, id int) error
+
+	ListStarCharts(ctx context.Context, familyID int, includeInactive bool) ([]StarChartRow, error)
+	GetStarChartByID(ctx context.Context, id int) (*StarChartRow, error)
+	GetDefaultStarChartID(ctx context.Context, familyID int) (int, error)
+	CreateStarChart(ctx context.Context, familyID int, name string, sortOrder int) (int, error)
+	UpdateStarChart(ctx context.Context, id int, name string, sortOrder int, active bool) error
+	DeleteStarChart(ctx context.Context, id int) error
+	CountChoresForStarChart(ctx context.Context, starChartID int) (int, error)
 
 	ListChorePauses(ctx context.Context, familyID int) ([]ChorePauseRow, error)
 	CreateChorePause(ctx context.Context, familyID int, startDate, endDate, reason string) (int, error)
@@ -130,5 +138,5 @@ type Store interface {
 	DeleteChoreCompletion(ctx context.Context, id int) error
 	ListCompletionsForWeek(ctx context.Context, familyID int, weekStart, weekEnd string) ([]WeeklyChartCompletion, error)
 	ListChoreLedgerEntryIDs(ctx context.Context, familyID int) ([]int, error)
-	ListBonusStarsForWeek(ctx context.Context, familyID int, weekStart, weekEnd string, choreLedgerIDs []int) (map[string]int, error)
+	ListBonusStarsForWeek(ctx context.Context, familyID int, weekStart, weekEnd string, choreLedgerIDs []int) (map[int]map[string]int, error)
 }

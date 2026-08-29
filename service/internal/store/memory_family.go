@@ -81,6 +81,9 @@ func (m *Memory) CreateFamily(_ context.Context, name string) (int, error) {
 	st.nextFamilyID++
 	id := st.nextFamilyID
 	st.families[id] = FamilyRow{ID: id, Name: name, CreatedAt: familyNow()}
+	st.mu.Unlock()
+	m.ensureDefaultStarChartLocked(id)
+	st.mu.Lock()
 	return id, nil
 }
 

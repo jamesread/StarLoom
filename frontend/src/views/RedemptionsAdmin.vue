@@ -46,7 +46,7 @@ onMounted(load)
     <table v-if="pending.length">
       <thead>
         <tr>
-          <th>Child</th>
+          <th>Person</th>
           <th>Reward</th>
           <th>Stars</th>
           <th>Requested</th>

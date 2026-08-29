@@ -527,6 +527,29 @@ message DeleteMemberAvatarResponse {
   FamilyMember member = 2;
 }
 
+message MemberAvatarEntry {
+  string filename = 1;
+  bool is_current = 2;
+}
+
+message ListMemberAvatarsRequest {
+  int32 member_id = 1;
+}
+
+message ListMemberAvatarsResponse {
+  repeated MemberAvatarEntry avatars = 1;
+}
+
+message SelectMemberAvatarRequest {
+  int32 member_id = 1;
+  string filename = 2;
+}
+
+message SelectMemberAvatarResponse {
+  StandardResponse standard_response = 1;
+  FamilyMember member = 2;
+}
+
 message AwardStarsRequest {
   int32 child_member_id = 1;
   int32 amount = 2;
@@ -678,6 +701,55 @@ message Chore {
   bool active = 6;
   repeated int32 child_member_ids = 7;
   string created_at = 8;
+  int32 star_chart_id = 9;
+}
+
+message StarChart {
+  int32 id = 1;
+  int32 family_id = 2;
+  string name = 3;
+  int32 sort_order = 4;
+  bool active = 5;
+  string created_at = 6;
+  int32 chore_count = 7;
+}
+
+message ListStarChartsRequest {
+  bool include_inactive = 1;
+}
+
+message ListStarChartsResponse {
+  repeated StarChart star_charts = 1;
+}
+
+message CreateStarChartRequest {
+  string name = 1;
+  int32 sort_order = 2;
+}
+
+message CreateStarChartResponse {
+  StandardResponse standard_response = 1;
+  StarChart star_chart = 2;
+}
+
+message UpdateStarChartRequest {
+  int32 id = 1;
+  string name = 2;
+  int32 sort_order = 3;
+  bool active = 4;
+}
+
+message UpdateStarChartResponse {
+  StandardResponse standard_response = 1;
+  StarChart star_chart = 2;
+}
+
+message DeleteStarChartRequest {
+  int32 id = 1;
+}
+
+message DeleteStarChartResponse {
+  StandardResponse standard_response = 1;
 }
 
 message ChorePause {
@@ -691,6 +763,7 @@ message ChorePause {
 
 message ListChoresRequest {
   bool include_inactive = 1;
+  int32 star_chart_id = 2;
 }
 
 message ListChoresResponse {
@@ -702,6 +775,7 @@ message CreateChoreRequest {
   int32 star_reward = 2;
   repeated int32 weekdays = 3;
   repeated int32 child_member_ids = 4;
+  int32 star_chart_id = 5;
 }
 
 message CreateChoreResponse {
@@ -716,6 +790,7 @@ message UpdateChoreRequest {
   repeated int32 weekdays = 4;
   repeated int32 child_member_ids = 5;
   bool active = 6;
+  int32 star_chart_id = 7;
 }
 
 message UpdateChoreResponse {
@@ -778,20 +853,23 @@ message WeeklyStarChartRow {
   repeated WeeklyStarChartChild children = 5;
 }
 
-message WeeklyStarChartBonusDay {
-  string date = 1;
-  int32 stars = 2;
+message WeeklyStarChartBonusChild {
+  FamilyMember child = 1;
+  repeated WeeklyStarChartDay days = 2;
 }
 
 message GetWeeklyStarChartRequest {
   string week_start = 1;
+  int32 star_chart_id = 2;
 }
 
 message GetWeeklyStarChartResponse {
   string week_start = 1;
   string week_end = 2;
   repeated WeeklyStarChartRow rows = 3;
-  repeated WeeklyStarChartBonusDay bonus_days = 4;
+  repeated WeeklyStarChartBonusChild bonus_children = 4;
+  int32 star_chart_id = 5;
+  string star_chart_name = 6;
 }
 
 message CompleteChoreRequest {
@@ -864,6 +942,8 @@ service StarAppService {
   rpc DeleteMember(DeleteMemberRequest) returns (DeleteMemberResponse);
   rpc UploadMemberAvatar(UploadMemberAvatarRequest) returns (UploadMemberAvatarResponse);
   rpc DeleteMemberAvatar(DeleteMemberAvatarRequest) returns (DeleteMemberAvatarResponse);
+  rpc ListMemberAvatars(ListMemberAvatarsRequest) returns (ListMemberAvatarsResponse);
+  rpc SelectMemberAvatar(SelectMemberAvatarRequest) returns (SelectMemberAvatarResponse);
   rpc AwardStars(AwardStarsRequest) returns (AwardStarsResponse);
   rpc RevokeStars(RevokeStarsRequest) returns (RevokeStarsResponse);
   rpc GetMemberBalance(GetMemberBalanceRequest) returns (GetMemberBalanceResponse);
@@ -878,6 +958,10 @@ service StarAppService {
   rpc ListRedemptions(ListRedemptionsRequest) returns (ListRedemptionsResponse);
   rpc GetParentHomeSummary(GetParentHomeSummaryRequest) returns (GetParentHomeSummaryResponse);
   rpc GetChildHomeSummary(GetChildHomeSummaryRequest) returns (GetChildHomeSummaryResponse);
+  rpc ListStarCharts(ListStarChartsRequest) returns (ListStarChartsResponse);
+  rpc CreateStarChart(CreateStarChartRequest) returns (CreateStarChartResponse);
+  rpc UpdateStarChart(UpdateStarChartRequest) returns (UpdateStarChartResponse);
+  rpc DeleteStarChart(DeleteStarChartRequest) returns (DeleteStarChartResponse);
   rpc ListChores(ListChoresRequest) returns (ListChoresResponse);
   rpc CreateChore(CreateChoreRequest) returns (CreateChoreResponse);
   rpc UpdateChore(UpdateChoreRequest) returns (UpdateChoreResponse);

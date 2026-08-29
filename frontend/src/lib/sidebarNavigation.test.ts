@@ -27,7 +27,7 @@ test('sidebar hides control panel without privilege', () => {
 test('sidebar adds family section for parents', () => {
   const nav = fakeNav()
   setupSidebarNavigation(nav, { showFamilyNav: true })
-  assert.ok(nav.links.some((l) => l && typeof l === 'object' && 'name' in l && l.name === 'familyChildren'))
+  assert.ok(nav.links.some((l) => l && typeof l === 'object' && 'name' in l && l.name === 'familyPeople'))
 })
 
 test('sidebar adds control panel as its own root section', () => {

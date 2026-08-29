@@ -51,6 +51,9 @@ func (s *Server) CreateFamily(ctx context.Context, req *connect.Request[apiv1.Cr
 	if err != nil {
 		return nil, mapStoreError(err)
 	}
+	if _, err := s.store.CreateStarChart(ctx, familyID, "Star Chart", 0); err != nil {
+		return nil, mapStoreError(err)
+	}
 	memberID, err := s.store.CreateMember(ctx, familyID, au.User.Username, store.MemberRoleParent, &au.User.ID, "")
 	if err != nil {
 		return nil, mapStoreError(err)
@@ -99,22 +102,30 @@ func (s *Server) CreateChildMember(ctx context.Context, req *connect.Request[api
 	}
 	displayName := strings.TrimSpace(req.Msg.DisplayName)
 	username := strings.TrimSpace(req.Msg.Username)
-	if displayName == "" || username == "" {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("display name and username required"))
+	plainPassword := req.Msg.Password
+	if displayName == "" {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("display name required"))
 	}
-	if len(req.Msg.Password) < 8 {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("password must be at least 8 characters"))
-	}
-	hash, err := password.Hash(req.Msg.Password)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-	userID, err := s.store.CreateUserAccount(ctx, username, hash, store.UserCreatedByAdmin)
-	if err != nil {
-		return nil, mapStoreError(err)
-	}
-	if err := s.store.EnsureUserInGroup(ctx, userID, rbac.GroupChildren); err != nil {
-		return nil, mapStoreError(err)
+	var accountID *int
+	if plainPassword != "" {
+		if username == "" {
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("username required when password is set"))
+		}
+		if len(plainPassword) < 8 {
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("password must be at least 8 characters"))
+		}
+		hash, err := password.Hash(plainPassword)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+		userID, err := s.store.CreateUserAccount(ctx, username, hash, store.UserCreatedByAdmin)
+		if err != nil {
+			return nil, mapStoreError(err)
+		}
+		if err := s.store.EnsureUserInGroup(ctx, userID, rbac.GroupChildren); err != nil {
+			return nil, mapStoreError(err)
+		}
+		accountID = &userID
 	}
 	members, err := s.store.ListMembersByFamily(ctx, fc.family.ID)
 	if err != nil {
@@ -127,9 +138,11 @@ func (s *Server) CreateChildMember(ctx context.Context, req *connect.Request[api
 		}
 	}
 	starColor := store.NextChildStarColor(childCount)
-	memberID, err := s.store.CreateMember(ctx, fc.family.ID, displayName, store.MemberRoleChild, &userID, starColor)
+	memberID, err := s.store.CreateMember(ctx, fc.family.ID, displayName, store.MemberRoleChild, accountID, starColor)
 	if err != nil {
-		_ = s.store.DeleteUserAccount(ctx, userID)
+		if accountID != nil {
+			_ = s.store.DeleteUserAccount(ctx, *accountID)
+		}
 		return nil, mapStoreError(err)
 	}
 	member, err := s.store.GetMemberByID(ctx, memberID)
@@ -137,7 +150,7 @@ func (s *Server) CreateChildMember(ctx context.Context, req *connect.Request[api
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	return connect.NewResponse(&apiv1.CreateChildMemberResponse{
-		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Child added"},
+		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Person added"},
 		Member:           toProtoMember(member),
 	}), nil
 }
@@ -200,7 +213,7 @@ func (s *Server) DeleteMember(ctx context.Context, req *connect.Request[apiv1.De
 	if member.UserAccountID != nil {
 		_ = s.store.DeleteUserAccount(ctx, *member.UserAccountID)
 	}
-	_ = avatar.Delete(s.cfg.ConfigDir, member.ID)
+	_ = avatar.DeleteAll(s.cfg.ConfigDir, member.ID)
 	if err := s.store.DeleteMember(ctx, member.ID); err != nil {
 		return nil, mapStoreError(err)
 	}
@@ -221,7 +234,7 @@ func (s *Server) UploadMemberAvatar(ctx context.Context, req *connect.Request[ap
 		return nil, err
 	}
 	member, err := s.store.GetMemberByID(ctx, int(req.Msg.MemberId))
-	if err != nil || member == nil || member.FamilyID != fc.family.ID || member.Role != store.MemberRoleChild {
+	if err != nil || member == nil || member.FamilyID != fc.family.ID || !isFamilyStarMember(member, fc.family.ID) {
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("member not found"))
 	}
 	path, err := avatar.Save(s.cfg.ConfigDir, member.ID, req.Msg.Data, req.Msg.ContentType)
@@ -250,16 +263,71 @@ func (s *Server) DeleteMemberAvatar(ctx context.Context, req *connect.Request[ap
 		return nil, err
 	}
 	member, err := s.store.GetMemberByID(ctx, int(req.Msg.MemberId))
-	if err != nil || member == nil || member.FamilyID != fc.family.ID || member.Role != store.MemberRoleChild {
+	if err != nil || member == nil || member.FamilyID != fc.family.ID || !isFamilyStarMember(member, fc.family.ID) {
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("member not found"))
 	}
-	_ = avatar.Delete(s.cfg.ConfigDir, member.ID)
+	_ = avatar.DeleteCurrent(s.cfg.ConfigDir, member.ID)
 	if err := s.store.SetMemberAvatarPath(ctx, member.ID, ""); err != nil {
 		return nil, mapStoreError(err)
 	}
 	member, _ = s.store.GetMemberByID(ctx, member.ID)
 	return connect.NewResponse(&apiv1.DeleteMemberAvatarResponse{
 		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Avatar removed"},
+		Member:           toProtoMember(member),
+	}), nil
+}
+
+func (s *Server) ListMemberAvatars(ctx context.Context, req *connect.Request[apiv1.ListMemberAvatarsRequest]) (*connect.Response[apiv1.ListMemberAvatarsResponse], error) {
+	fc, err := s.requireFamilyContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := s.requirePermission(ctx, rbac.PermissionMembersAvatar); err != nil {
+		return nil, err
+	}
+	member, err := s.store.GetMemberByID(ctx, int(req.Msg.MemberId))
+	if err != nil || member == nil || member.FamilyID != fc.family.ID || !isFamilyStarMember(member, fc.family.ID) {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("member not found"))
+	}
+	entries, err := avatar.List(s.cfg.ConfigDir, member.ID, member.AvatarPath)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	out := make([]*apiv1.MemberAvatarEntry, 0, len(entries))
+	for _, entry := range entries {
+		out = append(out, &apiv1.MemberAvatarEntry{
+			Filename:  entry.Filename,
+			IsCurrent: entry.IsCurrent,
+		})
+	}
+	return connect.NewResponse(&apiv1.ListMemberAvatarsResponse{Avatars: out}), nil
+}
+
+func (s *Server) SelectMemberAvatar(ctx context.Context, req *connect.Request[apiv1.SelectMemberAvatarRequest]) (*connect.Response[apiv1.SelectMemberAvatarResponse], error) {
+	fc, err := s.requireFamilyContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := s.requireWrite(ctx); err != nil {
+		return nil, err
+	}
+	if _, err := s.requirePermission(ctx, rbac.PermissionMembersAvatar); err != nil {
+		return nil, err
+	}
+	member, err := s.store.GetMemberByID(ctx, int(req.Msg.MemberId))
+	if err != nil || member == nil || member.FamilyID != fc.family.ID || !isFamilyStarMember(member, fc.family.ID) {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("member not found"))
+	}
+	path, err := avatar.Select(s.cfg.ConfigDir, member.ID, req.Msg.Filename)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+	if err := s.store.SetMemberAvatarPath(ctx, member.ID, path); err != nil {
+		return nil, mapStoreError(err)
+	}
+	member, _ = s.store.GetMemberByID(ctx, member.ID)
+	return connect.NewResponse(&apiv1.SelectMemberAvatarResponse{
+		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Avatar updated"},
 		Member:           toProtoMember(member),
 	}), nil
 }

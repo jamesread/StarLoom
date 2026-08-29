@@ -170,6 +170,12 @@ const (
 	// StarAppServiceDeleteMemberAvatarProcedure is the fully-qualified name of the StarAppService's
 	// DeleteMemberAvatar RPC.
 	StarAppServiceDeleteMemberAvatarProcedure = "/starapp.api.v1.StarAppService/DeleteMemberAvatar"
+	// StarAppServiceListMemberAvatarsProcedure is the fully-qualified name of the StarAppService's
+	// ListMemberAvatars RPC.
+	StarAppServiceListMemberAvatarsProcedure = "/starapp.api.v1.StarAppService/ListMemberAvatars"
+	// StarAppServiceSelectMemberAvatarProcedure is the fully-qualified name of the StarAppService's
+	// SelectMemberAvatar RPC.
+	StarAppServiceSelectMemberAvatarProcedure = "/starapp.api.v1.StarAppService/SelectMemberAvatar"
 	// StarAppServiceAwardStarsProcedure is the fully-qualified name of the StarAppService's AwardStars
 	// RPC.
 	StarAppServiceAwardStarsProcedure = "/starapp.api.v1.StarAppService/AwardStars"
@@ -212,6 +218,18 @@ const (
 	// StarAppServiceGetChildHomeSummaryProcedure is the fully-qualified name of the StarAppService's
 	// GetChildHomeSummary RPC.
 	StarAppServiceGetChildHomeSummaryProcedure = "/starapp.api.v1.StarAppService/GetChildHomeSummary"
+	// StarAppServiceListStarChartsProcedure is the fully-qualified name of the StarAppService's
+	// ListStarCharts RPC.
+	StarAppServiceListStarChartsProcedure = "/starapp.api.v1.StarAppService/ListStarCharts"
+	// StarAppServiceCreateStarChartProcedure is the fully-qualified name of the StarAppService's
+	// CreateStarChart RPC.
+	StarAppServiceCreateStarChartProcedure = "/starapp.api.v1.StarAppService/CreateStarChart"
+	// StarAppServiceUpdateStarChartProcedure is the fully-qualified name of the StarAppService's
+	// UpdateStarChart RPC.
+	StarAppServiceUpdateStarChartProcedure = "/starapp.api.v1.StarAppService/UpdateStarChart"
+	// StarAppServiceDeleteStarChartProcedure is the fully-qualified name of the StarAppService's
+	// DeleteStarChart RPC.
+	StarAppServiceDeleteStarChartProcedure = "/starapp.api.v1.StarAppService/DeleteStarChart"
 	// StarAppServiceListChoresProcedure is the fully-qualified name of the StarAppService's ListChores
 	// RPC.
 	StarAppServiceListChoresProcedure = "/starapp.api.v1.StarAppService/ListChores"
@@ -293,6 +311,8 @@ type StarAppServiceClient interface {
 	DeleteMember(context.Context, *connect.Request[v1.DeleteMemberRequest]) (*connect.Response[v1.DeleteMemberResponse], error)
 	UploadMemberAvatar(context.Context, *connect.Request[v1.UploadMemberAvatarRequest]) (*connect.Response[v1.UploadMemberAvatarResponse], error)
 	DeleteMemberAvatar(context.Context, *connect.Request[v1.DeleteMemberAvatarRequest]) (*connect.Response[v1.DeleteMemberAvatarResponse], error)
+	ListMemberAvatars(context.Context, *connect.Request[v1.ListMemberAvatarsRequest]) (*connect.Response[v1.ListMemberAvatarsResponse], error)
+	SelectMemberAvatar(context.Context, *connect.Request[v1.SelectMemberAvatarRequest]) (*connect.Response[v1.SelectMemberAvatarResponse], error)
 	AwardStars(context.Context, *connect.Request[v1.AwardStarsRequest]) (*connect.Response[v1.AwardStarsResponse], error)
 	RevokeStars(context.Context, *connect.Request[v1.RevokeStarsRequest]) (*connect.Response[v1.RevokeStarsResponse], error)
 	GetMemberBalance(context.Context, *connect.Request[v1.GetMemberBalanceRequest]) (*connect.Response[v1.GetMemberBalanceResponse], error)
@@ -307,6 +327,10 @@ type StarAppServiceClient interface {
 	ListRedemptions(context.Context, *connect.Request[v1.ListRedemptionsRequest]) (*connect.Response[v1.ListRedemptionsResponse], error)
 	GetParentHomeSummary(context.Context, *connect.Request[v1.GetParentHomeSummaryRequest]) (*connect.Response[v1.GetParentHomeSummaryResponse], error)
 	GetChildHomeSummary(context.Context, *connect.Request[v1.GetChildHomeSummaryRequest]) (*connect.Response[v1.GetChildHomeSummaryResponse], error)
+	ListStarCharts(context.Context, *connect.Request[v1.ListStarChartsRequest]) (*connect.Response[v1.ListStarChartsResponse], error)
+	CreateStarChart(context.Context, *connect.Request[v1.CreateStarChartRequest]) (*connect.Response[v1.CreateStarChartResponse], error)
+	UpdateStarChart(context.Context, *connect.Request[v1.UpdateStarChartRequest]) (*connect.Response[v1.UpdateStarChartResponse], error)
+	DeleteStarChart(context.Context, *connect.Request[v1.DeleteStarChartRequest]) (*connect.Response[v1.DeleteStarChartResponse], error)
 	ListChores(context.Context, *connect.Request[v1.ListChoresRequest]) (*connect.Response[v1.ListChoresResponse], error)
 	CreateChore(context.Context, *connect.Request[v1.CreateChoreRequest]) (*connect.Response[v1.CreateChoreResponse], error)
 	UpdateChore(context.Context, *connect.Request[v1.UpdateChoreRequest]) (*connect.Response[v1.UpdateChoreResponse], error)
@@ -612,6 +636,18 @@ func NewStarAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(starAppServiceMethods.ByName("DeleteMemberAvatar")),
 			connect.WithClientOptions(opts...),
 		),
+		listMemberAvatars: connect.NewClient[v1.ListMemberAvatarsRequest, v1.ListMemberAvatarsResponse](
+			httpClient,
+			baseURL+StarAppServiceListMemberAvatarsProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("ListMemberAvatars")),
+			connect.WithClientOptions(opts...),
+		),
+		selectMemberAvatar: connect.NewClient[v1.SelectMemberAvatarRequest, v1.SelectMemberAvatarResponse](
+			httpClient,
+			baseURL+StarAppServiceSelectMemberAvatarProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("SelectMemberAvatar")),
+			connect.WithClientOptions(opts...),
+		),
 		awardStars: connect.NewClient[v1.AwardStarsRequest, v1.AwardStarsResponse](
 			httpClient,
 			baseURL+StarAppServiceAwardStarsProcedure,
@@ -694,6 +730,30 @@ func NewStarAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+StarAppServiceGetChildHomeSummaryProcedure,
 			connect.WithSchema(starAppServiceMethods.ByName("GetChildHomeSummary")),
+			connect.WithClientOptions(opts...),
+		),
+		listStarCharts: connect.NewClient[v1.ListStarChartsRequest, v1.ListStarChartsResponse](
+			httpClient,
+			baseURL+StarAppServiceListStarChartsProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("ListStarCharts")),
+			connect.WithClientOptions(opts...),
+		),
+		createStarChart: connect.NewClient[v1.CreateStarChartRequest, v1.CreateStarChartResponse](
+			httpClient,
+			baseURL+StarAppServiceCreateStarChartProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("CreateStarChart")),
+			connect.WithClientOptions(opts...),
+		),
+		updateStarChart: connect.NewClient[v1.UpdateStarChartRequest, v1.UpdateStarChartResponse](
+			httpClient,
+			baseURL+StarAppServiceUpdateStarChartProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("UpdateStarChart")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteStarChart: connect.NewClient[v1.DeleteStarChartRequest, v1.DeleteStarChartResponse](
+			httpClient,
+			baseURL+StarAppServiceDeleteStarChartProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("DeleteStarChart")),
 			connect.WithClientOptions(opts...),
 		),
 		listChores: connect.NewClient[v1.ListChoresRequest, v1.ListChoresResponse](
@@ -808,6 +868,8 @@ type starAppServiceClient struct {
 	deleteMember                 *connect.Client[v1.DeleteMemberRequest, v1.DeleteMemberResponse]
 	uploadMemberAvatar           *connect.Client[v1.UploadMemberAvatarRequest, v1.UploadMemberAvatarResponse]
 	deleteMemberAvatar           *connect.Client[v1.DeleteMemberAvatarRequest, v1.DeleteMemberAvatarResponse]
+	listMemberAvatars            *connect.Client[v1.ListMemberAvatarsRequest, v1.ListMemberAvatarsResponse]
+	selectMemberAvatar           *connect.Client[v1.SelectMemberAvatarRequest, v1.SelectMemberAvatarResponse]
 	awardStars                   *connect.Client[v1.AwardStarsRequest, v1.AwardStarsResponse]
 	revokeStars                  *connect.Client[v1.RevokeStarsRequest, v1.RevokeStarsResponse]
 	getMemberBalance             *connect.Client[v1.GetMemberBalanceRequest, v1.GetMemberBalanceResponse]
@@ -822,6 +884,10 @@ type starAppServiceClient struct {
 	listRedemptions              *connect.Client[v1.ListRedemptionsRequest, v1.ListRedemptionsResponse]
 	getParentHomeSummary         *connect.Client[v1.GetParentHomeSummaryRequest, v1.GetParentHomeSummaryResponse]
 	getChildHomeSummary          *connect.Client[v1.GetChildHomeSummaryRequest, v1.GetChildHomeSummaryResponse]
+	listStarCharts               *connect.Client[v1.ListStarChartsRequest, v1.ListStarChartsResponse]
+	createStarChart              *connect.Client[v1.CreateStarChartRequest, v1.CreateStarChartResponse]
+	updateStarChart              *connect.Client[v1.UpdateStarChartRequest, v1.UpdateStarChartResponse]
+	deleteStarChart              *connect.Client[v1.DeleteStarChartRequest, v1.DeleteStarChartResponse]
 	listChores                   *connect.Client[v1.ListChoresRequest, v1.ListChoresResponse]
 	createChore                  *connect.Client[v1.CreateChoreRequest, v1.CreateChoreResponse]
 	updateChore                  *connect.Client[v1.UpdateChoreRequest, v1.UpdateChoreResponse]
@@ -1069,6 +1135,16 @@ func (c *starAppServiceClient) DeleteMemberAvatar(ctx context.Context, req *conn
 	return c.deleteMemberAvatar.CallUnary(ctx, req)
 }
 
+// ListMemberAvatars calls starapp.api.v1.StarAppService.ListMemberAvatars.
+func (c *starAppServiceClient) ListMemberAvatars(ctx context.Context, req *connect.Request[v1.ListMemberAvatarsRequest]) (*connect.Response[v1.ListMemberAvatarsResponse], error) {
+	return c.listMemberAvatars.CallUnary(ctx, req)
+}
+
+// SelectMemberAvatar calls starapp.api.v1.StarAppService.SelectMemberAvatar.
+func (c *starAppServiceClient) SelectMemberAvatar(ctx context.Context, req *connect.Request[v1.SelectMemberAvatarRequest]) (*connect.Response[v1.SelectMemberAvatarResponse], error) {
+	return c.selectMemberAvatar.CallUnary(ctx, req)
+}
+
 // AwardStars calls starapp.api.v1.StarAppService.AwardStars.
 func (c *starAppServiceClient) AwardStars(ctx context.Context, req *connect.Request[v1.AwardStarsRequest]) (*connect.Response[v1.AwardStarsResponse], error) {
 	return c.awardStars.CallUnary(ctx, req)
@@ -1137,6 +1213,26 @@ func (c *starAppServiceClient) GetParentHomeSummary(ctx context.Context, req *co
 // GetChildHomeSummary calls starapp.api.v1.StarAppService.GetChildHomeSummary.
 func (c *starAppServiceClient) GetChildHomeSummary(ctx context.Context, req *connect.Request[v1.GetChildHomeSummaryRequest]) (*connect.Response[v1.GetChildHomeSummaryResponse], error) {
 	return c.getChildHomeSummary.CallUnary(ctx, req)
+}
+
+// ListStarCharts calls starapp.api.v1.StarAppService.ListStarCharts.
+func (c *starAppServiceClient) ListStarCharts(ctx context.Context, req *connect.Request[v1.ListStarChartsRequest]) (*connect.Response[v1.ListStarChartsResponse], error) {
+	return c.listStarCharts.CallUnary(ctx, req)
+}
+
+// CreateStarChart calls starapp.api.v1.StarAppService.CreateStarChart.
+func (c *starAppServiceClient) CreateStarChart(ctx context.Context, req *connect.Request[v1.CreateStarChartRequest]) (*connect.Response[v1.CreateStarChartResponse], error) {
+	return c.createStarChart.CallUnary(ctx, req)
+}
+
+// UpdateStarChart calls starapp.api.v1.StarAppService.UpdateStarChart.
+func (c *starAppServiceClient) UpdateStarChart(ctx context.Context, req *connect.Request[v1.UpdateStarChartRequest]) (*connect.Response[v1.UpdateStarChartResponse], error) {
+	return c.updateStarChart.CallUnary(ctx, req)
+}
+
+// DeleteStarChart calls starapp.api.v1.StarAppService.DeleteStarChart.
+func (c *starAppServiceClient) DeleteStarChart(ctx context.Context, req *connect.Request[v1.DeleteStarChartRequest]) (*connect.Response[v1.DeleteStarChartResponse], error) {
+	return c.deleteStarChart.CallUnary(ctx, req)
 }
 
 // ListChores calls starapp.api.v1.StarAppService.ListChores.
@@ -1238,6 +1334,8 @@ type StarAppServiceHandler interface {
 	DeleteMember(context.Context, *connect.Request[v1.DeleteMemberRequest]) (*connect.Response[v1.DeleteMemberResponse], error)
 	UploadMemberAvatar(context.Context, *connect.Request[v1.UploadMemberAvatarRequest]) (*connect.Response[v1.UploadMemberAvatarResponse], error)
 	DeleteMemberAvatar(context.Context, *connect.Request[v1.DeleteMemberAvatarRequest]) (*connect.Response[v1.DeleteMemberAvatarResponse], error)
+	ListMemberAvatars(context.Context, *connect.Request[v1.ListMemberAvatarsRequest]) (*connect.Response[v1.ListMemberAvatarsResponse], error)
+	SelectMemberAvatar(context.Context, *connect.Request[v1.SelectMemberAvatarRequest]) (*connect.Response[v1.SelectMemberAvatarResponse], error)
 	AwardStars(context.Context, *connect.Request[v1.AwardStarsRequest]) (*connect.Response[v1.AwardStarsResponse], error)
 	RevokeStars(context.Context, *connect.Request[v1.RevokeStarsRequest]) (*connect.Response[v1.RevokeStarsResponse], error)
 	GetMemberBalance(context.Context, *connect.Request[v1.GetMemberBalanceRequest]) (*connect.Response[v1.GetMemberBalanceResponse], error)
@@ -1252,6 +1350,10 @@ type StarAppServiceHandler interface {
 	ListRedemptions(context.Context, *connect.Request[v1.ListRedemptionsRequest]) (*connect.Response[v1.ListRedemptionsResponse], error)
 	GetParentHomeSummary(context.Context, *connect.Request[v1.GetParentHomeSummaryRequest]) (*connect.Response[v1.GetParentHomeSummaryResponse], error)
 	GetChildHomeSummary(context.Context, *connect.Request[v1.GetChildHomeSummaryRequest]) (*connect.Response[v1.GetChildHomeSummaryResponse], error)
+	ListStarCharts(context.Context, *connect.Request[v1.ListStarChartsRequest]) (*connect.Response[v1.ListStarChartsResponse], error)
+	CreateStarChart(context.Context, *connect.Request[v1.CreateStarChartRequest]) (*connect.Response[v1.CreateStarChartResponse], error)
+	UpdateStarChart(context.Context, *connect.Request[v1.UpdateStarChartRequest]) (*connect.Response[v1.UpdateStarChartResponse], error)
+	DeleteStarChart(context.Context, *connect.Request[v1.DeleteStarChartRequest]) (*connect.Response[v1.DeleteStarChartResponse], error)
 	ListChores(context.Context, *connect.Request[v1.ListChoresRequest]) (*connect.Response[v1.ListChoresResponse], error)
 	CreateChore(context.Context, *connect.Request[v1.CreateChoreRequest]) (*connect.Response[v1.CreateChoreResponse], error)
 	UpdateChore(context.Context, *connect.Request[v1.UpdateChoreRequest]) (*connect.Response[v1.UpdateChoreResponse], error)
@@ -1553,6 +1655,18 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 		connect.WithSchema(starAppServiceMethods.ByName("DeleteMemberAvatar")),
 		connect.WithHandlerOptions(opts...),
 	)
+	starAppServiceListMemberAvatarsHandler := connect.NewUnaryHandler(
+		StarAppServiceListMemberAvatarsProcedure,
+		svc.ListMemberAvatars,
+		connect.WithSchema(starAppServiceMethods.ByName("ListMemberAvatars")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceSelectMemberAvatarHandler := connect.NewUnaryHandler(
+		StarAppServiceSelectMemberAvatarProcedure,
+		svc.SelectMemberAvatar,
+		connect.WithSchema(starAppServiceMethods.ByName("SelectMemberAvatar")),
+		connect.WithHandlerOptions(opts...),
+	)
 	starAppServiceAwardStarsHandler := connect.NewUnaryHandler(
 		StarAppServiceAwardStarsProcedure,
 		svc.AwardStars,
@@ -1635,6 +1749,30 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 		StarAppServiceGetChildHomeSummaryProcedure,
 		svc.GetChildHomeSummary,
 		connect.WithSchema(starAppServiceMethods.ByName("GetChildHomeSummary")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceListStarChartsHandler := connect.NewUnaryHandler(
+		StarAppServiceListStarChartsProcedure,
+		svc.ListStarCharts,
+		connect.WithSchema(starAppServiceMethods.ByName("ListStarCharts")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceCreateStarChartHandler := connect.NewUnaryHandler(
+		StarAppServiceCreateStarChartProcedure,
+		svc.CreateStarChart,
+		connect.WithSchema(starAppServiceMethods.ByName("CreateStarChart")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceUpdateStarChartHandler := connect.NewUnaryHandler(
+		StarAppServiceUpdateStarChartProcedure,
+		svc.UpdateStarChart,
+		connect.WithSchema(starAppServiceMethods.ByName("UpdateStarChart")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceDeleteStarChartHandler := connect.NewUnaryHandler(
+		StarAppServiceDeleteStarChartProcedure,
+		svc.DeleteStarChart,
+		connect.WithSchema(starAppServiceMethods.ByName("DeleteStarChart")),
 		connect.WithHandlerOptions(opts...),
 	)
 	starAppServiceListChoresHandler := connect.NewUnaryHandler(
@@ -1793,6 +1931,10 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 			starAppServiceUploadMemberAvatarHandler.ServeHTTP(w, r)
 		case StarAppServiceDeleteMemberAvatarProcedure:
 			starAppServiceDeleteMemberAvatarHandler.ServeHTTP(w, r)
+		case StarAppServiceListMemberAvatarsProcedure:
+			starAppServiceListMemberAvatarsHandler.ServeHTTP(w, r)
+		case StarAppServiceSelectMemberAvatarProcedure:
+			starAppServiceSelectMemberAvatarHandler.ServeHTTP(w, r)
 		case StarAppServiceAwardStarsProcedure:
 			starAppServiceAwardStarsHandler.ServeHTTP(w, r)
 		case StarAppServiceRevokeStarsProcedure:
@@ -1821,6 +1963,14 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 			starAppServiceGetParentHomeSummaryHandler.ServeHTTP(w, r)
 		case StarAppServiceGetChildHomeSummaryProcedure:
 			starAppServiceGetChildHomeSummaryHandler.ServeHTTP(w, r)
+		case StarAppServiceListStarChartsProcedure:
+			starAppServiceListStarChartsHandler.ServeHTTP(w, r)
+		case StarAppServiceCreateStarChartProcedure:
+			starAppServiceCreateStarChartHandler.ServeHTTP(w, r)
+		case StarAppServiceUpdateStarChartProcedure:
+			starAppServiceUpdateStarChartHandler.ServeHTTP(w, r)
+		case StarAppServiceDeleteStarChartProcedure:
+			starAppServiceDeleteStarChartHandler.ServeHTTP(w, r)
 		case StarAppServiceListChoresProcedure:
 			starAppServiceListChoresHandler.ServeHTTP(w, r)
 		case StarAppServiceCreateChoreProcedure:
@@ -2038,6 +2188,14 @@ func (UnimplementedStarAppServiceHandler) DeleteMemberAvatar(context.Context, *c
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.DeleteMemberAvatar is not implemented"))
 }
 
+func (UnimplementedStarAppServiceHandler) ListMemberAvatars(context.Context, *connect.Request[v1.ListMemberAvatarsRequest]) (*connect.Response[v1.ListMemberAvatarsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.ListMemberAvatars is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) SelectMemberAvatar(context.Context, *connect.Request[v1.SelectMemberAvatarRequest]) (*connect.Response[v1.SelectMemberAvatarResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.SelectMemberAvatar is not implemented"))
+}
+
 func (UnimplementedStarAppServiceHandler) AwardStars(context.Context, *connect.Request[v1.AwardStarsRequest]) (*connect.Response[v1.AwardStarsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.AwardStars is not implemented"))
 }
@@ -2092,6 +2250,22 @@ func (UnimplementedStarAppServiceHandler) GetParentHomeSummary(context.Context, 
 
 func (UnimplementedStarAppServiceHandler) GetChildHomeSummary(context.Context, *connect.Request[v1.GetChildHomeSummaryRequest]) (*connect.Response[v1.GetChildHomeSummaryResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.GetChildHomeSummary is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) ListStarCharts(context.Context, *connect.Request[v1.ListStarChartsRequest]) (*connect.Response[v1.ListStarChartsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.ListStarCharts is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) CreateStarChart(context.Context, *connect.Request[v1.CreateStarChartRequest]) (*connect.Response[v1.CreateStarChartResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.CreateStarChart is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) UpdateStarChart(context.Context, *connect.Request[v1.UpdateStarChartRequest]) (*connect.Response[v1.UpdateStarChartResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.UpdateStarChart is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) DeleteStarChart(context.Context, *connect.Request[v1.DeleteStarChartRequest]) (*connect.Response[v1.DeleteStarChartResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.DeleteStarChart is not implemented"))
 }
 
 func (UnimplementedStarAppServiceHandler) ListChores(context.Context, *connect.Request[v1.ListChoresRequest]) (*connect.Response[v1.ListChoresResponse], error) {

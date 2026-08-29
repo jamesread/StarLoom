@@ -323,7 +323,7 @@ export const starapp = {
       {},
     )
   },
-  createChildMember(body: { displayName: string; username: string; password: string }) {
+  createChildMember(body: { displayName: string; username?: string; password?: string }) {
     return connectFetch<{ standardResponse?: StandardResponse; member?: FamilyMember }>(
       '/starapp.api.v1.StarAppService/CreateChildMember',
       body,
@@ -352,6 +352,18 @@ export const starapp = {
   deleteMemberAvatar(body: { memberId: number }) {
     return connectFetch<{ standardResponse?: StandardResponse; member?: FamilyMember }>(
       '/starapp.api.v1.StarAppService/DeleteMemberAvatar',
+      body,
+    )
+  },
+  listMemberAvatars(body: { memberId: number }) {
+    return connectFetch<{ avatars: MemberAvatarEntry[] }>(
+      '/starapp.api.v1.StarAppService/ListMemberAvatars',
+      body,
+    )
+  },
+  selectMemberAvatar(body: { memberId: number; filename: string }) {
+    return connectFetch<{ standardResponse?: StandardResponse; member?: FamilyMember }>(
+      '/starapp.api.v1.StarAppService/SelectMemberAvatar',
       body,
     )
   },
@@ -446,7 +458,7 @@ export const starapp = {
       {},
     )
   },
-  listChores(body: { includeInactive?: boolean } = {}) {
+  listChores(body: { includeInactive?: boolean; starChartId?: number } = {}) {
     return connectFetch<{ chores: Chore[] }>(
       '/starapp.api.v1.StarAppService/ListChores',
       body,
@@ -457,6 +469,7 @@ export const starapp = {
     starReward: number
     weekdays: number[]
     childMemberIds: number[]
+    starChartId?: number
   }) {
     return connectFetch<{ standardResponse?: StandardResponse; chore?: Chore }>(
       '/starapp.api.v1.StarAppService/CreateChore',
@@ -470,6 +483,7 @@ export const starapp = {
     weekdays: number[]
     childMemberIds: number[]
     active: boolean
+    starChartId?: number
   }) {
     return connectFetch<{ standardResponse?: StandardResponse; chore?: Chore }>(
       '/starapp.api.v1.StarAppService/UpdateChore',
@@ -500,9 +514,33 @@ export const starapp = {
       body,
     )
   },
-  getWeeklyStarChart(body: { weekStart?: string } = {}) {
+  getWeeklyStarChart(body: { weekStart?: string; starChartId?: number } = {}) {
     return connectFetch<WeeklyStarChart>(
       '/starapp.api.v1.StarAppService/GetWeeklyStarChart',
+      body,
+    )
+  },
+  listStarCharts(body: { includeInactive?: boolean } = {}) {
+    return connectFetch<{ starCharts: StarChart[] }>(
+      '/starapp.api.v1.StarAppService/ListStarCharts',
+      body,
+    )
+  },
+  createStarChart(body: { name: string; sortOrder?: number }) {
+    return connectFetch<{ standardResponse?: StandardResponse; starChart?: StarChart }>(
+      '/starapp.api.v1.StarAppService/CreateStarChart',
+      body,
+    )
+  },
+  updateStarChart(body: { id: number; name: string; sortOrder?: number; active: boolean }) {
+    return connectFetch<{ standardResponse?: StandardResponse; starChart?: StarChart }>(
+      '/starapp.api.v1.StarAppService/UpdateStarChart',
+      body,
+    )
+  },
+  deleteStarChart(body: { id: number }) {
+    return connectFetch<{ standardResponse?: StandardResponse }>(
+      '/starapp.api.v1.StarAppService/DeleteStarChart',
       body,
     )
   },
@@ -536,6 +574,11 @@ export type FamilyMember = {
   createdAt?: string
   username?: string
   starColor?: string
+}
+
+export type MemberAvatarEntry = {
+  filename: string
+  isCurrent?: boolean
 }
 
 export type StarLedgerEntry = {
@@ -599,6 +642,17 @@ export type Chore = {
   active?: boolean
   childMemberIds?: number[]
   createdAt?: string
+  starChartId?: number
+}
+
+export type StarChart = {
+  id: number
+  familyId: number
+  name: string
+  sortOrder?: number
+  active?: boolean
+  createdAt?: string
+  choreCount?: number
 }
 
 export type ChorePause = {
@@ -632,21 +686,27 @@ export type WeeklyStarChartRow = {
   children?: WeeklyStarChartChild[]
 }
 
-export type WeeklyStarChartBonusDay = {
-  date?: string
-  stars?: number
+export type WeeklyStarChartBonusChild = {
+  child?: FamilyMember
+  days?: WeeklyStarChartDay[]
 }
 
 export type WeeklyStarChart = {
   weekStart?: string
   weekEnd?: string
   rows?: WeeklyStarChartRow[]
-  bonusDays?: WeeklyStarChartBonusDay[]
+  bonusChildren?: WeeklyStarChartBonusChild[]
+  starChartId?: number
+  starChartName?: string
 }
 
 export function memberAvatarUrl(memberId: number, hasAvatar?: boolean): string {
   if (!hasAvatar) return ''
   return `/avatars/${memberId}`
+}
+
+export function memberAvatarFileUrl(memberId: number, filename: string): string {
+  return `/avatars/${memberId}/${encodeURIComponent(filename)}`
 }
 
 function inferImageContentType(filename: string): string {

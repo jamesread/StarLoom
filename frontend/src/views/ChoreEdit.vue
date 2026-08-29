@@ -8,14 +8,15 @@ import CheckGroup from 'picocrank/vue/components/CheckGroup.vue'
 import RadioGroup from 'picocrank/vue/components/RadioGroup.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { ArrowLeft01Icon, Task01Icon } from '@hugeicons/core-free-icons'
-import { starapp, type Chore, type FamilyMember } from '../api/client'
+import { starapp, type Chore, type FamilyMember, type StarChart } from '../api/client'
 
 const route = useRoute()
 const router = useRouter()
 const choreId = computed(() => Number(route.params.id))
 
 const chore = ref<Chore | null>(null)
-const children = ref<FamilyMember[]>([])
+const people = ref<FamilyMember[]>([])
+const starCharts = ref<StarChart[]>([])
 const error = ref('')
 const saving = ref(false)
 const loading = ref(true)
@@ -36,6 +37,7 @@ const form = reactive({
   weekdays: [] as number[],
   childMemberIds: [] as number[],
   active: true,
+  starChartId: 0,
 })
 
 const booleanOptions = [
@@ -43,8 +45,14 @@ const booleanOptions = [
   { label: 'Inactive', value: false },
 ]
 
-const childOptions = computed(() =>
-  children.value.map((c) => ({ label: c.displayName, value: c.id })),
+const personOptions = computed(() =>
+  people.value.map((m) => ({ label: m.displayName, value: m.id })),
+)
+
+const starChartOptions = computed(() =>
+  starCharts.value
+    .filter((c) => c.active !== false)
+    .map((c) => ({ label: c.name, value: c.id })),
 )
 
 const sectionTitle = computed(() => chore.value?.title || 'Edit chore')
@@ -53,11 +61,13 @@ async function load() {
   loading.value = true
   error.value = ''
   try {
-    const [choreRes, memberRes] = await Promise.all([
+    const [choreRes, memberRes, chartRes] = await Promise.all([
       starapp.listChores({ includeInactive: true }),
       starapp.listMembers(),
+      starapp.listStarCharts({ includeInactive: true }),
     ])
-    children.value = (memberRes.members || []).filter((m) => m.role === 'child')
+    people.value = memberRes.members || []
+    starCharts.value = chartRes.starCharts || []
     chore.value = (choreRes.chores || []).find((c) => c.id === choreId.value) || null
     if (!chore.value) {
       error.value = 'Chore not found'
@@ -68,6 +78,7 @@ async function load() {
     form.weekdays = [...(chore.value.weekdays?.length ? chore.value.weekdays : [1, 2, 3, 4, 5, 6, 7])]
     form.childMemberIds = [...(chore.value.childMemberIds || [])]
     form.active = chore.value.active !== false
+    form.starChartId = chore.value.starChartId || starChartOptions.value[0]?.value || 0
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
   } finally {
@@ -87,22 +98,13 @@ async function save() {
       weekdays: form.weekdays,
       childMemberIds: form.childMemberIds,
       active: form.active,
+      starChartId: form.starChartId || undefined,
     })
     router.push({ name: 'familyChores' })
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
   } finally {
     saving.value = false
-  }
-}
-
-async function deactivate() {
-  if (!chore.value || !confirm('Deactivate this chore?')) return
-  try {
-    await starapp.deleteChore({ id: chore.value.id })
-    router.push({ name: 'familyChores' })
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : String(e)
   }
 }
 
@@ -129,19 +131,26 @@ onMounted(load)
       <FormField label="Star reward" for="chore-edit-reward">
         <input id="chore-edit-reward" v-model.number="form.starReward" type="number" min="1" required />
       </FormField>
+      <FormField v-if="starChartOptions.length > 1" label="Star chart" fake>
+        <RadioGroup v-model="form.starChartId" :options="starChartOptions" name="chore-edit-star-chart" />
+      </FormField>
       <FormField label="Days of week" fake>
         <CheckGroup v-model="form.weekdays" :options="weekdayOptions" name="chore-edit-weekdays" />
       </FormField>
-      <FormField label="Assigned children" fake>
-        <CheckGroup v-model="form.childMemberIds" :options="childOptions" name="chore-edit-children" />
+      <FormField label="Assigned people" fake>
+        <CheckGroup v-model="form.childMemberIds" :options="personOptions" name="chore-edit-people" />
       </FormField>
       <FormField label="Status" fake>
-        <RadioGroup v-model="form.active" name="chore-edit-active" :options="booleanOptions" />
+        <RadioGroup
+          v-model="form.active"
+          name="chore-edit-active"
+          variant="boolean"
+          :options="booleanOptions"
+        />
       </FormField>
       <template #actions>
         <button type="submit" class="good" :disabled="saving">{{ saving ? 'Saving…' : 'Save' }}</button>
         <RouterLink :to="{ name: 'familyChores' }" class="button neutral">Cancel</RouterLink>
-        <button v-if="form.active" type="button" class="bad" @click="deactivate">Deactivate</button>
       </template>
     </FormLayout>
   </Section>

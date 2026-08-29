@@ -4,16 +4,21 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strings"
 	"sync"
 )
 
-func (m *Memory) ListChores(ctx context.Context, familyID int, includeInactive bool) ([]ChoreWithAssignments, error) {
+func (m *Memory) ListChores(ctx context.Context, familyID int, starChartID int, includeInactive bool) ([]ChoreWithAssignments, error) {
 	st := m.choreState()
 	st.mu.Lock()
 	defer st.mu.Unlock()
+	m.ensureDefaultStarChartLocked(familyID)
 	var out []ChoreWithAssignments
 	for _, cw := range st.chores {
 		if cw.Chore.FamilyID != familyID {
+			continue
+		}
+		if starChartID > 0 && cw.Chore.StarChartID != starChartID {
 			continue
 		}
 		if !includeInactive && !cw.Chore.Active {
@@ -36,17 +41,20 @@ func (m *Memory) GetChoreByID(_ context.Context, id int) (*ChoreWithAssignments,
 	return nil, nil
 }
 
-func (m *Memory) CreateChore(_ context.Context, familyID int, title string, starReward, weekdayMask int, childMemberIDs []int) (int, error) {
+func (m *Memory) CreateChore(_ context.Context, familyID, starChartID int, title string, starReward, weekdayMask int, childMemberIDs []int) (int, error) {
 	st := m.choreState()
 	st.mu.Lock()
 	defer st.mu.Unlock()
+	if starChartID == 0 {
+		starChartID = m.ensureDefaultStarChartLocked(familyID)
+	}
 	if weekdayMask == 0 {
 		weekdayMask = 127
 	}
 	st.nextChoreID++
 	id := st.nextChoreID
 	c := ChoreRow{
-		ID: id, FamilyID: familyID, Title: title, StarReward: starReward,
+		ID: id, FamilyID: familyID, StarChartID: starChartID, Title: title, StarReward: starReward,
 		WeekdayMask: weekdayMask, Active: true, CreatedAt: familyNow(),
 	}
 	var assigns []ChoreAssignmentRow
@@ -58,7 +66,7 @@ func (m *Memory) CreateChore(_ context.Context, familyID int, title string, star
 	return id, nil
 }
 
-func (m *Memory) UpdateChore(_ context.Context, id int, title string, starReward, weekdayMask int, active bool, childMemberIDs []int) error {
+func (m *Memory) UpdateChore(_ context.Context, id int, starChartID int, title string, starReward, weekdayMask int, active bool, childMemberIDs []int) error {
 	st := m.choreState()
 	st.mu.Lock()
 	defer st.mu.Unlock()
@@ -69,7 +77,11 @@ func (m *Memory) UpdateChore(_ context.Context, id int, title string, starReward
 	if weekdayMask == 0 {
 		weekdayMask = 127
 	}
+	if starChartID == 0 {
+		starChartID = m.ensureDefaultStarChartLocked(cw.Chore.FamilyID)
+	}
 	cw.Chore.Title = title
+	cw.Chore.StarChartID = starChartID
 	cw.Chore.StarReward = starReward
 	cw.Chore.WeekdayMask = weekdayMask
 	cw.Chore.Active = active
@@ -251,7 +263,7 @@ func (m *Memory) ListChoreLedgerEntryIDs(_ context.Context, familyID int) ([]int
 	return out, nil
 }
 
-func (m *Memory) ListBonusStarsForWeek(ctx context.Context, familyID int, weekStart, weekEnd string, choreLedgerIDs []int) (map[string]int, error) {
+func (m *Memory) ListBonusStarsForWeek(ctx context.Context, familyID int, weekStart, weekEnd string, choreLedgerIDs []int) (map[int]map[string]int, error) {
 	choreSet := map[int]bool{}
 	for _, id := range choreLedgerIDs {
 		choreSet[id] = true
@@ -259,9 +271,12 @@ func (m *Memory) ListBonusStarsForWeek(ctx context.Context, familyID int, weekSt
 	fam := m.familyState()
 	fam.mu.Lock()
 	defer fam.mu.Unlock()
-	out := map[string]int{}
+	out := map[int]map[string]int{}
 	for _, e := range fam.ledger {
 		if e.FamilyID != familyID || e.EntryType != LedgerTypeAward {
+			continue
+		}
+		if strings.HasPrefix(e.Note, "Chore:") {
 			continue
 		}
 		d := e.CreatedAt
@@ -274,7 +289,10 @@ func (m *Memory) ListBonusStarsForWeek(ctx context.Context, familyID int, weekSt
 		if choreSet[e.ID] {
 			continue
 		}
-		out[d] += e.Amount
+		if out[e.ChildMemberID] == nil {
+			out[e.ChildMemberID] = map[string]int{}
+		}
+		out[e.ChildMemberID][d] += e.Amount
 	}
 	return out, nil
 }
