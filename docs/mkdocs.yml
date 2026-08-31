@@ -1,5 +1,5 @@
-site_name: StarApp
-site_description: Family star rewards — install, set up, and use StarApp at home.
+site_name: StarLoom
+site_description: Family star rewards — install, set up, and use StarLoom at home.
 docs_dir: content
 site_dir: site
 repo_url: https://github.com/jamesread/StarLoom/
@@ -11,7 +11,7 @@ nav:
   - Home: index.md
   - Install: install.md
   - First setup: setup.md
-  - Using StarApp: using.md
+  - Using StarLoom: using.md
   - Configuration: configuration.md
   - Accounts: accounts.md
   - Preferences and themes: preferences.md

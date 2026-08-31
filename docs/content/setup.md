@@ -15,7 +15,7 @@ logins later.
 ## 2. Create the family
 
 On **Home**, enter a family name (for example “The Smith Family”) and create
-it. The first parent to do this becomes the household owner. One StarApp
+it. The first parent to do this becomes the household owner. One StarLoom
 install is one family.
 
 ## 3. Add people
@@ -81,4 +81,4 @@ Control Panel.
 - [ ] At least one chore is on a star chart
 - [ ] Children can sign in on a tablet or phone
 
-[Using StarApp](using.md) covers the daily loop.
+[Using StarLoom](using.md) covers the daily loop.

@@ -1,13 +1,13 @@
-# StarApp — Product Specification
+# StarLoom — Product Specification
 
-**Status:** Core spec (v1.0)  
+**Status:** Core spec (v1.0)
 **Last updated:** 2026-08-27
 
 ---
 
 ## Summary
 
-StarApp is a family rewards app. **Stars** are an internal currency: parents award them to children for good behavior, and children spend them on **rewards** such as screen time, treats, or privileges.
+StarLoom is a family rewards app. **Stars** are an internal currency: parents award them to children for good behavior, and children spend them on **rewards** such as screen time, treats, or privileges.
 
 The app replaces ad-hoc star charts and verbal IOUs with a shared ledger every family member can trust.
 
@@ -36,7 +36,7 @@ The app replaces ad-hoc star charts and verbal IOUs with a shared ledger every f
 
 ## Personas and access model
 
-StarApp uses two layers of identity:
+StarLoom uses two layers of identity:
 
 1. **IAM layer** — `user_accounts`, sessions, RBAC (already implemented).
 2. **Family domain layer** — `families`, `family_members`, ledger, rewards.
@@ -439,7 +439,7 @@ Detailed protobuf definitions belong in `protocol/starapp/api/v1/` as implementa
 
 ## Technical architecture
 
-StarApp follows [jwr-soa-2.0](https://github.com/jamesread) project layout:
+StarLoom follows [jwr-soa-2.0](https://github.com/jamesread) project layout:
 
 | Path | Purpose |
 |------|---------|

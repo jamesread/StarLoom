@@ -1,4 +1,4 @@
-# Using StarApp
+# Using StarLoom
 
 Daily use is short: mark chores, award extra stars, and approve rewards.
 

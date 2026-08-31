@@ -1,6 +1,6 @@
 <div align="center">
-  <img alt="StarApp logo" src="logo.svg" width="128" />
-  <h1>StarApp</h1>
+  <img alt="StarLoom logo" src="logo.svg" width="128" />
+  <h1>StarLoom</h1>
 
   Family star rewards — parents award stars for good behavior; children redeem them for privileges like screen time.
 
@@ -67,7 +67,7 @@ User preferences (Egypt theme);
 
 ## Linux container
 
-StarApp is published as a multi-arch image on the GitHub Container Registry (`linux/amd64` and `linux/arm64`).
+StarLoom is published as a multi-arch image on the GitHub Container Registry (`linux/amd64` and `linux/arm64`).
 
 ```bash
 docker run -d \
@@ -90,6 +90,6 @@ See [Install](docs/content/install.md) for pull tags and updates.
 
 ## Status
 
-StarApp is a self-hosted family ledger for stars, chores, and rewards. See the
+StarLoom is a self-hosted family ledger for stars, chores, and rewards. See the
 [user manual](docs/content/index.md) to get started, or the
 [product spec](docs/SPEC.md) for the full roadmap.

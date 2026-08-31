@@ -1,6 +1,6 @@
-# StarApp
+# StarLoom
 
-StarApp is a family rewards app you run at home. Parents award **stars** for
+StarLoom is a family rewards app you run at home. Parents award **stars** for
 chores and good behaviour. Children spend those stars on **rewards** such as
 screen time, treats, or staying up late.
 
@@ -26,7 +26,7 @@ own username and password.
 
 1. [Install](install.md) the Linux container
 2. [Set up](setup.md) your family, people, and first rewards
-3. Read [Using StarApp](using.md) for day-to-day awarding and redeeming
+3. Read [Using StarLoom](using.md) for day-to-day awarding and redeeming
 
 Configuration, accounts, themes, and optional webhooks are covered in the
 later chapters.

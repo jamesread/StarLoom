@@ -1,6 +1,6 @@
 # Install
 
-The supported way to run StarApp is a **Linux container**. The image includes
+The supported way to run StarLoom is a **Linux container**. The image includes
 the web app, the API, and SQLite. Migrations run automatically when the
 container starts.
 
@@ -70,7 +70,7 @@ ghcr.io/jamesread/starloom:1.2.3
 
 ## HTTPS
 
-StarApp does not terminate TLS itself. Put a reverse proxy in front (Caddy,
+StarLoom does not terminate TLS itself. Put a reverse proxy in front (Caddy,
 nginx, Traefik) and talk to the container on port 8080.
 
 When the browser uses HTTPS:

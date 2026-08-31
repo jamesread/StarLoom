@@ -29,7 +29,7 @@ Colour scheme and theme name are stored in this browser.
 
 ## Themes
 
-StarApp ships looks that are meant for a family tablet:
+StarLoom ships looks that are meant for a family tablet:
 
 | Theme | Style |
 |-------|--------|

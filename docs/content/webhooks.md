@@ -13,7 +13,7 @@ You do not need webhooks for everyday awarding and redeeming.
 3. Add a webhook: URL, optional secret, and which events to send.
 4. Leave it enabled.
 
-The secret is write-only. StarApp will not show it again after you save.
+The secret is write-only. StarLoom will not show it again after you save.
 
 ## Events
 
