@@ -4,7 +4,12 @@ import NavigationGrid from 'picocrank/vue/components/NavigationGrid.vue'
 import Section from 'picocrank/vue/components/Section.vue'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { DashboardSquareSettingIcon } from '@hugeicons/core-free-icons'
+import {
+  DashboardSquareSettingIcon,
+  Key01Icon,
+  Settings01Icon,
+  UserShield01Icon,
+} from '@hugeicons/core-free-icons'
 import { fetchAppStatus, invalidateAppStatus, useStatus } from '../composables/useStatus'
 import { starapp } from '../api/client'
 import { canAccessControlPanelFromStatus } from '../lib/rbacAccess'
@@ -33,18 +38,22 @@ function setupQuickActions() {
   if (!nav) return
   nav.clearNavigationLinks()
   nav.addCallback('User Preferences', () => router.push({ name: 'userPreferences' }), {
+    icon: Settings01Icon,
     name: 'user-preferences',
     description: 'Language and personal settings',
   })
   nav.addCallback('Change Password', () => router.push({ name: 'changePassword' }), {
+    icon: Key01Icon,
     name: 'change-password',
     description: 'Update your account password',
   })
   nav.addCallback('API Keys', () => router.push({ name: 'apiKeys' }), {
+    icon: Key01Icon,
     name: 'api-keys',
     description: 'Manage Bearer tokens for automation',
   })
   nav.addCallback('My Permissions', () => router.push({ name: 'myPermissions' }), {
+    icon: UserShield01Icon,
     name: 'my-permissions',
     description: 'Review groups, roles, and effective access',
   })
@@ -120,7 +129,6 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 200px 1fr;
   column-gap: 1em;
-  row-gap: 0.25em;
   margin: 1em 0 0;
 }
 .account-info dt {

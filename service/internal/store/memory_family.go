@@ -304,7 +304,7 @@ func (m *Memory) GetRewardByID(_ context.Context, id int) (*RewardRow, error) {
 	return nil, nil
 }
 
-func (m *Memory) CreateReward(_ context.Context, familyID int, title, description string, costStars int, approvalRequired bool) (int, error) {
+func (m *Memory) CreateReward(_ context.Context, familyID int, title, description string, costStars int, approvalRequired bool, availabilityExpression string) (int, error) {
 	st := m.familyState()
 	st.mu.Lock()
 	defer st.mu.Unlock()
@@ -313,11 +313,12 @@ func (m *Memory) CreateReward(_ context.Context, familyID int, title, descriptio
 	st.rewards[id] = RewardRow{
 		ID: id, FamilyID: familyID, Title: title, Description: description,
 		CostStars: costStars, Active: true, ApprovalRequired: approvalRequired,
+		AvailabilityExpression: availabilityExpression,
 	}
 	return id, nil
 }
 
-func (m *Memory) UpdateReward(_ context.Context, id int, title, description string, costStars int, active, approvalRequired bool) error {
+func (m *Memory) UpdateReward(_ context.Context, id int, title, description string, costStars int, active, approvalRequired bool, availabilityExpression string) error {
 	st := m.familyState()
 	st.mu.Lock()
 	defer st.mu.Unlock()
@@ -330,6 +331,7 @@ func (m *Memory) UpdateReward(_ context.Context, id int, title, description stri
 	r.CostStars = costStars
 	r.Active = active
 	r.ApprovalRequired = approvalRequired
+	r.AvailabilityExpression = availabilityExpression
 	st.rewards[id] = r
 	return nil
 }

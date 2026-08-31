@@ -24,6 +24,7 @@ const form = reactive({
   costStars: 5,
   active: true,
   approvalRequired: true,
+  availabilityExpression: '',
 })
 
 const booleanOptions = [
@@ -53,6 +54,7 @@ async function load() {
     form.costStars = reward.value.costStars
     form.active = reward.value.active !== false
     form.approvalRequired = reward.value.approvalRequired !== false
+    form.availabilityExpression = reward.value.availabilityExpression || ''
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
   } finally {
@@ -72,6 +74,7 @@ async function save() {
       costStars: form.costStars,
       active: form.active,
       approvalRequired: form.approvalRequired,
+      availabilityExpression: form.availabilityExpression.trim(),
     })
     router.push({ name: 'familyRewards' })
   } catch (e) {
@@ -117,11 +120,23 @@ onMounted(load)
       <FormField label="Cost (stars)" for="reward-edit-cost">
         <input id="reward-edit-cost" v-model.number="form.costStars" type="number" min="1" required />
       </FormField>
-      <FormField label="Requires approval" fake>
+      <FormField label="Requires approval" component-has-label>
         <RadioGroup v-model="form.approvalRequired" name="reward-edit-approval" :options="booleanOptions" />
       </FormField>
-      <FormField label="Status" fake>
+      <FormField label="Status" component-has-label>
         <RadioGroup v-model="form.active" name="reward-edit-active" :options="statusOptions" />
+      </FormField>
+      <FormField
+        label="Availability expression"
+        for="reward-edit-availability"
+        description="Optional. expr language; must evaluate to true when the reward can be redeemed. Leave blank for always available. Variables: hour, minute, dayName (Mon–Sun), day, month, year, balance, costStars. Times use server local timezone."
+      >
+        <textarea
+          id="reward-edit-availability"
+          v-model="form.availabilityExpression"
+          rows="3"
+          placeholder='(hour > 9 && hour < 18) && (dayName == "Sat" || dayName == "Sun")'
+        />
       </FormField>
       <template #actions>
         <button type="submit" class="good" :disabled="saving">{{ saving ? 'Saving…' : 'Save' }}</button>

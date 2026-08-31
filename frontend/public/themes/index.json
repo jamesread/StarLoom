@@ -1,0 +1,20 @@
+{
+  "themes": [
+    {
+      "id": "ancient-greece",
+      "label": "Ancient Greece — Temples & Heroes"
+    },
+    {
+      "id": "aztecs",
+      "label": "Aztecs — Sunstone Adventure"
+    },
+    {
+      "id": "egypt",
+      "label": "Egypt — Treasure of the Pharaohs"
+    },
+    {
+      "id": "space",
+      "label": "Space — Rockets & Stars"
+    }
+  ]
+}

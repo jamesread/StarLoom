@@ -18,6 +18,7 @@ const form = reactive({
   description: '',
   costStars: 5,
   approvalRequired: true,
+  availabilityExpression: '',
 })
 
 const booleanOptions = [
@@ -34,6 +35,7 @@ async function createReward() {
       description: form.description.trim(),
       costStars: form.costStars,
       approvalRequired: form.approvalRequired,
+      availabilityExpression: form.availabilityExpression.trim(),
     })
     router.push({ name: 'familyRewards' })
   } catch (e) {
@@ -80,12 +82,25 @@ async function createReward() {
           :disabled="creating"
         />
       </FormField>
-      <FormField label="Requires approval" fake>
+      <FormField label="Requires approval" component-has-label>
         <RadioGroup
           v-model="form.approvalRequired"
           name="reward-create-approval"
           variant="boolean"
           :options="booleanOptions"
+        />
+      </FormField>
+      <FormField
+        label="Availability expression"
+        for="reward-create-availability"
+        description="Optional. expr language; must evaluate to true when the reward can be redeemed. Leave blank for always available. Variables: hour, minute, dayName (Mon–Sun), day, month, year, balance, costStars. Times use server local timezone."
+      >
+        <textarea
+          id="reward-create-availability"
+          v-model="form.availabilityExpression"
+          rows="3"
+          placeholder='(hour > 9 && hour < 18) && (dayName == "Sat" || dayName == "Sun")'
+          :disabled="creating"
         />
       </FormField>
       <template #actions>

@@ -14,7 +14,7 @@ func (m *Memory) GetUserPreferences(ctx context.Context, userID int) (*UserPrefe
 	return DefaultUserPreferences(userID), nil
 }
 
-func (m *Memory) SaveUserPreferences(ctx context.Context, userID int, language string, sidebarEnabled, themeToggleEnabled bool) error {
+func (m *Memory) SaveUserPreferences(ctx context.Context, userID int, language string, sidebarEnabled bool) error {
 	_ = ctx
 	st := m.iamState()
 	st.mu.Lock()
@@ -23,10 +23,9 @@ func (m *Memory) SaveUserPreferences(ctx context.Context, userID int, language s
 		st.userPrefs = map[int]UserPreferencesRow{}
 	}
 	st.userPrefs[userID] = UserPreferencesRow{
-		UserAccountID:      userID,
-		Language:           language,
-		SidebarEnabled:     sidebarEnabled,
-		ThemeToggleEnabled: themeToggleEnabled,
+		UserAccountID:  userID,
+		Language:       language,
+		SidebarEnabled: sidebarEnabled,
 	}
 	return nil
 }

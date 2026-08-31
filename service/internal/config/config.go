@@ -12,7 +12,7 @@ import (
 )
 
 // RequiredMigration is the sql-migrate id this binary expects to be applied.
-const RequiredMigration = "9.star-charts.sql"
+const RequiredMigration = "12.webhook-deliveries.sql"
 
 // Config holds StarApp service configuration.
 type Config struct {

@@ -15,13 +15,14 @@ import { useRouter } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
 import Navigation from 'picocrank/vue/components/Navigation.vue'
 import NavigationGrid from 'picocrank/vue/components/NavigationGrid.vue'
-import { Settings01Icon, UserShield01Icon, WebhookIcon } from '@hugeicons/core-free-icons'
+import { Settings01Icon, Task01Icon, UserMultipleIcon, UserShield01Icon, WebhookIcon } from '@hugeicons/core-free-icons'
 import { fetchAppStatus, useStatus } from '../composables/useStatus'
 import {
   canAccessControlPanelFromStatus,
   canAccessIamFromStatus,
   canAccessSettingsFromStatus,
   canAccessWebhooksFromStatus,
+  canViewFamilyHomeFromStatus,
 } from '../lib/rbacAccess'
 
 const router = useRouter()
@@ -69,6 +70,19 @@ function populateHubTiles() {
       icon: WebhookIcon,
       name: 'webhooks',
       description: 'HTTP callbacks for StarLoom events',
+    })
+  }
+  if (canViewFamilyHomeFromStatus(st)) {
+    tileCount += 2
+    nav.addCallback('People', () => router.push({ name: 'familyPeople' }), {
+      icon: UserMultipleIcon,
+      name: 'familyPeople',
+      description: 'Manage family members',
+    })
+    nav.addCallback('Chores', () => router.push({ name: 'familyChores' }), {
+      icon: Task01Icon,
+      name: 'familyChores',
+      description: 'Chore definitions',
     })
   }
   if (tileCount === 0) {

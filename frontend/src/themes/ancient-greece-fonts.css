@@ -1,0 +1,36 @@
+/*
+ * Unlayered section title typography for Ancient Greece. Femtocrank's unlayered
+ * h2 { font-weight: 800 } beats anything in @layer theme, so these rules must
+ * stay outside PicoCrank's theme layer too.
+ *
+ * Set display type once on the heading only; nested .section-title-with-icon /
+ * .section-title-text must inherit so markup variants (title prop, #title slot,
+ * Section :icon) render the same size.
+ */
+
+@import url('https://db.onlinewebfonts.com/c/2f996c2b3f90b2705113d32332ce25af?family=GreeKish');
+
+section.with-header-and-content .section-header h2,
+section.with-header-and-content .section-subheader h3 {
+	font-family: 'GreeKish', Georgia, 'Palatino Linotype', serif;
+	font-size: 1.7em;
+	font-weight: 700;
+	font-synthesis: style;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+section.with-header-and-content .section-header h2 {
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+}
+
+section.with-header-and-content .section-header h2 .section-title-with-icon,
+section.with-header-and-content .section-header h2 .section-title-text,
+section.with-header-and-content .section-subheader h3 .section-title-with-icon,
+section.with-header-and-content .section-subheader h3 .section-title-text {
+	font: inherit;
+	letter-spacing: inherit;
+	text-transform: inherit;
+	color: inherit;
+}

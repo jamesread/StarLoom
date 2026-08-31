@@ -22,6 +22,8 @@ type Store interface {
 	CreateWebhookTarget(ctx context.Context, url, secret string, events []string, enabled bool) (int, error)
 	UpdateWebhookTarget(ctx context.Context, id int, url, secret string, events []string, enabled bool, clearSecret bool) error
 	DeleteWebhookTarget(ctx context.Context, id int) error
+	InsertWebhookDelivery(ctx context.Context, row WebhookDeliveryRow) (int, error)
+	ListWebhookDeliveries(ctx context.Context, limit int) ([]WebhookDeliveryRow, error)
 
 	// IAM — user accounts
 	CountUserAccounts(ctx context.Context) (int, error)
@@ -78,7 +80,7 @@ type Store interface {
 	SetUserGroupMembers(ctx context.Context, groupID int, userIDs []int) error
 
 	GetUserPreferences(ctx context.Context, userID int) (*UserPreferencesRow, error)
-	SaveUserPreferences(ctx context.Context, userID int, language string, sidebarEnabled, themeToggleEnabled bool) error
+	SaveUserPreferences(ctx context.Context, userID int, language string, sidebarEnabled bool) error
 
 	EnsureUserInGroup(ctx context.Context, userID int, groupName string) error
 
@@ -103,8 +105,8 @@ type Store interface {
 
 	ListRewards(ctx context.Context, familyID int, includeInactive bool) ([]RewardRow, error)
 	GetRewardByID(ctx context.Context, id int) (*RewardRow, error)
-	CreateReward(ctx context.Context, familyID int, title, description string, costStars int, approvalRequired bool) (int, error)
-	UpdateReward(ctx context.Context, id int, title, description string, costStars int, active, approvalRequired bool) error
+	CreateReward(ctx context.Context, familyID int, title, description string, costStars int, approvalRequired bool, availabilityExpression string) (int, error)
+	UpdateReward(ctx context.Context, id int, title, description string, costStars int, active, approvalRequired bool, availabilityExpression string) error
 	DeactivateReward(ctx context.Context, id int) error
 
 	ListRedemptions(ctx context.Context, familyID int, status string) ([]RedemptionRow, error)

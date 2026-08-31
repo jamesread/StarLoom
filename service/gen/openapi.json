@@ -1510,6 +1510,64 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/FireTestWebhooks": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "FireTestWebhooks",
+        "operationId": "starapp.api.v1.StarAppService.FireTestWebhooks",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.FireTestWebhooksRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.FireTestWebhooksResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/GetChildHomeSummary": {
       "post": {
         "tags": [
@@ -3243,6 +3301,64 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/starapp.api.v1.ListUserGroupsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/ListWebhookDeliveries": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListWebhookDeliveries",
+        "operationId": "starapp.api.v1.StarAppService.ListWebhookDeliveries",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListWebhookDeliveriesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListWebhookDeliveriesResponse"
                 }
               }
             }
@@ -5060,6 +5176,10 @@
           "approvalRequired": {
             "type": "boolean",
             "title": "approval_required"
+          },
+          "availabilityExpression": {
+            "type": "string",
+            "title": "availability_expression"
           }
         },
         "title": "CreateRewardRequest",
@@ -5546,9 +5666,49 @@
           "redemptionApprovalDefault": {
             "type": "boolean",
             "title": "redemption_approval_default"
+          },
+          "themeColorSchemeSwitcherEnabled": {
+            "type": "boolean",
+            "title": "theme_color_scheme_switcher_enabled"
+          },
+          "themeName": {
+            "type": "string",
+            "title": "theme_name"
+          },
+          "themeControl": {
+            "type": "string",
+            "title": "theme_control"
+          },
+          "availableThemes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "available_themes"
           }
         },
         "title": "Features",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.FireTestWebhooksRequest": {
+        "type": "object",
+        "title": "FireTestWebhooksRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.FireTestWebhooksResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "targetsFired": {
+            "type": "integer",
+            "title": "targets_fired",
+            "format": "int32"
+          }
+        },
+        "title": "FireTestWebhooksResponse",
         "additionalProperties": false
       },
       "starapp.api.v1.GetChildHomeSummaryRequest": {
@@ -5911,13 +6071,6 @@
               "null"
             ],
             "title": "sidebar_enabled"
-          },
-          "themeToggleEnabled": {
-            "type": [
-              "boolean",
-              "null"
-            ],
-            "title": "theme_toggle_enabled"
           }
         },
         "title": "GetUserPreferencesResponse",
@@ -6414,6 +6567,32 @@
         "title": "ListUserGroupsResponse",
         "additionalProperties": false
       },
+      "starapp.api.v1.ListWebhookDeliveriesRequest": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "title": "limit",
+            "format": "int32"
+          }
+        },
+        "title": "ListWebhookDeliveriesRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListWebhookDeliveriesResponse": {
+        "type": "object",
+        "properties": {
+          "deliveries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.WebhookDelivery"
+            },
+            "title": "deliveries"
+          }
+        },
+        "title": "ListWebhookDeliveriesResponse",
+        "additionalProperties": false
+      },
       "starapp.api.v1.ListWebhooksRequest": {
         "type": "object",
         "title": "ListWebhooksRequest",
@@ -6802,6 +6981,10 @@
           "approvalRequired": {
             "type": "boolean",
             "title": "approval_required"
+          },
+          "availabilityExpression": {
+            "type": "string",
+            "title": "availability_expression"
           }
         },
         "title": "Reward",
@@ -6817,10 +7000,6 @@
           "sidebarEnabled": {
             "type": "boolean",
             "title": "sidebar_enabled"
-          },
-          "themeToggleEnabled": {
-            "type": "boolean",
-            "title": "theme_toggle_enabled"
           }
         },
         "title": "SaveUserPreferencesRequest",
@@ -7262,6 +7441,10 @@
           "approvalRequired": {
             "type": "boolean",
             "title": "approval_required"
+          },
+          "availabilityExpression": {
+            "type": "string",
+            "title": "availability_expression"
           }
         },
         "title": "UpdateRewardRequest",
@@ -7467,6 +7650,48 @@
           }
         },
         "title": "Webhook",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.WebhookDelivery": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "webhookTargetId": {
+            "type": "integer",
+            "title": "webhook_target_id",
+            "format": "int32"
+          },
+          "event": {
+            "type": "string",
+            "title": "event"
+          },
+          "url": {
+            "type": "string",
+            "title": "url"
+          },
+          "success": {
+            "type": "boolean",
+            "title": "success"
+          },
+          "httpStatus": {
+            "type": "integer",
+            "title": "http_status",
+            "format": "int32"
+          },
+          "errorMessage": {
+            "type": "string",
+            "title": "error_message"
+          },
+          "firedAt": {
+            "type": "string",
+            "title": "fired_at"
+          }
+        },
+        "title": "WebhookDelivery",
         "additionalProperties": false
       },
       "starapp.api.v1.WeeklyStarChartBonusChild": {

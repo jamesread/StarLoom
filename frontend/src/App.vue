@@ -1,23 +1,45 @@
 <script setup lang="ts">
-import { onMounted, computed, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import AppLayout from './components/AppLayout.vue'
 import LoginForm from './components/LoginForm.vue'
 import { fetchAppStatus, useStatus } from './composables/useStatus'
-import { loadInit } from './composables/useInit'
-import { loadAndApplyUserPreferences, registerSidebarApplier, registerThemeToggleApplier } from './lib/userPreferences'
+import { loadInit, useInit } from './composables/useInit'
+import { loadAndApplyUserPreferences, registerSidebarApplier } from './lib/userPreferences'
+import {
+  applyAppTheming,
+  featuresFromShell,
+  themeColorSchemeSwitcherEnabledFromFeatures,
+} from './lib/applyAppTheming'
+import { syncThemeFontStylesheet } from './lib/themeFonts'
+import { useCustomTheme } from 'picocrank/vue/composables/useCustomTheme.js'
 
 const status = useStatus()
+const init = useInit()
 const sidebarPreferenceEnabled = ref(true)
-const themeTogglePreferenceEnabled = ref(false)
+const { discoverThemes, themePreference } = useCustomTheme()
 
 const isLoggedIn = computed(() => Boolean(status.status?.isLoggedIn))
+const initFeatures = computed(() => featuresFromShell(init.init, status.status))
+const themeColorSchemeSwitcherEnabled = computed(() =>
+  themeColorSchemeSwitcherEnabledFromFeatures(initFeatures.value),
+)
 
 registerSidebarApplier((enabled) => {
   sidebarPreferenceEnabled.value = enabled
 })
-registerThemeToggleApplier((enabled) => {
-  themeTogglePreferenceEnabled.value = enabled
-})
+
+watch(
+  themePreference,
+  (name) => {
+    void syncThemeFontStylesheet(name)
+  },
+  { immediate: true },
+)
+
+async function applyShellTheming() {
+  await discoverThemes()
+  applyAppTheming(initFeatures.value)
+}
 
 onMounted(async () => {
   try {
@@ -28,11 +50,14 @@ onMounted(async () => {
   } catch {
     // login form shown
   }
+  await applyShellTheming()
 })
 
 async function onLogin() {
   await fetchAppStatus({ force: true })
+  await loadInit({ force: true })
   await loadAndApplyUserPreferences()
+  await applyShellTheming()
 }
 </script>
 
@@ -40,7 +65,7 @@ async function onLogin() {
   <AppLayout
     v-if="isLoggedIn"
     :sidebar-preference-enabled="sidebarPreferenceEnabled"
-    :theme-toggle-preference-enabled="themeTogglePreferenceEnabled"
+    :theme-color-scheme-switcher-enabled="themeColorSchemeSwitcherEnabled"
   >
     <p v-if="status.loading && !status.loaded">Loading…</p>
     <p v-else-if="status.error">{{ status.error }}</p>

@@ -72,7 +72,7 @@ async function submit() {
           placeholder="Shared signing secret"
         >
       </FormField>
-      <FormField label="Events" fake description="Select one or more events that should POST to this URL.">
+      <FormField label="Events" component-has-label description="Select one or more events that should POST to this URL.">
         <CheckGroup
           v-model="selectedEvents"
           :options="eventOptions"
@@ -80,7 +80,7 @@ async function submit() {
           aria-label="Webhook events"
         />
       </FormField>
-      <FormField label="Enabled" fake>
+      <FormField label="Enabled" component-has-label>
         <RadioGroup
           v-model="enabled"
           name="webhook-enabled-create"

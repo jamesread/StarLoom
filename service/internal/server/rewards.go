@@ -9,6 +9,7 @@ import (
 
 	apiv1 "github.com/jamesread/starapp/service/gen/starapp/api/v1"
 	"github.com/jamesread/starapp/service/internal/rbac"
+	"github.com/jamesread/starapp/service/internal/rewards"
 )
 
 func (s *Server) ListRewards(ctx context.Context, req *connect.Request[apiv1.ListRewardsRequest]) (*connect.Response[apiv1.ListRewardsResponse], error) {
@@ -46,8 +47,12 @@ func (s *Server) CreateReward(ctx context.Context, req *connect.Request[apiv1.Cr
 	if title == "" || req.Msg.CostStars <= 0 {
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("title and positive cost required"))
 	}
+	availabilityExpression := strings.TrimSpace(req.Msg.AvailabilityExpression)
+	if err := rewards.ValidateAvailabilityExpression(availabilityExpression); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid availability expression: %w", err))
+	}
 	approval := req.Msg.ApprovalRequired || s.redemptionApprovalDefault(ctx)
-	id, err := s.store.CreateReward(ctx, fc.family.ID, title, req.Msg.Description, int(req.Msg.CostStars), approval)
+	id, err := s.store.CreateReward(ctx, fc.family.ID, title, req.Msg.Description, int(req.Msg.CostStars), approval, availabilityExpression)
 	if err != nil {
 		return nil, mapStoreError(err)
 	}
@@ -77,7 +82,11 @@ func (s *Server) UpdateReward(ctx context.Context, req *connect.Request[apiv1.Up
 	if title == "" || req.Msg.CostStars <= 0 {
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("title and positive cost required"))
 	}
-	if err := s.store.UpdateReward(ctx, reward.ID, title, req.Msg.Description, int(req.Msg.CostStars), req.Msg.Active, req.Msg.ApprovalRequired); err != nil {
+	availabilityExpression := strings.TrimSpace(req.Msg.AvailabilityExpression)
+	if err := rewards.ValidateAvailabilityExpression(availabilityExpression); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid availability expression: %w", err))
+	}
+	if err := s.store.UpdateReward(ctx, reward.ID, title, req.Msg.Description, int(req.Msg.CostStars), req.Msg.Active, req.Msg.ApprovalRequired, availabilityExpression); err != nil {
 		return nil, mapStoreError(err)
 	}
 	reward, _ = s.store.GetRewardByID(ctx, reward.ID)

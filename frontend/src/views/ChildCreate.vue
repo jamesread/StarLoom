@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
 import FormField from 'picocrank/vue/components/FormField.vue'
 import FormLayout from 'picocrank/vue/components/FormLayout.vue'
+import RadioGroup from 'picocrank/vue/components/RadioGroup.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { ArrowLeft01Icon, UserMultipleIcon } from '@hugeicons/core-free-icons'
 import { starapp } from '../api/client'
@@ -14,13 +15,29 @@ const creating = ref(false)
 
 const form = reactive({
   displayName: '',
+  allowLogin: false,
   username: '',
   password: '',
 })
 
+const loginOptions = [
+  { label: 'Yes', value: true },
+  { label: 'No', value: false },
+]
+
+watch(
+  () => form.allowLogin,
+  (enabled) => {
+    if (!enabled) {
+      form.username = ''
+      form.password = ''
+    }
+  },
+)
+
 const canSubmit = computed(() => {
   if (!form.displayName.trim()) return false
-  if (form.password.trim()) {
+  if (form.allowLogin) {
     if (!form.username.trim()) return false
     if (form.password.length < 8) return false
   }
@@ -33,8 +50,9 @@ async function createPerson() {
   try {
     await starapp.createChildMember({
       displayName: form.displayName.trim(),
-      username: form.username.trim(),
-      password: form.password,
+      ...(form.allowLogin
+        ? { username: form.username.trim(), password: form.password }
+        : {}),
     })
     router.push({ name: 'familyPeople' })
   } catch (e) {
@@ -55,8 +73,8 @@ async function createPerson() {
     </template>
 
     <p class="subtle">
-      Add someone to your family. A star color is assigned automatically. Login details are optional for
-      members who will not sign in themselves.
+      Add someone to your family. A star color is assigned automatically. Turn on login only if this
+      person will sign in themselves.
     </p>
 
     <FormLayout @submit.prevent="createPerson">
@@ -71,33 +89,45 @@ async function createPerson() {
           :disabled="creating"
         />
       </FormField>
-      <FormField
-        label="Username"
-        for="child-username"
-        description="Optional. Required if you set a password so this person can sign in."
-      >
-        <input
-          id="child-username"
-          v-model="form.username"
-          type="text"
-          autocomplete="off"
-          :disabled="creating"
+      <FormField label="Allow login?" component-has-label>
+        <RadioGroup
+          v-model="form.allowLogin"
+          name="child-allow-login"
+          variant="boolean"
+          :options="loginOptions"
         />
       </FormField>
-      <FormField
-        label="Password"
-        for="child-password"
-        description="Optional. Leave blank if this person will not sign in. At least 8 characters when set."
-      >
-        <input
-          id="child-password"
-          v-model="form.password"
-          type="password"
-          minlength="8"
-          autocomplete="new-password"
-          :disabled="creating"
-        />
-      </FormField>
+      <template v-if="form.allowLogin">
+        <FormField
+          label="Username"
+          for="child-username"
+          description="Required when login is enabled."
+        >
+          <input
+            id="child-username"
+            v-model="form.username"
+            type="text"
+            autocomplete="off"
+            required
+            :disabled="creating"
+          />
+        </FormField>
+        <FormField
+          label="Password"
+          for="child-password"
+          description="At least 8 characters."
+        >
+          <input
+            id="child-password"
+            v-model="form.password"
+            type="password"
+            minlength="8"
+            autocomplete="new-password"
+            required
+            :disabled="creating"
+          />
+        </FormField>
+      </template>
       <template #actions>
         <button type="submit" class="good" :disabled="creating || !canSubmit">
           {{ creating ? 'Creating…' : 'Create' }}

@@ -146,6 +146,12 @@ const (
 	// StarAppServiceDeleteWebhookProcedure is the fully-qualified name of the StarAppService's
 	// DeleteWebhook RPC.
 	StarAppServiceDeleteWebhookProcedure = "/starapp.api.v1.StarAppService/DeleteWebhook"
+	// StarAppServiceListWebhookDeliveriesProcedure is the fully-qualified name of the StarAppService's
+	// ListWebhookDeliveries RPC.
+	StarAppServiceListWebhookDeliveriesProcedure = "/starapp.api.v1.StarAppService/ListWebhookDeliveries"
+	// StarAppServiceFireTestWebhooksProcedure is the fully-qualified name of the StarAppService's
+	// FireTestWebhooks RPC.
+	StarAppServiceFireTestWebhooksProcedure = "/starapp.api.v1.StarAppService/FireTestWebhooks"
 	// StarAppServiceGetMyFamilyProcedure is the fully-qualified name of the StarAppService's
 	// GetMyFamily RPC.
 	StarAppServiceGetMyFamilyProcedure = "/starapp.api.v1.StarAppService/GetMyFamily"
@@ -303,6 +309,8 @@ type StarAppServiceClient interface {
 	CreateWebhook(context.Context, *connect.Request[v1.CreateWebhookRequest]) (*connect.Response[v1.CreateWebhookResponse], error)
 	UpdateWebhook(context.Context, *connect.Request[v1.UpdateWebhookRequest]) (*connect.Response[v1.Webhook], error)
 	DeleteWebhook(context.Context, *connect.Request[v1.DeleteWebhookRequest]) (*connect.Response[v1.DeleteWebhookResponse], error)
+	ListWebhookDeliveries(context.Context, *connect.Request[v1.ListWebhookDeliveriesRequest]) (*connect.Response[v1.ListWebhookDeliveriesResponse], error)
+	FireTestWebhooks(context.Context, *connect.Request[v1.FireTestWebhooksRequest]) (*connect.Response[v1.FireTestWebhooksResponse], error)
 	GetMyFamily(context.Context, *connect.Request[v1.GetMyFamilyRequest]) (*connect.Response[v1.GetMyFamilyResponse], error)
 	CreateFamily(context.Context, *connect.Request[v1.CreateFamilyRequest]) (*connect.Response[v1.CreateFamilyResponse], error)
 	ListMembers(context.Context, *connect.Request[v1.ListMembersRequest]) (*connect.Response[v1.ListMembersResponse], error)
@@ -588,6 +596,18 @@ func NewStarAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(starAppServiceMethods.ByName("DeleteWebhook")),
 			connect.WithClientOptions(opts...),
 		),
+		listWebhookDeliveries: connect.NewClient[v1.ListWebhookDeliveriesRequest, v1.ListWebhookDeliveriesResponse](
+			httpClient,
+			baseURL+StarAppServiceListWebhookDeliveriesProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("ListWebhookDeliveries")),
+			connect.WithClientOptions(opts...),
+		),
+		fireTestWebhooks: connect.NewClient[v1.FireTestWebhooksRequest, v1.FireTestWebhooksResponse](
+			httpClient,
+			baseURL+StarAppServiceFireTestWebhooksProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("FireTestWebhooks")),
+			connect.WithClientOptions(opts...),
+		),
 		getMyFamily: connect.NewClient[v1.GetMyFamilyRequest, v1.GetMyFamilyResponse](
 			httpClient,
 			baseURL+StarAppServiceGetMyFamilyProcedure,
@@ -860,6 +880,8 @@ type starAppServiceClient struct {
 	createWebhook                *connect.Client[v1.CreateWebhookRequest, v1.CreateWebhookResponse]
 	updateWebhook                *connect.Client[v1.UpdateWebhookRequest, v1.Webhook]
 	deleteWebhook                *connect.Client[v1.DeleteWebhookRequest, v1.DeleteWebhookResponse]
+	listWebhookDeliveries        *connect.Client[v1.ListWebhookDeliveriesRequest, v1.ListWebhookDeliveriesResponse]
+	fireTestWebhooks             *connect.Client[v1.FireTestWebhooksRequest, v1.FireTestWebhooksResponse]
 	getMyFamily                  *connect.Client[v1.GetMyFamilyRequest, v1.GetMyFamilyResponse]
 	createFamily                 *connect.Client[v1.CreateFamilyRequest, v1.CreateFamilyResponse]
 	listMembers                  *connect.Client[v1.ListMembersRequest, v1.ListMembersResponse]
@@ -1095,6 +1117,16 @@ func (c *starAppServiceClient) DeleteWebhook(ctx context.Context, req *connect.R
 	return c.deleteWebhook.CallUnary(ctx, req)
 }
 
+// ListWebhookDeliveries calls starapp.api.v1.StarAppService.ListWebhookDeliveries.
+func (c *starAppServiceClient) ListWebhookDeliveries(ctx context.Context, req *connect.Request[v1.ListWebhookDeliveriesRequest]) (*connect.Response[v1.ListWebhookDeliveriesResponse], error) {
+	return c.listWebhookDeliveries.CallUnary(ctx, req)
+}
+
+// FireTestWebhooks calls starapp.api.v1.StarAppService.FireTestWebhooks.
+func (c *starAppServiceClient) FireTestWebhooks(ctx context.Context, req *connect.Request[v1.FireTestWebhooksRequest]) (*connect.Response[v1.FireTestWebhooksResponse], error) {
+	return c.fireTestWebhooks.CallUnary(ctx, req)
+}
+
 // GetMyFamily calls starapp.api.v1.StarAppService.GetMyFamily.
 func (c *starAppServiceClient) GetMyFamily(ctx context.Context, req *connect.Request[v1.GetMyFamilyRequest]) (*connect.Response[v1.GetMyFamilyResponse], error) {
 	return c.getMyFamily.CallUnary(ctx, req)
@@ -1326,6 +1358,8 @@ type StarAppServiceHandler interface {
 	CreateWebhook(context.Context, *connect.Request[v1.CreateWebhookRequest]) (*connect.Response[v1.CreateWebhookResponse], error)
 	UpdateWebhook(context.Context, *connect.Request[v1.UpdateWebhookRequest]) (*connect.Response[v1.Webhook], error)
 	DeleteWebhook(context.Context, *connect.Request[v1.DeleteWebhookRequest]) (*connect.Response[v1.DeleteWebhookResponse], error)
+	ListWebhookDeliveries(context.Context, *connect.Request[v1.ListWebhookDeliveriesRequest]) (*connect.Response[v1.ListWebhookDeliveriesResponse], error)
+	FireTestWebhooks(context.Context, *connect.Request[v1.FireTestWebhooksRequest]) (*connect.Response[v1.FireTestWebhooksResponse], error)
 	GetMyFamily(context.Context, *connect.Request[v1.GetMyFamilyRequest]) (*connect.Response[v1.GetMyFamilyResponse], error)
 	CreateFamily(context.Context, *connect.Request[v1.CreateFamilyRequest]) (*connect.Response[v1.CreateFamilyResponse], error)
 	ListMembers(context.Context, *connect.Request[v1.ListMembersRequest]) (*connect.Response[v1.ListMembersResponse], error)
@@ -1605,6 +1639,18 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 		StarAppServiceDeleteWebhookProcedure,
 		svc.DeleteWebhook,
 		connect.WithSchema(starAppServiceMethods.ByName("DeleteWebhook")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceListWebhookDeliveriesHandler := connect.NewUnaryHandler(
+		StarAppServiceListWebhookDeliveriesProcedure,
+		svc.ListWebhookDeliveries,
+		connect.WithSchema(starAppServiceMethods.ByName("ListWebhookDeliveries")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceFireTestWebhooksHandler := connect.NewUnaryHandler(
+		StarAppServiceFireTestWebhooksProcedure,
+		svc.FireTestWebhooks,
+		connect.WithSchema(starAppServiceMethods.ByName("FireTestWebhooks")),
 		connect.WithHandlerOptions(opts...),
 	)
 	starAppServiceGetMyFamilyHandler := connect.NewUnaryHandler(
@@ -1915,6 +1961,10 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 			starAppServiceUpdateWebhookHandler.ServeHTTP(w, r)
 		case StarAppServiceDeleteWebhookProcedure:
 			starAppServiceDeleteWebhookHandler.ServeHTTP(w, r)
+		case StarAppServiceListWebhookDeliveriesProcedure:
+			starAppServiceListWebhookDeliveriesHandler.ServeHTTP(w, r)
+		case StarAppServiceFireTestWebhooksProcedure:
+			starAppServiceFireTestWebhooksHandler.ServeHTTP(w, r)
 		case StarAppServiceGetMyFamilyProcedure:
 			starAppServiceGetMyFamilyHandler.ServeHTTP(w, r)
 		case StarAppServiceCreateFamilyProcedure:
@@ -2154,6 +2204,14 @@ func (UnimplementedStarAppServiceHandler) UpdateWebhook(context.Context, *connec
 
 func (UnimplementedStarAppServiceHandler) DeleteWebhook(context.Context, *connect.Request[v1.DeleteWebhookRequest]) (*connect.Response[v1.DeleteWebhookResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.DeleteWebhook is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) ListWebhookDeliveries(context.Context, *connect.Request[v1.ListWebhookDeliveriesRequest]) (*connect.Response[v1.ListWebhookDeliveriesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.ListWebhookDeliveries is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) FireTestWebhooks(context.Context, *connect.Request[v1.FireTestWebhooksRequest]) (*connect.Response[v1.FireTestWebhooksResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.FireTestWebhooks is not implemented"))
 }
 
 func (UnimplementedStarAppServiceHandler) GetMyFamily(context.Context, *connect.Request[v1.GetMyFamilyRequest]) (*connect.Response[v1.GetMyFamilyResponse], error) {

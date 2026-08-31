@@ -26,7 +26,6 @@ func (s *Server) GetUserPreferences(ctx context.Context, _ *connect.Request[apiv
 		Language:           prefs.Language,
 		AvailableLanguages: i18n.AvailableLanguageCodes(),
 		SidebarEnabled:     proto.Bool(prefs.SidebarEnabled),
-		ThemeToggleEnabled: proto.Bool(prefs.ThemeToggleEnabled),
 	}), nil
 }
 
@@ -39,7 +38,7 @@ func (s *Server) SaveUserPreferences(ctx context.Context, req *connect.Request[a
 	if !i18n.IsSupportedLanguage(language) {
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("unsupported language: %s", language))
 	}
-	if err := s.store.SaveUserPreferences(ctx, au.User.ID, language, req.Msg.SidebarEnabled, req.Msg.ThemeToggleEnabled); err != nil {
+	if err := s.store.SaveUserPreferences(ctx, au.User.ID, language, req.Msg.SidebarEnabled); err != nil {
 		s.log.WithError(err).Error("save user preferences")
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}

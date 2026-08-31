@@ -131,13 +131,14 @@ func toProtoReward(r *store.RewardRow) *apiv1.Reward {
 		return nil
 	}
 	return &apiv1.Reward{
-		Id:               int32(r.ID),
-		FamilyId:         int32(r.FamilyID),
-		Title:            r.Title,
-		Description:      r.Description,
-		CostStars:        int32(r.CostStars),
-		Active:           r.Active,
-		ApprovalRequired: r.ApprovalRequired,
+		Id:                     int32(r.ID),
+		FamilyId:               int32(r.FamilyID),
+		Title:                  r.Title,
+		Description:            r.Description,
+		CostStars:              int32(r.CostStars),
+		Active:                 r.Active,
+		ApprovalRequired:       r.ApprovalRequired,
+		AvailabilityExpression: r.AvailabilityExpression,
 	}
 }
 

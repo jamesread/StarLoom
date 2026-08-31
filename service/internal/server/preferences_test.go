@@ -23,13 +23,11 @@ func TestUserPreferencesDefaultsAndSave(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "", got.Msg.Language)
 	require.True(t, got.Msg.GetSidebarEnabled())
-	require.False(t, got.Msg.GetThemeToggleEnabled())
 	require.Contains(t, got.Msg.AvailableLanguages, "en")
 
 	saved, err := svc.SaveUserPreferences(ctx, connect.NewRequest(&apiv1.SaveUserPreferencesRequest{
-		Language:           "en",
-		SidebarEnabled:     false,
-		ThemeToggleEnabled: true,
+		Language:       "en",
+		SidebarEnabled: false,
 	}))
 	require.NoError(t, err)
 	require.True(t, saved.Msg.StandardResponse.Success)
@@ -38,7 +36,6 @@ func TestUserPreferencesDefaultsAndSave(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "en", got2.Msg.Language)
 	require.False(t, got2.Msg.GetSidebarEnabled())
-	require.True(t, got2.Msg.GetThemeToggleEnabled())
 }
 
 func TestGetStatusIncludesAccountCreated(t *testing.T) {

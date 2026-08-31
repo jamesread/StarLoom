@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"time"
 
 	"connectrpc.com/connect"
 
@@ -72,6 +73,9 @@ func (s *Server) GetChildHomeSummary(ctx context.Context, _ *connect.Request[api
 		}
 	}
 	for i := range rewards {
+		if !rewardAvailableNow(&rewards[i], balance, time.Now()) {
+			continue
+		}
 		out.Rewards = append(out.Rewards, toProtoReward(&rewards[i]))
 	}
 	return connect.NewResponse(out), nil

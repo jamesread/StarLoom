@@ -29,6 +29,7 @@ export function memberAvatarStyle(member?: MemberColorSource | null): Record<str
   const color = memberStarColor(member)
   return {
     border: `3px solid ${color}`,
+    '--member-star-color': color,
   }
 }
 

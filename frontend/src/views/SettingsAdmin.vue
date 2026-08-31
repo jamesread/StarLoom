@@ -7,9 +7,17 @@ import RadioGroup from 'picocrank/vue/components/RadioGroup.vue'
 import NotificationBlock from 'picocrank/vue/components/NotificationBlock.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { ArrowLeft01Icon } from '@hugeicons/core-free-icons'
+import { useCustomTheme } from 'picocrank/vue/composables/useCustomTheme.js'
 import { starapp, type Cvar } from '../api/client'
 import { fetchAppStatus } from '../composables/useStatus'
 import { loadInit } from '../composables/useInit'
+import { applyAppTheming } from '../lib/applyAppTheming'
+
+const THEME_CVAR_KEYS = new Set([
+  'theme_color_scheme_switcher_enabled',
+  'theme_name',
+  'theme_control',
+])
 
 const cvars = ref<Cvar[]>([])
 const edits = reactive<Record<string, {
@@ -18,13 +26,26 @@ const edits = reactive<Record<string, {
   boolValue: boolean
 }>>({})
 const dirtySections = reactive<Record<string, boolean>>({})
+const themeEdits = reactive({
+  colorSchemeSwitcher: false,
+  themeName: '',
+  themeControl: 'user',
+})
+const themeSectionDirty = ref(false)
 const error = ref('')
 const success = ref('')
 const savingSection = ref('')
+const themeSaving = ref(false)
+const { availableThemes, themeLabels } = useCustomTheme()
 
 const booleanOptions = [
   { label: 'On', value: true },
   { label: 'Off', value: false },
+]
+
+const themeControlOptions = [
+  { label: 'System preference', value: 'system' },
+  { label: 'User preference', value: 'user' },
 ]
 
 function labelFor(cvar: Cvar) {
@@ -49,6 +70,9 @@ const categories = computed(() => {
   const groups: { name: string; cvars: Cvar[] }[] = []
   const indexByName: Record<string, number> = {}
   for (const c of cvars.value) {
+    if (THEME_CVAR_KEYS.has(c.key)) {
+      continue
+    }
     const name = c.category || 'Other'
     if (indexByName[name] === undefined) {
       indexByName[name] = groups.length
@@ -58,6 +82,13 @@ const categories = computed(() => {
   }
   return groups
 })
+
+function syncThemeEdits() {
+  themeEdits.colorSchemeSwitcher = !!edits.theme_color_scheme_switcher_enabled?.boolValue
+  themeEdits.themeName = edits.theme_name?.valueString ?? ''
+  themeEdits.themeControl = edits.theme_control?.valueString || 'user'
+  themeSectionDirty.value = false
+}
 
 function syncEdits() {
   for (const key of Object.keys(edits)) delete edits[key]
@@ -69,6 +100,7 @@ function syncEdits() {
     }
   }
   clearDirty()
+  syncThemeEdits()
 }
 
 function valuesFor(cvar: Cvar) {
@@ -80,6 +112,12 @@ function valuesFor(cvar: Cvar) {
     return { valueInt: Number(edit.valueInt) || 0, valueString: '' }
   }
   return { valueInt: 0, valueString: edit.valueString || '' }
+}
+
+async function reloadShell() {
+  const init = await loadInit({ force: true })
+  await fetchAppStatus({ force: true })
+  applyAppTheming(init.features)
 }
 
 async function load() {
@@ -104,11 +142,39 @@ async function saveSection(group: { name: string; cvars: Cvar[] }) {
     }
     success.value = `${group.name} settings saved.`
     await load()
-    await Promise.all([loadInit({ force: true }), fetchAppStatus({ force: true })])
+    await reloadShell()
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
   } finally {
     savingSection.value = ''
+  }
+}
+
+async function saveThemeSection() {
+  themeSaving.value = true
+  success.value = ''
+  error.value = ''
+  try {
+    await starapp.updateCvar({
+      key: 'theme_color_scheme_switcher_enabled',
+      valueInt: themeEdits.colorSchemeSwitcher ? 1 : 0,
+    })
+    await starapp.updateCvar({
+      key: 'theme_name',
+      valueString: themeEdits.themeName,
+    })
+    await starapp.updateCvar({
+      key: 'theme_control',
+      valueString: themeEdits.themeControl,
+    })
+    success.value = 'Theme settings saved.'
+    themeSectionDirty.value = false
+    await load()
+    await reloadShell()
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : String(e)
+  } finally {
+    themeSaving.value = false
   }
 }
 
@@ -131,6 +197,57 @@ onMounted(load)
       :message="success"
     />
     <p v-if="cvars.length === 0 && !error" class="subtle">No configuration variables found.</p>
+  </Section>
+
+  <Section title="Theme" subtitle="Appearance and theme policy" :padding="true">
+    <FormLayout @submit.prevent="saveThemeSection">
+      <FormField label="Color scheme switcher" component-has-label>
+        <RadioGroup
+          v-model="themeEdits.colorSchemeSwitcher"
+          name="settings-theme-color-scheme-switcher"
+          variant="boolean"
+          :options="booleanOptions"
+          aria-label="Color scheme switcher"
+          @change="themeSectionDirty = true"
+        />
+        <p class="subtle">Show the auto/light/dark control in the header.</p>
+      </FormField>
+
+      <FormField label="Theme name" for="settings-theme-name">
+        <select
+          id="settings-theme-name"
+          v-model="themeEdits.themeName"
+          @change="themeSectionDirty = true"
+        >
+          <option value="">Default (Femtocrank only)</option>
+          <option v-for="name in availableThemes" :key="name" :value="name">
+            {{ themeLabels[name] || name }}
+          </option>
+        </select>
+        <p class="subtle">Drop-in CSS theme for the app.</p>
+      </FormField>
+
+      <FormField label="Theme control" component-has-label>
+        <RadioGroup
+          v-model="themeEdits.themeControl"
+          name="settings-theme-control"
+          variant="list"
+          :options="themeControlOptions"
+          aria-label="Theme control"
+          @change="themeSectionDirty = true"
+        />
+        <p class="subtle">
+          System preference forces the theme name for all users.
+          User preference uses this theme as the default; users may override on User Preferences.
+        </p>
+      </FormField>
+
+      <template #actions>
+        <button type="submit" class="good" :disabled="!themeSectionDirty || themeSaving">
+          {{ themeSaving ? 'Saving…' : 'Save' }}
+        </button>
+      </template>
+    </FormLayout>
   </Section>
 
   <Section
@@ -181,7 +298,7 @@ onMounted(load)
         <FormField
           v-else-if="cvar.mainType === 'bool'"
           :label="labelFor(cvar)"
-          fake
+          component-has-label
         >
           <div>
             <RadioGroup

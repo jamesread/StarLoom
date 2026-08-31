@@ -271,7 +271,7 @@ func (s *SQLite) InsertLedgerEntry(ctx context.Context, row StarLedgerRow) (int,
 }
 
 func (s *SQLite) ListRewards(ctx context.Context, familyID int, includeInactive bool) ([]RewardRow, error) {
-	q := `SELECT id, family_id, title, description, cost_stars, active, approval_required FROM rewards WHERE family_id = ?`
+	q := `SELECT id, family_id, title, description, cost_stars, active, approval_required, availability_expression FROM rewards WHERE family_id = ?`
 	if !includeInactive {
 		q += ` AND active = 1`
 	}
@@ -286,7 +286,7 @@ func (s *SQLite) ListRewards(ctx context.Context, familyID int, includeInactive 
 	for rows.Next() {
 		var r RewardRow
 		var active, approval int
-		if err := rows.Scan(&r.ID, &r.FamilyID, &r.Title, &r.Description, &r.CostStars, &active, &approval); err != nil {
+		if err := rows.Scan(&r.ID, &r.FamilyID, &r.Title, &r.Description, &r.CostStars, &active, &approval, &r.AvailabilityExpression); err != nil {
 			return nil, err
 		}
 		r.Active = active != 0
@@ -300,8 +300,8 @@ func (s *SQLite) GetRewardByID(ctx context.Context, id int) (*RewardRow, error) 
 	var r RewardRow
 	var active, approval int
 	err := s.db.QueryRowContext(ctx,
-		`SELECT id, family_id, title, description, cost_stars, active, approval_required FROM rewards WHERE id = ?`, id,
-	).Scan(&r.ID, &r.FamilyID, &r.Title, &r.Description, &r.CostStars, &active, &approval)
+		`SELECT id, family_id, title, description, cost_stars, active, approval_required, availability_expression FROM rewards WHERE id = ?`, id,
+	).Scan(&r.ID, &r.FamilyID, &r.Title, &r.Description, &r.CostStars, &active, &approval, &r.AvailabilityExpression)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -313,15 +313,15 @@ func (s *SQLite) GetRewardByID(ctx context.Context, id int) (*RewardRow, error) 
 	return &r, nil
 }
 
-func (s *SQLite) CreateReward(ctx context.Context, familyID int, title, description string, costStars int, approvalRequired bool) (int, error) {
+func (s *SQLite) CreateReward(ctx context.Context, familyID int, title, description string, costStars int, approvalRequired bool, availabilityExpression string) (int, error) {
 	active := 1
 	approval := 0
 	if approvalRequired {
 		approval = 1
 	}
 	res, err := s.db.ExecContext(ctx,
-		`INSERT INTO rewards (family_id, title, description, cost_stars, active, approval_required) VALUES (?, ?, ?, ?, ?, ?)`,
-		familyID, title, description, costStars, active, approval)
+		`INSERT INTO rewards (family_id, title, description, cost_stars, active, approval_required, availability_expression) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+		familyID, title, description, costStars, active, approval, availabilityExpression)
 	if err != nil {
 		return 0, err
 	}
@@ -332,7 +332,7 @@ func (s *SQLite) CreateReward(ctx context.Context, familyID int, title, descript
 	return int(id), nil
 }
 
-func (s *SQLite) UpdateReward(ctx context.Context, id int, title, description string, costStars int, active, approvalRequired bool) error {
+func (s *SQLite) UpdateReward(ctx context.Context, id int, title, description string, costStars int, active, approvalRequired bool, availabilityExpression string) error {
 	activeInt := 0
 	if active {
 		activeInt = 1
@@ -342,8 +342,8 @@ func (s *SQLite) UpdateReward(ctx context.Context, id int, title, description st
 		approvalInt = 1
 	}
 	_, err := s.db.ExecContext(ctx,
-		`UPDATE rewards SET title = ?, description = ?, cost_stars = ?, active = ?, approval_required = ? WHERE id = ?`,
-		title, description, costStars, activeInt, approvalInt, id)
+		`UPDATE rewards SET title = ?, description = ?, cost_stars = ?, active = ?, approval_required = ?, availability_expression = ? WHERE id = ?`,
+		title, description, costStars, activeInt, approvalInt, availabilityExpression, id)
 	return err
 }
 

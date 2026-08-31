@@ -1,0 +1,569 @@
+/*
+ * Aztecs — Sunstone Adventure
+ * A bright, child-friendly Mesoamerican-inspired theme built from geometric
+ * steps, sun motifs, jade, turquoise, maize, and warm clay.
+ *
+ * Drop-in theme for PicoCrank useCustomTheme().
+ * Asset URLs are absolute paths under /themes/aztecs/.
+ *
+ * Core text and interactive color pairs are chosen to meet WCAG 2.2 AA.
+ */
+
+:root,
+html {
+	color-scheme: light;
+
+	/* Sunlit codex palette */
+	--aztecs-codex: #fff9e6;
+	--aztecs-maize: #f7e7b4;
+	--aztecs-gold: #e5a81f;
+	--aztecs-gold-light: #f5cc58;
+	--aztecs-stone: #9c7137;
+	--aztecs-cacao: #291f18;
+	--aztecs-cacao-muted: #5f4b36;
+	--aztecs-jade: #0a6b51;
+	--aztecs-jade-deep: #164f48;
+	--aztecs-turquoise: #00627a;
+	--aztecs-clay: #9f3434;
+	--aztecs-shadow: rgba(66, 43, 16, 0.2);
+
+	--body-bg-color: var(--aztecs-maize);
+	--section-bg-color: var(--aztecs-codex);
+	--standout-bg-color: #f3d98f;
+	--section-header-bg-color: #f8e4aa;
+	--shadow-color: var(--aztecs-shadow);
+	--backdrop-color: rgba(18, 61, 57, 0.5);
+
+	--text-color: var(--aztecs-cacao);
+	--icon-color: var(--aztecs-cacao);
+	--muted-text-color: var(--aztecs-cacao-muted);
+	--annotation-key-color: #6b563c;
+	--link-color: var(--aztecs-turquoise);
+	--focus-outline-color: #075d70;
+	--border-color: var(--aztecs-stone);
+
+	--hover-background-color: #ead28b;
+	--hover-text-color: var(--aztecs-cacao);
+
+	--header-bg-color: var(--aztecs-jade-deep);
+	--header-fg-color: #fff9e6;
+	--header-border-color: var(--aztecs-gold-light);
+	--header-shadow: 0 4px 14px rgba(22, 79, 72, 0.38);
+	--header-hover-background-color: #0d3d39;
+	--header-hover-text-color: #ffffff;
+	--header-button-hover-bg-color: #0d3d39;
+	--header-focus-outline-color: #fff4bd;
+
+	--sidebar-bg-color: #edcf78;
+	--sidebar-link-color: var(--aztecs-cacao);
+	--sidebar-hover-bg-color: #f8e5a9;
+	--sidebar-border-color: var(--aztecs-stone);
+
+	--footer-chip-bg-color: #efd58a;
+	--footer-link-color: var(--aztecs-turquoise);
+
+	--input-bg-color: #fffdf5;
+	--input-fg-color: var(--aztecs-cacao);
+	--control-option-bg-color: var(--aztecs-codex);
+	--control-hover-bg-color: #f4dda0;
+	--control-checked-bg: #d2e8d4;
+	--control-checked-hover-bg: #badcc1;
+	--control-checked-fg: #1f483e;
+
+	--menu-hover-bg-color: var(--hover-background-color);
+	--menu-item-hover-background-color: var(--hover-background-color);
+	--menu-dropdown-background-color: var(--aztecs-codex);
+	--menu-dropdown-border-color: var(--aztecs-stone);
+	--menu-dropdown-link-hover-background-color: var(--hover-background-color);
+	--header-menu-dropdown-link-hover-background-color: var(--header-hover-background-color);
+
+	--table-sticky-bg: var(--aztecs-codex);
+	--table-row-hover-bg: var(--hover-background-color);
+	--table-row-hover-fg: var(--aztecs-cacao);
+	--table-sticky-hover-bg: var(--hover-background-color);
+	--table-uneditable-bg: #eddfb8;
+	--table-sticky-uneditable-bg: #eddfb8;
+
+	--disabled-background-color: #ded1ab;
+	--disabled-text-color: #706247;
+	--button-disabled-bg: #706247;
+	--button-disabled-fg: #ffffff;
+
+	--button-good-bg: var(--aztecs-jade);
+	--button-good-hover-bg: #07503d;
+	--button-bad-bg: var(--aztecs-clay);
+	--button-bad-hover-bg: #7f2527;
+	--button-warning-bg: #874900;
+	--button-warning-hover-bg: #6c3900;
+	--button-on-accent-fg: #ffffff;
+
+	/* Notification colors use dark text and remain easy to distinguish. */
+	--karma-good: #77c69a;
+	--karma-bad: #f08c7f;
+	--karma-warning: #f1c75b;
+	--karma-severe: #e88760;
+	--karma-note: #77cbd4;
+	--karma-info: #ded3b2;
+	--karma-old: #cab98d;
+	--karma-on-bg-fg: #241b12;
+	--karma-bad-border: #7f2527;
+
+	--progress-track-bg-color: #e5d5a9;
+	--progress-fill-bg-color: var(--aztecs-jade);
+
+	--nav-grid-accent-fg: var(--aztecs-cacao);
+	--nav-grid-accent-bg: #efbd43;
+	--nav-grid-active-fg: #ffffff;
+	--nav-grid-muted-fg: var(--aztecs-cacao-muted);
+	--nav-grid-border: var(--aztecs-stone);
+	--nav-grid-hover-bg: #f6df9b;
+	--nav-grid-indicator-bg: #f08c7f;
+	--nav-grid-indicator-fg: var(--aztecs-cacao);
+	--nav-grid-disabled-fg: var(--disabled-text-color);
+	--nav-grid-shadow: var(--aztecs-shadow);
+	--nav-grid-hover-shadow: rgba(66, 43, 16, 0.28);
+}
+
+body {
+	background-color: var(--body-bg-color);
+	background-image:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 32rem),
+		url('/themes/aztecs/sunstone.svg'),
+		repeating-linear-gradient(
+			45deg,
+			transparent 0 34px,
+			rgba(156, 113, 55, 0.07) 34px 36px,
+			transparent 36px 70px
+		),
+		repeating-linear-gradient(
+			-45deg,
+			transparent 0 34px,
+			rgba(10, 107, 81, 0.045) 34px 36px,
+			transparent 36px 70px
+		);
+	background-position: center, right 1.5rem top 5.5rem, center, center;
+	background-repeat: no-repeat, no-repeat, repeat, repeat;
+	background-size: auto, clamp(150px, 24vw, 280px), auto, auto;
+	color: var(--text-color);
+	font-family: ui-rounded, "Trebuchet MS", system-ui, sans-serif;
+}
+
+a:visited {
+	color: #6b3d84;
+}
+
+:focus-visible {
+	outline: 3px solid var(--focus-outline-color);
+	outline-offset: 2px;
+}
+
+header {
+	background:
+		linear-gradient(90deg, rgba(229, 168, 31, 0.12), transparent 38%, rgba(0, 98, 122, 0.2)),
+		var(--header-bg-color);
+	border-bottom: 4px solid var(--aztecs-gold-light);
+	box-shadow: var(--header-shadow);
+}
+
+header::after {
+	content: '';
+	display: block;
+	height: 8px;
+	background-color: #fff0b2;
+	background-image: url('/themes/aztecs/geometric-band.svg');
+	background-position: center;
+	background-repeat: repeat-x;
+	background-size: auto 8px;
+}
+
+/* Header controls stay legible over the decorated jade bar. */
+header button,
+header .button {
+	border: 0;
+	border-radius: 0.3rem;
+	background: transparent;
+	box-shadow: none;
+	color: var(--header-fg-color);
+	font-weight: inherit;
+}
+
+header button:hover,
+header .button:hover,
+header button:focus-visible,
+header .button:focus-visible {
+	background: var(--header-button-hover-bg-color);
+	box-shadow: none;
+	color: var(--header-hover-text-color);
+}
+
+#sidebar,
+.sidebar {
+	border-right: 3px solid var(--sidebar-border-color);
+	background-color: var(--sidebar-bg-color);
+	background-image:
+		linear-gradient(180deg, rgba(255, 249, 230, 0.5), transparent 36%),
+		repeating-linear-gradient(
+			135deg,
+			transparent 0 22px,
+			rgba(156, 113, 55, 0.08) 22px 24px
+		);
+}
+
+section {
+	border: 2px solid var(--aztecs-stone);
+	border-radius: 0.7rem;
+	box-shadow:
+		0 3px 0 #79552b,
+		0 9px 22px var(--aztecs-shadow);
+}
+
+section .section-header,
+section .section-subheader {
+	border-bottom: 3px solid var(--aztecs-gold);
+	background-color: var(--section-header-bg-color);
+	background-image: url('/themes/aztecs/geometric-band.svg');
+	background-position: bottom center;
+	background-repeat: repeat-x;
+	background-size: auto 10px;
+	padding-bottom: 0.55rem;
+}
+
+button,
+.button {
+	border: 2px solid #79552b;
+	border-radius: 0.45rem;
+	background: linear-gradient(180deg, var(--aztecs-gold-light), var(--aztecs-gold));
+	box-shadow: 0 3px 0 #79552b;
+	color: var(--aztecs-cacao);
+	font-weight: 700;
+}
+
+button:hover,
+.button:hover {
+	background: linear-gradient(180deg, #f8dc7a, #efb832);
+}
+
+button.good,
+.button.good,
+button[type='submit'] {
+	border-color: #064b39;
+	background: linear-gradient(180deg, #14745b, var(--button-good-bg));
+	color: var(--button-on-accent-fg);
+}
+
+button.good:hover,
+.button.good:hover,
+button[type='submit']:hover {
+	background: linear-gradient(180deg, #096047, var(--button-good-hover-bg));
+}
+
+button.bad,
+.button.bad,
+button[type='reset'] {
+	border-color: #722226;
+	background: linear-gradient(180deg, #a84038, var(--button-bad-bg));
+	color: var(--button-on-accent-fg);
+}
+
+button.bad:hover,
+.button.bad:hover,
+button[type='reset']:hover {
+	background: linear-gradient(180deg, #8b2d2e, var(--button-bad-hover-bg));
+}
+
+button.warning,
+.button.warning {
+	border-color: #603200;
+	background: linear-gradient(180deg, #955200, var(--button-warning-bg));
+	color: var(--button-on-accent-fg);
+}
+
+button.warning:hover,
+.button.warning:hover {
+	background: linear-gradient(180deg, #783f00, var(--button-warning-hover-bg));
+}
+
+button.neutral,
+.button.neutral,
+button[type='submit'].neutral {
+	border-color: var(--aztecs-stone);
+	background: linear-gradient(180deg, #fffdf5, #f1dfad);
+	color: var(--aztecs-cacao);
+}
+
+button:disabled,
+.button:disabled {
+	border-color: #5f553f;
+	background: var(--button-disabled-bg);
+	box-shadow: none;
+	color: var(--button-disabled-fg);
+}
+
+input,
+select,
+textarea {
+	border: 2px solid var(--aztecs-stone);
+	border-radius: 0.4rem;
+	background-color: var(--input-bg-color);
+	color: var(--input-fg-color);
+	box-shadow: inset 0 1px 3px rgba(66, 43, 16, 0.12);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+	border-color: var(--aztecs-turquoise);
+	outline: 3px solid rgba(0, 98, 122, 0.3);
+	outline-offset: 1px;
+}
+
+.navigation-grid a,
+.navigation-grid button {
+	border: 2px solid var(--aztecs-stone);
+	background:
+		linear-gradient(135deg, transparent 82%, rgba(10, 107, 81, 0.16) 82%),
+		linear-gradient(145deg, var(--aztecs-codex), #f4dc98);
+	box-shadow: 0 4px 0 #79552b;
+}
+
+.navigation-grid a:hover,
+.navigation-grid button:hover {
+	border-color: var(--aztecs-jade);
+	background:
+		linear-gradient(135deg, transparent 82%, rgba(10, 107, 81, 0.24) 82%),
+		linear-gradient(145deg, #fffdf4, #f6df9b);
+}
+
+.tabs-header {
+	border-bottom: 3px solid var(--aztecs-gold);
+}
+
+.tab-button.active {
+	border-bottom: 4px solid var(--aztecs-jade);
+	background: var(--control-checked-bg);
+}
+
+dialog {
+	border: 3px solid var(--aztecs-gold);
+	border-radius: 0.8rem;
+	box-shadow:
+		0 0 0 3px var(--aztecs-jade-deep),
+		0 16px 40px rgba(22, 79, 72, 0.35);
+}
+
+footer {
+	border-top: 8px solid transparent;
+	border-image: url('/themes/aztecs/geometric-band.svg') 8 round;
+	background: linear-gradient(180deg, #efd58a, var(--aztecs-maize));
+}
+
+footer span,
+footer a {
+	color: var(--footer-link-color);
+}
+
+/* Starlit temple palette */
+html[data-theme='dark'] {
+	color-scheme: dark;
+
+	--aztecs-codex: #1b2a26;
+	--aztecs-maize: #101c1a;
+	--aztecs-gold: #f0b83a;
+	--aztecs-gold-light: #f6d36d;
+	--aztecs-stone: #8d7349;
+	--aztecs-cacao: #fff2cf;
+	--aztecs-cacao-muted: #d3c59e;
+	--aztecs-jade: #0d7357;
+	--aztecs-jade-deep: #092f32;
+	--aztecs-turquoise: #69deee;
+	--aztecs-clay: #a83a3a;
+	--aztecs-shadow: rgba(0, 0, 0, 0.5);
+
+	--body-bg-color: var(--aztecs-maize);
+	--section-bg-color: var(--aztecs-codex);
+	--standout-bg-color: #243831;
+	--section-header-bg-color: #293c35;
+	--shadow-color: var(--aztecs-shadow);
+	--backdrop-color: rgba(0, 0, 0, 0.7);
+
+	--text-color: var(--aztecs-cacao);
+	--icon-color: var(--aztecs-cacao);
+	--muted-text-color: var(--aztecs-cacao-muted);
+	--annotation-key-color: #c7b78d;
+	--link-color: var(--aztecs-turquoise);
+	--focus-outline-color: #8cecf5;
+	--border-color: var(--aztecs-stone);
+
+	--hover-background-color: #365248;
+	--hover-text-color: #fff8e6;
+
+	--header-bg-color: var(--aztecs-jade-deep);
+	--header-fg-color: #fff8e6;
+	--header-border-color: var(--aztecs-gold-light);
+	--header-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+	--header-hover-background-color: #14544d;
+	--header-hover-text-color: #ffffff;
+	--header-button-hover-bg-color: #14544d;
+	--header-focus-outline-color: #fff4bd;
+
+	--sidebar-bg-color: #14241f;
+	--sidebar-link-color: var(--aztecs-cacao);
+	--sidebar-hover-bg-color: var(--hover-background-color);
+	--sidebar-border-color: var(--aztecs-stone);
+
+	--footer-chip-bg-color: #30483e;
+	--footer-link-color: var(--aztecs-turquoise);
+
+	--input-bg-color: #12221e;
+	--input-fg-color: var(--aztecs-cacao);
+	--control-option-bg-color: var(--aztecs-codex);
+	--control-hover-bg-color: var(--hover-background-color);
+	--control-checked-bg: #27463c;
+	--control-checked-hover-bg: #31594b;
+	--control-checked-fg: #dcffed;
+
+	--menu-hover-bg-color: var(--hover-background-color);
+	--menu-item-hover-background-color: var(--hover-background-color);
+	--menu-dropdown-background-color: var(--aztecs-codex);
+	--menu-dropdown-border-color: var(--aztecs-stone);
+
+	--table-sticky-bg: var(--aztecs-codex);
+	--table-row-hover-bg: var(--hover-background-color);
+	--table-row-hover-fg: var(--hover-text-color);
+	--table-sticky-hover-bg: var(--hover-background-color);
+	--table-uneditable-bg: #263831;
+	--table-sticky-uneditable-bg: #263831;
+
+	--disabled-background-color: #2a3833;
+	--disabled-text-color: #9b9e8d;
+	--button-disabled-bg: #4d5148;
+	--button-disabled-fg: #f8f4e7;
+
+	--button-good-bg: #0b684f;
+	--button-good-hover-bg: #07503d;
+	--button-bad-bg: var(--aztecs-clay);
+	--button-bad-hover-bg: #852b2e;
+	--button-warning-bg: #874900;
+	--button-warning-hover-bg: #6c3900;
+	--button-on-accent-fg: #ffffff;
+
+	--karma-good: #77c69a;
+	--karma-bad: #f08c7f;
+	--karma-warning: #f1c75b;
+	--karma-severe: #e88760;
+	--karma-note: #77cbd4;
+	--karma-info: #aebcae;
+	--karma-old: #b8aa83;
+	--karma-on-bg-fg: #17130e;
+
+	--progress-track-bg-color: #2a4038;
+	--progress-fill-bg-color: #5bd19d;
+
+	--nav-grid-accent-fg: #17130e;
+	--nav-grid-accent-bg: var(--aztecs-gold);
+	--nav-grid-muted-fg: var(--aztecs-cacao-muted);
+	--nav-grid-border: var(--aztecs-stone);
+	--nav-grid-hover-bg: var(--hover-background-color);
+	--nav-grid-indicator-bg: var(--karma-bad);
+	--nav-grid-indicator-fg: #17130e;
+	--nav-grid-disabled-fg: var(--disabled-text-color);
+	--nav-grid-shadow: var(--aztecs-shadow);
+	--nav-grid-hover-shadow: rgba(0, 0, 0, 0.7);
+}
+
+html[data-theme='dark'] body {
+	background-image:
+		radial-gradient(circle at 78% 8%, rgba(240, 184, 58, 0.1), transparent 25rem),
+		url('/themes/aztecs/sunstone.svg'),
+		repeating-linear-gradient(
+			45deg,
+			transparent 0 34px,
+			rgba(141, 115, 73, 0.09) 34px 36px,
+			transparent 36px 70px
+		),
+		repeating-linear-gradient(
+			-45deg,
+			transparent 0 34px,
+			rgba(105, 222, 238, 0.045) 34px 36px,
+			transparent 36px 70px
+		);
+}
+
+html[data-theme='dark'] #sidebar,
+html[data-theme='dark'] .sidebar {
+	background-image:
+		linear-gradient(180deg, rgba(105, 222, 238, 0.035), transparent 36%),
+		repeating-linear-gradient(
+			135deg,
+			transparent 0 22px,
+			rgba(246, 211, 109, 0.045) 22px 24px
+		);
+}
+
+html[data-theme='dark'] section {
+	box-shadow:
+		0 3px 0 #765f3d,
+		0 10px 24px var(--aztecs-shadow);
+}
+
+html[data-theme='dark'] section .section-header,
+html[data-theme='dark'] section .section-subheader {
+	border-bottom-color: var(--aztecs-gold);
+}
+
+html[data-theme='dark'] button.neutral,
+html[data-theme='dark'] .button.neutral,
+html[data-theme='dark'] button[type='submit'].neutral {
+	border-color: var(--aztecs-stone);
+	background: linear-gradient(180deg, #30463e, #243831);
+	color: var(--aztecs-cacao);
+}
+
+html[data-theme='dark'] .navigation-grid a,
+html[data-theme='dark'] .navigation-grid button {
+	background:
+		linear-gradient(135deg, transparent 82%, rgba(105, 222, 238, 0.1) 82%),
+		linear-gradient(145deg, #22352e, #192923);
+	box-shadow: 0 4px 0 #765f3d;
+}
+
+html[data-theme='dark'] .navigation-grid a:hover,
+html[data-theme='dark'] .navigation-grid button:hover {
+	border-color: var(--aztecs-turquoise);
+	background:
+		linear-gradient(135deg, transparent 82%, rgba(105, 222, 238, 0.16) 82%),
+		linear-gradient(145deg, #315046, #253b34);
+}
+
+html[data-theme='dark'] footer {
+	background: linear-gradient(180deg, #243831, var(--aztecs-maize));
+}
+
+html[data-theme='dark'] a:visited {
+	color: #e7a9ff;
+}
+
+/*
+ * PicoCrank gives these two neutral buttons transparent header chrome.
+ * Remove the neutral-button gradient so its light surface cannot sit behind
+ * the header's light foreground; top-bar controls keep their existing style.
+ */
+header #sidebar-toggler-button,
+header button.user-info {
+	background-image: none;
+}
+
+@media (max-width: 700px) {
+	body {
+		background-position: center, right -3rem top 5.5rem, center, center;
+		background-size: auto, 180px, auto, auto;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	button,
+	.button,
+	a {
+		transition: none;
+	}
+}

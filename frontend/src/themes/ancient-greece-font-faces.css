@@ -1,0 +1,20 @@
+/*
+ * Unlayered @font-face (not in PicoCrank @layer theme). Imported statically from
+ * main.ts so GreeceDisplay is registered before the first section title paints.
+ */
+
+@font-face {
+	font-family: 'GreeceDisplay';
+	src: url('../assets/themes/ancient-greece/fonts/greece-display-regular.woff2') format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'GreeceDisplay';
+	src: url('../assets/themes/ancient-greece/fonts/greece-display-semibold.woff2') format('woff2');
+	font-weight: 600 800;
+	font-style: normal;
+	font-display: swap;
+}

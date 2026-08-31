@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { ArrowLeft01Icon, ArrowRight01Icon, PlusSignIcon, Refresh01Icon, StarIcon } from '@hugeicons/core-free-icons'
+import { ArrowLeft01Icon, ArrowRight01Icon, PlusSignIcon, StarIcon } from '@hugeicons/core-free-icons'
 import {
   starapp,
   type StarChart as StarChartMeta,
@@ -50,9 +50,17 @@ const dayLabels = computed(() => {
   })
 })
 
+function isoWeekNumber(dateStr: string): number {
+  const date = new Date(dateStr + 'T12:00:00')
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  d.setDate(d.getDate() + 4 - (d.getDay() || 7))
+  const yearStart = new Date(d.getFullYear(), 0, 1)
+  return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
+}
+
 const weekLabel = computed(() => {
-  if (!chart.value?.weekStart || !chart.value?.weekEnd) return ''
-  return `${chart.value.weekStart} — ${chart.value.weekEnd}`
+  if (!chart.value?.weekStart) return ''
+  return `Week ${isoWeekNumber(chart.value.weekStart)}`
 })
 
 function mondayOf(date: Date): string {
@@ -170,7 +178,7 @@ watch(starChartId, () => {
           <option v-for="sc in activeStarCharts" :key="sc.id" :value="sc.id">{{ sc.name }}</option>
         </select>
       </label>
-      <button type="button" class="inline-icon neutral" :disabled="loading" @click="shiftWeek(-1)">
+      <button type="button" class="inline-icon neutral" :disabled="loading" aria-label="Previous" @click="shiftWeek(-1)">
         <HugeiconsIcon
           :icon="ArrowLeft01Icon"
           width="1em"
@@ -178,22 +186,11 @@ watch(starChartId, () => {
           :strokeWidth="iconStrokeWidth"
           aria-hidden="true"
         />
-        <span>Previous</span>
       </button>
       <span v-if="weekLabel" class="week-label">{{ weekLabel }}</span>
-      <button type="button" class="inline-icon neutral" :disabled="loading" @click="shiftWeek(1)">
+      <button type="button" class="inline-icon neutral" :disabled="loading" aria-label="Next" @click="shiftWeek(1)">
         <HugeiconsIcon
           :icon="ArrowRight01Icon"
-          width="1em"
-          height="1em"
-          :strokeWidth="iconStrokeWidth"
-          aria-hidden="true"
-        />
-        <span>Next</span>
-      </button>
-      <button type="button" class="inline-icon neutral" :disabled="loading" aria-label="Refresh" @click="load">
-        <HugeiconsIcon
-          :icon="Refresh01Icon"
           width="1em"
           height="1em"
           :strokeWidth="iconStrokeWidth"

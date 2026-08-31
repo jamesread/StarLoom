@@ -64,14 +64,22 @@ const linkTitle = computed(() => props.title ?? props.member.displayName)
   border-radius: 50%;
 }
 
-.member-avatar-link:hover {
-  opacity: 0.85;
-}
-
 .member-avatar {
   border-radius: 50%;
   object-fit: cover;
   box-sizing: border-box;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.member-avatar-link:hover .member-avatar,
+.member-avatar-link:focus-visible .member-avatar,
+.member-avatar-wrap:hover .member-avatar {
+  transform: scale(1.08);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--member-star-color, var(--pico-primary)) 45%, transparent),
+    0 4px 14px color-mix(in srgb, var(--member-star-color, var(--pico-primary)) 35%, transparent);
 }
 
 .member-avatar-placeholder {

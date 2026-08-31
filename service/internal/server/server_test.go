@@ -93,7 +93,37 @@ func TestWebhookCRUD(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, list.Msg.Webhooks, 1)
 	require.Contains(t, list.Msg.Events, "redemption.requested")
+	require.Contains(t, list.Msg.Events, "webhooks.test")
 
 	_, err = svc.DeleteWebhook(ctx, connect.NewRequest(&apiv1.DeleteWebhookRequest{Id: created.Msg.Webhook.Id}))
 	require.NoError(t, err)
+}
+
+func TestFireTestWebhooks(t *testing.T) {
+	st := store.OpenMemory()
+	ctx := superuserCtx(context.Background())
+	svc := New(&config.Config{}, st, nil, logrus.New())
+
+	fired, err := svc.FireTestWebhooks(ctx, connect.NewRequest(&apiv1.FireTestWebhooksRequest{}))
+	require.NoError(t, err)
+	require.True(t, fired.Msg.StandardResponse.Success)
+	require.Equal(t, int32(0), fired.Msg.TargetsFired)
+
+	_, err = svc.CreateWebhook(ctx, connect.NewRequest(&apiv1.CreateWebhookRequest{
+		Url:     "https://example.com/test-hook",
+		Secret:  "s3cret",
+		Events:  []string{"webhooks.test"},
+		Enabled: true,
+	}))
+	require.NoError(t, err)
+
+	fired, err = svc.FireTestWebhooks(ctx, connect.NewRequest(&apiv1.FireTestWebhooksRequest{}))
+	require.NoError(t, err)
+	require.True(t, fired.Msg.StandardResponse.Success)
+	require.Equal(t, int32(1), fired.Msg.TargetsFired)
+
+	deliveries, err := svc.ListWebhookDeliveries(ctx, connect.NewRequest(&apiv1.ListWebhookDeliveriesRequest{Limit: 10}))
+	require.NoError(t, err)
+	require.Len(t, deliveries.Msg.Deliveries, 1)
+	require.Equal(t, "webhooks.test", deliveries.Msg.Deliveries[0].Event)
 }

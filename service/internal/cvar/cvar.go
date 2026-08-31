@@ -14,11 +14,19 @@ const (
 	KeyDefaultAwardStars        = "default_award_stars"
 	KeyEnableRedemptionApproval = "enable_redemption_approval"
 
+	KeyThemeColorSchemeSwitcherEnabled = "theme_color_scheme_switcher_enabled"
+	KeyThemeName                       = "theme_name"
+	KeyThemeControl                    = "theme_control"
+
+	ThemeControlSystem = "system"
+	ThemeControlUser   = "user"
+
 	DefaultAwardStars = 1
 	MaxAwardStars     = 100
 
 	CategorySite     = "Site"
 	CategoryFeatures = "Features"
+	CategoryTheme    = "Theme"
 )
 
 type Def struct {
@@ -73,6 +81,24 @@ func Defaults(siteTitle string, showFooter bool) []Def {
 			Title:       "Redemption approval by default",
 			Description: "When enabled, new rewards require parent approval before stars are deducted.",
 			Category:    CategoryFeatures, Ordinal: 40,
+		},
+		{
+			Key: KeyThemeColorSchemeSwitcherEnabled, MainType: TypeBool, ValueInt: 0,
+			Title:       "Color scheme switcher",
+			Description: "Show the auto/light/dark color scheme control in the PicoCrank header.",
+			Category:    CategoryTheme, Ordinal: 10,
+		},
+		{
+			Key: KeyThemeName, MainType: TypeString, ValueString: "",
+			Title:       "Theme name",
+			Description: "Default or enforced drop-in CSS theme (empty = Femtocrank base styling only).",
+			Category:    CategoryTheme, Ordinal: 20,
+		},
+		{
+			Key: KeyThemeControl, MainType: TypeString, ValueString: ThemeControlUser,
+			Title:       "Theme control",
+			Description: "System preference forces the theme name cvar for everyone. User preference uses the cvar as default and allows overrides on User Preferences.",
+			Category:    CategoryTheme, Ordinal: 30,
 		},
 	}
 }

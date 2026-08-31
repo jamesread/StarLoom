@@ -16,6 +16,9 @@ export const crumb = {
   settings: { name: 'Settings', href: '/control-panel/settings', to: { name: 'settings' } },
   webhooks: { name: 'Webhooks', href: '/control-panel/webhooks', to: { name: 'webhooks' } },
   webhookCreate: { name: 'Add webhook', href: '/control-panel/webhooks/create', to: { name: 'webhook-create' } },
+  people: { name: 'People', href: '/control-panel/people', to: { name: 'familyPeople' } },
+  personCreate: { name: 'Add person', href: '/control-panel/people/create', to: { name: 'familyPersonCreate' } },
+  chores: { name: 'Chores', href: '/control-panel/chores', to: { name: 'familyChores' } },
 }
 
 function trail(...items: BreadcrumbItem[]): BreadcrumbItem[] {
@@ -36,6 +39,12 @@ export const breadcrumbsByRouteName: Record<string, () => BreadcrumbItem[]> = {
   settings: () => trail(crumb.controlPanel, crumb.settings),
   webhooks: () => trail(crumb.controlPanel, crumb.webhooks),
   'webhook-create': () => trail(crumb.controlPanel, crumb.webhooks, crumb.webhookCreate),
+  familyPeople: () => trail(crumb.controlPanel, crumb.people),
+  familyPersonCreate: () => trail(crumb.controlPanel, crumb.people, crumb.personCreate),
+  familyPersonDetail: () => trail(crumb.controlPanel, crumb.people),
+  familyPersonEdit: () => trail(crumb.controlPanel, crumb.people),
+  familyChores: () => trail(crumb.controlPanel, crumb.chores),
+  familyChoreEdit: () => trail(crumb.controlPanel, crumb.chores),
 }
 
 export function applyRouteBreadcrumbs(route: RouteRecordRaw) {

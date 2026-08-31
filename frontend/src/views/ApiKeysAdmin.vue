@@ -59,7 +59,7 @@ onMounted(async () => {
       <FormField label="Key name" for="api-key-name">
         <input id="api-key-name" v-model="name" type="text" placeholder="API key" />
       </FormField>
-      <FormField label="Access" fake>
+      <FormField label="Access" component-has-label>
         <RadioGroup v-model="readOnly" name="api-key-readonly" :options="booleanOptions" />
       </FormField>
       <template #actions>

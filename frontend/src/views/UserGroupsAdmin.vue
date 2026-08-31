@@ -75,7 +75,7 @@ onMounted(async () => {
           <option v-for="g in groups" :key="g.id" :value="g.id">{{ g.name }} ({{ g.memberCount }} members)</option>
         </select>
       </FormField>
-      <FormField label="Members" fake>
+      <FormField label="Members" component-has-label>
         <CheckGroup
           v-model="memberIds"
           name="group-members"
@@ -87,7 +87,7 @@ onMounted(async () => {
       </template>
     </FormLayout>
     <FormLayout @submit.prevent="saveRoles">
-      <FormField label="Roles for this group" fake>
+      <FormField label="Roles for this group" component-has-label>
         <CheckGroup
           v-model="roleIds"
           name="group-roles"

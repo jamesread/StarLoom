@@ -11,6 +11,10 @@ message StandardResponse {
 
 message Features {
   bool redemption_approval_default = 1;
+  bool theme_color_scheme_switcher_enabled = 2;
+  string theme_name = 3;
+  string theme_control = 4;
+  repeated string available_themes = 5;
 }
 
 message InitRequest {}
@@ -80,13 +84,11 @@ message GetUserPreferencesResponse {
   string language = 1;
   repeated string available_languages = 2;
   optional bool sidebar_enabled = 3;
-  optional bool theme_toggle_enabled = 4;
 }
 
 message SaveUserPreferencesRequest {
   string language = 1;
   bool sidebar_enabled = 2;
-  bool theme_toggle_enabled = 3;
 }
 
 message SaveUserPreferencesResponse {
@@ -399,6 +401,32 @@ message DeleteWebhookRequest {
 
 message DeleteWebhookResponse {}
 
+message WebhookDelivery {
+  int32 id = 1;
+  int32 webhook_target_id = 2;
+  string event = 3;
+  string url = 4;
+  bool success = 5;
+  int32 http_status = 6;
+  string error_message = 7;
+  string fired_at = 8;
+}
+
+message ListWebhookDeliveriesRequest {
+  int32 limit = 1;
+}
+
+message ListWebhookDeliveriesResponse {
+  repeated WebhookDelivery deliveries = 1;
+}
+
+message FireTestWebhooksRequest {}
+
+message FireTestWebhooksResponse {
+  StandardResponse standard_response = 1;
+  int32 targets_fired = 2;
+}
+
 message Family {
   int32 id = 1;
   string name = 2;
@@ -437,6 +465,7 @@ message Reward {
   int32 cost_stars = 5;
   bool active = 6;
   bool approval_required = 7;
+  string availability_expression = 8;
 }
 
 message Redemption {
@@ -604,6 +633,7 @@ message CreateRewardRequest {
   string description = 2;
   int32 cost_stars = 3;
   bool approval_required = 4;
+  string availability_expression = 5;
 }
 
 message CreateRewardResponse {
@@ -618,6 +648,7 @@ message UpdateRewardRequest {
   int32 cost_stars = 4;
   bool active = 5;
   bool approval_required = 6;
+  string availability_expression = 7;
 }
 
 message UpdateRewardResponse {
@@ -934,6 +965,8 @@ service StarAppService {
   rpc CreateWebhook(CreateWebhookRequest) returns (CreateWebhookResponse);
   rpc UpdateWebhook(UpdateWebhookRequest) returns (Webhook);
   rpc DeleteWebhook(DeleteWebhookRequest) returns (DeleteWebhookResponse);
+  rpc ListWebhookDeliveries(ListWebhookDeliveriesRequest) returns (ListWebhookDeliveriesResponse);
+  rpc FireTestWebhooks(FireTestWebhooksRequest) returns (FireTestWebhooksResponse);
   rpc GetMyFamily(GetMyFamilyRequest) returns (GetMyFamilyResponse);
   rpc CreateFamily(CreateFamilyRequest) returns (CreateFamilyResponse);
   rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);

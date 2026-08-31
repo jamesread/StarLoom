@@ -7,3 +7,7 @@ body {
 #app {
   min-height: 100svh;
 }
+
+dl {
+  row-gap: 0;
+}

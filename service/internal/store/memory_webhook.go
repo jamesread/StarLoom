@@ -7,8 +7,10 @@ import (
 )
 
 type memoryWebhook struct {
-	nextID int
-	byID   map[int]WebhookTargetRow
+	nextID         int
+	nextDeliveryID int
+	byID           map[int]WebhookTargetRow
+	deliveries     []WebhookDeliveryRow
 }
 
 func (m *Memory) webhookState() *memoryWebhook {
@@ -92,4 +94,27 @@ func (m *Memory) DeleteWebhookTarget(_ context.Context, id int) error {
 	}
 	delete(st.byID, id)
 	return nil
+}
+
+func (m *Memory) InsertWebhookDelivery(_ context.Context, row WebhookDeliveryRow) (int, error) {
+	st := m.webhookState()
+	st.nextDeliveryID++
+	row.ID = st.nextDeliveryID
+	if row.FiredAt == "" {
+		row.FiredAt = time.Now().UTC().Format(time.RFC3339)
+	}
+	st.deliveries = append(st.deliveries, row)
+	return row.ID, nil
+}
+
+func (m *Memory) ListWebhookDeliveries(_ context.Context, limit int) ([]WebhookDeliveryRow, error) {
+	if limit <= 0 {
+		limit = 100
+	}
+	st := m.webhookState()
+	out := make([]WebhookDeliveryRow, 0, len(st.deliveries))
+	for i := len(st.deliveries) - 1; i >= 0 && len(out) < limit; i-- {
+		out = append(out, st.deliveries[i])
+	}
+	return out, nil
 }

@@ -6,7 +6,8 @@ import Navigation from 'picocrank/vue/components/Navigation.vue'
 import NavigationGrid from 'picocrank/vue/components/NavigationGrid.vue'
 import FormField from 'picocrank/vue/components/FormField.vue'
 import FormLayout from 'picocrank/vue/components/FormLayout.vue'
-import { StarIcon } from '@hugeicons/core-free-icons'
+import { StarIcon, PlusSignIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { starapp, type ParentHomeSummary, type ChildHomeSummary, type StarChart } from '../api/client'
 import MemberAvatar from '../components/MemberAvatar.vue'
 import { fetchAppStatus, useStatus } from '../composables/useStatus'
@@ -16,6 +17,8 @@ import {
   hasPermission,
 } from '../lib/rbacAccess'
 import { memberStarStyle } from '../lib/memberStarColor'
+
+const iconStrokeWidth = 2.5
 
 const statusState = useStatus()
 const router = useRouter()
@@ -38,6 +41,9 @@ const needsFamily = computed(
   () => isParentHome.value && !parentSummary.value?.family?.id,
 )
 const canCreateFamily = computed(() => hasPermission(statusState.status, 'family.manage'))
+const showAddPerson = computed(
+  () => isParentHome.value && !needsFamily.value && !loading.value,
+)
 
 const sectionTitle = computed(() => {
   if (loading.value) return 'Home'
@@ -110,7 +116,7 @@ async function loadChild() {
     error.value = ''
   } catch (e) {
     error.value =
-      'Your account is not linked to a family profile. A parent must add you via Family → People (not IAM → Users).'
+      'Your account is not linked to a family profile. A parent must add you via Control Panel → People (not IAM → Users).'
     if (e instanceof Error && !e.message.includes('failed_precondition')) {
       error.value = e.message
     }
@@ -131,7 +137,7 @@ async function load() {
       await loadParent()
     } else {
       error.value =
-        'Your account is not linked to a family. Sign in as a parent, create the family on Home, then add people from Family → People.'
+        'Your account is not linked to a family. Sign in as a parent, create the family on Home, then add people from Control Panel → People.'
     }
   } finally {
     loading.value = false
@@ -178,6 +184,23 @@ watch(starChartNavRef, () => {
 
 <template>
   <Section :title="sectionTitle" :icon="StarIcon">
+    <template v-if="showAddPerson" #toolbar>
+      <RouterLink
+        :to="{ name: 'familyPersonCreate' }"
+        class="button inline-icon good"
+        aria-label="Add person"
+        title="Add person"
+      >
+        <HugeiconsIcon
+          :icon="PlusSignIcon"
+          width="1em"
+          height="1em"
+          :strokeWidth="iconStrokeWidth"
+          aria-hidden="true"
+        />
+      </RouterLink>
+    </template>
+
     <p v-if="loading" class="subtle">Loading…</p>
 
     <template v-else-if="isParentHome">
@@ -201,8 +224,8 @@ watch(starChartNavRef, () => {
 
       <template v-else>
         <p v-if="parentSummary?.pendingRedemptions" class="subtle">
-          Pending redemptions:
-          <RouterLink :to="{ name: 'familyRedemptions' }">{{ parentSummary.pendingRedemptions }}</RouterLink>
+          Pending redemption requests:
+          <RouterLink :to="{ name: 'familyRewards' }">{{ parentSummary.pendingRedemptions }}</RouterLink>
         </p>
 
         <div v-if="!parentSummary?.children?.length" class="subtle">

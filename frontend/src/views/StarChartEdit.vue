@@ -108,7 +108,7 @@ onMounted(load)
       <FormField label="Sort order" for="star-chart-edit-sort">
         <input id="star-chart-edit-sort" v-model.number="form.sortOrder" type="number" min="0" />
       </FormField>
-      <FormField label="Status" fake>
+      <FormField label="Status" component-has-label>
         <RadioGroup
           v-model="form.active"
           name="star-chart-edit-active"

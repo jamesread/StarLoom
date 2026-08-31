@@ -20,6 +20,13 @@ export function hasPermission(st: StatusLike | null | undefined, name: string): 
 export function canAccessControlPanelFromStatus(st: StatusLike | null | undefined): boolean {
   if (!st?.isLoggedIn) return false
   if (st.rbacIsSuperuser) return true
+  if (
+    hasPermission(st, 'stars.view_family') ||
+    hasPermission(st, 'family.manage') ||
+    hasPermission(st, 'members.manage')
+  ) {
+    return true
+  }
   return CONTROL_PANEL_PERMISSIONS.some((p) => (st.rbacPermissions || []).includes(p))
 }
 

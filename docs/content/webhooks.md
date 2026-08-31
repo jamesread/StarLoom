@@ -11,6 +11,7 @@ and event subscriptions are stored in the database (`webhook_targets`,
 | `stars.awarded` | Parent awards stars to a child |
 | `redemption.requested` | Child requests a reward (especially pending approval) |
 | `redemption.resolved` | Parent approves or rejects a redemption |
+| `webhooks.test` | Manual test from the webhooks admin page |
 
 The catalog is defined in code (`service/internal/webhook/`). The Settings UI
 CheckGroup reads the list from Init / ListWebhooks.

@@ -44,13 +44,14 @@ type StarLedgerRow struct {
 }
 
 type RewardRow struct {
-	ID               int
-	FamilyID         int
-	Title            string
-	Description      string
-	CostStars        int
-	Active           bool
-	ApprovalRequired bool
+	ID                     int
+	FamilyID               int
+	Title                  string
+	Description            string
+	CostStars              int
+	Active                 bool
+	ApprovalRequired       bool
+	AvailabilityExpression string
 }
 
 type RedemptionRow struct {

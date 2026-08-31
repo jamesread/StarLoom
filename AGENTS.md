@@ -64,7 +64,7 @@ Add an `Authorization` header when parent auth is enabled.
 | `starapp_update_webhook` | Update webhook | `id` (required); `url`, `secret`, `events`, `enabled` |
 | `starapp_delete_webhook` | Delete webhook | `id` (required) |
 
-Webhook `events` use comma-separated names: `stars.awarded`, `redemption.requested`, `redemption.resolved`.
+Webhook `events` use comma-separated names: `stars.awarded`, `redemption.requested`, `redemption.resolved`, `webhooks.test`.
 
 ## Connect RPC API
 
@@ -115,7 +115,7 @@ Wrap every data-entry form in PicoCrank **`FormLayout`** with **`FormField`** ch
   <FormField label="Title" for="example-title">
     <input id="example-title" v-model="title" type="text" required />
   </FormField>
-  <FormField label="Options" fake>
+  <FormField label="Options" component-has-label>
     <CheckGroup v-model="selected" :options="options" name="example-options" />
   </FormField>
   <template #actions>
@@ -125,7 +125,7 @@ Wrap every data-entry form in PicoCrank **`FormLayout`** with **`FormField`** ch
 </FormLayout>
 ```
 
-Use `fake` on `FormField` when the control is not a single native input (e.g. `CheckGroup`, `RadioGroup`). Reference examples: `WebhookCreate.vue`, `ChangePassword.vue`, `SettingsAdmin.vue`.
+Use `component-has-label` on `FormField` when the control is not a single native input (e.g. `CheckGroup`, `RadioGroup`). Reference examples: `WebhookCreate.vue`, `ChangePassword.vue`, `SettingsAdmin.vue`.
 
 The login screen uses PicoCrank’s `Login` component (`LoginForm.vue`); all other app forms follow the `FormLayout` pattern above.
 

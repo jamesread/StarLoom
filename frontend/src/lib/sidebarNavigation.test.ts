@@ -27,7 +27,7 @@ test('sidebar hides control panel without privilege', () => {
 test('sidebar adds family section for parents', () => {
   const nav = fakeNav()
   setupSidebarNavigation(nav, { showFamilyNav: true })
-  assert.ok(nav.links.some((l) => l && typeof l === 'object' && 'name' in l && l.name === 'familyPeople'))
+  assert.ok(nav.links.some((l) => l && typeof l === 'object' && 'name' in l && l.name === 'familyRewards'))
 })
 
 test('sidebar adds control panel as its own root section', () => {
@@ -50,17 +50,15 @@ test('top bar can exclude chores and control panel', () => {
   setupSidebarNavigation(nav, {
     showControlPanel: true,
     showFamilyNav: true,
-    excludeRoutes: ['familyChores', 'controlPanel'],
+    excludeRoutes: ['controlPanel'],
+    flat: true,
   })
   assert.deepEqual(
     nav.links.map((l) => l && typeof l === 'object' && 'name' in l ? l.name : null),
     [
       'home',
-      'nav-family',
-      'familyPeople',
       'familyStarCharts',
       'familyRewards',
-      'familyRedemptions',
     ],
   )
 })

@@ -118,7 +118,7 @@ onMounted(load)
       <FormField label="Secret" for="webhook-edit-secret" description="Leave blank to keep the current secret.">
         <input id="webhook-edit-secret" v-model="form.secret" type="text" />
       </FormField>
-      <FormField label="Events" fake>
+      <FormField label="Events" component-has-label>
         <CheckGroup
           v-model="form.events"
           :options="eventOptions"
@@ -126,7 +126,7 @@ onMounted(load)
           aria-label="Webhook events"
         />
       </FormField>
-      <FormField label="Enabled" fake>
+      <FormField label="Enabled" component-has-label>
         <RadioGroup
           v-model="form.enabled"
           name="webhook-enabled-edit"

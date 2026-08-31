@@ -8,7 +8,7 @@ import FormLayout from 'picocrank/vue/components/FormLayout.vue'
 import CheckGroup from 'picocrank/vue/components/CheckGroup.vue'
 import RadioGroup from 'picocrank/vue/components/RadioGroup.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { PauseIcon, PlusSignIcon, Refresh01Icon, Task01Icon } from '@hugeicons/core-free-icons'
+import { ArrowLeft01Icon, PauseIcon, PlusSignIcon, Refresh01Icon, Task01Icon } from '@hugeicons/core-free-icons'
 import { starapp, type Chore, type ChorePause, type FamilyMember, type StarChart } from '../api/client'
 import MemberAvatar from '../components/MemberAvatar.vue'
 
@@ -267,7 +267,7 @@ onMounted(async () => {
           :disabled="creating"
         />
       </FormField>
-      <FormField v-if="starChartOptions.length > 1" label="Star chart" fake>
+      <FormField v-if="starChartOptions.length > 1" label="Star chart" component-has-label>
         <RadioGroup
           v-model="form.starChartId"
           variant="list"
@@ -275,10 +275,10 @@ onMounted(async () => {
           name="chore-star-chart"
         />
       </FormField>
-      <FormField label="Days of week" fake>
+      <FormField label="Days of week" component-has-label>
         <CheckGroup v-model="form.weekdays" :options="weekdayOptions" name="chore-weekdays" />
       </FormField>
-      <FormField label="Assigned people" fake>
+      <FormField label="Assigned people" component-has-label>
         <CheckGroup v-model="form.childMemberIds" :options="personOptions" name="chore-people" />
       </FormField>
       <p v-if="createError" class="inline-notification error">{{ createError }}</p>
@@ -333,6 +333,10 @@ onMounted(async () => {
     </template>
 
     <template #toolbar>
+      <RouterLink :to="{ name: 'controlPanel' }" class="button inline-icon neutral">
+        <HugeiconsIcon :icon="ArrowLeft01Icon" width="1em" height="1em" aria-hidden="true" />
+        <span>Control Panel</span>
+      </RouterLink>
       <button
         type="button"
         class="inline-icon neutral"

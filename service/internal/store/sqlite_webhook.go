@@ -203,6 +203,56 @@ func insertWebhookEventsTx(ctx context.Context, tx *sql.Tx, targetID int, events
 	return nil
 }
 
+func (s *SQLite) InsertWebhookDelivery(ctx context.Context, row WebhookDeliveryRow) (int, error) {
+	firedAt := row.FiredAt
+	if firedAt == "" {
+		firedAt = time.Now().UTC().Format(time.RFC3339)
+	}
+	var targetID any
+	if row.WebhookTargetID > 0 {
+		targetID = row.WebhookTargetID
+	}
+	res, err := s.db.ExecContext(ctx,
+		`INSERT INTO webhook_deliveries (webhook_target_id, event, url, success, http_status, error_message, fired_at)
+		 VALUES (?, ?, ?, ?, ?, ?, ?)`,
+		targetID, row.Event, row.URL, boolToInt(row.Success), row.HTTPStatus, row.ErrorMessage, firedAt)
+	if err != nil {
+		return 0, err
+	}
+	id, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return int(id), nil
+}
+
+func (s *SQLite) ListWebhookDeliveries(ctx context.Context, limit int) ([]WebhookDeliveryRow, error) {
+	if limit <= 0 {
+		limit = 100
+	}
+	rows, err := s.db.QueryContext(ctx,
+		`SELECT id, COALESCE(webhook_target_id, 0), event, url, success, http_status, error_message, fired_at
+		 FROM webhook_deliveries
+		 ORDER BY fired_at DESC, id DESC
+		 LIMIT ?`, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	out := []WebhookDeliveryRow{}
+	for rows.Next() {
+		var row WebhookDeliveryRow
+		var success int
+		if err := rows.Scan(&row.ID, &row.WebhookTargetID, &row.Event, &row.URL, &success, &row.HTTPStatus, &row.ErrorMessage, &row.FiredAt); err != nil {
+			return nil, err
+		}
+		row.Success = success != 0
+		out = append(out, row)
+	}
+	return out, rows.Err()
+}
+
 func boolToInt(v bool) int {
 	if v {
 		return 1

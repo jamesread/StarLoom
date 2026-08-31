@@ -10,3 +10,15 @@ type WebhookTargetRow struct {
 	Updated string
 	Events  []string
 }
+
+// WebhookDeliveryRow records one outbound webhook POST attempt.
+type WebhookDeliveryRow struct {
+	ID              int
+	WebhookTargetID int
+	Event           string
+	URL             string
+	Success         bool
+	HTTPStatus      int
+	ErrorMessage    string
+	FiredAt         string
+}

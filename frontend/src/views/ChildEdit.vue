@@ -168,7 +168,7 @@ onMounted(load)
 
       <FormField
         label="Previous avatars"
-        fake
+        component-has-label
         description="Choose an earlier upload to use it again. Uploading a new image keeps earlier versions here."
       >
         <p v-if="avatarLoading" class="muted">Loading previous avatars…</p>

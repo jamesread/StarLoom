@@ -20,6 +20,7 @@ var SupportedEvents = []string{
 	"stars.awarded",
 	"redemption.requested",
 	"redemption.resolved",
+	"webhooks.test",
 }
 
 func NormalizeEvent(event string) (string, error) {
@@ -113,11 +114,21 @@ func (d *Dispatcher) httpClient() *http.Client {
 }
 
 func (d *Dispatcher) postWebhook(ctx context.Context, client *http.Client, event string, wh store.WebhookTargetRow, body []byte) {
+	row := store.WebhookDeliveryRow{
+		WebhookTargetID: wh.ID,
+		Event:           event,
+		URL:             wh.URL,
+		FiredAt:         time.Now().UTC().Format(time.RFC3339),
+	}
 	if _, err := NormalizeURL(wh.URL); err != nil {
+		row.ErrorMessage = err.Error()
+		_, _ = d.Store.InsertWebhookDelivery(ctx, row)
 		return
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, wh.URL, bytes.NewReader(body))
 	if err != nil {
+		row.ErrorMessage = err.Error()
+		_, _ = d.Store.InsertWebhookDelivery(ctx, row)
 		return
 	}
 	req.Header.Set("Content-Type", "application/json")
@@ -125,7 +136,15 @@ func (d *Dispatcher) postWebhook(ctx context.Context, client *http.Client, event
 	req.Header.Set("X-StarApp-Signature", "sha256="+Signature(string(body), wh.Secret))
 	resp, err := client.Do(req)
 	if err != nil {
+		row.ErrorMessage = err.Error()
+		_, _ = d.Store.InsertWebhookDelivery(ctx, row)
 		return
 	}
+	row.HTTPStatus = resp.StatusCode
 	_ = resp.Body.Close()
+	row.Success = resp.StatusCode >= 200 && resp.StatusCode < 300
+	if !row.Success {
+		row.ErrorMessage = fmt.Sprintf("HTTP %d", resp.StatusCode)
+	}
+	_, _ = d.Store.InsertWebhookDelivery(ctx, row)
 }

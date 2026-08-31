@@ -7,6 +7,7 @@ require (
 	connectrpc.com/connect v1.20.0
 	connectrpc.com/cors v0.1.0
 	github.com/alexedwards/argon2id v1.0.0
+	github.com/expr-lang/expr v1.17.8
 	github.com/google/uuid v1.6.0
 	github.com/jamesread/golure v0.0.0-20260510214136-6ef80e0ce8da
 	github.com/jamesread/httpauthshim v0.1.0

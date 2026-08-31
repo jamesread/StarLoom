@@ -131,7 +131,7 @@ onMounted(load)
       <FormField label="Star reward" for="chore-edit-reward">
         <input id="chore-edit-reward" v-model.number="form.starReward" type="number" min="1" required />
       </FormField>
-      <FormField v-if="starChartOptions.length > 1" label="Star chart" fake>
+      <FormField v-if="starChartOptions.length > 1" label="Star chart" component-has-label>
         <RadioGroup
           v-model="form.starChartId"
           variant="list"
@@ -139,13 +139,13 @@ onMounted(load)
           name="chore-edit-star-chart"
         />
       </FormField>
-      <FormField label="Days of week" fake>
+      <FormField label="Days of week" component-has-label>
         <CheckGroup v-model="form.weekdays" :options="weekdayOptions" name="chore-edit-weekdays" />
       </FormField>
-      <FormField label="Assigned people" fake>
+      <FormField label="Assigned people" component-has-label>
         <CheckGroup v-model="form.childMemberIds" :options="personOptions" name="chore-edit-people" />
       </FormField>
-      <FormField label="Status" fake>
+      <FormField label="Status" component-has-label>
         <RadioGroup
           v-model="form.active"
           name="chore-edit-active"

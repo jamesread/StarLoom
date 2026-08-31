@@ -4,47 +4,55 @@ import FormLayout from 'picocrank/vue/components/FormLayout.vue'
 import RadioGroup from 'picocrank/vue/components/RadioGroup.vue'
 import Section from 'picocrank/vue/components/Section.vue'
 import { useTheme } from 'picocrank/vue/composables/useTheme.js'
+import { useCustomTheme } from 'picocrank/vue/composables/useCustomTheme.js'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { starapp } from '../api/client'
-import {
-  applyUserLanguage,
-  applyUserSidebar,
-  applyUserThemeToggle,
-  languageLabel,
-} from '../lib/userPreferences'
+import { useInit } from '../composables/useInit'
+import { applyAppTheming, themeControlFromFeatures } from '../lib/applyAppTheming'
+import { applyUserLanguage, applyUserSidebar, languageLabel } from '../lib/userPreferences'
 
 const router = useRouter()
+const init = useInit()
 const { theme } = useTheme()
+const { availableThemes, themeLabels, themePreference, setTheme } = useCustomTheme()
 
 const language = ref('')
 const sidebarEnabled = ref(true)
-const themeToggleEnabled = ref(false)
 const availableLanguages = ref<string[]>([])
 const savedLanguage = ref('')
 const savedSidebar = ref(true)
-const savedThemeToggle = ref(false)
 const saving = ref(false)
 const error = ref('')
 const success = ref('')
 
+const initFeatures = computed(() => init.init?.features ?? {})
+const themeControl = computed(() => themeControlFromFeatures(initFeatures.value))
+const userThemeControl = computed(() => themeControl.value === 'user')
+
+const colorSchemeOptions = [
+  { label: 'Auto (system)', value: 'auto' },
+  { label: 'Light', value: 'light' },
+  { label: 'Dark', value: 'dark' },
+]
+
 const dirty = computed(
-  () =>
-    language.value !== savedLanguage.value ||
-    sidebarEnabled.value !== savedSidebar.value ||
-    themeToggleEnabled.value !== savedThemeToggle.value,
+  () => language.value !== savedLanguage.value || sidebarEnabled.value !== savedSidebar.value,
 )
+
+function onThemeNameChange(event: Event) {
+  const target = event.target as HTMLSelectElement
+  setTheme(target.value)
+}
 
 async function load() {
   error.value = ''
   const res = await starapp.getUserPreferences()
   language.value = res.language
   sidebarEnabled.value = res.sidebarEnabled
-  themeToggleEnabled.value = res.themeToggleEnabled
   availableLanguages.value = res.availableLanguages
   savedLanguage.value = language.value
   savedSidebar.value = sidebarEnabled.value
-  savedThemeToggle.value = themeToggleEnabled.value
 }
 
 async function save() {
@@ -55,7 +63,6 @@ async function save() {
     const res = await starapp.saveUserPreferences({
       language: language.value,
       sidebarEnabled: sidebarEnabled.value,
-      themeToggleEnabled: themeToggleEnabled.value,
     })
     if (!res.standardResponse?.success) {
       error.value = res.standardResponse?.message || 'Save failed'
@@ -63,10 +70,8 @@ async function save() {
     }
     savedLanguage.value = language.value
     savedSidebar.value = sidebarEnabled.value
-    savedThemeToggle.value = themeToggleEnabled.value
     applyUserLanguage(language.value)
     applyUserSidebar(sidebarEnabled.value)
-    applyUserThemeToggle(themeToggleEnabled.value)
     success.value = 'Preferences saved'
     await load()
   } catch (e) {
@@ -111,7 +116,7 @@ onMounted(async () => {
         </select>
       </FormField>
 
-      <FormField label="Sidebar" fake :disabled="saving" description="Show navigation sidebar on wide screens.">
+      <FormField label="Sidebar" component-has-label :disabled="saving" description="Show navigation sidebar on wide screens.">
         <RadioGroup
           v-model="sidebarEnabled"
           name="user-preferences-sidebar"
@@ -124,30 +129,44 @@ onMounted(async () => {
         />
       </FormField>
 
-      <FormField label="Theme switcher" fake :disabled="saving" description="Show the theme button in the header.">
+      <FormField
+        label="Color scheme preference"
+        component-has-label
+        description="Choose light, dark, or match your operating system. Saved in this browser."
+      >
         <RadioGroup
-          v-model="themeToggleEnabled"
-          name="user-preferences-theme-toggle"
-          variant="boolean"
-          :options="[
-            { label: 'Enabled', value: true },
-            { label: 'Disabled', value: false },
-          ]"
-          :disabled="saving"
+          v-model="theme"
+          name="user-preferences-color-scheme"
+          variant="list"
+          :options="colorSchemeOptions"
+          aria-label="Color scheme preference"
         />
       </FormField>
 
-      <FormField label="Theme" fake description="Saved in this browser only.">
-        <RadioGroup
-          v-model="theme"
-          name="user-preferences-theme"
-          variant="list"
-          :options="[
-            { label: 'Auto (system)', value: 'auto' },
-            { label: 'Light', value: 'light' },
-            { label: 'Dark', value: 'dark' },
-          ]"
-        />
+      <FormField
+        v-if="userThemeControl"
+        label="Theme name"
+        for="user-preferences-theme-name"
+        description="Override the administrator default theme. Saved in this browser."
+      >
+        <select
+          id="user-preferences-theme-name"
+          :value="themePreference"
+          @change="onThemeNameChange"
+        >
+          <option value="">Default (Femtocrank only)</option>
+          <option v-for="name in availableThemes" :key="name" :value="name">
+            {{ themeLabels[name] || name }}
+          </option>
+        </select>
+      </FormField>
+      <FormField
+        v-else
+        label="Theme name"
+        component-has-label
+        description="Set by administrator in Settings."
+      >
+        <p class="subtle">{{ initFeatures.themeName || 'Default (Femtocrank only)' }}</p>
       </FormField>
 
       <template #actions>

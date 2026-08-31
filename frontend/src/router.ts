@@ -6,7 +6,6 @@ import {
   Settings01Icon,
   StarIcon,
   Task01Icon,
-  TaskDone01Icon,
   UserMultipleIcon,
   UserShield01Icon,
   WebhookIcon,
@@ -43,7 +42,6 @@ import ChildEdit from './views/ChildEdit.vue'
 import RewardsAdmin from './views/RewardsAdmin.vue'
 import RewardCreate from './views/RewardCreate.vue'
 import RewardEdit from './views/RewardEdit.vue'
-import RedemptionsAdmin from './views/RedemptionsAdmin.vue'
 import ChoresAdmin from './views/ChoresAdmin.vue'
 import ChoreEdit from './views/ChoreEdit.vue'
 import StarChart from './views/StarChart.vue'
@@ -55,28 +53,35 @@ import StarChartEdit from './views/StarChartEdit.vue'
 const routes = [
   { path: '/', name: 'home', component: HomeView, meta: { title: 'Home', icon: Home01Icon, requiresAuth: true } },
   {
-    path: '/family/people',
+    path: '/control-panel/people',
     name: 'familyPeople',
     component: ChildrenAdmin,
     meta: { title: 'People', icon: UserMultipleIcon, requiresAuth: true, requiresFamilyAdmin: true },
   },
   {
-    path: '/family/people/create',
+    path: '/control-panel/people/create',
     name: 'familyPersonCreate',
     component: ChildCreate,
     meta: { title: 'Add person', requiresAuth: true, requiresFamilyAdmin: true },
   },
   {
-    path: '/family/people/:id',
+    path: '/control-panel/people/:id',
     name: 'familyPersonDetail',
     component: ChildDetail,
     meta: { title: 'Person', requiresAuth: true, requiresFamilyAdmin: true },
   },
   {
-    path: '/family/people/:id/edit',
+    path: '/control-panel/people/:id/edit',
     name: 'familyPersonEdit',
     component: ChildEdit,
     meta: { title: 'Edit person', requiresAuth: true, requiresFamilyAdmin: true },
+  },
+  { path: '/family/people', redirect: { name: 'familyPeople' } },
+  { path: '/family/people/create', redirect: { name: 'familyPersonCreate' } },
+  { path: '/family/people/:id', redirect: (to) => ({ name: 'familyPersonDetail', params: { id: to.params.id } }) },
+  {
+    path: '/family/people/:id/edit',
+    redirect: (to) => ({ name: 'familyPersonEdit', params: { id: to.params.id } }),
   },
   { path: '/family/children', redirect: { name: 'familyPeople' } },
   { path: '/family/children/create', redirect: { name: 'familyPersonCreate' } },
@@ -102,21 +107,24 @@ const routes = [
   },
   {
     path: '/family/redemptions',
-    name: 'familyRedemptions',
-    component: RedemptionsAdmin,
-    meta: { title: 'Redemptions', icon: TaskDone01Icon, requiresAuth: true, requiresFamilyAdmin: true },
+    redirect: { name: 'familyRewards' },
   },
   {
-    path: '/family/chores',
+    path: '/control-panel/chores',
     name: 'familyChores',
     component: ChoresAdmin,
     meta: { title: 'Chores', icon: Task01Icon, requiresAuth: true, requiresFamilyAdmin: true },
   },
   {
-    path: '/family/chores/:id',
+    path: '/control-panel/chores/:id',
     name: 'familyChoreEdit',
     component: ChoreEdit,
     meta: { title: 'Edit chore', requiresAuth: true, requiresFamilyAdmin: true },
+  },
+  { path: '/family/chores', redirect: { name: 'familyChores' } },
+  {
+    path: '/family/chores/:id',
+    redirect: (to) => ({ name: 'familyChoreEdit', params: { id: to.params.id } }),
   },
   {
     path: '/family/star-charts',
@@ -213,47 +221,37 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach(async (to, _from, next) => {
+router.beforeEach(async (to) => {
   let st
   try {
     st = await fetchAppStatus()
   } catch {
     if (to.meta.requiresAuth && to.name !== 'home') {
-      next({ name: 'home' })
-    } else {
-      next()
+      return { name: 'home' }
     }
     return
   }
   if (to.meta.requiresAuth && !st?.isLoggedIn) {
     if (to.name !== 'home') {
-      next({ name: 'home' })
-    } else {
-      next()
+      return { name: 'home' }
     }
     return
   }
   if (to.meta.requiresControlPanel && !canAccessControlPanelFromStatus(st)) {
-    next('/')
-    return
+    return '/'
   }
   if (to.meta.requiresIam && !canAccessIamFromStatus(st)) {
-    next('/')
-    return
+    return '/'
   }
   if (to.meta.requiresSettings && !canAccessSettingsFromStatus(st)) {
-    next('/')
-    return
+    return '/'
   }
   if (to.meta.requiresFamilyAdmin && !canViewFamilyHomeFromStatus(st)) {
-    next('/')
-    return
+    return '/'
   }
   if (to.meta.requiresChoresView && !canViewChoresFromStatus(st)) {
-    next('/')
-    return
+    return '/'
   }
-  next()
 })
 
 export default router

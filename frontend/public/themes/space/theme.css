@@ -1,0 +1,813 @@
+/*
+ * Space — Rockets & Stars
+ *
+ * A Saturday-morning space adventure for ages 5–12. Deep purple voids,
+ * lavender nebula panels, neon cyan holograms, magenta accents, and PixelLab
+ * pixel-art sprites (rocket, planet, astronaut, star border).
+ *
+ * Asset URLs are absolute paths under /themes/space/.
+ * Core text and interactive color pairs are chosen to meet WCAG 2.2 AA.
+ */
+
+:root,
+html {
+	color-scheme: light;
+
+	/* Light mode — lavender nebula above a purple void */
+	--space-sky: #ebe3f9;
+	--space-sky-deep: #d4c4f0;
+	--space-panel: #faf6ff;
+	--space-card: #f0e8fc;
+	--space-navy: #5e35b1;
+	--space-navy-deep: #311b92;
+	--space-teal: #00838f;
+	--space-teal-bright: #00e5ff;
+	--space-gold: #ffe082;
+	--space-gold-bright: #fff176;
+	--space-orange: #ff7043;
+	--space-rocket: #ff1744;
+	--space-peach: #ff8a80;
+	--space-ink: #2a1045;
+	--space-ink-muted: #6b5589;
+	--space-line: #b39ddb;
+	--space-shadow: rgba(49, 27, 146, 0.22);
+
+	--body-bg-color: var(--space-sky);
+	--section-bg-color: rgba(250, 246, 255, 0.96);
+	--standout-bg-color: var(--space-card);
+	--section-header-bg-color: #ede7f6;
+	--shadow-color: var(--space-shadow);
+	--backdrop-color: rgba(49, 27, 146, 0.58);
+
+	--text-color: var(--space-ink);
+	--icon-color: var(--space-navy);
+	--muted-text-color: var(--space-ink-muted);
+	--annotation-key-color: #7e6b9a;
+	--link-color: var(--space-navy);
+	--focus-outline-color: var(--space-teal);
+	--border-color: var(--space-line);
+
+	--hover-background-color: #e1d5f4;
+	--hover-text-color: var(--space-ink);
+
+	--header-bg-color: var(--space-navy);
+	--header-fg-color: #ffffff;
+	--header-border-color: var(--space-teal-bright);
+	--header-shadow: 0 3px 14px rgba(49, 27, 146, 0.38);
+	--header-hover-background-color: var(--space-navy-deep);
+	--header-hover-text-color: #ffffff;
+	--header-button-hover-bg-color: var(--space-navy-deep);
+	--header-focus-outline-color: var(--space-teal-bright);
+
+	--sidebar-bg-color: rgba(250, 246, 255, 0.94);
+	--sidebar-link-color: var(--space-navy-deep);
+	--sidebar-hover-bg-color: #e8dcf8;
+	--sidebar-border-color: var(--space-line);
+
+	--footer-chip-bg-color: #d1c4e9;
+	--footer-link-color: var(--space-navy-deep);
+
+	--input-bg-color: #ffffff;
+	--input-fg-color: var(--space-ink);
+	--control-option-bg-color: var(--space-panel);
+	--control-hover-bg-color: #ede7f6;
+	--control-checked-bg: #b2ebf2;
+	--control-checked-hover-bg: #80deea;
+	--control-checked-fg: var(--space-navy-deep);
+
+	--menu-hover-bg-color: var(--hover-background-color);
+	--menu-item-hover-background-color: var(--hover-background-color);
+	--menu-dropdown-background-color: var(--space-panel);
+	--menu-dropdown-border-color: var(--space-line);
+	--menu-dropdown-link-hover-background-color: var(--hover-background-color);
+	--header-menu-dropdown-link-hover-background-color: var(--header-hover-background-color);
+
+	--table-sticky-bg: var(--space-panel);
+	--table-row-hover-bg: #e8dcf8;
+	--table-row-hover-fg: var(--space-ink);
+	--table-sticky-hover-bg: #e8dcf8;
+	--table-uneditable-bg: #ece4f5;
+	--table-sticky-uneditable-bg: #ece4f5;
+
+	--disabled-background-color: #d5dde6;
+	--disabled-text-color: #6a7584;
+	--button-disabled-bg: #66758a;
+	--button-disabled-fg: #ffffff;
+
+	--button-good-bg: var(--space-teal);
+	--button-good-hover-bg: #006064;
+	--button-bad-bg: var(--space-rocket);
+	--button-bad-hover-bg: #d50000;
+	--button-warning-bg: var(--space-orange);
+	--button-warning-hover-bg: #e64a19;
+	--button-on-accent-fg: #ffffff;
+
+	--karma-good: #7ecfa0;
+	--karma-bad: #ef9380;
+	--karma-warning: #f2ca63;
+	--karma-severe: #e7855f;
+	--karma-note: #80deea;
+	--karma-info: #d1c4e9;
+	--karma-old: #c9c4ae;
+	--karma-on-bg-fg: #2a1045;
+	--karma-bad-border: #d50000;
+
+	--progress-track-bg-color: #d1c4e9;
+	--progress-fill-bg-color: var(--space-teal);
+
+	--nav-grid-accent-fg: #ffffff;
+	--nav-grid-accent-bg: var(--space-navy);
+	--nav-grid-active-fg: #ffffff;
+	--nav-grid-muted-fg: var(--space-ink-muted);
+	--nav-grid-border: var(--space-line);
+	--nav-grid-hover-bg: #ede7f6;
+	--nav-grid-indicator-bg: var(--space-teal-bright);
+	--nav-grid-indicator-fg: var(--space-navy-deep);
+	--nav-grid-disabled-fg: var(--disabled-text-color);
+	--nav-grid-shadow: var(--space-shadow);
+	--nav-grid-hover-shadow: rgba(49, 27, 146, 0.32);
+
+	--theme-font-body: ui-rounded, "Trebuchet MS", system-ui, sans-serif;
+}
+
+body {
+	background-color: var(--body-bg-color);
+	background-image:
+		url('/themes/space/rocket.png'),
+		url('/themes/space/planet.png'),
+		url('/themes/space/astronaut.png'),
+		radial-gradient(circle at 12% 18%, #ffffff 0 1px, transparent 2px),
+		radial-gradient(circle at 28% 42%, #e040fb 0 1px, transparent 2px),
+		radial-gradient(circle at 72% 22%, var(--space-teal-bright) 0 1.5px, transparent 3px),
+		radial-gradient(circle at 88% 58%, #ffffff 0 1px, transparent 2px),
+		linear-gradient(180deg, #d1c4e9 0, #f3e5f5 22rem, #ebe3f9 100%);
+	background-position:
+		right 1.25rem top 5.25rem,
+		left 1.5rem top 7.5rem,
+		right 2rem bottom 4rem,
+		left top,
+		left top,
+		left top,
+		left top,
+		center;
+	background-repeat: no-repeat;
+	background-size:
+		clamp(140px, 22vw, 220px),
+		clamp(88px, 14vw, 140px),
+		clamp(96px, 15vw, 150px),
+		auto,
+		auto,
+		auto,
+		auto,
+		auto;
+	color: var(--text-color);
+	font-family: var(--theme-font-body);
+}
+
+section .section-header h2,
+section .section-subheader h3 {
+	color: var(--space-navy-deep);
+}
+
+header h1,
+header .image-and-title h1,
+#sidebar-button h1 {
+	color: var(--header-fg-color);
+	font-family: var(--theme-font-body);
+	font-weight: 700;
+	letter-spacing: 0.01em;
+}
+
+header .image-and-title:hover h1,
+#sidebar-button:hover h1,
+#sidebar-button:focus-visible h1 {
+	color: var(--header-hover-text-color);
+}
+
+a:visited {
+	color: #ab47bc;
+}
+
+:focus-visible {
+	outline: 3px solid var(--focus-outline-color);
+	outline-offset: 3px;
+}
+
+header {
+	background:
+		linear-gradient(120deg, rgba(224, 64, 251, 0.12), transparent 42%),
+		linear-gradient(100deg, #1a0a33, var(--space-navy-deep) 45%, #7b1fa2 78%, #4a148c);
+	border-bottom: 0;
+	box-shadow: var(--header-shadow);
+}
+
+header::after {
+	content: '';
+	display: block;
+	height: 28px;
+	background: #1a0a33 url('/themes/space/star-border.png') repeat-x center;
+	background-size: auto 28px;
+	image-rendering: pixelated;
+}
+
+header nav.menu button,
+header nav.menu .button {
+	border: 0;
+	border-radius: 0;
+	background-color: transparent;
+	background-image: none;
+	color: var(--header-fg-color);
+	box-shadow: none;
+	font-weight: inherit;
+}
+
+header nav.menu button:hover,
+header nav.menu .button:hover,
+header nav.menu button:focus-visible,
+header nav.menu .button:focus-visible {
+	background-color: var(--header-button-hover-bg-color);
+	background-image: none;
+	color: var(--header-hover-text-color);
+	box-shadow: none;
+}
+
+/*
+ * Header chrome uses cyan holographic mission badges. !important beats PicoCrank
+ * Header.vue overrides (same pattern as Egypt / Block Crafting).
+ */
+header #sidebar-toggler-button,
+header button.user-info,
+header .header-actions .theme-toggle,
+header nav.topbar .topbar-link,
+header nav.topbar .button,
+header .search-trigger {
+	border: 2px solid #006064 !important;
+	border-radius: 0.55rem;
+	background: linear-gradient(180deg, var(--space-teal-bright), var(--space-teal)) !important;
+	box-shadow: 0 2px 0 #006064 !important;
+	color: var(--space-navy-deep) !important;
+	font-weight: 700;
+	align-self: stretch;
+}
+
+header #sidebar-toggler-button:hover,
+header button.user-info:hover,
+header .header-actions .theme-toggle:hover,
+header nav.topbar .topbar-link:hover,
+header nav.topbar .button:hover,
+header .search-trigger:hover,
+header #sidebar-toggler-button:focus-visible,
+header button.user-info:focus-visible,
+header .header-actions .theme-toggle:focus-visible,
+header nav.topbar .topbar-link:focus-visible,
+header nav.topbar .button:focus-visible,
+header .search-trigger:focus-visible {
+	background: linear-gradient(180deg, #84ffff, var(--space-teal-bright)) !important;
+	box-shadow: 0 2px 0 #006064 !important;
+	color: var(--space-navy-deep) !important;
+}
+
+header #sidebar-toggler-button:active,
+header button.user-info:active,
+header .header-actions .theme-toggle:active,
+header nav.topbar .topbar-link:active,
+header nav.topbar .button:active,
+header .search-trigger:active {
+	box-shadow: 0 1px 0 #006064 !important;
+	transform: translateY(1px);
+}
+
+header nav.topbar .topbar-link.active {
+	text-decoration: underline;
+	color: var(--space-ink) !important;
+}
+
+#sidebar,
+.sidebar {
+	border-right: 3px solid var(--sidebar-border-color);
+	background-color: var(--sidebar-bg-color);
+	background-image:
+		linear-gradient(90deg, transparent 0 12px, rgba(94, 53, 177, 0.1) 12px 14px, transparent 14px),
+		repeating-linear-gradient(90deg, transparent 0 36px, rgba(179, 157, 219, 0.16) 36px 37px);
+	box-shadow: 5px 0 18px rgba(49, 27, 146, 0.1);
+}
+
+section {
+	overflow: hidden;
+	border: 3px solid var(--space-navy);
+	border-radius: 1rem;
+	background-color: var(--section-bg-color);
+	background-image:
+		linear-gradient(135deg, rgba(224, 64, 251, 0.08), transparent 40%),
+		repeating-linear-gradient(105deg, rgba(179, 157, 219, 0.06) 0 2px, transparent 2px 16px);
+	box-shadow: 0 8px 22px var(--space-shadow);
+}
+
+section .section-header,
+section .section-subheader {
+	border-bottom: 3px solid var(--space-navy);
+	border-left: 8px solid #e040fb;
+	background:
+		linear-gradient(90deg, rgba(224, 64, 251, 0.1), transparent 56%),
+		var(--section-header-bg-color);
+}
+
+button,
+.button {
+	border: 2px solid var(--space-navy-deep);
+	border-radius: 999px;
+	background: var(--space-navy);
+	box-shadow: 0 2px 0 var(--space-navy-deep);
+	color: #ffffff;
+	font-weight: 700;
+}
+
+button:hover,
+.button:hover {
+	background: var(--space-navy-deep);
+	color: #ffffff;
+	transform: translateY(-1px);
+}
+
+button:active,
+.button:active {
+	box-shadow: none;
+	transform: translateY(1px);
+}
+
+button.good,
+.button.good,
+button[type='submit'] {
+	border-color: #004d40;
+	background: var(--button-good-bg);
+	color: var(--button-on-accent-fg);
+	box-shadow: 0 2px 0 #004d40;
+}
+
+button.good:hover,
+.button.good:hover,
+button[type='submit']:hover {
+	background: var(--button-good-hover-bg);
+}
+
+button.bad,
+.button.bad,
+button[type='reset'] {
+	border-color: #b71c1c;
+	background: var(--button-bad-bg);
+	color: var(--button-on-accent-fg);
+	box-shadow: 0 2px 0 #b71c1c;
+}
+
+button.bad:hover,
+.button.bad:hover,
+button[type='reset']:hover {
+	background: var(--button-bad-hover-bg);
+}
+
+button.warning,
+.button.warning {
+	border-color: #bf360c;
+	background: var(--button-warning-bg);
+	color: #ffffff;
+	box-shadow: 0 2px 0 #bf360c;
+}
+
+button.warning:hover,
+.button.warning:hover {
+	background: var(--button-warning-hover-bg);
+	color: #ffffff;
+}
+
+button.neutral,
+.button.neutral,
+button[type='submit'].neutral {
+	border-color: var(--space-navy);
+	background: var(--space-panel);
+	color: var(--space-navy-deep);
+	box-shadow: 0 2px 0 var(--space-line);
+}
+
+button.neutral:hover,
+.button.neutral:hover,
+button[type='submit'].neutral:hover {
+	background: #ede7f6;
+	color: var(--space-navy-deep);
+}
+
+button:disabled,
+.button:disabled {
+	border-color: #5b6870;
+	background: var(--button-disabled-bg);
+	box-shadow: none;
+	color: var(--button-disabled-fg);
+	transform: none;
+}
+
+input,
+select,
+textarea {
+	border: 2px solid var(--space-line);
+	border-radius: 0.65rem;
+	background-color: var(--input-bg-color);
+	color: var(--input-fg-color);
+	box-shadow: inset 0 1px 3px rgba(49, 27, 146, 0.12);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+	border-color: var(--space-teal-bright);
+	outline: 3px solid rgba(0, 229, 255, 0.28);
+	outline-offset: 1px;
+}
+
+.navigation-grid a,
+.navigation-grid button {
+	border: 2px solid var(--space-line);
+	border-top: 7px solid var(--space-navy);
+	border-radius: 0.85rem;
+	background: linear-gradient(160deg, rgba(255, 255, 255, 0.96), rgba(225, 213, 244, 0.92));
+	box-shadow: 0 6px 16px var(--space-shadow);
+	color: var(--space-ink);
+}
+
+.navigation-grid a:nth-child(3n + 2),
+.navigation-grid button:nth-child(3n + 2) {
+	border-top-color: #e040fb;
+}
+
+.navigation-grid a:nth-child(3n),
+.navigation-grid button:nth-child(3n) {
+	border-top-color: var(--space-teal-bright);
+}
+
+.navigation-grid a:hover,
+.navigation-grid button:hover {
+	border-color: var(--space-navy);
+	background: linear-gradient(160deg, #ffffff, #e1d5f4);
+	box-shadow: 0 9px 22px var(--nav-grid-hover-shadow);
+	color: var(--space-navy-deep);
+}
+
+.tabs-header {
+	border-bottom: 3px solid var(--space-line);
+}
+
+.tab-button.active {
+	border-bottom: 5px solid #e040fb;
+	background: var(--control-checked-bg);
+	color: var(--space-navy-deep);
+}
+
+dialog {
+	border: 3px solid var(--space-navy);
+	border-radius: 1rem;
+	box-shadow:
+		0 0 0 5px var(--space-panel),
+		0 18px 48px rgba(49, 27, 146, 0.35);
+}
+
+footer {
+	opacity: 0.8;
+	border-top: 28px solid transparent;
+	border-image: url('/themes/space/star-border.png') 14 round;
+	background: linear-gradient(180deg, #d1c4e9, var(--space-sky-deep));
+	image-rendering: pixelated;
+}
+
+footer span,
+footer a {
+	color: var(--footer-link-color);
+}
+
+/*
+ * Deep void — black-purple nebula with neon cyan and magenta accents.
+ */
+html[data-theme='dark'] {
+	color-scheme: dark;
+
+	--space-sky: #050014;
+	--space-sky-deep: #0a0020;
+	--space-panel: #140828;
+	--space-card: #1e0f3d;
+	--space-navy: #b388ff;
+	--space-navy-deep: #0a0020;
+	--space-teal: #00bcd4;
+	--space-teal-bright: #18ffff;
+	--space-gold: #fff176;
+	--space-gold-bright: #ffff8d;
+	--space-orange: #ff7043;
+	--space-rocket: #ff5252;
+	--space-peach: #ff8a80;
+	--space-ink: #f3e5f5;
+	--space-ink-muted: #b39ddb;
+	--space-line: #4a148c;
+	--space-shadow: rgba(0, 0, 0, 0.62);
+
+	--body-bg-color: var(--space-sky);
+	--section-bg-color: rgba(20, 8, 40, 0.96);
+	--standout-bg-color: var(--space-card);
+	--section-header-bg-color: #1e0f3d;
+	--shadow-color: var(--space-shadow);
+	--backdrop-color: rgba(0, 0, 0, 0.78);
+
+	--text-color: var(--space-ink);
+	--icon-color: var(--space-teal-bright);
+	--muted-text-color: var(--space-ink-muted);
+	--annotation-key-color: #9575cd;
+	--link-color: var(--space-teal-bright);
+	--focus-outline-color: var(--space-teal-bright);
+	--border-color: var(--space-line);
+
+	--hover-background-color: #2a1454;
+	--hover-text-color: #ffffff;
+
+	--header-bg-color: #030010;
+	--header-fg-color: #ffffff;
+	--header-border-color: var(--space-teal-bright);
+	--header-shadow: 0 4px 18px rgba(0, 0, 0, 0.72);
+	--header-hover-background-color: #2a1454;
+	--header-hover-text-color: #ffffff;
+	--header-button-hover-bg-color: #2a1454;
+	--header-focus-outline-color: var(--space-teal-bright);
+
+	--sidebar-bg-color: rgba(5, 0, 20, 0.97);
+	--sidebar-link-color: var(--space-ink);
+	--sidebar-hover-bg-color: var(--hover-background-color);
+	--sidebar-border-color: var(--space-line);
+
+	--footer-chip-bg-color: #1e0f3d;
+	--footer-link-color: var(--space-teal-bright);
+
+	--input-bg-color: #0a0020;
+	--input-fg-color: var(--space-ink);
+	--control-option-bg-color: var(--space-panel);
+	--control-hover-bg-color: var(--hover-background-color);
+	--control-checked-bg: #004d40;
+	--control-checked-hover-bg: #00695c;
+	--control-checked-fg: #e0f7fa;
+
+	--menu-hover-bg-color: var(--hover-background-color);
+	--menu-item-hover-background-color: var(--hover-background-color);
+	--menu-dropdown-background-color: var(--space-panel);
+	--menu-dropdown-border-color: var(--space-line);
+
+	--table-sticky-bg: var(--space-panel);
+	--table-row-hover-bg: var(--hover-background-color);
+	--table-row-hover-fg: var(--hover-text-color);
+	--table-sticky-hover-bg: var(--hover-background-color);
+	--table-uneditable-bg: #1a0a33;
+	--table-sticky-uneditable-bg: #1a0a33;
+
+	--disabled-background-color: #2a1454;
+	--disabled-text-color: #9575cd;
+	--button-disabled-bg: #4a148c;
+	--button-disabled-fg: #f3e5f5;
+
+	--button-good-bg: #00838f;
+	--button-good-hover-bg: #006064;
+	--button-bad-bg: #ff1744;
+	--button-bad-hover-bg: #d50000;
+	--button-warning-bg: #ff7043;
+	--button-warning-hover-bg: #e64a19;
+	--button-on-accent-fg: #ffffff;
+
+	--karma-good: #69f0ae;
+	--karma-bad: #ff8a80;
+	--karma-warning: #fff176;
+	--karma-severe: #ff7043;
+	--karma-note: #18ffff;
+	--karma-info: #b388ff;
+	--karma-old: #9575cd;
+	--karma-on-bg-fg: #050014;
+
+	--progress-track-bg-color: #1e0f3d;
+	--progress-fill-bg-color: var(--space-teal-bright);
+
+	--nav-grid-accent-fg: #050014;
+	--nav-grid-accent-bg: var(--space-teal-bright);
+	--nav-grid-muted-fg: var(--space-ink-muted);
+	--nav-grid-border: var(--space-line);
+	--nav-grid-hover-bg: var(--hover-background-color);
+	--nav-grid-indicator-bg: #e040fb;
+	--nav-grid-indicator-fg: #ffffff;
+	--nav-grid-disabled-fg: var(--disabled-text-color);
+	--nav-grid-shadow: var(--space-shadow);
+	--nav-grid-hover-shadow: rgba(0, 0, 0, 0.75);
+}
+
+html[data-theme='dark'] body {
+	background-image:
+		url('/themes/space/rocket.png'),
+		url('/themes/space/planet.png'),
+		url('/themes/space/astronaut.png'),
+		radial-gradient(circle at 14% 16%, rgba(224, 64, 251, 0.65) 0 1px, transparent 2px),
+		radial-gradient(circle at 32% 40%, rgba(255, 255, 255, 0.45) 0 1px, transparent 2px),
+		radial-gradient(circle at 70% 20%, rgba(24, 255, 255, 0.5) 0 1.5px, transparent 3px),
+		radial-gradient(circle at 86% 62%, rgba(179, 157, 219, 0.4) 0 1px, transparent 2px),
+		linear-gradient(180deg, #020008 0, #0a0020 26rem, #050014 100%);
+}
+
+html[data-theme='dark'] section .section-header h2,
+html[data-theme='dark'] section .section-subheader h3 {
+	color: var(--space-teal-bright);
+}
+
+html[data-theme='dark'] header h1,
+html[data-theme='dark'] header .image-and-title h1,
+html[data-theme='dark'] #sidebar-button h1 {
+	color: var(--header-fg-color);
+}
+
+html[data-theme='dark'] header {
+	background:
+		linear-gradient(120deg, rgba(224, 64, 251, 0.1), transparent 44%),
+		linear-gradient(100deg, #020008, #1a0a33 45%, #4a148c 78%, #7b1fa2);
+}
+
+html[data-theme='dark'] header::after {
+	background-color: #020008;
+}
+
+html[data-theme='dark'] header #sidebar-toggler-button,
+html[data-theme='dark'] header button.user-info,
+html[data-theme='dark'] header .header-actions .theme-toggle,
+html[data-theme='dark'] header nav.topbar .topbar-link,
+html[data-theme='dark'] header nav.topbar .button,
+html[data-theme='dark'] header .search-trigger {
+	border-color: #006064 !important;
+	background: linear-gradient(180deg, var(--space-teal-bright), var(--space-teal)) !important;
+	box-shadow: 0 2px 0 #006064 !important;
+	color: #0a0020 !important;
+}
+
+html[data-theme='dark'] header #sidebar-toggler-button:hover,
+html[data-theme='dark'] header button.user-info:hover,
+html[data-theme='dark'] header .header-actions .theme-toggle:hover,
+html[data-theme='dark'] header nav.topbar .topbar-link:hover,
+html[data-theme='dark'] header nav.topbar .button:hover,
+html[data-theme='dark'] header .search-trigger:hover,
+html[data-theme='dark'] header #sidebar-toggler-button:focus-visible,
+html[data-theme='dark'] header button.user-info:focus-visible,
+html[data-theme='dark'] header .header-actions .theme-toggle:focus-visible,
+html[data-theme='dark'] header nav.topbar .topbar-link:focus-visible,
+html[data-theme='dark'] header nav.topbar .button:focus-visible,
+html[data-theme='dark'] header .search-trigger:focus-visible {
+	background: linear-gradient(180deg, #84ffff, var(--space-teal-bright)) !important;
+	color: #0a0020 !important;
+}
+
+html[data-theme='dark'] header nav.topbar .topbar-link.active {
+	color: #0a0020 !important;
+}
+
+html[data-theme='dark'] #sidebar,
+html[data-theme='dark'] .sidebar {
+	background-image:
+		linear-gradient(90deg, transparent 0 12px, rgba(224, 64, 251, 0.1) 12px 14px, transparent 14px),
+		repeating-linear-gradient(90deg, transparent 0 36px, rgba(74, 20, 140, 0.2) 36px 37px);
+}
+
+html[data-theme='dark'] section {
+	background-image:
+		linear-gradient(135deg, rgba(224, 64, 251, 0.06), transparent 38%),
+		repeating-linear-gradient(105deg, rgba(74, 20, 140, 0.12) 0 2px, transparent 2px 16px);
+	box-shadow: 0 9px 28px var(--space-shadow);
+}
+
+html[data-theme='dark'] section .section-header,
+html[data-theme='dark'] section .section-subheader {
+	background:
+		linear-gradient(90deg, rgba(224, 64, 251, 0.08), transparent 56%),
+		var(--section-header-bg-color);
+}
+
+html[data-theme='dark'] button,
+html[data-theme='dark'] .button {
+	border-color: #7b1fa2;
+	background: #4a148c;
+	box-shadow: 0 2px 0 #311b92;
+	color: #ffffff;
+}
+
+html[data-theme='dark'] button:hover,
+html[data-theme='dark'] .button:hover {
+	background: #6a1b9a;
+}
+
+html[data-theme='dark'] button.good,
+html[data-theme='dark'] .button.good,
+html[data-theme='dark'] button[type='submit'] {
+	border-color: var(--space-teal-bright);
+	background: var(--button-good-bg);
+	box-shadow: 0 2px 0 #004d40;
+}
+
+html[data-theme='dark'] button.good:hover,
+html[data-theme='dark'] .button.good:hover,
+html[data-theme='dark'] button[type='submit']:hover {
+	background: var(--button-good-hover-bg);
+}
+
+html[data-theme='dark'] button.bad,
+html[data-theme='dark'] .button.bad,
+html[data-theme='dark'] button[type='reset'] {
+	border-color: #ff5252;
+	background: var(--button-bad-bg);
+	box-shadow: 0 2px 0 #b71c1c;
+}
+
+html[data-theme='dark'] button.bad:hover,
+html[data-theme='dark'] .button.bad:hover,
+html[data-theme='dark'] button[type='reset']:hover {
+	background: var(--button-bad-hover-bg);
+}
+
+html[data-theme='dark'] button.warning,
+html[data-theme='dark'] .button.warning {
+	border-color: var(--space-orange);
+	background: var(--button-warning-bg);
+	color: #ffffff;
+	box-shadow: 0 2px 0 #bf360c;
+}
+
+html[data-theme='dark'] button.warning:hover,
+html[data-theme='dark'] .button.warning:hover {
+	background: var(--button-warning-hover-bg);
+	color: #ffffff;
+}
+
+html[data-theme='dark'] button.neutral,
+html[data-theme='dark'] .button.neutral,
+html[data-theme='dark'] button[type='submit'].neutral {
+	border-color: var(--space-line);
+	background: #1e0f3d;
+	color: var(--space-ink);
+	box-shadow: 0 2px 0 #0a0020;
+}
+
+html[data-theme='dark'] button.neutral:hover,
+html[data-theme='dark'] .button.neutral:hover,
+html[data-theme='dark'] button[type='submit'].neutral:hover {
+	background: #2a1454;
+	color: #ffffff;
+}
+
+html[data-theme='dark'] .navigation-grid a,
+html[data-theme='dark'] .navigation-grid button {
+	background: linear-gradient(160deg, #1e0f3d, #140828);
+	color: var(--space-ink);
+}
+
+html[data-theme='dark'] .navigation-grid a:hover,
+html[data-theme='dark'] .navigation-grid button:hover {
+	background: linear-gradient(160deg, #2a1454, #1e0f3d);
+	color: #ffffff;
+}
+
+html[data-theme='dark'] footer {
+	background: linear-gradient(180deg, #140828, var(--space-sky));
+}
+
+html[data-theme='dark'] a:visited {
+	color: #ea80fc;
+}
+
+@media (max-width: 700px) {
+		body {
+		background-image:
+			url('/themes/space/rocket.png'),
+			linear-gradient(180deg, #d1c4e9 0, #f3e5f5 22rem, #ebe3f9 100%);
+		background-position:
+			center top 31rem,
+			center;
+		background-size:
+			180px,
+			auto;
+	}
+
+	html[data-theme='dark'] body {
+		background-image:
+			url('/themes/space/rocket.png'),
+			linear-gradient(180deg, #020008 0, #0a0020 26rem, #050014 100%);
+		background-position:
+			center top 31rem,
+			center;
+		background-size:
+			180px,
+			auto;
+	}
+
+	section {
+		border-radius: 0.75rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	button,
+	.button,
+	a {
+		transition: none;
+	}
+}

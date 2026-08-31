@@ -2,7 +2,7 @@
 import Header from 'picocrank/vue/components/Header.vue'
 import Navigation from 'picocrank/vue/components/Navigation.vue'
 import Sidebar from 'picocrank/vue/components/Sidebar.vue'
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import AppFooter from './AppFooter.vue'
 import { useInit } from '../composables/useInit'
@@ -12,7 +12,7 @@ import { setupSidebarNavigation } from '../lib/sidebarNavigation'
 
 defineProps<{
   sidebarPreferenceEnabled?: boolean
-  themeTogglePreferenceEnabled?: boolean
+  themeColorSchemeSwitcherEnabled?: boolean
 }>()
 
 const router = useRouter()
@@ -37,8 +37,7 @@ watch(
 
 watch(
   [navigation, topBarNavigation, () => status.status],
-  async () => {
-    await nextTick()
+  () => {
     const showControlPanel = canAccessControlPanelFromStatus(status.status)
     const showFamilyNav = canViewFamilyHomeFromStatus(status.status)
     if (navigation.value) {
@@ -48,11 +47,12 @@ watch(
       setupSidebarNavigation(topBarNavigation.value, {
         showControlPanel,
         showFamilyNav,
-        excludeRoutes: ['familyChores', 'controlPanel'],
+        excludeRoutes: ['controlPanel'],
+        flat: true,
       })
     }
   },
-  { immediate: true },
+  { immediate: true, flush: 'post' },
 )
 
 function toggleSidebar() {
@@ -72,11 +72,12 @@ function goToUserControlPanel() {
   <Navigation ref="navigation">
     <Navigation ref="topBarNavigation">
       <Header
+        v-if="topBarNavigation"
         :title="siteTitle"
         logo-url="/favicon.svg"
         :username="username"
         :sidebar-enabled="isLoggedIn && (sidebarPreferenceEnabled ?? true)"
-        :theme-toggle-enabled="isLoggedIn && (themeTogglePreferenceEnabled ?? false)"
+        :theme-toggle-enabled="isLoggedIn && (themeColorSchemeSwitcherEnabled ?? false)"
         :breadcrumbs="false"
         :top-bar-enabled="true"
         :navigation="navigation"

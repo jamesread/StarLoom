@@ -3,12 +3,14 @@ package server
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"connectrpc.com/connect"
 
 	apiv1 "github.com/jamesread/starapp/service/gen/starapp/api/v1"
 	"github.com/jamesread/starapp/service/internal/cvar"
 	"github.com/jamesread/starapp/service/internal/store"
+	"github.com/jamesread/starapp/service/internal/themes"
 )
 
 // EnsureDefaultCvars upserts catalog rows; metadata refresh only on conflict.
@@ -95,7 +97,22 @@ func (s *Server) ListCvars(ctx context.Context, _ *connect.Request[apiv1.ListCva
 	}), nil
 }
 
-func validateCvarUpdate(row *store.CvarRow, valueInt int32, valueString string) (int, string, error) {
+func validateCvarUpdate(row *store.CvarRow, valueInt int32, valueString string, allowedThemes []string) (int, string, error) {
+	switch row.Key {
+	case cvar.KeyThemeControl:
+		value := strings.TrimSpace(valueString)
+		if value != cvar.ThemeControlSystem && value != cvar.ThemeControlUser {
+			return 0, "", fmt.Errorf("theme_control must be system or user")
+		}
+		return 0, value, nil
+	case cvar.KeyThemeName:
+		value := strings.TrimSpace(valueString)
+		if !themes.IsValidName(value, allowedThemes) {
+			return 0, "", fmt.Errorf("unknown theme %q", value)
+		}
+		return 0, value, nil
+	}
+
 	switch row.MainType {
 	case cvar.TypeString:
 		if valueString == "" {
@@ -131,7 +148,7 @@ func (s *Server) UpdateCvar(ctx context.Context, req *connect.Request[apiv1.Upda
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("cvar not found"))
 	}
 
-	valueInt, valueString, valErr := validateCvarUpdate(row, req.Msg.ValueInt, req.Msg.ValueString)
+	valueInt, valueString, valErr := validateCvarUpdate(row, req.Msg.ValueInt, req.Msg.ValueString, s.availableThemes(ctx))
 	if valErr != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, valErr)
 	}

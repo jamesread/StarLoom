@@ -26,6 +26,22 @@ func toProtoWebhook(w *store.WebhookTargetRow) *apiv1.Webhook {
 	}
 }
 
+func toProtoWebhookDelivery(row *store.WebhookDeliveryRow) *apiv1.WebhookDelivery {
+	if row == nil {
+		return nil
+	}
+	return &apiv1.WebhookDelivery{
+		Id:              int32(row.ID),
+		WebhookTargetId: int32(row.WebhookTargetID),
+		Event:           row.Event,
+		Url:             row.URL,
+		Success:         row.Success,
+		HttpStatus:      int32(row.HTTPStatus),
+		ErrorMessage:    row.ErrorMessage,
+		FiredAt:         row.FiredAt,
+	}
+}
+
 func validateCreateWebhookInput(req *apiv1.CreateWebhookRequest) (url string, events []string, err error) {
 	url, urlErr := webhook.NormalizeURL(req.Url)
 	if urlErr != nil {
@@ -99,4 +115,45 @@ func (s *Server) DeleteWebhook(ctx context.Context, req *connect.Request[apiv1.D
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("webhook not found"))
 	}
 	return connect.NewResponse(&apiv1.DeleteWebhookResponse{}), nil
+}
+
+func (s *Server) ListWebhookDeliveries(ctx context.Context, req *connect.Request[apiv1.ListWebhookDeliveriesRequest]) (*connect.Response[apiv1.ListWebhookDeliveriesResponse], error) {
+	limit := int(req.Msg.Limit)
+	if limit <= 0 {
+		limit = 100
+	}
+	if limit > 500 {
+		limit = 500
+	}
+	rows, err := s.store.ListWebhookDeliveries(ctx, limit)
+	if err != nil {
+		s.log.WithError(err).Error("list webhook deliveries")
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	out := &apiv1.ListWebhookDeliveriesResponse{}
+	for i := range rows {
+		out.Deliveries = append(out.Deliveries, toProtoWebhookDelivery(&rows[i]))
+	}
+	return connect.NewResponse(out), nil
+}
+
+func (s *Server) FireTestWebhooks(ctx context.Context, _ *connect.Request[apiv1.FireTestWebhooksRequest]) (*connect.Response[apiv1.FireTestWebhooksResponse], error) {
+	const event = "webhooks.test"
+	targets, err := s.store.EnabledTargetsForEvent(ctx, event)
+	if err != nil {
+		s.log.WithError(err).Error("fire test webhooks")
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	s.webhooks.Dispatch(ctx, event, map[string]any{
+		"message": "Test webhook from StarApp",
+		"source":  "manual",
+	})
+	msg := fmt.Sprintf("Test webhook sent to %d target(s)", len(targets))
+	if len(targets) == 0 {
+		msg = "No enabled webhooks subscribe to webhooks.test"
+	}
+	return connect.NewResponse(&apiv1.FireTestWebhooksResponse{
+		StandardResponse: &apiv1.StandardResponse{Success: true, Message: msg},
+		TargetsFired:     int32(len(targets)),
+	}), nil
 }

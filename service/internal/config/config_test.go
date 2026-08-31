@@ -9,7 +9,7 @@ import (
 )
 
 func TestRequiredMigration(t *testing.T) {
-	if RequiredMigration != "9.star-charts.sql" {
+	if RequiredMigration != "12.webhook-deliveries.sql" {
 		t.Fatalf("migration=%s", RequiredMigration)
 	}
 }

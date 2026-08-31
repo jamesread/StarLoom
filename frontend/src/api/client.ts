@@ -2,6 +2,10 @@ const base = '/api'
 
 export type Features = {
   redemptionApprovalDefault?: boolean
+  themeColorSchemeSwitcherEnabled?: boolean
+  themeName?: string
+  themeControl?: string
+  availableThemes?: string[]
 }
 
 export type StandardResponse = {
@@ -68,6 +72,17 @@ export type Webhook = {
   updated?: string
 }
 
+export type WebhookDelivery = {
+  id: number
+  webhookTargetId?: number
+  event: string
+  url: string
+  success?: boolean
+  httpStatus?: number
+  errorMessage?: string
+  firedAt?: string
+}
+
 export type Cvar = {
   key: string
   mainType: string
@@ -83,20 +98,17 @@ export type UserPreferences = {
   language: string
   availableLanguages: string[]
   sidebarEnabled: boolean
-  themeToggleEnabled: boolean
 }
 
 function normalizeUserPreferences(res: {
   language?: string
   availableLanguages?: string[]
   sidebarEnabled?: boolean
-  themeToggleEnabled?: boolean
 }): UserPreferences {
   return {
     language: res.language ?? '',
     availableLanguages: res.availableLanguages ?? [],
     sidebarEnabled: typeof res.sidebarEnabled === 'boolean' ? res.sidebarEnabled : true,
-    themeToggleEnabled: res.themeToggleEnabled === true,
   }
 }
 
@@ -163,13 +175,11 @@ export const starapp = {
       language?: string
       availableLanguages?: string[]
       sidebarEnabled?: boolean
-      themeToggleEnabled?: boolean
     }>('/starapp.api.v1.StarAppService/GetUserPreferences', {}).then(normalizeUserPreferences)
   },
   saveUserPreferences(body: {
     language: string
     sidebarEnabled: boolean
-    themeToggleEnabled: boolean
   }) {
     return connectFetch<{ standardResponse?: StandardResponse; username?: string }>(
       '/starapp.api.v1.StarAppService/SaveUserPreferences',
@@ -305,6 +315,18 @@ export const starapp = {
   deleteWebhook(body: { id: number }) {
     return connectFetch<object>('/starapp.api.v1.StarAppService/DeleteWebhook', body)
   },
+  listWebhookDeliveries(body: { limit?: number } = {}) {
+    return connectFetch<{ deliveries: WebhookDelivery[] }>(
+      '/starapp.api.v1.StarAppService/ListWebhookDeliveries',
+      body,
+    )
+  },
+  fireTestWebhooks() {
+    return connectFetch<{ standardResponse?: StandardResponse; targetsFired?: number }>(
+      '/starapp.api.v1.StarAppService/FireTestWebhooks',
+      {},
+    )
+  },
   getMyFamily() {
     return connectFetch<{ family?: Family; callerMember?: FamilyMember }>(
       '/starapp.api.v1.StarAppService/GetMyFamily',
@@ -397,7 +419,13 @@ export const starapp = {
       body,
     )
   },
-  createReward(body: { title: string; description?: string; costStars: number; approvalRequired?: boolean }) {
+  createReward(body: {
+    title: string
+    description?: string
+    costStars: number
+    approvalRequired?: boolean
+    availabilityExpression?: string
+  }) {
     return connectFetch<{ standardResponse?: StandardResponse; reward?: Reward }>(
       '/starapp.api.v1.StarAppService/CreateReward',
       body,
@@ -410,6 +438,7 @@ export const starapp = {
     costStars: number
     active: boolean
     approvalRequired: boolean
+    availabilityExpression?: string
   }) {
     return connectFetch<{ standardResponse?: StandardResponse; reward?: Reward }>(
       '/starapp.api.v1.StarAppService/UpdateReward',
@@ -601,6 +630,7 @@ export type Reward = {
   costStars: number
   active?: boolean
   approvalRequired?: boolean
+  availabilityExpression?: string
 }
 
 export type Redemption = {

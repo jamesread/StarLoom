@@ -43,7 +43,9 @@ func RequiredPermission(procedureName string) string {
 		apiv1connect.StarAppServiceListWebhooksProcedure,
 		apiv1connect.StarAppServiceCreateWebhookProcedure,
 		apiv1connect.StarAppServiceUpdateWebhookProcedure,
-		apiv1connect.StarAppServiceDeleteWebhookProcedure:
+		apiv1connect.StarAppServiceDeleteWebhookProcedure,
+		apiv1connect.StarAppServiceListWebhookDeliveriesProcedure,
+		apiv1connect.StarAppServiceFireTestWebhooksProcedure:
 		return rbac.PermissionSystemSettings
 
 	case apiv1connect.StarAppServiceImpersonateUserProcedure:

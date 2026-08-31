@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"connectrpc.com/connect"
 
@@ -43,6 +44,9 @@ func (s *Server) RequestRedemption(ctx context.Context, req *connect.Request[api
 	}
 	if balance < reward.CostStars {
 		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("insufficient balance"))
+	}
+	if !rewardAvailableNow(reward, balance, time.Now()) {
+		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("reward not available"))
 	}
 	if reward.ApprovalRequired {
 		id, err := s.store.CreateRedemption(ctx, fc.family.ID, child.ID, reward.ID, reward.CostStars, store.RedemptionPending, nil)

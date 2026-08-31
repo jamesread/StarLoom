@@ -5,7 +5,7 @@ import Section from 'picocrank/vue/components/Section.vue'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { ArrowLeft01Icon, Key01Icon, UserGroupIcon, UserIcon } from '@hugeicons/core-free-icons'
+import { ArrowLeft01Icon, Key01Icon, SearchList01Icon, UserGroupIcon, UserIcon } from '@hugeicons/core-free-icons'
 import { fetchAppStatus, useStatus } from '../composables/useStatus'
 import { canAccessIamFromStatus, hasPermission } from '../lib/rbacAccess'
 
@@ -44,6 +44,7 @@ onMounted(async () => {
       description: 'Permissions via groups',
     })
     nav.addCallback('Permission catalog', () => router.push({ name: 'rbac-permissions' }), {
+      icon: SearchList01Icon,
       name: 'perms',
       description: 'Read-only reference',
     })

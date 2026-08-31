@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
 import Table from 'picocrank/vue/components/Table.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { PlusSignIcon, Refresh01Icon, UserMultipleIcon } from '@hugeicons/core-free-icons'
+import { ArrowLeft01Icon, PlusSignIcon, Refresh01Icon, UserMultipleIcon } from '@hugeicons/core-free-icons'
 import { starapp, type FamilyMember } from '../api/client'
 import MemberAvatar from '../components/MemberAvatar.vue'
 import { memberStarColor } from '../lib/memberStarColor'
@@ -29,7 +29,11 @@ function roleLabel(role?: string) {
 }
 
 const listRows = computed(() =>
-  members.value.map((m) => ({
+  [...members.value]
+    .sort((a, b) =>
+      a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' }),
+    )
+    .map((m) => ({
     id: m.id,
     displayName: m.displayName,
     role: roleLabel(m.role),
@@ -70,6 +74,10 @@ onMounted(load)
     </template>
 
     <template #toolbar>
+      <RouterLink :to="{ name: 'controlPanel' }" class="button inline-icon neutral">
+        <HugeiconsIcon :icon="ArrowLeft01Icon" width="1em" height="1em" aria-hidden="true" />
+        <span>Control Panel</span>
+      </RouterLink>
       <button
         type="button"
         class="inline-icon neutral"

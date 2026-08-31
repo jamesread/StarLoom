@@ -1,0 +1,739 @@
+/*
+ * Ancient Greece — Temples & Heroes
+ *
+ * A bright schoolbook adventure for young classicists. The visual language
+ * uses Aegean blue, white marble, terracotta pottery, laurel leaves, Greek
+ * meanders, and a large Parthenon illustration.
+ *
+ * Asset URLs are absolute paths under /themes/ancient-greece/.
+ * Display fonts: GreeKish (section titles) via ancient-greece-fonts.css
+ * Core text and interactive color pairs are chosen to meet WCAG 2.2 AA.
+ */
+
+:root,
+html {
+	color-scheme: light;
+
+	/* A sunny day beside the Aegean Sea */
+	--greece-sky: #dff3ff;
+	--greece-sky-deep: #b9e0f4;
+	--greece-white: #fffdf5;
+	--greece-marble: #f4f1e8;
+	--greece-blue: #1266a8;
+	--greece-blue-bright: #278cd3;
+	--greece-blue-deep: #0a3d6a;
+	--greece-gold: #f0b43c;
+	--greece-terracotta: #a8432f;
+	--greece-olive: #55752d;
+	--greece-ink: #243243;
+	--greece-ink-muted: #566170;
+	--greece-line: #75a9ca;
+	--greece-shadow: rgba(18, 76, 116, 0.16);
+
+	--body-bg-color: var(--greece-sky);
+	--section-bg-color: rgba(255, 253, 245, 0.96);
+	--standout-bg-color: #e9f4fa;
+	--section-header-bg-color: #edf7fc;
+	--shadow-color: var(--greece-shadow);
+	--backdrop-color: rgba(10, 61, 106, 0.58);
+
+	--text-color: var(--greece-ink);
+	--icon-color: var(--greece-blue-deep);
+	--muted-text-color: var(--greece-ink-muted);
+	--annotation-key-color: #5d6873;
+	--link-color: var(--greece-blue);
+	--focus-outline-color: var(--greece-blue);
+	--border-color: var(--greece-line);
+
+	--hover-background-color: #d8edf8;
+	--hover-text-color: var(--greece-ink);
+
+	--header-bg-color: var(--greece-blue);
+	--header-fg-color: #ffffff;
+	--header-border-color: var(--greece-gold);
+	--header-shadow: 0 3px 14px rgba(10, 61, 106, 0.3);
+	--header-hover-background-color: var(--greece-blue-deep);
+	--header-hover-text-color: #ffffff;
+	--header-button-hover-bg-color: var(--greece-blue-deep);
+	--header-focus-outline-color: #ffe59d;
+
+	--sidebar-bg-color: rgba(255, 253, 245, 0.94);
+	--sidebar-link-color: var(--greece-blue-deep);
+	--sidebar-hover-bg-color: #d9edf8;
+	--sidebar-border-color: var(--greece-line);
+
+	--footer-chip-bg-color: #cae6f4;
+	--footer-link-color: var(--greece-blue-deep);
+
+	--input-bg-color: #ffffff;
+	--input-fg-color: var(--greece-ink);
+	--control-option-bg-color: var(--greece-white);
+	--control-hover-bg-color: #e1f0f8;
+	--control-checked-bg: #cde8f7;
+	--control-checked-hover-bg: #b8dced;
+	--control-checked-fg: var(--greece-blue-deep);
+
+	--menu-hover-bg-color: var(--hover-background-color);
+	--menu-item-hover-background-color: var(--hover-background-color);
+	--menu-dropdown-background-color: var(--greece-white);
+	--menu-dropdown-border-color: var(--greece-line);
+	--menu-dropdown-link-hover-background-color: var(--hover-background-color);
+	--header-menu-dropdown-link-hover-background-color: var(--header-hover-background-color);
+
+	--table-sticky-bg: var(--greece-white);
+	--table-row-hover-bg: #dceff8;
+	--table-row-hover-fg: var(--greece-ink);
+	--table-sticky-hover-bg: #dceff8;
+	--table-uneditable-bg: #e8eef0;
+	--table-sticky-uneditable-bg: #e8eef0;
+
+	--disabled-background-color: #dbe2e5;
+	--disabled-text-color: #687177;
+	--button-disabled-bg: #657681;
+	--button-disabled-fg: #ffffff;
+
+	--button-good-bg: var(--greece-olive);
+	--button-good-hover-bg: #3f5d20;
+	--button-bad-bg: var(--greece-terracotta);
+	--button-bad-hover-bg: #843321;
+	--button-warning-bg: #d99116;
+	--button-warning-hover-bg: #b8730d;
+	--button-on-accent-fg: #ffffff;
+
+	--karma-good: #8bc69a;
+	--karma-bad: #ef9380;
+	--karma-warning: #f2ca63;
+	--karma-severe: #e7855f;
+	--karma-note: #82cde9;
+	--karma-info: #c8dfeb;
+	--karma-old: #c9c4ae;
+	--karma-on-bg-fg: #1e2a36;
+	--karma-bad-border: #843321;
+
+	--progress-track-bg-color: #c9e2ee;
+	--progress-fill-bg-color: var(--greece-blue);
+
+	--nav-grid-accent-fg: #ffffff;
+	--nav-grid-accent-bg: var(--greece-blue);
+	--nav-grid-active-fg: #ffffff;
+	--nav-grid-muted-fg: var(--greece-ink-muted);
+	--nav-grid-border: var(--greece-line);
+	--nav-grid-hover-bg: #e2f2fa;
+	--nav-grid-indicator-bg: var(--greece-gold);
+	--nav-grid-indicator-fg: var(--greece-ink);
+	--nav-grid-disabled-fg: var(--disabled-text-color);
+	--nav-grid-shadow: var(--greece-shadow);
+	--nav-grid-hover-shadow: rgba(18, 76, 116, 0.26);
+
+	--theme-font-body: ui-rounded, "Trebuchet MS", system-ui, sans-serif;
+	--theme-font-display: 'GreeKish', Georgia, "Palatino Linotype", serif;
+}
+
+body {
+	background-color: var(--body-bg-color);
+	background-image:
+		url('/themes/ancient-greece/greek-landmarks.svg'),
+		radial-gradient(ellipse at 16% 9rem, rgba(255, 255, 255, 0.86) 0 4rem, transparent 4.1rem),
+		radial-gradient(ellipse at 28% 11rem, rgba(255, 255, 255, 0.62) 0 6rem, transparent 6.1rem),
+		linear-gradient(180deg, #cdeaff 0, #f5fbff 25rem, #d7effa 100%);
+	background-position:
+		right 1.5rem top 5.5rem,
+		left top,
+		left top,
+		center;
+	background-repeat: no-repeat;
+	background-size:
+		clamp(330px, 43vw, 560px),
+		auto,
+		auto,
+		auto;
+	color: var(--text-color);
+	font-family: var(--theme-font-body);
+}
+
+section .section-header h2,
+section .section-subheader h3 {
+	color: var(--greece-blue-deep);
+}
+
+header h1,
+header .image-and-title h1,
+#sidebar-button h1 {
+	color: var(--header-fg-color);
+	font-family: var(--theme-font-body);
+	font-weight: 700;
+	letter-spacing: 0.01em;
+}
+
+header .image-and-title:hover h1,
+#sidebar-button:hover h1,
+#sidebar-button:focus-visible h1 {
+	color: var(--header-hover-text-color);
+}
+
+a:visited {
+	color: #70458f;
+}
+
+:focus-visible {
+	outline: 3px solid var(--focus-outline-color);
+	outline-offset: 3px;
+}
+
+header {
+	background:
+		linear-gradient(120deg, rgba(255, 255, 255, 0.08), transparent 42%),
+		linear-gradient(100deg, var(--greece-blue-deep), var(--greece-blue) 64%, var(--greece-blue-bright));
+	border-bottom: 0;
+	box-shadow: var(--header-shadow);
+}
+
+header::after {
+	content: '';
+	display: block;
+	height: 14px;
+	background: var(--greece-white) url('/themes/ancient-greece/meander-border.svg') repeat-x center;
+	background-size: auto 14px;
+}
+
+header button,
+header .button {
+	border: 0;
+	border-radius: 0.45rem;
+	background: transparent;
+	box-shadow: none;
+	color: var(--header-fg-color);
+	font-weight: inherit;
+}
+
+header button:hover,
+header .button:hover,
+header button:focus-visible,
+header .button:focus-visible {
+	background: var(--header-button-hover-bg-color);
+	box-shadow: none;
+	color: var(--header-hover-text-color);
+}
+
+#sidebar,
+.sidebar {
+	border-right: 2px solid var(--sidebar-border-color);
+	background-color: var(--sidebar-bg-color);
+	background-image:
+		linear-gradient(90deg, transparent 0 12px, rgba(18, 102, 168, 0.08) 12px 14px, transparent 14px),
+		repeating-linear-gradient(90deg, transparent 0 42px, rgba(117, 169, 202, 0.08) 42px 44px);
+	box-shadow: 5px 0 18px rgba(18, 76, 116, 0.08);
+}
+
+section {
+	overflow: hidden;
+	opacity: 0.8;
+	border: 2px solid var(--greece-line);
+	border-radius: 1rem;
+	background-color: var(--section-bg-color);
+	background-image:
+		linear-gradient(135deg, rgba(255, 255, 255, 0.52), transparent 38%),
+		repeating-linear-gradient(105deg, rgba(117, 169, 202, 0.025) 0 2px, transparent 2px 18px);
+	box-shadow: 0 8px 24px var(--greece-shadow);
+}
+
+section .section-header,
+section .section-subheader {
+	border-bottom: 2px solid var(--greece-line);
+	border-left: 7px solid var(--greece-terracotta);
+	background:
+		linear-gradient(90deg, rgba(255, 255, 255, 0.92), transparent 52%),
+		var(--section-header-bg-color);
+}
+
+section .section-header {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+button,
+.button {
+	border: 2px solid var(--greece-blue-deep);
+	border-radius: 999px;
+	background: var(--greece-blue);
+	box-shadow: 0 2px 0 var(--greece-blue-deep);
+	color: #ffffff;
+	font-weight: 700;
+}
+
+button:hover,
+.button:hover {
+	background: var(--greece-blue-deep);
+	color: #ffffff;
+	transform: translateY(-1px);
+}
+
+button:active,
+.button:active {
+	box-shadow: none;
+	transform: translateY(1px);
+}
+
+button.good,
+.button.good,
+button[type='submit'] {
+	border-color: #354f1c;
+	background: var(--button-good-bg);
+	color: var(--button-on-accent-fg);
+	box-shadow: 0 2px 0 #354f1c;
+}
+
+button.good:hover,
+.button.good:hover,
+button[type='submit']:hover {
+	background: var(--button-good-hover-bg);
+}
+
+button.bad,
+.button.bad,
+button[type='reset'] {
+	border-color: #702719;
+	background: var(--button-bad-bg);
+	color: var(--button-on-accent-fg);
+	box-shadow: 0 2px 0 #702719;
+}
+
+button.bad:hover,
+.button.bad:hover,
+button[type='reset']:hover {
+	background: var(--button-bad-hover-bg);
+}
+
+button.warning,
+.button.warning {
+	border-color: #895306;
+	background: var(--button-warning-bg);
+	color: #251b0b;
+	box-shadow: 0 2px 0 #895306;
+}
+
+button.warning:hover,
+.button.warning:hover {
+	background: var(--button-warning-hover-bg);
+	color: #ffffff;
+}
+
+button.neutral,
+.button.neutral,
+button[type='submit'].neutral {
+	border-color: var(--greece-blue);
+	background: var(--greece-white);
+	color: var(--greece-blue-deep);
+	box-shadow: 0 2px 0 var(--greece-line);
+}
+
+button.neutral:hover,
+.button.neutral:hover,
+button[type='submit'].neutral:hover {
+	background: #dceff8;
+	color: var(--greece-blue-deep);
+}
+
+button:disabled,
+.button:disabled {
+	border-color: #5b6870;
+	background: var(--button-disabled-bg);
+	box-shadow: none;
+	color: var(--button-disabled-fg);
+	transform: none;
+}
+
+input,
+select,
+textarea {
+	border: 2px solid var(--greece-line);
+	border-radius: 0.65rem;
+	background-color: var(--input-bg-color);
+	color: var(--input-fg-color);
+	box-shadow: inset 0 1px 3px rgba(18, 76, 116, 0.1);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+	border-color: var(--greece-blue);
+	outline: 3px solid rgba(39, 140, 211, 0.25);
+	outline-offset: 1px;
+}
+
+.navigation-grid a,
+.navigation-grid button {
+	border: 2px solid var(--greece-line);
+	border-top: 7px solid var(--greece-blue);
+	border-radius: 0.85rem;
+	background:
+		linear-gradient(160deg, rgba(255, 255, 255, 0.94), rgba(223, 243, 255, 0.92));
+	box-shadow: 0 6px 16px var(--greece-shadow);
+	color: var(--greece-ink);
+}
+
+.navigation-grid a:nth-child(3n + 2),
+.navigation-grid button:nth-child(3n + 2) {
+	border-top-color: var(--greece-terracotta);
+}
+
+.navigation-grid a:nth-child(3n),
+.navigation-grid button:nth-child(3n) {
+	border-top-color: var(--greece-gold);
+}
+
+.navigation-grid a:hover,
+.navigation-grid button:hover {
+	border-color: var(--greece-blue);
+	background: linear-gradient(160deg, #ffffff, #cfeaf7);
+	box-shadow: 0 9px 22px var(--nav-grid-hover-shadow);
+	color: var(--greece-blue-deep);
+}
+
+.tabs-header {
+	border-bottom: 3px solid var(--greece-line);
+}
+
+.tab-button.active {
+	border-bottom: 5px solid var(--greece-terracotta);
+	background: var(--control-checked-bg);
+	color: var(--greece-blue-deep);
+}
+
+dialog {
+	border: 3px solid var(--greece-blue);
+	border-radius: 1rem;
+	box-shadow:
+		0 0 0 5px var(--greece-white),
+		0 18px 48px rgba(10, 61, 106, 0.35);
+}
+
+footer {
+	opacity: 0.8;
+	border-top: 14px solid transparent;
+	border-image: url('/themes/ancient-greece/meander-border.svg') 14 round;
+	background: linear-gradient(180deg, #d5edf8, var(--greece-sky-deep));
+}
+
+footer span,
+footer a {
+	color: var(--footer-link-color);
+}
+
+/*
+ * Night on Mount Olympus. The recognizable blue, gold, pottery, and laurel
+ * accents remain bright while marble surfaces become deep museum blue.
+ */
+html[data-theme='dark'] {
+	color-scheme: dark;
+
+	--greece-sky: #071b2e;
+	--greece-sky-deep: #0b2c48;
+	--greece-white: #172d40;
+	--greece-marble: #21394c;
+	--greece-blue: #55b5ed;
+	--greece-blue-bright: #7bc9f3;
+	--greece-blue-deep: #0b3454;
+	--greece-gold: #ffd45f;
+	--greece-terracotta: #e17251;
+	--greece-olive: #8cad55;
+	--greece-ink: #f8f2df;
+	--greece-ink-muted: #c6d0d5;
+	--greece-line: #5f8da7;
+	--greece-shadow: rgba(0, 0, 0, 0.48);
+
+	--body-bg-color: var(--greece-sky);
+	--section-bg-color: rgba(23, 45, 64, 0.97);
+	--standout-bg-color: #243e51;
+	--section-header-bg-color: #203b50;
+	--shadow-color: var(--greece-shadow);
+	--backdrop-color: rgba(0, 0, 0, 0.74);
+
+	--text-color: var(--greece-ink);
+	--icon-color: var(--greece-blue-bright);
+	--muted-text-color: var(--greece-ink-muted);
+	--annotation-key-color: #b5c0c5;
+	--link-color: var(--greece-blue-bright);
+	--focus-outline-color: #9bdcff;
+	--border-color: var(--greece-line);
+
+	--hover-background-color: #31536a;
+	--hover-text-color: #ffffff;
+
+	--header-bg-color: #092c49;
+	--header-fg-color: #ffffff;
+	--header-border-color: var(--greece-gold);
+	--header-shadow: 0 4px 18px rgba(0, 0, 0, 0.64);
+	--header-hover-background-color: #174f76;
+	--header-hover-text-color: #ffffff;
+	--header-button-hover-bg-color: #174f76;
+	--header-focus-outline-color: #ffe59d;
+
+	--sidebar-bg-color: rgba(13, 39, 59, 0.97);
+	--sidebar-link-color: var(--greece-ink);
+	--sidebar-hover-bg-color: var(--hover-background-color);
+	--sidebar-border-color: var(--greece-line);
+
+	--footer-chip-bg-color: #27485e;
+	--footer-link-color: var(--greece-blue-bright);
+
+	--input-bg-color: #10283a;
+	--input-fg-color: var(--greece-ink);
+	--control-option-bg-color: var(--greece-white);
+	--control-hover-bg-color: var(--hover-background-color);
+	--control-checked-bg: #29516a;
+	--control-checked-hover-bg: #37647e;
+	--control-checked-fg: #e8f7ff;
+
+	--menu-hover-bg-color: var(--hover-background-color);
+	--menu-item-hover-background-color: var(--hover-background-color);
+	--menu-dropdown-background-color: var(--greece-white);
+	--menu-dropdown-border-color: var(--greece-line);
+
+	--table-sticky-bg: var(--greece-white);
+	--table-row-hover-bg: var(--hover-background-color);
+	--table-row-hover-fg: var(--hover-text-color);
+	--table-sticky-hover-bg: var(--hover-background-color);
+	--table-uneditable-bg: #273e4d;
+	--table-sticky-uneditable-bg: #273e4d;
+
+	--disabled-background-color: #2a3b46;
+	--disabled-text-color: #a5adb0;
+	--button-disabled-bg: #4e5e67;
+	--button-disabled-fg: #f5f1e5;
+
+	--button-good-bg: #587b32;
+	--button-good-hover-bg: #466427;
+	--button-bad-bg: #a8432f;
+	--button-bad-hover-bg: #843321;
+	--button-warning-bg: #d99116;
+	--button-warning-hover-bg: #b8730d;
+	--button-on-accent-fg: #ffffff;
+
+	--karma-good: #8bc69a;
+	--karma-bad: #ef9380;
+	--karma-warning: #f2ca63;
+	--karma-severe: #e7855f;
+	--karma-note: #82cde9;
+	--karma-info: #a9c8d7;
+	--karma-old: #b8b29c;
+	--karma-on-bg-fg: #172431;
+
+	--progress-track-bg-color: #29485b;
+	--progress-fill-bg-color: var(--greece-blue-bright);
+
+	--nav-grid-accent-fg: #10202c;
+	--nav-grid-accent-bg: var(--greece-gold);
+	--nav-grid-muted-fg: var(--greece-ink-muted);
+	--nav-grid-border: var(--greece-line);
+	--nav-grid-hover-bg: var(--hover-background-color);
+	--nav-grid-indicator-bg: var(--greece-gold);
+	--nav-grid-indicator-fg: #172431;
+	--nav-grid-disabled-fg: var(--disabled-text-color);
+	--nav-grid-shadow: var(--greece-shadow);
+	--nav-grid-hover-shadow: rgba(0, 0, 0, 0.7);
+}
+
+html[data-theme='dark'] body {
+	background-image:
+		url('/themes/ancient-greece/greek-landmarks.svg'),
+		radial-gradient(circle at 17% 9rem, rgba(255, 212, 95, 0.12) 0 2px, transparent 3px),
+		radial-gradient(circle at 28% 11rem, rgba(123, 201, 243, 0.1) 0 2px, transparent 3px),
+		linear-gradient(180deg, #061524 0, #0b2c48 26rem, #071b2e 100%);
+}
+
+html[data-theme='dark'] section .section-header h2,
+html[data-theme='dark'] section .section-subheader h3 {
+	color: var(--greece-blue-bright);
+}
+
+html[data-theme='dark'] header h1,
+html[data-theme='dark'] header .image-and-title h1,
+html[data-theme='dark'] #sidebar-button h1 {
+	color: var(--header-fg-color);
+}
+
+html[data-theme='dark'] header {
+	background:
+		linear-gradient(120deg, rgba(123, 201, 243, 0.08), transparent 44%),
+		linear-gradient(100deg, #061b2e, #0b426c 64%, #1266a8);
+}
+
+html[data-theme='dark'] header::after {
+	background-color: #e9f4f8;
+}
+
+html[data-theme='dark'] #sidebar,
+html[data-theme='dark'] .sidebar {
+	background-image:
+		linear-gradient(90deg, transparent 0 12px, rgba(123, 201, 243, 0.08) 12px 14px, transparent 14px),
+		repeating-linear-gradient(90deg, transparent 0 42px, rgba(95, 141, 167, 0.06) 42px 44px);
+}
+
+html[data-theme='dark'] section {
+	background-image:
+		linear-gradient(135deg, rgba(123, 201, 243, 0.04), transparent 38%),
+		repeating-linear-gradient(105deg, rgba(95, 141, 167, 0.035) 0 2px, transparent 2px 18px);
+	box-shadow: 0 9px 28px var(--greece-shadow);
+}
+
+html[data-theme='dark'] section .section-header,
+html[data-theme='dark'] section .section-subheader {
+	background:
+		linear-gradient(90deg, rgba(123, 201, 243, 0.06), transparent 52%),
+		var(--section-header-bg-color);
+}
+
+html[data-theme='dark'] button,
+html[data-theme='dark'] .button {
+	border-color: #277caf;
+	background: #176b9d;
+	box-shadow: 0 2px 0 #082c47;
+	color: #ffffff;
+}
+
+html[data-theme='dark'] button:hover,
+html[data-theme='dark'] .button:hover {
+	background: #12567f;
+}
+
+html[data-theme='dark'] button.good,
+html[data-theme='dark'] .button.good,
+html[data-theme='dark'] button[type='submit'] {
+	border-color: #769b48;
+	background: var(--button-good-bg);
+	box-shadow: 0 2px 0 #2f471d;
+}
+
+html[data-theme='dark'] button.good:hover,
+html[data-theme='dark'] .button.good:hover,
+html[data-theme='dark'] button[type='submit']:hover {
+	background: var(--button-good-hover-bg);
+}
+
+html[data-theme='dark'] button.bad,
+html[data-theme='dark'] .button.bad,
+html[data-theme='dark'] button[type='reset'] {
+	border-color: #ce674b;
+	background: var(--button-bad-bg);
+	box-shadow: 0 2px 0 #612319;
+}
+
+html[data-theme='dark'] button.bad:hover,
+html[data-theme='dark'] .button.bad:hover,
+html[data-theme='dark'] button[type='reset']:hover {
+	background: var(--button-bad-hover-bg);
+}
+
+html[data-theme='dark'] button.warning,
+html[data-theme='dark'] .button.warning {
+	border-color: var(--greece-gold);
+	background: var(--button-warning-bg);
+	color: #21180a;
+	box-shadow: 0 2px 0 #704301;
+}
+
+html[data-theme='dark'] button.warning:hover,
+html[data-theme='dark'] .button.warning:hover {
+	background: var(--button-warning-hover-bg);
+	color: #ffffff;
+}
+
+html[data-theme='dark'] button.neutral,
+html[data-theme='dark'] .button.neutral,
+html[data-theme='dark'] button[type='submit'].neutral {
+	border-color: var(--greece-line);
+	background: #203d51;
+	color: var(--greece-ink);
+	box-shadow: 0 2px 0 #0b2537;
+}
+
+html[data-theme='dark'] button.neutral:hover,
+html[data-theme='dark'] .button.neutral:hover,
+html[data-theme='dark'] button[type='submit'].neutral:hover {
+	background: #31566d;
+	color: #ffffff;
+}
+
+html[data-theme='dark'] .navigation-grid a,
+html[data-theme='dark'] .navigation-grid button {
+	background: linear-gradient(160deg, #203d51, #142b3c);
+	color: var(--greece-ink);
+}
+
+html[data-theme='dark'] .navigation-grid a:hover,
+html[data-theme='dark'] .navigation-grid button:hover {
+	background: linear-gradient(160deg, #315b75, #1c3c51);
+	color: #ffffff;
+}
+
+html[data-theme='dark'] footer {
+	background: linear-gradient(180deg, #17364c, var(--greece-sky));
+}
+
+html[data-theme='dark'] a:visited {
+	color: #dfaef7;
+}
+
+/* Top-bar controls retain PicoCrank's transparent header chrome. */
+html[data-theme='dark'] header button,
+html[data-theme='dark'] header .button {
+	border: 0;
+	background: transparent;
+	box-shadow: none;
+	color: var(--header-fg-color);
+	transform: none;
+}
+
+html[data-theme='dark'] header button:hover,
+html[data-theme='dark'] header .button:hover,
+html[data-theme='dark'] header button:focus-visible,
+html[data-theme='dark'] header .button:focus-visible {
+	background: var(--header-button-hover-bg-color);
+	box-shadow: none;
+	color: var(--header-hover-text-color);
+	transform: none;
+}
+
+header #sidebar-toggler-button,
+header button.user-info {
+	background-image: none;
+}
+
+@media (max-width: 700px) {
+	body {
+		background-image:
+			url('/themes/ancient-greece/greek-landmarks.svg'),
+			linear-gradient(180deg, #cdeaff 0, #f5fbff 25rem, #d7effa 100%);
+		background-position:
+			center top 31rem,
+			center;
+		background-size:
+			360px,
+			auto;
+	}
+
+	html[data-theme='dark'] body {
+		background-image:
+			url('/themes/ancient-greece/greek-landmarks.svg'),
+			linear-gradient(180deg, #061524 0, #0b2c48 26rem, #071b2e 100%);
+		background-position:
+			center top 31rem,
+			center;
+		background-size:
+			360px,
+			auto;
+	}
+
+	section {
+		border-radius: 0.75rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	button,
+	.button,
+	a {
+		transition: none;
+	}
+}

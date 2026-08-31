@@ -10,10 +10,13 @@ export function setupSidebarNavigation(
     showControlPanel = false,
     showFamilyNav = false,
     excludeRoutes = [],
+    flat = false,
   }: {
     showControlPanel?: boolean
     showFamilyNav?: boolean
     excludeRoutes?: string[]
+    /** Omit section headers — required for PicoCrank TopBar, which cannot skip section rows. */
+    flat?: boolean
   } = {},
 ) {
   const excluded = new Set(excludeRoutes)
@@ -23,26 +26,21 @@ export function setupSidebarNavigation(
   navigation.addRouterLink('home')
 
   if (showFamilyNav) {
-    navigation.addSection('Family', { name: 'nav-family' })
-    if (!excluded.has('familyPeople')) {
-      navigation.addRouterLink('familyPeople', null, { description: 'Manage people' })
+    if (!flat) {
+      navigation.addSection('Family', { name: 'nav-family' })
     }
     if (!excluded.has('familyStarCharts')) {
       navigation.addRouterLink('familyStarCharts', null, { description: 'Manage star charts' })
     }
-    if (!excluded.has('familyChores')) {
-      navigation.addRouterLink('familyChores', null, { description: 'Chore definitions' })
-    }
     if (!excluded.has('familyRewards')) {
       navigation.addRouterLink('familyRewards', null, { description: 'Reward catalog' })
-    }
-    if (!excluded.has('familyRedemptions')) {
-      navigation.addRouterLink('familyRedemptions', null, { description: 'Approval queue' })
     }
   }
 
   if (showControlPanel && !excluded.has('controlPanel')) {
-    navigation.addSection('Control Panel', { name: 'nav-control-panel' })
+    if (!flat) {
+      navigation.addSection('Control Panel', { name: 'nav-control-panel' })
+    }
     navigation.addRouterLink('controlPanel', null, {
       description: 'System administration',
     })
