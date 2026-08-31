@@ -4,15 +4,18 @@ import { RouterLink, useRouter } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
 import Navigation from 'picocrank/vue/components/Navigation.vue'
 import NavigationGrid from 'picocrank/vue/components/NavigationGrid.vue'
+import RewardNavigationGrid from '../components/RewardNavigationGrid.vue'
+import RecentAwardsList from '../components/RecentAwardsList.vue'
 import FormField from 'picocrank/vue/components/FormField.vue'
 import FormLayout from 'picocrank/vue/components/FormLayout.vue'
-import { StarIcon, PlusSignIcon } from '@hugeicons/core-free-icons'
+import { StarIcon, PlusSignIcon, GiftIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { starapp, type ParentHomeSummary, type ChildHomeSummary, type StarChart } from '../api/client'
+import { starapp, type ParentHomeSummary, type ChildHomeSummary, type StarChart, type Reward } from '../api/client'
 import MemberAvatar from '../components/MemberAvatar.vue'
 import { fetchAppStatus, useStatus } from '../composables/useStatus'
 import {
   canViewChildHomeFromStatus,
+  canViewChoresFromStatus,
   canViewFamilyHomeFromStatus,
   hasPermission,
 } from '../lib/rbacAccess'
@@ -31,6 +34,9 @@ const parentSummary = ref<ParentHomeSummary | null>(null)
 const childSummary = ref<ChildHomeSummary | null>(null)
 const starCharts = ref<StarChart[]>([])
 const starChartNavRef = ref<InstanceType<typeof Navigation> | null>(null)
+const rewardNavRef = ref<InstanceType<typeof Navigation> | null>(null)
+const redeemingRewardId = ref<number | null>(null)
+const redeemError = ref('')
 
 const isParentHome = computed(
   () =>
@@ -43,6 +49,24 @@ const needsFamily = computed(
 const canCreateFamily = computed(() => hasPermission(statusState.status, 'family.manage'))
 const showAddPerson = computed(
   () => isParentHome.value && !needsFamily.value && !loading.value,
+)
+const isChildHome = computed(
+  () => !isParentHome.value && canViewChildHomeFromStatus(statusState.status),
+)
+const showStarChartsSection = computed(() => {
+  if (loading.value || needsFamily.value) return false
+  if (isParentHome.value) return true
+  return isChildHome.value && canViewChoresFromStatus(statusState.status)
+})
+const showChildRewardsSection = computed(() => isChildHome.value && !loading.value && Boolean(childSummary.value))
+const showChildAwardsSection = computed(() => isChildHome.value && !loading.value && Boolean(childSummary.value))
+
+const pendingRewardIds = computed(
+  () => new Set(childSummary.value?.pendingRewardIds || []),
+)
+
+const unavailableRewardIds = computed(
+  () => new Set(childSummary.value?.unavailableRewardIds || []),
 )
 
 const sectionTitle = computed(() => {
@@ -90,6 +114,14 @@ async function loadStarCharts() {
   setupStarChartNav()
 }
 
+function choreCountLabel(count: number) {
+  const n = count ?? 0
+  if (isChildHome.value) {
+    return n === 1 ? '1 chore for you' : `${n} chores for you`
+  }
+  return n === 1 ? '1 chore' : `${n} chores`
+}
+
 function setupStarChartNav() {
   const nav = starChartNavRef.value
   if (!nav) return
@@ -104,9 +136,63 @@ function setupStarChartNav() {
       {
         name: `star-chart-${chart.id}`,
         icon: StarIcon,
-        description: count === 1 ? '1 chore' : `${count} chores`,
+        description: choreCountLabel(count),
       },
     )
+  }
+}
+
+function starsNeeded(reward: Pick<Reward, 'costStars'>) {
+  const balance = childSummary.value?.balance ?? 0
+  const cost = reward.costStars ?? 0
+  return Math.max(0, cost - balance)
+}
+
+function isPendingApproval(rewardId: number) {
+  return pendingRewardIds.value.has(rewardId)
+}
+
+function isUnavailableNow(rewardId: number) {
+  return unavailableRewardIds.value.has(rewardId)
+}
+
+function rewardDescription(reward: Reward) {
+  if (isPendingApproval(reward.id)) {
+    return 'Pending approval'
+  }
+  if (isUnavailableNow(reward.id)) {
+    return 'Not currently available'
+  }
+  const needed = starsNeeded(reward)
+  if (needed > 0) {
+    return needed === 1 ? '1 more star' : `${needed} more stars`
+  }
+  const cost = reward.costStars ?? 0
+  return cost === 1 ? '1 star · Tap to redeem' : `${cost} stars · Tap to redeem`
+}
+
+function setupRewardNav() {
+  const nav = rewardNavRef.value
+  if (!nav) return
+  nav.clearNavigationLinks()
+  for (const reward of childSummary.value?.rewards || []) {
+    const needed = starsNeeded(reward)
+    const pending = isPendingApproval(reward.id)
+    const unavailable = isUnavailableNow(reward.id)
+    const blocked = pending || unavailable || needed > 0
+    const disabled = blocked || redeemingRewardId.value === reward.id
+    nav.addNavigationLink({
+      name: `reward-${reward.id}`,
+      type: 'callback',
+      icon: GiftIcon,
+      callback: () => {
+        void redeem(reward.id)
+      },
+      title: reward.title,
+      description: rewardDescription(reward),
+      disabled,
+      rewardBlocked: disabled,
+    })
   }
 }
 
@@ -114,6 +200,14 @@ async function loadChild() {
   try {
     childSummary.value = await starapp.getChildHomeSummary()
     error.value = ''
+    redeemError.value = ''
+    if (canViewChoresFromStatus(statusState.status)) {
+      await loadStarCharts()
+    } else {
+      starCharts.value = []
+    }
+    await nextTick()
+    setupRewardNav()
   } catch (e) {
     error.value =
       'Your account is not linked to a family profile. A parent must add you via Control Panel → People (not IAM → Users).'
@@ -165,11 +259,20 @@ function formatAward(entry?: { amount?: number; note?: string; createdAt?: strin
 }
 
 async function redeem(rewardId: number) {
+  const reward = childSummary.value?.rewards?.find((entry) => entry.id === rewardId)
+  if (!reward || isPendingApproval(rewardId) || isUnavailableNow(rewardId) || starsNeeded(reward) > 0) return
+  redeemingRewardId.value = rewardId
+  redeemError.value = ''
+  setupRewardNav()
   try {
     await starapp.requestRedemption({ rewardId })
     await loadChild()
   } catch (e) {
-    error.value = e instanceof Error ? e.message : String(e)
+    redeemError.value = e instanceof Error ? e.message : String(e)
+  } finally {
+    redeemingRewardId.value = null
+    await nextTick()
+    setupRewardNav()
   }
 }
 
@@ -180,6 +283,21 @@ watch(() => statusState.status?.isLoggedIn, () => {
 watch(starChartNavRef, () => {
   setupStarChartNav()
 })
+watch(rewardNavRef, () => {
+  setupRewardNav()
+})
+watch(
+  () => [
+    childSummary.value?.balance,
+    childSummary.value?.rewards,
+    childSummary.value?.pendingRewardIds,
+    childSummary.value?.unavailableRewardIds,
+  ],
+  () => {
+    void nextTick(setupRewardNav)
+  },
+  { deep: true },
+)
 </script>
 
 <template>
@@ -257,52 +375,57 @@ watch(starChartNavRef, () => {
           :member="childSummary.member"
           size="xl"
         />
-        <div class="balance large" :style="memberStarStyle(childSummary?.member)">
-          ★ {{ childSummary?.balance ?? 0 }} stars
+        <div class="child-balance">
+          <p class="child-balance-label">Your stars</p>
+          <div class="balance large" :style="memberStarStyle(childSummary?.member)">
+            ★ {{ childSummary?.balance ?? 0 }}
+          </div>
         </div>
       </div>
-
-      <h3>Recent awards</h3>
-      <ul v-if="childSummary?.recentAwards?.length" class="award-list">
-        <li v-for="entry in childSummary.recentAwards" :key="entry.id">
-          +{{ entry.amount }}
-          <span v-if="entry.note"> {{ entry.note }}</span>
-          <span class="subtle"> — {{ entry.createdAt }}</span>
-        </li>
-      </ul>
-      <p v-else class="subtle">No awards yet.</p>
-
-      <h3>Rewards you can get</h3>
-      <ul v-if="childSummary?.rewards?.length" class="reward-list">
-        <li v-for="reward in childSummary.rewards" :key="reward.id">
-          {{ reward.title }} — {{ reward.costStars }} stars
-          <button
-            type="button"
-            class="outline"
-            :disabled="(childSummary.balance ?? 0) < reward.costStars"
-            @click="redeem(reward.id)"
-          >
-            Redeem
-          </button>
-        </li>
-      </ul>
-      <p v-else class="subtle">No rewards available.</p>
     </template>
   </Section>
 
   <Section
-    v-if="isParentHome && !needsFamily && !loading"
+    v-if="showChildAwardsSection"
+    title="Recent awards"
+    subtitle="Stars your family gave you lately."
+    :icon="StarIcon"
+    :padding="true"
+  >
+    <RecentAwardsList
+      :entries="childSummary?.recentAwards || []"
+      :member="childSummary?.member"
+    />
+  </Section>
+
+  <Section
+    v-if="showChildRewardsSection"
+    title="Rewards you can get"
+    subtitle="Save up stars and tap a reward to redeem it."
+    :icon="GiftIcon"
+    :padding="true"
+  >
+    <p v-if="redeemError" class="inline-notification error">{{ redeemError }}</p>
+    <Navigation v-if="childSummary?.rewards?.length" ref="rewardNavRef">
+      <RewardNavigationGrid />
+    </Navigation>
+    <p v-else class="subtle">No rewards available right now.</p>
+  </Section>
+
+  <Section
+    v-if="showStarChartsSection"
     title="Star charts"
-    subtitle="Open a weekly chart to mark chore completions."
+    :subtitle="isChildHome ? 'Open a weekly chart to see your chores.' : 'Open a weekly chart to mark chore completions.'"
     :padding="true"
   >
     <Navigation v-if="starCharts.length" ref="starChartNavRef">
       <NavigationGrid />
     </Navigation>
-    <p v-else class="subtle">
+    <p v-else-if="isParentHome" class="subtle">
       No star charts yet.
       <RouterLink :to="{ name: 'familyStarCharts' }">Manage star charts</RouterLink>
     </p>
+    <p v-else class="subtle">No chores assigned to you yet.</p>
   </Section>
 </template>
 
@@ -337,10 +460,15 @@ watch(starChartNavRef, () => {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.5rem;
 }
-.award-list, .reward-list {
-  padding-left: 1.25rem;
+.child-balance-label {
+  margin: 0 0 0.15rem;
+  font-size: 0.95rem;
+  color: var(--muted-text-color, var(--pico-muted-color));
+}
+.child-balance {
+  display: flex;
+  flex-direction: column;
 }
 .last-award {
   font-size: 0.85rem;

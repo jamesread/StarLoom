@@ -126,3 +126,22 @@ func (m *Memory) CountChoresForStarChart(_ context.Context, starChartID int) (in
 	}
 	return count, nil
 }
+
+func (m *Memory) CountChoresForStarChartAndMember(_ context.Context, starChartID, memberID int) (int, error) {
+	ch := m.choreState()
+	ch.mu.Lock()
+	defer ch.mu.Unlock()
+	count := 0
+	for _, cw := range ch.chores {
+		if cw.Chore.StarChartID != starChartID || !cw.Chore.Active {
+			continue
+		}
+		for _, assign := range cw.Assignments {
+			if assign.ChildMemberID == memberID {
+				count++
+				break
+			}
+		}
+	}
+	return count, nil
+}

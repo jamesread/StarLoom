@@ -167,6 +167,9 @@ const (
 	// StarAppServiceUpdateMemberProcedure is the fully-qualified name of the StarAppService's
 	// UpdateMember RPC.
 	StarAppServiceUpdateMemberProcedure = "/starapp.api.v1.StarAppService/UpdateMember"
+	// StarAppServiceAssignMemberLoginProcedure is the fully-qualified name of the StarAppService's
+	// AssignMemberLogin RPC.
+	StarAppServiceAssignMemberLoginProcedure = "/starapp.api.v1.StarAppService/AssignMemberLogin"
 	// StarAppServiceDeleteMemberProcedure is the fully-qualified name of the StarAppService's
 	// DeleteMember RPC.
 	StarAppServiceDeleteMemberProcedure = "/starapp.api.v1.StarAppService/DeleteMember"
@@ -316,6 +319,7 @@ type StarAppServiceClient interface {
 	ListMembers(context.Context, *connect.Request[v1.ListMembersRequest]) (*connect.Response[v1.ListMembersResponse], error)
 	CreateChildMember(context.Context, *connect.Request[v1.CreateChildMemberRequest]) (*connect.Response[v1.CreateChildMemberResponse], error)
 	UpdateMember(context.Context, *connect.Request[v1.UpdateMemberRequest]) (*connect.Response[v1.UpdateMemberResponse], error)
+	AssignMemberLogin(context.Context, *connect.Request[v1.AssignMemberLoginRequest]) (*connect.Response[v1.AssignMemberLoginResponse], error)
 	DeleteMember(context.Context, *connect.Request[v1.DeleteMemberRequest]) (*connect.Response[v1.DeleteMemberResponse], error)
 	UploadMemberAvatar(context.Context, *connect.Request[v1.UploadMemberAvatarRequest]) (*connect.Response[v1.UploadMemberAvatarResponse], error)
 	DeleteMemberAvatar(context.Context, *connect.Request[v1.DeleteMemberAvatarRequest]) (*connect.Response[v1.DeleteMemberAvatarResponse], error)
@@ -638,6 +642,12 @@ func NewStarAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(starAppServiceMethods.ByName("UpdateMember")),
 			connect.WithClientOptions(opts...),
 		),
+		assignMemberLogin: connect.NewClient[v1.AssignMemberLoginRequest, v1.AssignMemberLoginResponse](
+			httpClient,
+			baseURL+StarAppServiceAssignMemberLoginProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("AssignMemberLogin")),
+			connect.WithClientOptions(opts...),
+		),
 		deleteMember: connect.NewClient[v1.DeleteMemberRequest, v1.DeleteMemberResponse](
 			httpClient,
 			baseURL+StarAppServiceDeleteMemberProcedure,
@@ -887,6 +897,7 @@ type starAppServiceClient struct {
 	listMembers                  *connect.Client[v1.ListMembersRequest, v1.ListMembersResponse]
 	createChildMember            *connect.Client[v1.CreateChildMemberRequest, v1.CreateChildMemberResponse]
 	updateMember                 *connect.Client[v1.UpdateMemberRequest, v1.UpdateMemberResponse]
+	assignMemberLogin            *connect.Client[v1.AssignMemberLoginRequest, v1.AssignMemberLoginResponse]
 	deleteMember                 *connect.Client[v1.DeleteMemberRequest, v1.DeleteMemberResponse]
 	uploadMemberAvatar           *connect.Client[v1.UploadMemberAvatarRequest, v1.UploadMemberAvatarResponse]
 	deleteMemberAvatar           *connect.Client[v1.DeleteMemberAvatarRequest, v1.DeleteMemberAvatarResponse]
@@ -1152,6 +1163,11 @@ func (c *starAppServiceClient) UpdateMember(ctx context.Context, req *connect.Re
 	return c.updateMember.CallUnary(ctx, req)
 }
 
+// AssignMemberLogin calls starapp.api.v1.StarAppService.AssignMemberLogin.
+func (c *starAppServiceClient) AssignMemberLogin(ctx context.Context, req *connect.Request[v1.AssignMemberLoginRequest]) (*connect.Response[v1.AssignMemberLoginResponse], error) {
+	return c.assignMemberLogin.CallUnary(ctx, req)
+}
+
 // DeleteMember calls starapp.api.v1.StarAppService.DeleteMember.
 func (c *starAppServiceClient) DeleteMember(ctx context.Context, req *connect.Request[v1.DeleteMemberRequest]) (*connect.Response[v1.DeleteMemberResponse], error) {
 	return c.deleteMember.CallUnary(ctx, req)
@@ -1365,6 +1381,7 @@ type StarAppServiceHandler interface {
 	ListMembers(context.Context, *connect.Request[v1.ListMembersRequest]) (*connect.Response[v1.ListMembersResponse], error)
 	CreateChildMember(context.Context, *connect.Request[v1.CreateChildMemberRequest]) (*connect.Response[v1.CreateChildMemberResponse], error)
 	UpdateMember(context.Context, *connect.Request[v1.UpdateMemberRequest]) (*connect.Response[v1.UpdateMemberResponse], error)
+	AssignMemberLogin(context.Context, *connect.Request[v1.AssignMemberLoginRequest]) (*connect.Response[v1.AssignMemberLoginResponse], error)
 	DeleteMember(context.Context, *connect.Request[v1.DeleteMemberRequest]) (*connect.Response[v1.DeleteMemberResponse], error)
 	UploadMemberAvatar(context.Context, *connect.Request[v1.UploadMemberAvatarRequest]) (*connect.Response[v1.UploadMemberAvatarResponse], error)
 	DeleteMemberAvatar(context.Context, *connect.Request[v1.DeleteMemberAvatarRequest]) (*connect.Response[v1.DeleteMemberAvatarResponse], error)
@@ -1683,6 +1700,12 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 		connect.WithSchema(starAppServiceMethods.ByName("UpdateMember")),
 		connect.WithHandlerOptions(opts...),
 	)
+	starAppServiceAssignMemberLoginHandler := connect.NewUnaryHandler(
+		StarAppServiceAssignMemberLoginProcedure,
+		svc.AssignMemberLogin,
+		connect.WithSchema(starAppServiceMethods.ByName("AssignMemberLogin")),
+		connect.WithHandlerOptions(opts...),
+	)
 	starAppServiceDeleteMemberHandler := connect.NewUnaryHandler(
 		StarAppServiceDeleteMemberProcedure,
 		svc.DeleteMember,
@@ -1975,6 +1998,8 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 			starAppServiceCreateChildMemberHandler.ServeHTTP(w, r)
 		case StarAppServiceUpdateMemberProcedure:
 			starAppServiceUpdateMemberHandler.ServeHTTP(w, r)
+		case StarAppServiceAssignMemberLoginProcedure:
+			starAppServiceAssignMemberLoginHandler.ServeHTTP(w, r)
 		case StarAppServiceDeleteMemberProcedure:
 			starAppServiceDeleteMemberHandler.ServeHTTP(w, r)
 		case StarAppServiceUploadMemberAvatarProcedure:
@@ -2232,6 +2257,10 @@ func (UnimplementedStarAppServiceHandler) CreateChildMember(context.Context, *co
 
 func (UnimplementedStarAppServiceHandler) UpdateMember(context.Context, *connect.Request[v1.UpdateMemberRequest]) (*connect.Response[v1.UpdateMemberResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.UpdateMember is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) AssignMemberLogin(context.Context, *connect.Request[v1.AssignMemberLoginRequest]) (*connect.Response[v1.AssignMemberLoginResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.AssignMemberLogin is not implemented"))
 }
 
 func (UnimplementedStarAppServiceHandler) DeleteMember(context.Context, *connect.Request[v1.DeleteMemberRequest]) (*connect.Response[v1.DeleteMemberResponse], error) {

@@ -60,6 +60,64 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/AssignMemberLogin": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "AssignMemberLogin",
+        "operationId": "starapp.api.v1.StarAppService.AssignMemberLogin",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.AssignMemberLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.AssignMemberLoginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/AwardStars": {
       "post": {
         "tags": [
@@ -4731,6 +4789,41 @@
         "title": "ApproveRedemptionResponse",
         "additionalProperties": false
       },
+      "starapp.api.v1.AssignMemberLoginRequest": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "integer",
+            "title": "member_id",
+            "format": "int32"
+          },
+          "username": {
+            "type": "string",
+            "title": "username"
+          },
+          "password": {
+            "type": "string",
+            "title": "password"
+          }
+        },
+        "title": "AssignMemberLoginRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.AssignMemberLoginResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "member": {
+            "title": "member",
+            "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
+          }
+        },
+        "title": "AssignMemberLoginResponse",
+        "additionalProperties": false
+      },
       "starapp.api.v1.AwardStarsRequest": {
         "type": "object",
         "properties": {
@@ -5741,6 +5834,22 @@
               "$ref": "#/components/schemas/starapp.api.v1.Reward"
             },
             "title": "rewards"
+          },
+          "pendingRewardIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "pending_reward_ids"
+          },
+          "unavailableRewardIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "unavailable_reward_ids"
           }
         },
         "title": "GetChildHomeSummaryResponse",

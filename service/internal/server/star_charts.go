@@ -55,15 +55,32 @@ func (s *Server) ListStarCharts(ctx context.Context, req *connect.Request[apiv1.
 		return nil, err
 	}
 	if _, err := s.requirePermission(ctx, rbac.PermissionChoresViewFamily); err != nil {
-		return nil, err
+		if _, err2 := s.requirePermission(ctx, rbac.PermissionStarsViewOwn); err2 != nil {
+			return nil, err
+		}
 	}
+	memberFilter := s.chartMemberFilter(fc)
 	rows, err := s.store.ListStarCharts(ctx, fc.family.ID, req.Msg.IncludeInactive)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	out := &apiv1.ListStarChartsResponse{}
 	for i := range rows {
-		count, _ := s.store.CountChoresForStarChart(ctx, rows[i].ID)
+		var count int
+		if memberFilter != 0 {
+			count, err = s.store.CountChoresForStarChartAndMember(ctx, rows[i].ID, memberFilter)
+			if err != nil {
+				return nil, connect.NewError(connect.CodeInternal, err)
+			}
+			if count == 0 {
+				continue
+			}
+		} else {
+			count, err = s.store.CountChoresForStarChart(ctx, rows[i].ID)
+			if err != nil {
+				return nil, connect.NewError(connect.CodeInternal, err)
+			}
+		}
 		out.StarCharts = append(out.StarCharts, toProtoStarChart(&rows[i], count))
 	}
 	return connect.NewResponse(out), nil

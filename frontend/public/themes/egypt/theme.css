@@ -89,6 +89,10 @@ html {
 	--karma-good: #58a86e;
 	--karma-bad: #d9654a;
 	--karma-warning: var(--egypt-gold-bright);
+	--reward-blocked-bg: color-mix(in srgb, var(--karma-bad) 24%, var(--egypt-papyrus));
+	--reward-blocked-border: color-mix(in srgb, var(--egypt-coral) 55%, var(--egypt-stone));
+	--reward-blocked-icon: var(--button-bad-bg);
+	--reward-blocked-description: color-mix(in srgb, var(--button-bad-bg) 72%, var(--egypt-ink));
 	--karma-severe: var(--egypt-coral);
 	--karma-note: var(--egypt-nile-light);
 	--karma-info: var(--egypt-scroll);
@@ -409,6 +413,10 @@ html[data-theme='dark'] {
 	--karma-good: #7ecfa0;
 	--karma-bad: #ff8a65;
 	--karma-warning: var(--egypt-gold-bright);
+	--reward-blocked-bg: color-mix(in srgb, var(--karma-bad) 24%, var(--egypt-papyrus));
+	--reward-blocked-border: color-mix(in srgb, var(--egypt-coral) 55%, var(--egypt-stone));
+	--reward-blocked-icon: var(--button-bad-bg);
+	--reward-blocked-description: color-mix(in srgb, var(--button-bad-bg) 72%, var(--egypt-ink));
 	--karma-severe: var(--egypt-coral);
 	--karma-note: var(--egypt-nile-light);
 	--karma-info: var(--egypt-scroll);

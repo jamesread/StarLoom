@@ -101,6 +101,10 @@ html {
 	--karma-good: #77c69a;
 	--karma-bad: #f08c7f;
 	--karma-warning: #f1c75b;
+	--reward-blocked-bg: color-mix(in srgb, var(--karma-bad) 22%, var(--section-bg-color));
+	--reward-blocked-border: color-mix(in srgb, var(--aztecs-clay) 50%, var(--border-color));
+	--reward-blocked-icon: var(--button-bad-bg);
+	--reward-blocked-description: color-mix(in srgb, var(--button-bad-bg) 72%, var(--text-color));
 	--karma-severe: #e88760;
 	--karma-note: #77cbd4;
 	--karma-info: #ded3b2;
@@ -450,6 +454,10 @@ html[data-theme='dark'] {
 	--karma-good: #77c69a;
 	--karma-bad: #f08c7f;
 	--karma-warning: #f1c75b;
+	--reward-blocked-bg: color-mix(in srgb, var(--karma-bad) 22%, var(--section-bg-color));
+	--reward-blocked-border: color-mix(in srgb, var(--aztecs-clay) 50%, var(--border-color));
+	--reward-blocked-icon: var(--button-bad-bg);
+	--reward-blocked-description: color-mix(in srgb, var(--button-bad-bg) 72%, var(--text-color));
 	--karma-severe: #e88760;
 	--karma-note: #77cbd4;
 	--karma-info: #aebcae;

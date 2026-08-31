@@ -63,20 +63,48 @@ func (s *Server) GetChildHomeSummary(ctx context.Context, _ *connect.Request[api
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
+	pendingRows, err := s.store.ListRedemptions(ctx, fc.family.ID, store.RedemptionPending)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	pendingRewardIDs := map[int]struct{}{}
 	out := &apiv1.GetChildHomeSummaryResponse{
 		Member:  toProtoMember(fc.member),
 		Balance: int32(balance),
+	}
+	for i := range pendingRows {
+		if pendingRows[i].ChildMemberID != fc.member.ID {
+			continue
+		}
+		pendingRewardIDs[pendingRows[i].RewardID] = struct{}{}
+		out.PendingRewardIds = append(out.PendingRewardIds, int32(pendingRows[i].RewardID))
 	}
 	for i := range ledger {
 		if ledger[i].EntryType == store.LedgerTypeAward || ledger[i].Amount > 0 {
 			out.RecentAwards = append(out.RecentAwards, toProtoLedger(&ledger[i]))
 		}
 	}
+	rewardIncluded := map[int]bool{}
+	now := time.Now()
 	for i := range rewards {
-		if !rewardAvailableNow(&rewards[i], balance, time.Now()) {
+		if !rewards[i].Active {
 			continue
 		}
 		out.Rewards = append(out.Rewards, toProtoReward(&rewards[i]))
+		rewardIncluded[rewards[i].ID] = true
+		if rewardUnavailableDueToSchedule(&rewards[i], balance, now) {
+			out.UnavailableRewardIds = append(out.UnavailableRewardIds, int32(rewards[i].ID))
+		}
+	}
+	for rewardID := range pendingRewardIDs {
+		if rewardIncluded[rewardID] {
+			continue
+		}
+		reward, err := s.store.GetRewardByID(ctx, rewardID)
+		if err != nil || reward == nil || !reward.Active {
+			continue
+		}
+		out.Rewards = append(out.Rewards, toProtoReward(reward))
 	}
 	return connect.NewResponse(out), nil
 }

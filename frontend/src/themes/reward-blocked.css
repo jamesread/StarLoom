@@ -1,0 +1,47 @@
+/*
+ * Unredeemable reward tiles on the child home grid (pending approval,
+ * insufficient stars, or availability expression). Uses theme bad/error
+ * tokens so each drop-in theme keeps a consistent red-tinted disabled look.
+ */
+
+:root {
+  --reward-blocked-bg: var(--karma-bad-wash);
+  --reward-blocked-border: color-mix(in srgb, var(--karma-bad) 50%, var(--border-color));
+  --reward-blocked-icon: var(--button-bad-bg);
+  --reward-blocked-description: color-mix(in srgb, var(--button-bad-bg) 72%, var(--text-color));
+  --reward-blocked-label: var(--text-color);
+}
+
+.navigation-grid button.nav-button.reward-blocked,
+.navigation-grid button.nav-button.reward-blocked:disabled,
+.navigation-grid button.nav-button.reward-blocked.disabled {
+  background: var(--reward-blocked-bg);
+  border: 2px solid var(--reward-blocked-border);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--karma-bad) 20%, transparent);
+  color: var(--reward-blocked-label);
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.navigation-grid button.nav-button.reward-blocked:hover,
+.navigation-grid button.nav-button.reward-blocked:disabled:hover,
+.navigation-grid button.nav-button.reward-blocked.disabled:hover {
+  background: var(--reward-blocked-bg);
+  border-color: var(--reward-blocked-border);
+  transform: none;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--karma-bad) 20%, transparent);
+}
+
+.navigation-grid button.nav-button.reward-blocked .nav-button-icon {
+  color: var(--reward-blocked-icon);
+}
+
+.navigation-grid button.nav-button.reward-blocked .nav-button-label {
+  color: var(--reward-blocked-label);
+}
+
+.navigation-grid button.nav-button.reward-blocked .nav-button-description {
+  color: var(--reward-blocked-description);
+  font-weight: 600;
+  font-size: 0.85rem;
+}

@@ -63,6 +63,7 @@ func RequiredPermission(procedureName string) string {
 
 	case apiv1connect.StarAppServiceCreateChildMemberProcedure,
 		apiv1connect.StarAppServiceUpdateMemberProcedure,
+		apiv1connect.StarAppServiceAssignMemberLoginProcedure,
 		apiv1connect.StarAppServiceDeleteMemberProcedure:
 		return rbac.PermissionMembersManage
 

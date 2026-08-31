@@ -528,6 +528,17 @@ message UpdateMemberResponse {
   FamilyMember member = 2;
 }
 
+message AssignMemberLoginRequest {
+  int32 member_id = 1;
+  string username = 2;
+  string password = 3;
+}
+
+message AssignMemberLoginResponse {
+  StandardResponse standard_response = 1;
+  FamilyMember member = 2;
+}
+
 message DeleteMemberRequest {
   int32 member_id = 1;
 }
@@ -721,6 +732,8 @@ message GetChildHomeSummaryResponse {
   int32 balance = 2;
   repeated StarLedgerEntry recent_awards = 3;
   repeated Reward rewards = 4;
+  repeated int32 pending_reward_ids = 5;
+  repeated int32 unavailable_reward_ids = 6;
 }
 
 message Chore {
@@ -972,6 +985,7 @@ service StarAppService {
   rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);
   rpc CreateChildMember(CreateChildMemberRequest) returns (CreateChildMemberResponse);
   rpc UpdateMember(UpdateMemberRequest) returns (UpdateMemberResponse);
+  rpc AssignMemberLogin(AssignMemberLoginRequest) returns (AssignMemberLoginResponse);
   rpc DeleteMember(DeleteMemberRequest) returns (DeleteMemberResponse);
   rpc UploadMemberAvatar(UploadMemberAvatarRequest) returns (UploadMemberAvatarResponse);
   rpc DeleteMemberAvatar(DeleteMemberAvatarRequest) returns (DeleteMemberAvatarResponse);

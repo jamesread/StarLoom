@@ -2,11 +2,15 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { starapp } from '../api/client'
+import { fetchAppStatus, useStatus } from '../composables/useStatus'
+import { canViewFamilyHomeFromStatus } from '../lib/rbacAccess'
 
 const router = useRouter()
+const statusState = useStatus()
 
 onMounted(async () => {
   try {
+    await fetchAppStatus()
     const res = await starapp.listStarCharts()
     const charts = (res.starCharts || []).filter((c) => c.active !== false)
     const first = charts[0] || res.starCharts?.[0]
@@ -14,7 +18,11 @@ onMounted(async () => {
       await router.replace({ name: 'familyStarChartView', params: { id: first.id } })
       return
     }
-    await router.replace({ name: 'familyStarCharts' })
+    if (canViewFamilyHomeFromStatus(statusState.status)) {
+      await router.replace({ name: 'familyStarCharts' })
+      return
+    }
+    await router.replace({ name: 'home' })
   } catch {
     await router.replace({ name: 'home' })
   }

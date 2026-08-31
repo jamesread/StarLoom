@@ -17,3 +17,20 @@ func rewardAvailableNow(reward *store.RewardRow, balance int, now time.Time) boo
 	)
 	return err == nil && ok
 }
+
+// rewardUnavailableDueToSchedule is true when the availability expression fails for
+// reasons other than insufficient balance (e.g. time-of-day rules).
+func rewardUnavailableDueToSchedule(reward *store.RewardRow, balance int, now time.Time) bool {
+	if reward == nil || !reward.Active {
+		return false
+	}
+	listBalance := balance
+	if listBalance < reward.CostStars {
+		listBalance = reward.CostStars
+	}
+	ok, err := rewards.EvaluateAvailabilityExpression(
+		reward.AvailabilityExpression,
+		rewards.AvailabilityEnvAt(now, listBalance, reward.CostStars),
+	)
+	return err != nil || !ok
+}

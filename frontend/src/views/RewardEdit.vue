@@ -121,10 +121,20 @@ onMounted(load)
         <input id="reward-edit-cost" v-model.number="form.costStars" type="number" min="1" required />
       </FormField>
       <FormField label="Requires approval" component-has-label>
-        <RadioGroup v-model="form.approvalRequired" name="reward-edit-approval" :options="booleanOptions" />
+        <RadioGroup
+          v-model="form.approvalRequired"
+          name="reward-edit-approval"
+          variant="boolean"
+          :options="booleanOptions"
+        />
       </FormField>
       <FormField label="Status" component-has-label>
-        <RadioGroup v-model="form.active" name="reward-edit-active" :options="statusOptions" />
+        <RadioGroup
+          v-model="form.active"
+          name="reward-edit-active"
+          variant="boolean"
+          :options="statusOptions"
+        />
       </FormField>
       <FormField
         label="Availability expression"

@@ -18,6 +18,7 @@ const form = reactive({
   description: '',
   costStars: 5,
   approvalRequired: true,
+  active: true,
   availabilityExpression: '',
 })
 
@@ -26,17 +27,34 @@ const booleanOptions = [
   { label: 'No', value: false },
 ]
 
+const statusOptions = [
+  { label: 'Active', value: true },
+  { label: 'Inactive', value: false },
+]
+
 async function createReward() {
   creating.value = true
   error.value = ''
   try {
-    await starapp.createReward({
+    const res = await starapp.createReward({
       title: form.title.trim(),
       description: form.description.trim(),
       costStars: form.costStars,
       approvalRequired: form.approvalRequired,
       availabilityExpression: form.availabilityExpression.trim(),
     })
+    const created = res.reward
+    if (created?.id && !form.active) {
+      await starapp.updateReward({
+        id: created.id,
+        title: form.title.trim(),
+        description: form.description.trim(),
+        costStars: form.costStars,
+        active: false,
+        approvalRequired: form.approvalRequired,
+        availabilityExpression: form.availabilityExpression.trim(),
+      })
+    }
     router.push({ name: 'familyRewards' })
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
@@ -88,6 +106,14 @@ async function createReward() {
           name="reward-create-approval"
           variant="boolean"
           :options="booleanOptions"
+        />
+      </FormField>
+      <FormField label="Status" component-has-label>
+        <RadioGroup
+          v-model="form.active"
+          name="reward-create-active"
+          variant="boolean"
+          :options="statusOptions"
         />
       </FormField>
       <FormField

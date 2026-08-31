@@ -103,6 +103,10 @@ html {
 	--karma-good: #8bc69a;
 	--karma-bad: #ef9380;
 	--karma-warning: #f2ca63;
+	--reward-blocked-bg: color-mix(in srgb, var(--karma-bad) 22%, var(--greece-white));
+	--reward-blocked-border: color-mix(in srgb, var(--greece-terracotta) 55%, var(--greece-line));
+	--reward-blocked-icon: var(--button-bad-bg);
+	--reward-blocked-description: color-mix(in srgb, var(--button-bad-bg) 75%, var(--greece-ink));
 	--karma-severe: #e7855f;
 	--karma-note: #82cde9;
 	--karma-info: #c8dfeb;
@@ -513,6 +517,10 @@ html[data-theme='dark'] {
 	--karma-good: #8bc69a;
 	--karma-bad: #ef9380;
 	--karma-warning: #f2ca63;
+	--reward-blocked-bg: color-mix(in srgb, var(--karma-bad) 22%, var(--greece-white));
+	--reward-blocked-border: color-mix(in srgb, var(--greece-terracotta) 55%, var(--greece-line));
+	--reward-blocked-icon: var(--button-bad-bg);
+	--reward-blocked-description: color-mix(in srgb, var(--button-bad-bg) 75%, var(--greece-ink));
 	--karma-severe: #e7855f;
 	--karma-note: #82cde9;
 	--karma-info: #a9c8d7;

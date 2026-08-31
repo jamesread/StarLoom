@@ -415,14 +415,18 @@ func (s *Server) GetWeeklyStarChart(ctx context.Context, req *connect.Request[ap
 	return connect.NewResponse(out), nil
 }
 
-func (s *Server) chartChildFilter(fc *familyContext) int {
-	if fc.au.HasPermission(rbac.PermissionChoresViewFamily) || fc.au.HasPermission(rbac.PermissionStarsViewFamily) {
+func (s *Server) chartMemberFilter(fc *familyContext) int {
+	if fc.au.HasPermission(rbac.PermissionStarsViewFamily) {
 		return 0
 	}
 	if fc.member != nil && fc.member.Role == store.MemberRoleChild {
 		return fc.member.ID
 	}
 	return 0
+}
+
+func (s *Server) chartChildFilter(fc *familyContext) int {
+	return s.chartMemberFilter(fc)
 }
 
 func (s *Server) CompleteChore(ctx context.Context, req *connect.Request[apiv1.CompleteChoreRequest]) (*connect.Response[apiv1.CompleteChoreResponse], error) {

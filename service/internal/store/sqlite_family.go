@@ -162,6 +162,23 @@ func (s *SQLite) UpdateMember(ctx context.Context, id int, displayName, starColo
 	return err
 }
 
+func (s *SQLite) SetMemberUserAccount(ctx context.Context, id int, accountID int) error {
+	res, err := s.db.ExecContext(ctx,
+		`UPDATE family_members SET user_account_id = ? WHERE id = ? AND user_account_id IS NULL`,
+		accountID, id)
+	if err != nil {
+		return fmt.Errorf("set member user account: %w", err)
+	}
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n == 0 {
+		return fmt.Errorf("member not found or already has login")
+	}
+	return nil
+}
+
 func (s *SQLite) DeleteMember(ctx context.Context, id int) error {
 	_, err := s.db.ExecContext(ctx, `DELETE FROM family_members WHERE id = ? AND role = ?`, id, MemberRoleChild)
 	return err

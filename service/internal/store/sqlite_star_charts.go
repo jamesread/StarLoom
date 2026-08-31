@@ -95,3 +95,14 @@ func (s *SQLite) CountChoresForStarChart(ctx context.Context, starChartID int) (
 	).Scan(&count)
 	return count, err
 }
+
+func (s *SQLite) CountChoresForStarChartAndMember(ctx context.Context, starChartID, memberID int) (int, error) {
+	var count int
+	err := s.db.QueryRowContext(ctx,
+		`SELECT COUNT(*) FROM chores c
+		 JOIN chore_assignments ca ON ca.chore_id = c.id
+		 WHERE c.star_chart_id = ? AND c.active = 1 AND ca.child_member_id = ?`,
+		starChartID, memberID,
+	).Scan(&count)
+	return count, err
+}

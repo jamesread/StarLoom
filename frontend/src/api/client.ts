@@ -357,6 +357,12 @@ export const starapp = {
       body,
     )
   },
+  assignMemberLogin(body: { memberId: number; username: string; password: string }) {
+    return connectFetch<{ standardResponse?: StandardResponse; member?: FamilyMember }>(
+      '/starapp.api.v1.StarAppService/AssignMemberLogin',
+      body,
+    )
+  },
   deleteMember(body: { memberId: number }) {
     return connectFetch<{ standardResponse?: StandardResponse }>(
       '/starapp.api.v1.StarAppService/DeleteMember',
@@ -651,6 +657,8 @@ export type ChildHomeSummary = {
   balance?: number
   recentAwards?: StarLedgerEntry[]
   rewards?: Reward[]
+  pendingRewardIds?: number[]
+  unavailableRewardIds?: number[]
 }
 
 export type ParentHomeSummary = {

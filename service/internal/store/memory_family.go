@@ -179,6 +179,22 @@ func (m *Memory) UpdateMember(_ context.Context, id int, displayName, starColor 
 	return nil
 }
 
+func (m *Memory) SetMemberUserAccount(_ context.Context, id int, accountID int) error {
+	st := m.familyState()
+	st.mu.Lock()
+	defer st.mu.Unlock()
+	row, ok := st.members[id]
+	if !ok {
+		return fmt.Errorf("member not found")
+	}
+	if row.UserAccountID != nil {
+		return fmt.Errorf("member already has login")
+	}
+	row.UserAccountID = &accountID
+	st.members[id] = row
+	return nil
+}
+
 func (m *Memory) DeleteMember(_ context.Context, id int) error {
 	st := m.familyState()
 	st.mu.Lock()

@@ -95,6 +95,7 @@ type Store interface {
 	ListMembersByFamily(ctx context.Context, familyID int) ([]FamilyMemberRow, error)
 	CreateMember(ctx context.Context, familyID int, displayName, role string, accountID *int, starColor string) (int, error)
 	UpdateMember(ctx context.Context, id int, displayName, starColor string) error
+	SetMemberUserAccount(ctx context.Context, id int, accountID int) error
 	DeleteMember(ctx context.Context, id int) error
 	SetMemberAvatarPath(ctx context.Context, id int, path string) error
 
@@ -128,6 +129,7 @@ type Store interface {
 	UpdateStarChart(ctx context.Context, id int, name string, sortOrder int, active bool) error
 	DeleteStarChart(ctx context.Context, id int) error
 	CountChoresForStarChart(ctx context.Context, starChartID int) (int, error)
+	CountChoresForStarChartAndMember(ctx context.Context, starChartID, memberID int) (int, error)
 
 	ListChorePauses(ctx context.Context, familyID int) ([]ChorePauseRow, error)
 	CreateChorePause(ctx context.Context, familyID int, startDate, endDate, reason string) (int, error)

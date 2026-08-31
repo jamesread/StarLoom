@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
 import FormField from 'picocrank/vue/components/FormField.vue'
@@ -19,13 +19,26 @@ const member = ref<FamilyMember | null>(null)
 const error = ref('')
 const loading = ref(true)
 const savingProfile = ref(false)
+const assigningLogin = ref(false)
+const loginError = ref('')
 const displayName = ref('')
 const starColor = ref('#3498db')
+const loginForm = reactive({
+  username: '',
+  password: '',
+})
 const avatarHistory = ref<MemberAvatarEntry[]>([])
 const avatarLoading = ref(false)
 const selectingAvatar = ref('')
 
 const avatarBorderStyle = computed(() => memberAvatarStyle(member.value))
+
+const hasLogin = computed(() => Boolean(member.value?.userAccountId))
+
+const canAssignLogin = computed(() => {
+  if (!loginForm.username.trim()) return false
+  return loginForm.password.length >= 8
+})
 
 const sectionTitle = computed(() =>
   member.value ? `Edit ${member.value.displayName}` : 'Edit person',
@@ -60,6 +73,26 @@ async function loadAvatarHistory() {
     error.value = e instanceof Error ? e.message : String(e)
   } finally {
     avatarLoading.value = false
+  }
+}
+
+async function assignLogin() {
+  if (!member.value || hasLogin.value) return
+  assigningLogin.value = true
+  loginError.value = ''
+  try {
+    const res = await starapp.assignMemberLogin({
+      memberId: memberId.value,
+      username: loginForm.username.trim(),
+      password: loginForm.password,
+    })
+    member.value = res.member || member.value
+    loginForm.username = ''
+    loginForm.password = ''
+  } catch (e) {
+    loginError.value = e instanceof Error ? e.message : String(e)
+  } finally {
+    assigningLogin.value = false
   }
 }
 
@@ -219,6 +252,50 @@ onMounted(load)
           </RouterLink>
         </template>
       </FormLayout>
+
+      <div class="login-section">
+        <h3>Login</h3>
+        <template v-if="hasLogin">
+          <p class="subtle">
+            This person can sign in with username
+            <strong>{{ member.username || '—' }}</strong>.
+          </p>
+        </template>
+        <template v-else>
+          <p class="subtle">
+            This person cannot sign in yet. Create a username and password so they can log in.
+          </p>
+          <FormLayout class="login-form" @submit.prevent="assignLogin">
+            <p v-if="loginError" class="inline-notification error">{{ loginError }}</p>
+            <FormField label="Username" for="person-edit-username">
+              <input
+                id="person-edit-username"
+                v-model="loginForm.username"
+                type="text"
+                autocomplete="off"
+                required
+                :disabled="assigningLogin"
+              />
+            </FormField>
+            <FormField label="Password" for="person-edit-password" description="At least 8 characters.">
+              <input
+                id="person-edit-password"
+                v-model="loginForm.password"
+                type="password"
+                minlength="8"
+                autocomplete="new-password"
+                required
+                :disabled="assigningLogin"
+              />
+            </FormField>
+            <template #actions>
+              <button type="submit" class="good" :disabled="assigningLogin || !canAssignLogin">
+                {{ assigningLogin ? 'Creating…' : 'Create login' }}
+              </button>
+            </template>
+          </FormLayout>
+        </template>
+      </div>
     </template>
   </Section>
 
@@ -276,5 +353,15 @@ onMounted(load)
 .profile-form {
   max-width: 24rem;
   margin-bottom: 1.5rem;
+}
+.login-section {
+  max-width: 24rem;
+  margin-bottom: 1.5rem;
+}
+.login-section h3 {
+  margin-bottom: 0.5rem;
+}
+.login-form {
+  margin-top: 1rem;
 }
 </style>

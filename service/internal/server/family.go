@@ -195,6 +195,59 @@ func (s *Server) UpdateMember(ctx context.Context, req *connect.Request[apiv1.Up
 	}), nil
 }
 
+func (s *Server) AssignMemberLogin(ctx context.Context, req *connect.Request[apiv1.AssignMemberLoginRequest]) (*connect.Response[apiv1.AssignMemberLoginResponse], error) {
+	fc, err := s.requireFamilyContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := s.requireWrite(ctx); err != nil {
+		return nil, err
+	}
+	if _, err := s.requirePermission(ctx, rbac.PermissionMembersManage); err != nil {
+		return nil, err
+	}
+	member, err := s.store.GetMemberByID(ctx, int(req.Msg.MemberId))
+	if err != nil || member == nil || member.FamilyID != fc.family.ID {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("member not found"))
+	}
+	if member.UserAccountID != nil {
+		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("member already has login"))
+	}
+	username := strings.TrimSpace(req.Msg.Username)
+	plainPassword := req.Msg.Password
+	if username == "" {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("username required"))
+	}
+	if len(plainPassword) < 8 {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("password must be at least 8 characters"))
+	}
+	hash, err := password.Hash(plainPassword)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	userID, err := s.store.CreateUserAccount(ctx, username, hash, store.UserCreatedByAdmin)
+	if err != nil {
+		return nil, mapStoreError(err)
+	}
+	groupName := rbac.GroupChildren
+	if member.Role == store.MemberRoleParent {
+		groupName = rbac.GroupParents
+	}
+	if err := s.store.EnsureUserInGroup(ctx, userID, groupName); err != nil {
+		_ = s.store.DeleteUserAccount(ctx, userID)
+		return nil, mapStoreError(err)
+	}
+	if err := s.store.SetMemberUserAccount(ctx, member.ID, userID); err != nil {
+		_ = s.store.DeleteUserAccount(ctx, userID)
+		return nil, mapStoreError(err)
+	}
+	member, _ = s.store.GetMemberByID(ctx, member.ID)
+	return connect.NewResponse(&apiv1.AssignMemberLoginResponse{
+		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Login created"},
+		Member:           toProtoMember(member),
+	}), nil
+}
+
 func (s *Server) DeleteMember(ctx context.Context, req *connect.Request[apiv1.DeleteMemberRequest]) (*connect.Response[apiv1.DeleteMemberResponse], error) {
 	fc, err := s.requireFamilyContext(ctx)
 	if err != nil {
