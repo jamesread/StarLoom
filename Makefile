@@ -1,7 +1,7 @@
 # StarApp — build, test, lint, run
 # Running make without arguments builds the project and all subdirectories.
 
-.PHONY: all build test lint run clean protocol frontend service integration-test docs migrate migrate-status
+.PHONY: all build test lint run clean protocol frontend service integration-test docs migrate migrate-status screenshots
 
 all: build
 
@@ -46,6 +46,12 @@ migrate:
 
 migrate-status:
 	DB_PATH="$(DB_PATH)" $(MAKE) -wC database/sqlite status
+
+# Marketing PNGs in var/marketing/. Requires the SPA at https://localhost:5173.
+# The shim skips webdriver_manager so Selenium uses the system chromedriver.
+screenshots:
+	PYTHONPATH="$(CURDIR)/var/marketing/chromedriver-shim$(if $(PYTHONPATH),:$(PYTHONPATH))" \
+		repo-helper screenshot
 
 clean:
 	$(MAKE) -wC protocol clean

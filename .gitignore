@@ -38,3 +38,5 @@ docs/site/
 
 # Buf / generated (uncomment if gen is not committed)
 # service/gen/
+
+__pycache__

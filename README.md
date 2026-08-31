@@ -9,6 +9,56 @@
 
 </div>
 
+## Screenshots
+
+Login (Space theme);
+
+<p align="center">
+<img alt="Login page in the Space theme" src="var/marketing/login-space.png" />
+</p>
+
+Parent home (Egypt theme) — family overview as a privileged user;
+
+<p align="center">
+<img alt="Parent home in the Egypt theme" src="var/marketing/parent-home-egypt.png" />
+</p>
+
+Child home (Aztecs theme) — personal stars and rewards;
+
+<p align="center">
+<img alt="Child home in the Aztecs theme" src="var/marketing/child-home-aztecs.png" />
+</p>
+
+Weekly star chart (Ancient Greece theme);
+
+<p align="center">
+<img alt="Star chart in the Ancient Greece theme" src="var/marketing/star-chart-greece.png" />
+</p>
+
+Rewards and redemption requests (Space theme, dark);
+
+<p align="center">
+<img alt="Rewards admin in the Space theme, dark mode" src="var/marketing/rewards-space-dark.png" />
+</p>
+
+People (Aztecs theme, dark);
+
+<p align="center">
+<img alt="People admin in the Aztecs theme, dark mode" src="var/marketing/people-aztecs-dark.png" />
+</p>
+
+Control Panel (Catppuccin theme);
+
+<p align="center">
+<img alt="Control Panel in the Catppuccin theme" src="var/marketing/control-panel-catppuccin.png" />
+</p>
+
+User preferences (Egypt theme);
+
+<p align="center">
+<img alt="User preferences in the Egypt theme" src="var/marketing/preferences-egypt.png" />
+</p>
+
 ## Documentation
 
 - [Product specification](docs/SPEC.md)
