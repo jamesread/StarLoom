@@ -1,24 +1,32 @@
 # Webhooks
 
-StarApp can POST JSON to admin-configured URLs when domain events occur. Targets
-and event subscriptions are stored in the database (`webhook_targets`,
-`webhook_events`).
+Webhooks send an HTTP POST to a URL you choose when something happens in
+the family — a star award, a redemption request, or an approval. Use them
+to ping a chat bot, a home-automation hook, or another service you run.
 
-## Supported events
+You do not need webhooks for everyday awarding and redeeming.
 
-| Event | When fired (planned / future handlers) |
-|-------|----------------------------------------|
-| `stars.awarded` | Parent awards stars to a child |
-| `redemption.requested` | Child requests a reward (especially pending approval) |
-| `redemption.resolved` | Parent approves or rejects a redemption |
-| `webhooks.test` | Manual test from the webhooks admin page |
+## Create a target
 
-The catalog is defined in code (`service/internal/webhook/`). The Settings UI
-CheckGroup reads the list from Init / ListWebhooks.
+1. Sign in as an administrator.
+2. Open **Control Panel → Webhooks**.
+3. Add a webhook: URL, optional secret, and which events to send.
+4. Leave it enabled.
 
-## Payload shape
+The secret is write-only. StarApp will not show it again after you save.
 
-Every delivery includes:
+## Events
+
+| Event | When it fires |
+|-------|----------------|
+| `stars.awarded` | A parent awards stars |
+| `redemption.requested` | Someone requests a reward (often pending approval) |
+| `redemption.resolved` | A parent approves or rejects a request |
+| `webhooks.test` | You click test on the webhook page |
+
+## What is sent
+
+Each delivery is JSON:
 
 ```json
 {
@@ -27,31 +35,19 @@ Every delivery includes:
 }
 ```
 
-Event-specific fields will be added alongside when domain handlers call the
-dispatcher (e.g. `child`, `amount`, `reward`).
-
-## Signing
-
-Requests use:
+Headers:
 
 - `Content-Type: application/json`
 - `X-StarApp-Event: <event name>`
 - `X-StarApp-Signature: sha256=<hex>`
 
-The signature is HMAC-SHA256 of the **raw JSON body** using the target secret.
-
-Verification sketch (pseudocode):
+The signature is HMAC-SHA256 of the raw body using your secret. Check it
+before you trust the payload:
 
 ```
 expected = HMAC_SHA256(secret, raw_body)
-assert header == "sha256=" + hex(expected)
+header == "sha256=" + hex(expected)
 ```
 
-Secrets are **write-only** — never returned by List/Create/Update responses.
-
-## Admin UI
-
-- List: `/control-panel/webhooks` (PicoCrank Table)
-- Create: `/control-panel/webhooks/create` (CheckGroup for events, boolean RadioGroup for enabled)
-
-Dispatch uses a ~2s HTTP timeout and does not block user actions if delivery fails.
+Deliveries use a short timeout. A failing hook does not block awarding or
+redeeming in the app.

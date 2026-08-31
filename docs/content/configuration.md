@@ -1,103 +1,95 @@
 # Configuration
 
-Configuration is split between **YAML/env bootstrap** and **database cvars**
-(live runtime settings edited on the Settings page).
+Most day-to-day options live in the app under **Control Panel → Settings**.
+A small YAML file and a few environment variables cover how the process
+starts.
 
-## YAML bootstrap
+## Settings in the app
 
-Loaded from the config directory passed to `-configdir` (default:
-`~/.config/starapp`).
+Open **Control Panel → Settings** while signed in as an administrator.
+Changes apply immediately; you do not restart the container.
 
-Copy `service/config.yaml.example` to `~/.config/starapp/config.yaml`:
+### Site
+
+| Setting | What it does |
+|---------|----------------|
+| Site title | Name in the header and browser tab |
+| Show footer | Show or hide the page footer |
+| Show version number | Show the installed version in the footer |
+| Show new versions | Offer a link when a newer release exists |
+
+### Features
+
+| Setting | What it does |
+|---------|----------------|
+| Default award stars | Prefill when a parent awards stars by hand (1–100) |
+| Redemption approval by default | New rewards require parent approval before stars are spent |
+
+### Theme
+
+| Setting | What it does |
+|---------|----------------|
+| Color scheme switcher | Show an auto / light / dark control in the header |
+| Theme name | Default look for the household (or the enforced look) |
+| Theme control | **User preference** lets each person pick a theme. **System preference** forces the theme name above for everyone |
+
+Built-in themes include Ancient Greece, Aztecs, Egypt, and Space. See
+[Preferences and themes](preferences.md).
+
+## File configuration
+
+The container reads `/config/config.yaml` from the volume you mounted at
+install time. A default file is created on first start.
 
 ```yaml
 http_addr: ":8080"
 db_driver: sqlite
 db_path: starapp.db
-show_footer: true   # seeds show_footer cvar on first insert only
-# webui_dir: /path/to/frontend/dist
+show_footer: true
 ```
 
-YAML covers values needed before the database is available (listen address,
-database path). Feature toggles and site title live in **cvars** after the first
-startup upsert.
+| Key | Purpose |
+|-----|---------|
+| `http_addr` | Listen address inside the container (default `:8080`) |
+| `db_driver` | `sqlite` |
+| `db_path` | SQLite file, relative to the config directory unless you use an absolute path |
+| `show_footer` | Seeds the **Show footer** setting the first time only |
+| `webui_dir` | Leave unset in the container; the image already serves the web UI |
 
-## Runtime settings (cvars)
+`site_title` and other live options belong in Settings, not this file.
+Restart the container after you edit YAML.
 
-Admins edit cvars at **Control Panel › Settings** (`/control-panel/settings`). Values are stored in the
-`cvars` table. The catalog (keys, types, titles, defaults) lives in
-`service/internal/cvar/`.
+## Environment variables
 
-On each startup, after migrations, the service upserts missing keys and refreshes
-**metadata only** (title, description, category, ordinal). Admin-chosen values
-are never overwritten.
+Set these on the container (`docker run -e` or Compose `environment:`).
 
-Saving Settings reloads **Init** in the SPA (no process restart).
-
-### Page footer
-
-Footer visibility, version text, and update hints come from **Init** (and
-**GetStatus**, which mirrors the same shell fields). The SPA renders
-`AppFooter` under `#content` after `<main>`; femtocrank styles apply to
-`footer` and `footer span` chips.
-
-When `show_version_number` is off, Init clears `current_version` and
-`available_version` on the server so the client cannot display them. When
-`show_footer` is off, the footer is omitted entirely.
-
-| Key | Type | Default | Category | Effect |
-|-----|------|---------|----------|--------|
-| `site_title` | string | StarApp | Site | Header and browser tab title |
-| `show_footer` | bool | on | Site | Footer visibility (Init) |
-| `show_version_number` | bool | on | Site | Version text in footer (Init) |
-| `show_new_versions` | bool | on | Site | Update hint when a newer release exists (Init) |
-| `default_award_stars` | int | 1 | Features | Default stars when awarding (1–100) |
-| `enable_redemption_approval` | bool | on | Features | New rewards require approval by default (Init `features`) |
-
-Parent authentication uses httpauthshim, session cookies, and group-based RBAC.
-See [Authentication](authentication.md).
-
-## Database migrations
-
-Schema changes are versioned SQL files under `database/sqlite/migrations/`,
-applied with [sql-migrate](https://github.com/rubenv/sql-migrate).
-
-The service binary expects migration **`7.chores.sql`** (`config.RequiredMigration`).
-
-On startup the service **applies pending migrations automatically** (using
-`database/sqlite/migrations` relative to the working directory, or
-`STARAPP_MIGRATIONS_DIR`). You can still run them manually:
-
-### Development (manual)
-
-```bash
-export DB_PATH="$HOME/.config/starapp/starapp.db"
-make migrate
-```
-
-Check status:
-
-```bash
-DB_PATH="$HOME/.config/starapp/starapp.db" make migrate-status
-```
-
-### Containers
-
-The Docker image runs `sql-migrate up` in the entrypoint before starting the
-service. Set `DB_PATH` to an absolute SQLite file path.
-
-| Variable | Purpose |
-|----------|---------|
-| `DB_PATH` | SQLite database file (required for migrations) |
+| Variable | When to use |
+|----------|-------------|
+| `STARAPP_SECURE_COOKIES` | Set to `false` only when the browser uses HTTP. Leave unset (secure cookies on) behind HTTPS |
+| `PORT` | Alternate listen port if you do not use `http_addr` |
+| `STARAPP_CONFIG_DIR` | Config directory (default `/config` in the image) |
+| `DB_PATH` | Override the SQLite file path |
 | `DB_DRIVER` | `sqlite` (default) |
 
-## Environment
+Do not enable development-only flags such as disabled authentication on a
+family install.
 
-| Variable | Effect |
-|----------|--------|
-| `PORT` | When set, golure picks listen address ($PORT → 8080 → free 8000–8999). |
+## Reverse proxy
 
-## Required migration
+Put Caddy, nginx, or Traefik in front of port 8080 when you want HTTPS or a
+hostname such as `stars.home.example`.
 
-Current required migration id: **`2.webhook-targets-events.sql`** — webhook targets
-and event subscriptions (after `0.base.sql` and `1.cvars.sql`).
+- Proxy `/` to the container
+- Forward `Host` and `X-Forwarded-Proto`
+- Omit `STARAPP_SECURE_COOKIES=false` so the session cookie is marked Secure
+
+## Backups
+
+Copy the `/config` volume (or at least `starapp.db` and `avatars/`) on a
+schedule. That is the household ledger, accounts, and pictures.
+
+## Next
+
+- [Accounts](accounts.md) — parents, children, and passwords
+- [Preferences and themes](preferences.md)
+- [Webhooks](webhooks.md) — optional HTTP notifications

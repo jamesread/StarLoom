@@ -1,5 +1,5 @@
 site_name: StarApp
-site_description: Family star rewards — Vue frontend with a ConnectRPC Go backend.
+site_description: Family star rewards — install, set up, and use StarApp at home.
 docs_dir: content
 site_dir: site
 repo_url: https://github.com/jamesread/StarLoom/
@@ -9,11 +9,10 @@ theme:
 
 nav:
   - Home: index.md
-  - Product spec: spec.md
-  - Architecture: architecture.md
+  - Install: install.md
+  - First setup: setup.md
+  - Using StarApp: using.md
   - Configuration: configuration.md
-  - Authentication: authentication.md
-  - User profile: user-profile.md
-  - Settings (cvars): configuration.md#runtime-settings-cvars
+  - Accounts: accounts.md
+  - Preferences and themes: preferences.md
   - Webhooks: webhooks.md
-  - Releases: releases.md

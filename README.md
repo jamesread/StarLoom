@@ -61,27 +61,35 @@ User preferences (Egypt theme);
 
 ## Documentation
 
+- [User manual](docs/content/index.md) — install, setup, and daily use
 - [Product specification](docs/SPEC.md)
-- [Developer docs](docs/content/index.md) (MkDocs)
 - [AGENTS.md](AGENTS.md) — AI agent integration (MCP, OpenAPI, llms.txt)
 
-## Run locally
+## Linux container
+
+StarApp is published as a multi-arch image on the GitHub Container Registry (`linux/amd64` and `linux/arm64`).
 
 ```bash
-# Terminal 1 — API (default :8080, or set PORT)
-make -C service run
-
-# Terminal 2 — frontend HTTPS on :5173 (proxies /api to backend)
-make -C frontend run
+docker run -d \
+  --name starapp \
+  --restart unless-stopped \
+  -p 8080:8080 \
+  -v starapp-config:/config \
+  -e STARAPP_SECURE_COOKIES=false \
+  ghcr.io/jamesread/starloom:latest
 ```
 
-Build everything: `make`
+`podman run` accepts the same arguments. Open http://localhost:8080 and sign in as **admin** / **admin**. Change that password immediately.
+
+SQLite data and `config.yaml` persist on the `/config` volume. Omit `STARAPP_SECURE_COOKIES=false` when you terminate TLS at a reverse proxy. Pin a release with `ghcr.io/jamesread/starloom:1.2.3` instead of `latest` if you prefer.
 
 ## Releases
 
-Releases on `main` are automated via semantic-release from conventional commits.
-See [Releases](docs/content/releases.md) for commit message format and CI behaviour.
+Container images are published to `ghcr.io/jamesread/starloom` on each release.
+See [Install](docs/content/install.md) for pull tags and updates.
 
 ## Status
 
-StarApp implements the jwr-soa-2.0 stack: Connect RPC backend, Vue + PicoCrank SPA, family ledger, rewards, chores, webhooks, and integration tests. See the [product spec](docs/SPEC.md) for the full roadmap.
+StarApp is a self-hosted family ledger for stars, chores, and rewards. See the
+[user manual](docs/content/index.md) to get started, or the
+[product spec](docs/SPEC.md) for the full roadmap.

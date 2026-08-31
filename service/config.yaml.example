@@ -7,4 +7,4 @@ db_driver: sqlite
 db_path: starapp.db
 show_footer: true
 # webui_dir: ../frontend/dist
-# auth: {}   # httpauthshim — JWT, trusted headers, mTLS (see docs/content/authentication.md)
+# auth: {}   # httpauthshim — JWT, trusted headers, mTLS (see docs/content/accounts.md)

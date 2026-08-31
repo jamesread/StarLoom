@@ -229,6 +229,7 @@ Edit pages include a **Back** link in the section `#toolbar` returning to the li
 
 ## Documentation
 
+- [User manual](docs/content/index.md)
 - [Product spec](docs/SPEC.md)
 - [Webhooks](docs/content/webhooks.md)
 - [Configuration](docs/content/configuration.md)
