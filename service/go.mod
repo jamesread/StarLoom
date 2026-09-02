@@ -9,7 +9,7 @@ require (
 	github.com/alexedwards/argon2id v1.0.0
 	github.com/expr-lang/expr v1.17.8
 	github.com/google/uuid v1.6.0
-	github.com/jamesread/golure v0.0.0-20260510214136-6ef80e0ce8da
+	github.com/jamesread/golure v0.0.0-20260902093223-27b18778c9a5
 	github.com/jamesread/httpauthshim v0.1.0
 	github.com/knadh/koanf/parsers/yaml v1.1.1
 	github.com/knadh/koanf/providers/file v1.2.1
