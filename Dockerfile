@@ -14,7 +14,7 @@ RUN CGO_ENABLED=1 go build \
   -ldflags "-s -w -X github.com/jamesread/starapp/service/internal/buildinfo.Version=${VERSION}" \
   -o /starapp .
 
-FROM alpine:3.20
+FROM alpine:3.24
 LABEL org.opencontainers.image.source="https://github.com/jamesread/StarLoom"
 LABEL org.opencontainers.image.title="StarApp"
 LABEL org.opencontainers.image.description="Family star rewards — parents award stars; children redeem privileges."
