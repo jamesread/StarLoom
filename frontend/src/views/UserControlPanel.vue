@@ -2,11 +2,14 @@
 import Navigation from 'picocrank/vue/components/Navigation.vue'
 import NavigationGrid from 'picocrank/vue/components/NavigationGrid.vue'
 import Section from 'picocrank/vue/components/Section.vue'
+import NotificationBlock from 'picocrank/vue/components/NotificationBlock.vue'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import {
   DashboardSquareSettingIcon,
   Key01Icon,
+  Notification03Icon,
   Settings01Icon,
   UserShield01Icon,
 } from '@hugeicons/core-free-icons'
@@ -14,11 +17,17 @@ import { fetchAppStatus, invalidateAppStatus, useStatus } from '../composables/u
 import { starapp } from '../api/client'
 import { canAccessControlPanelFromStatus } from '../lib/rbacAccess'
 
+const iconStrokeWidth = 2.5
+
 const router = useRouter()
 const status = useStatus()
 const navRef = ref<InstanceType<typeof Navigation> | null>(null)
 const loggingOut = ref(false)
 const error = ref('')
+const testingNotify = ref(false)
+const notifyError = ref('')
+const notifySuccess = ref('')
+const personTag = ref('')
 
 const userData = computed(() => status.status)
 
@@ -30,6 +39,16 @@ async function refreshUserData() {
     setupQuickActions()
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Refresh failed'
+  }
+}
+
+async function loadPersonTag() {
+  try {
+    const fam = await starapp.getMyFamily()
+    const id = fam.callerMember?.id
+    personTag.value = id ? `starloom_uid_${id}` : ''
+  } catch {
+    personTag.value = ''
   }
 }
 
@@ -66,6 +85,24 @@ function setupQuickActions() {
   }
 }
 
+async function sendTestNotification() {
+  testingNotify.value = true
+  notifyError.value = ''
+  notifySuccess.value = ''
+  try {
+    const res = await starapp.testAppriseNotification()
+    const tag = res.tag || personTag.value
+    if (tag) personTag.value = tag
+    notifySuccess.value = res.standardResponse?.message
+      ? `${res.standardResponse.message}${tag ? ` (tag ${tag})` : ''}`
+      : 'Test notification sent'
+  } catch (e) {
+    notifyError.value = e instanceof Error ? e.message : String(e)
+  } finally {
+    testingNotify.value = false
+  }
+}
+
 async function logout() {
   loggingOut.value = true
   try {
@@ -86,6 +123,7 @@ function formatDate(value?: string) {
 
 onMounted(async () => {
   await refreshUserData()
+  await loadPersonTag()
   await nextTick()
   setupQuickActions()
 })
@@ -108,6 +146,34 @@ onMounted(async () => {
       <dt>Account created</dt>
       <dd>{{ formatDate(userData.accountCreatedAt) }}</dd>
     </dl>
+  </Section>
+
+  <Section v-if="userData?.isLoggedIn" title="Notifications" :padding="true">
+    <p>
+      Send a test Apprise notification to your devices.
+      <template v-if="personTag"> Uses tag <code>{{ personTag }}</code>.</template>
+    </p>
+    <p v-if="notifyError" class="inline-notification error">{{ notifyError }}</p>
+    <NotificationBlock
+      v-if="notifySuccess"
+      type="success"
+      :message="notifySuccess"
+    />
+    <button
+      type="button"
+      class="inline-icon neutral"
+      :disabled="testingNotify"
+      @click="sendTestNotification"
+    >
+      <HugeiconsIcon
+        :icon="Notification03Icon"
+        width="1em"
+        height="1em"
+        :strokeWidth="iconStrokeWidth"
+        aria-hidden="true"
+      />
+      <span>{{ testingNotify ? 'Sending…' : 'Send test notification' }}</span>
+    </button>
   </Section>
 
   <Section v-if="userData?.isLoggedIn" title="Quick actions" :padding="true">

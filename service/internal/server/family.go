@@ -7,9 +7,9 @@ import (
 
 	"connectrpc.com/connect"
 
+	"github.com/jamesread/armature-iam/password"
 	apiv1 "github.com/jamesread/starapp/service/gen/starapp/api/v1"
 	"github.com/jamesread/starapp/service/internal/avatar"
-	"github.com/jamesread/starapp/service/internal/password"
 	"github.com/jamesread/starapp/service/internal/rbac"
 	"github.com/jamesread/starapp/service/internal/store"
 )

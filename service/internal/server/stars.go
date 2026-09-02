@@ -27,6 +27,9 @@ func (s *Server) AwardStars(ctx context.Context, req *connect.Request[apiv1.Awar
 	if err != nil || !isFamilyStarMember(member, fc.family.ID) {
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("member not found"))
 	}
+	if member.ID == fc.member.ID {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("cannot award stars to yourself"))
+	}
 	amount := int(req.Msg.Amount)
 	if amount <= 0 {
 		amount = s.defaultAwardStars(ctx)

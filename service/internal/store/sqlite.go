@@ -8,10 +8,13 @@ import (
 	"path/filepath"
 
 	_ "github.com/mattn/go-sqlite3"
+
+	iamsqlite "github.com/jamesread/armature-iam/store/sqlite"
 )
 
 // SQLite persists StarApp data in SQLite.
 type SQLite struct {
+	*iamsqlite.SQLite
 	db *sql.DB
 }
 
@@ -46,7 +49,7 @@ func OpenSQLite(dbPath string) (*SQLite, error) {
 		return nil, err
 	}
 
-	return &SQLite{db: db}, nil
+	return &SQLite{db: db, SQLite: iamsqlite.New(db)}, nil
 }
 
 // SQLDB exposes the underlying connection for migrations.

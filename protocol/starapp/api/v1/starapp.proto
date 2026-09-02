@@ -427,6 +427,13 @@ message FireTestWebhooksResponse {
   int32 targets_fired = 2;
 }
 
+message TestAppriseNotificationRequest {}
+
+message TestAppriseNotificationResponse {
+  StandardResponse standard_response = 1;
+  string tag = 2;
+}
+
 message Family {
   int32 id = 1;
   string name = 2;
@@ -980,6 +987,7 @@ service StarAppService {
   rpc DeleteWebhook(DeleteWebhookRequest) returns (DeleteWebhookResponse);
   rpc ListWebhookDeliveries(ListWebhookDeliveriesRequest) returns (ListWebhookDeliveriesResponse);
   rpc FireTestWebhooks(FireTestWebhooksRequest) returns (FireTestWebhooksResponse);
+  rpc TestAppriseNotification(TestAppriseNotificationRequest) returns (TestAppriseNotificationResponse);
   rpc GetMyFamily(GetMyFamilyRequest) returns (GetMyFamilyResponse);
   rpc CreateFamily(CreateFamilyRequest) returns (CreateFamilyResponse);
   rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"strings"
 )
 
 func scanFamily(row *sql.Row) (*FamilyRow, error) {
@@ -484,13 +483,4 @@ func (s *SQLite) CountPendingRedemptions(ctx context.Context, familyID int) (int
 		`SELECT COUNT(*) FROM redemptions WHERE family_id = ? AND status = ?`, familyID, RedemptionPending,
 	).Scan(&n)
 	return n, err
-}
-
-func (s *SQLite) EnsureUserInGroup(ctx context.Context, userID int, groupName string) error {
-	groupName = strings.TrimSpace(groupName)
-	_, err := s.db.ExecContext(ctx,
-		`INSERT OR IGNORE INTO user_group_memberships (user_account_id, user_group_id)
-		 SELECT ?, g.id FROM user_groups g WHERE g.name = ?`,
-		userID, groupName)
-	return err
 }

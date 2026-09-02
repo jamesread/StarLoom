@@ -10,9 +10,9 @@ import (
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
 
+	"github.com/jamesread/armature-iam/password"
 	apiv1 "github.com/jamesread/starapp/service/gen/starapp/api/v1"
 	"github.com/jamesread/starapp/service/internal/auth"
-	"github.com/jamesread/starapp/service/internal/password"
 	"github.com/jamesread/starapp/service/internal/rbac"
 	"github.com/jamesread/starapp/service/internal/store"
 )
@@ -23,6 +23,9 @@ func (s *Server) BootstrapIAM(ctx context.Context) error {
 
 func (s *Server) bootstrapIAM(ctx context.Context) error {
 	if err := s.store.EnsureRBACBootstrap(ctx); err != nil {
+		return err
+	}
+	if err := s.store.SeedDomainRBAC(ctx); err != nil {
 		return err
 	}
 	count, err := s.store.CountUserAccounts(ctx)

@@ -115,10 +115,9 @@ func validateCvarUpdate(row *store.CvarRow, valueInt int32, valueString string, 
 
 	switch row.MainType {
 	case cvar.TypeString:
-		if valueString == "" {
-			return 0, "", fmt.Errorf("value required")
-		}
-		if len(valueString) > 255 {
+		return validateStringCvar(row.Key, valueString)
+	case cvar.TypeTextarea:
+		if len(valueString) > cvar.MaxTextareaCvarLen {
 			return 0, "", fmt.Errorf("value too long")
 		}
 		return 0, valueString, nil
@@ -136,6 +135,28 @@ func validateCvarUpdate(row *store.CvarRow, valueInt int32, valueString string, 
 	default:
 		return 0, "", fmt.Errorf("unsupported cvar type")
 	}
+}
+
+func validateStringCvar(key, valueString string) (int, string, error) {
+	if len(valueString) > cvar.MaxStringCvarLen {
+		return 0, "", fmt.Errorf("value too long")
+	}
+	switch key {
+	case cvar.KeyAppriseURL, cvar.KeyExternalBaseURL:
+		return 0, strings.TrimSpace(valueString), nil
+	}
+	if valueString == "" {
+		return 0, "", fmt.Errorf("value required")
+	}
+	return 0, valueString, nil
+}
+
+func (s *Server) stringCvar(ctx context.Context, key string) string {
+	row, err := s.store.FindCvar(ctx, key)
+	if err != nil || row == nil {
+		return ""
+	}
+	return row.ValueString
 }
 
 func (s *Server) UpdateCvar(ctx context.Context, req *connect.Request[apiv1.UpdateCvarRequest]) (*connect.Response[apiv1.Cvar], error) {

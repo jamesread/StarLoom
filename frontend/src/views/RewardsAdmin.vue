@@ -14,6 +14,7 @@ const iconStrokeWidth = 2.5
 
 const rewards = ref<Reward[]>([])
 const members = ref<FamilyMember[]>([])
+const myMemberId = ref(0)
 const pendingRedemptions = ref<Redemption[]>([])
 const error = ref('')
 const redemptionsError = ref('')
@@ -50,9 +51,9 @@ const statusOptions = [
   { label: 'Inactive', value: false },
 ]
 
-const childOptions = computed(() =>
+const personOptions = computed(() =>
   members.value
-    .filter((m) => m.role === 'child')
+    .filter((m) => m.id !== myMemberId.value)
     .sort((a, b) => a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' }))
     .map((m) => ({ label: m.displayName, value: m.id })),
 )
@@ -95,10 +96,12 @@ const redemptionHeaders = [
 const redemptionRows = computed(() =>
   pendingRedemptions.value.map((r) => ({
     id: r.id,
+    childMemberId: r.childMemberId,
     childDisplayName: r.childDisplayName || '—',
     rewardTitle: r.rewardTitle || '—',
     starsSpent: r.starsSpent,
     createdAt: r.createdAt || '—',
+    isOwn: Boolean(myMemberId.value) && r.childMemberId === myMemberId.value,
     actions: '',
   })),
 )
@@ -106,12 +109,14 @@ const redemptionRows = computed(() =>
 async function loadRewards() {
   loading.value = true
   try {
-    const [rewardRes, memberRes] = await Promise.all([
+    const [rewardRes, memberRes, familyRes] = await Promise.all([
       starapp.listRewards({ includeInactive: true }),
       starapp.listMembers(),
+      starapp.getMyFamily().catch(() => null),
     ])
     rewards.value = rewardRes.rewards || []
     members.value = memberRes.members || []
+    myMemberId.value = familyRes?.callerMember?.id || 0
     error.value = ''
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
@@ -198,7 +203,7 @@ function openAwardDialog(rewardId: number) {
   const reward = rewards.value.find((r) => r.id === rewardId)
   if (!reward) return
   awardReward.value = reward
-  awardChildId.value = childOptions.value[0]?.value || 0
+  awardChildId.value = personOptions.value[0]?.value || 0
   awardError.value = ''
   awardMessage.value = ''
   awardDialog.value?.showModal()
@@ -218,6 +223,10 @@ function resetAwardForm() {
 async function awardRewardToChild() {
   if (!awardReward.value?.id || !awardChildId.value) {
     awardError.value = 'Select a person.'
+    return
+  }
+  if (myMemberId.value && awardChildId.value === myMemberId.value) {
+    awardError.value = 'You cannot award a reward to yourself.'
     return
   }
   awarding.value = true
@@ -338,12 +347,12 @@ onMounted(load)
     <p v-if="awardReward">
       Give <strong>{{ awardReward.title }}</strong> ({{ awardReward.costStars }} stars) to a family member.
     </p>
-    <FormLayout v-if="childOptions.length" @submit.prevent="awardRewardToChild">
+    <FormLayout v-if="personOptions.length" @submit.prevent="awardRewardToChild">
       <FormField label="Person" component-has-label>
         <RadioGroup
           v-model="awardChildId"
           variant="list"
-          :options="childOptions"
+          :options="personOptions"
           name="award-reward-person"
         />
       </FormField>
@@ -357,7 +366,7 @@ onMounted(load)
       </template>
     </FormLayout>
     <template v-else>
-      <p class="inline-notification note">No family members to award rewards to yet.</p>
+      <p class="inline-notification note">No other family members to award rewards to.</p>
       <div class="dialog-actions">
         <button type="button" class="neutral" @click="closeAwardDialog">Close</button>
       </div>
@@ -500,8 +509,13 @@ onMounted(load)
       >
         <template #cell-actions="{ row }">
           <div class="actions-cell">
-            <button type="button" class="good small" @click="approveRedemption(row.id)">Approve</button>
-            <button type="button" class="neutral small" @click="rejectRedemption(row.id)">Reject</button>
+            <template v-if="row.isOwn">
+              <span class="subtle">Awaiting another parent</span>
+            </template>
+            <template v-else>
+              <button type="button" class="good small" @click="approveRedemption(row.id)">Approve</button>
+              <button type="button" class="neutral small" @click="rejectRedemption(row.id)">Reject</button>
+            </template>
           </div>
         </template>
       </Table>

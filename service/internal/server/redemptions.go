@@ -28,8 +28,8 @@ func (s *Server) RequestRedemption(ctx context.Context, req *connect.Request[api
 		childID = fc.member.ID
 	}
 	child, err := s.store.GetMemberByID(ctx, childID)
-	if err != nil || child == nil || child.FamilyID != fc.family.ID || child.Role != store.MemberRoleChild {
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("child not found"))
+	if err != nil || !isFamilyStarMember(child, fc.family.ID) {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("member not found"))
 	}
 	if !fc.au.HasPermission(rbac.PermissionStarsViewFamily) && child.ID != fc.member.ID {
 		return nil, connect.NewError(connect.CodePermissionDenied, fmt.Errorf("forbidden"))
@@ -37,6 +37,9 @@ func (s *Server) RequestRedemption(ctx context.Context, req *connect.Request[api
 	reward, err := s.store.GetRewardByID(ctx, int(req.Msg.RewardId))
 	if err != nil || reward == nil || reward.FamilyID != fc.family.ID || !reward.Active {
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("reward not found"))
+	}
+	if reward.ApprovalRequired && child.ID == fc.member.ID && fc.au.HasPermission(rbac.PermissionRedemptionsApprove) {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("cannot request approval for your own reward"))
 	}
 	balance, err := s.store.GetMemberBalance(ctx, child.ID)
 	if err != nil {
@@ -58,6 +61,7 @@ func (s *Server) RequestRedemption(ctx context.Context, req *connect.Request[api
 			"family_id": fc.family.ID, "child_member_id": child.ID, "reward_id": reward.ID,
 			"stars_spent": reward.CostStars, "redemption_id": id,
 		})
+		s.notifyRedemptionRequested(ctx, red)
 		return connect.NewResponse(&apiv1.RequestRedemptionResponse{
 			StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Redemption requested"},
 			Redemption:       toProtoRedemption(red),
@@ -120,6 +124,9 @@ func (s *Server) resolveRedemption(ctx context.Context, redemptionID int, status
 	red, err := s.store.GetRedemptionByID(ctx, redemptionID)
 	if err != nil || red == nil || red.FamilyID != fc.family.ID || red.Status != store.RedemptionPending {
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("redemption not found"))
+	}
+	if red.ChildMemberID == fc.member.ID {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("cannot approve or reject your own redemption"))
 	}
 	var entryID *int
 	if status == store.RedemptionApproved {

@@ -170,6 +170,12 @@ export const starapp = {
       body,
     )
   },
+  testAppriseNotification() {
+    return connectFetch<{ standardResponse?: StandardResponse; tag?: string }>(
+      '/starapp.api.v1.StarAppService/TestAppriseNotification',
+      {},
+    )
+  },
   getUserPreferences() {
     return connectFetch<{
       language?: string

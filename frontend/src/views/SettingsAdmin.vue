@@ -111,6 +111,7 @@ function valuesFor(cvar: Cvar) {
   if (cvar.mainType === 'int') {
     return { valueInt: Number(edit.valueInt) || 0, valueString: '' }
   }
+  // string + textarea
   return { valueInt: 0, valueString: edit.valueString || '' }
 }
 
@@ -268,10 +269,27 @@ onMounted(load)
               :id="fieldId(cvar)"
               v-model="edits[cvar.key].valueString"
               type="text"
-              required
+              :required="cvar.key !== 'apprise_url' && cvar.key !== 'external_base_url'"
               maxlength="255"
               @change="markDirty(group.name)"
             >
+            <p v-if="cvar.description" class="subtle">{{ cvar.description }}</p>
+          </div>
+        </FormField>
+
+        <FormField
+          v-else-if="cvar.mainType === 'textarea'"
+          :label="labelFor(cvar)"
+          :for="fieldId(cvar)"
+        >
+          <div>
+            <textarea
+              :id="fieldId(cvar)"
+              v-model="edits[cvar.key].valueString"
+              rows="6"
+              maxlength="4000"
+              @change="markDirty(group.name)"
+            />
             <p v-if="cvar.description" class="subtle">{{ cvar.description }}</p>
           </div>
         </FormField>

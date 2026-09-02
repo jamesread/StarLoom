@@ -43,6 +43,13 @@ const awardForm = reactive({ amount: 1, note: '' })
 
 const starStyle = computed(() => memberStarStyle(member.value))
 const canRevoke = computed(() => hasPermission(statusState.status, 'stars.revoke'))
+const myMemberId = ref(0)
+const isOwnProfile = computed(
+  () => Boolean(myMemberId.value) && memberId.value === myMemberId.value,
+)
+const canAwardBonus = computed(
+  () => hasPermission(statusState.status, 'stars.award') && !isOwnProfile.value,
+)
 
 const ledgerHeaders = [
   { key: 'createdAt', label: 'Date', sortable: true, width: '11rem' },
@@ -83,8 +90,12 @@ async function load() {
   error.value = ''
   ledgerError.value = ''
   try {
-    const members = await starapp.listMembers()
-    member.value = (members.members || []).find((m) => m.id === memberId.value) || null
+    const [membersRes, familyRes] = await Promise.all([
+      starapp.listMembers(),
+      starapp.getMyFamily().catch(() => null),
+    ])
+    myMemberId.value = familyRes?.callerMember?.id || 0
+    member.value = (membersRes.members || []).find((m) => m.id === memberId.value) || null
     if (!member.value) {
       error.value = 'Person not found'
       ledger.value = []
@@ -179,7 +190,7 @@ onMounted(load)
   </Section>
 
   <Section
-    v-if="member"
+    v-if="member && canAwardBonus"
     subtitle="Give extra stars outside of chores."
     :padding="true"
   >

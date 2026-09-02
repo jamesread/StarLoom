@@ -1,9 +1,10 @@
 package cvar
 
 const (
-	TypeString = "string"
-	TypeInt    = "int"
-	TypeBool   = "bool"
+	TypeString   = "string"
+	TypeTextarea = "textarea"
+	TypeInt      = "int"
+	TypeBool     = "bool"
 )
 
 const (
@@ -14,6 +15,10 @@ const (
 	KeyDefaultAwardStars        = "default_award_stars"
 	KeyEnableRedemptionApproval = "enable_redemption_approval"
 
+	KeyAppriseURL               = "apprise_url"
+	KeyExternalBaseURL          = "external_base_url"
+	KeyAppriseRedemptionMessage = "apprise_redemption_message"
+
 	KeyThemeColorSchemeSwitcherEnabled = "theme_color_scheme_switcher_enabled"
 	KeyThemeName                       = "theme_name"
 	KeyThemeControl                    = "theme_control"
@@ -21,12 +26,15 @@ const (
 	ThemeControlSystem = "system"
 	ThemeControlUser   = "user"
 
-	DefaultAwardStars = 1
-	MaxAwardStars     = 100
+	DefaultAwardStars  = 1
+	MaxAwardStars      = 100
+	MaxStringCvarLen   = 255
+	MaxTextareaCvarLen = 4000
 
-	CategorySite     = "Site"
-	CategoryFeatures = "Features"
-	CategoryTheme    = "Theme"
+	CategorySite          = "Site"
+	CategoryFeatures      = "Features"
+	CategoryNotifications = "Notifications"
+	CategoryTheme         = "Theme"
 )
 
 type Def struct {
@@ -81,6 +89,28 @@ func Defaults(siteTitle string, showFooter bool) []Def {
 			Title:       "Redemption approval by default",
 			Description: "When enabled, new rewards require parent approval before stars are deducted.",
 			Category:    CategoryFeatures, Ordinal: 40,
+		},
+		{
+			Key: KeyAppriseURL, MainType: TypeString, ValueString: "",
+			Title: "Apprise URL",
+			Description: "Apprise API notify URL for redemption approval requests " +
+				"(e.g. http://apprise:8000/notify/ or http://apprise:8000/notify/mykey). Leave empty to disable.",
+			Category: CategoryNotifications, Ordinal: 10,
+		},
+		{
+			Key: KeyExternalBaseURL, MainType: TypeString, ValueString: "",
+			Title: "External base URL",
+			Description: "Public origin used in notification deep links " +
+				"(e.g. https://stars.example.com). No trailing slash. Leave empty to use a path-only link.",
+			Category: CategoryNotifications, Ordinal: 20,
+		},
+		{
+			Key: KeyAppriseRedemptionMessage, MainType: TypeTextarea, ValueString: "",
+			Title: "Apprise redemption message",
+			Description: "Message body for approval-request notifications. Placeholders: " +
+				"{{approval_url}}, {{requestor_name}}, {{reward_name}}, {{stars}}, {{redemption_id}}, {{requestor_id}}. " +
+				"Leave empty to use the built-in default.",
+			Category: CategoryNotifications, Ordinal: 30,
 		},
 		{
 			Key: KeyThemeColorSchemeSwitcherEnabled, MainType: TypeBool, ValueInt: 0,

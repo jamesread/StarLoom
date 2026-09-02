@@ -25,6 +25,18 @@ Changes apply immediately; you do not restart the container.
 | Default award stars | Prefill when a parent awards stars by hand (1–100) |
 | Redemption approval by default | New rewards require parent approval before stars are spent |
 
+### Notifications
+
+| Setting | What it does |
+|---------|----------------|
+| Apprise URL | Apprise API notify URL for redemption approval requests. Leave empty to disable |
+| External base URL | Public site origin used in deep links inside notification messages (no trailing slash) |
+| Apprise redemption message | Message body template. Supports `{{approval_url}}`, `{{requestor_name}}`, `{{reward_name}}`, `{{stars}}`, `{{redemption_id}}`, and `{{requestor_id}}`. Empty uses the built-in default |
+
+When a child requests a reward that needs approval, StarLoom POSTs to the Apprise URL once per parent, using tag `starloom_uid_X` where **X** is that parent’s person (family member) id. Configure Apprise endpoints with matching tags so each parent’s devices receive the alert.
+
+From **User Control Panel** (click your username), use **Send test notification** to verify your tag reaches your devices.
+
 ### Theme
 
 | Setting | What it does |

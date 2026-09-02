@@ -14,6 +14,11 @@ func TestDefaultsHaveMetadata(t *testing.T) {
 	if !seen[KeySiteTitle] {
 		t.Fatal("missing site_title")
 	}
+	for _, key := range []string{KeyAppriseURL, KeyExternalBaseURL, KeyAppriseRedemptionMessage} {
+		if !seen[key] {
+			t.Fatalf("missing %s", key)
+		}
+	}
 }
 
 func assertDefMetadata(t *testing.T, def Def, seen map[string]bool) {

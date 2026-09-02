@@ -4120,6 +4120,64 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/TestAppriseNotification": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "TestAppriseNotification",
+        "operationId": "starapp.api.v1.StarAppService.TestAppriseNotification",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.TestAppriseNotificationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.TestAppriseNotificationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/UncompleteChore": {
       "post": {
         "tags": [
@@ -7339,6 +7397,26 @@
           }
         },
         "title": "StopImpersonationResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.TestAppriseNotificationRequest": {
+        "type": "object",
+        "title": "TestAppriseNotificationRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.TestAppriseNotificationResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "tag": {
+            "type": "string",
+            "title": "tag"
+          }
+        },
+        "title": "TestAppriseNotificationResponse",
         "additionalProperties": false
       },
       "starapp.api.v1.UncompleteChoreRequest": {

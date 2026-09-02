@@ -17,6 +17,7 @@ import {
   canViewChildHomeFromStatus,
   canViewChoresFromStatus,
   canViewFamilyHomeFromStatus,
+  canApproveRedemptionsFromStatus,
   hasPermission,
 } from '../lib/rbacAccess'
 import { memberStarStyle } from '../lib/memberStarColor'
@@ -156,9 +157,17 @@ function isUnavailableNow(rewardId: number) {
   return unavailableRewardIds.value.has(rewardId)
 }
 
+/** Approvers cannot self-redeem rewards that need approval (another parent must grant them). */
+function isSelfApprovalBlocked(reward: Pick<Reward, 'approvalRequired'>) {
+  return Boolean(reward.approvalRequired) && canApproveRedemptionsFromStatus(statusState.status)
+}
+
 function rewardDescription(reward: Reward) {
   if (isPendingApproval(reward.id)) {
     return 'Pending approval'
+  }
+  if (isSelfApprovalBlocked(reward)) {
+    return 'Needs another parent to award'
   }
   if (isUnavailableNow(reward.id)) {
     return 'Not currently available'
@@ -179,7 +188,8 @@ function setupRewardNav() {
     const needed = starsNeeded(reward)
     const pending = isPendingApproval(reward.id)
     const unavailable = isUnavailableNow(reward.id)
-    const blocked = pending || unavailable || needed > 0
+    const selfBlocked = isSelfApprovalBlocked(reward)
+    const blocked = pending || unavailable || selfBlocked || needed > 0
     const disabled = blocked || redeemingRewardId.value === reward.id
     nav.addNavigationLink({
       name: `reward-${reward.id}`,
@@ -260,7 +270,15 @@ function formatAward(entry?: { amount?: number; note?: string; createdAt?: strin
 
 async function redeem(rewardId: number) {
   const reward = childSummary.value?.rewards?.find((entry) => entry.id === rewardId)
-  if (!reward || isPendingApproval(rewardId) || isUnavailableNow(rewardId) || starsNeeded(reward) > 0) return
+  if (
+    !reward ||
+    isPendingApproval(rewardId) ||
+    isUnavailableNow(rewardId) ||
+    isSelfApprovalBlocked(reward) ||
+    starsNeeded(reward) > 0
+  ) {
+    return
+  }
   redeemingRewardId.value = rewardId
   redeemError.value = ''
   setupRewardNav()

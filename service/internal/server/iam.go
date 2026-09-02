@@ -11,9 +11,10 @@ import (
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
 
+	"github.com/jamesread/armature-iam/password"
+	iamstore "github.com/jamesread/armature-iam/store"
 	apiv1 "github.com/jamesread/starapp/service/gen/starapp/api/v1"
 	"github.com/jamesread/starapp/service/internal/auth"
-	"github.com/jamesread/starapp/service/internal/password"
 	"github.com/jamesread/starapp/service/internal/store"
 )
 
@@ -100,11 +101,18 @@ func mapStoreError(err error) *connect.Error {
 	if errors.Is(err, sql.ErrNoRows) {
 		return connect.NewError(connect.CodeNotFound, err)
 	}
+	if errors.Is(err, iamstore.ErrNoSuperuser) ||
+		errors.Is(err, iamstore.ErrSystemRole) ||
+		errors.Is(err, iamstore.ErrSystemGroup) ||
+		errors.Is(err, iamstore.ErrRenameSystemRole) {
+		return connect.NewError(connect.CodeFailedPrecondition, err)
+	}
 	msg := err.Error()
 	switch {
 	case strings.Contains(msg, "already exists"):
 		return connect.NewError(connect.CodeAlreadyExists, err)
 	case strings.Contains(msg, "cannot delete system"),
+		strings.Contains(msg, "cannot modify system"),
 		strings.Contains(msg, "cannot rename system"),
 		strings.Contains(msg, "cannot set permissions for system"),
 		strings.Contains(msg, "refusing to leave the system without a superuser"):
@@ -620,7 +628,7 @@ func (s *Server) CreateApiKey(ctx context.Context, req *connect.Request[apiv1.Cr
 	if name == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("name required"))
 	}
-	secret, err := password.GenerateAPIKey()
+	secret, err := password.GenerateAPIKey("sa_")
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}

@@ -444,21 +444,3 @@ func (m *Memory) CountPendingRedemptions(_ context.Context, familyID int) (int, 
 	}
 	return len(rows), nil
 }
-
-func (m *Memory) EnsureUserInGroup(ctx context.Context, userID int, groupName string) error {
-	g, err := m.GetUserGroupByName(ctx, groupName)
-	if err != nil || g == nil {
-		return fmt.Errorf("group %q not found", groupName)
-	}
-	ids, err := m.ListUserGroupMemberIDs(ctx, g.ID)
-	if err != nil {
-		return err
-	}
-	for _, id := range ids {
-		if id == userID {
-			return nil
-		}
-	}
-	ids = append(ids, userID)
-	return m.SetUserGroupMembers(ctx, g.ID, ids)
-}
