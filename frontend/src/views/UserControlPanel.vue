@@ -2,7 +2,6 @@
 import Navigation from 'picocrank/vue/components/Navigation.vue'
 import NavigationGrid from 'picocrank/vue/components/NavigationGrid.vue'
 import Section from 'picocrank/vue/components/Section.vue'
-import NotificationBlock from 'picocrank/vue/components/NotificationBlock.vue'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { HugeiconsIcon } from '@hugeicons/vue'
@@ -17,17 +16,11 @@ import { fetchAppStatus, invalidateAppStatus, useStatus } from '../composables/u
 import { starapp } from '../api/client'
 import { canAccessControlPanelFromStatus, canViewFamilyHomeFromStatus } from '../lib/rbacAccess'
 
-const iconStrokeWidth = 2.5
-
 const router = useRouter()
 const status = useStatus()
 const navRef = ref<InstanceType<typeof Navigation> | null>(null)
 const loggingOut = ref(false)
 const error = ref('')
-const testingNotify = ref(false)
-const notifyError = ref('')
-const notifySuccess = ref('')
-const personTag = ref('')
 const personId = ref<number | null>(null)
 const personName = ref('')
 
@@ -54,11 +47,9 @@ async function loadPerson() {
     const id = fam.callerMember?.id
     personId.value = id || null
     personName.value = fam.callerMember?.displayName?.trim() || ''
-    personTag.value = id ? `starloom_uid_${id}` : ''
   } catch {
     personId.value = null
     personName.value = ''
-    personTag.value = ''
   }
 }
 
@@ -97,24 +88,6 @@ function setupQuickActions() {
       icon: DashboardSquareSettingIcon,
       description: 'System administration',
     })
-  }
-}
-
-async function sendTestNotification() {
-  testingNotify.value = true
-  notifyError.value = ''
-  notifySuccess.value = ''
-  try {
-    const res = await starapp.testAppriseNotification()
-    const tag = res.tag || personTag.value
-    if (tag) personTag.value = tag
-    notifySuccess.value = res.standardResponse?.message
-      ? `${res.standardResponse.message}${tag ? ` (tag ${tag})` : ''}`
-      : 'Test notification sent'
-  } catch (e) {
-    notifyError.value = e instanceof Error ? e.message : String(e)
-  } finally {
-    testingNotify.value = false
   }
 }
 
@@ -173,33 +146,15 @@ onMounted(() => {
 
   <Section v-if="userData?.isLoggedIn" title="Notifications" :padding="true">
     <p>
-      Send a test Apprise notification to your devices, or choose which chore completions should notify you.
-      <template v-if="personTag"> Uses tag <code>{{ personTag }}</code>.</template>
+      Choose which chore completions should notify you, or manage subscriptions from your
+      <RouterLink v-if="showPersonLink" :to="{ name: 'familyPersonDetail', params: { id: personId } }">
+        person profile
+      </RouterLink>
+      <span v-else>person profile</span>.
     </p>
     <p>
       <RouterLink :to="{ name: 'choreNotifications' }">Manage chore completion subscriptions</RouterLink>
     </p>
-    <p v-if="notifyError" class="inline-notification error">{{ notifyError }}</p>
-    <NotificationBlock
-      v-if="notifySuccess"
-      type="success"
-      :message="notifySuccess"
-    />
-    <button
-      type="button"
-      class="inline-icon neutral"
-      :disabled="testingNotify"
-      @click="sendTestNotification"
-    >
-      <HugeiconsIcon
-        :icon="Notification03Icon"
-        width="1em"
-        height="1em"
-        :strokeWidth="iconStrokeWidth"
-        aria-hidden="true"
-      />
-      <span>{{ testingNotify ? 'Sending…' : 'Send test notification' }}</span>
-    </button>
   </Section>
 
   <Section v-if="userData?.isLoggedIn" title="Quick actions" :padding="true">

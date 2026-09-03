@@ -56,9 +56,6 @@ const (
 	StarAppServiceGetUsersProcedure = "/starapp.api.v1.StarAppService/GetUsers"
 	// StarAppServiceGetUserProcedure is the fully-qualified name of the StarAppService's GetUser RPC.
 	StarAppServiceGetUserProcedure = "/starapp.api.v1.StarAppService/GetUser"
-	// StarAppServiceSendUserTestNotificationProcedure is the fully-qualified name of the
-	// StarAppService's SendUserTestNotification RPC.
-	StarAppServiceSendUserTestNotificationProcedure = "/starapp.api.v1.StarAppService/SendUserTestNotification"
 	// StarAppServiceCreateUserProcedure is the fully-qualified name of the StarAppService's CreateUser
 	// RPC.
 	StarAppServiceCreateUserProcedure = "/starapp.api.v1.StarAppService/CreateUser"
@@ -155,15 +152,18 @@ const (
 	// StarAppServiceFireTestWebhooksProcedure is the fully-qualified name of the StarAppService's
 	// FireTestWebhooks RPC.
 	StarAppServiceFireTestWebhooksProcedure = "/starapp.api.v1.StarAppService/FireTestWebhooks"
-	// StarAppServiceTestAppriseNotificationProcedure is the fully-qualified name of the
-	// StarAppService's TestAppriseNotification RPC.
-	StarAppServiceTestAppriseNotificationProcedure = "/starapp.api.v1.StarAppService/TestAppriseNotification"
 	// StarAppServiceGetMyChoreNotificationSubscriptionsProcedure is the fully-qualified name of the
 	// StarAppService's GetMyChoreNotificationSubscriptions RPC.
 	StarAppServiceGetMyChoreNotificationSubscriptionsProcedure = "/starapp.api.v1.StarAppService/GetMyChoreNotificationSubscriptions"
 	// StarAppServiceSaveMyChoreNotificationSubscriptionsProcedure is the fully-qualified name of the
 	// StarAppService's SaveMyChoreNotificationSubscriptions RPC.
 	StarAppServiceSaveMyChoreNotificationSubscriptionsProcedure = "/starapp.api.v1.StarAppService/SaveMyChoreNotificationSubscriptions"
+	// StarAppServiceGetMemberChoreNotificationSubscriptionsProcedure is the fully-qualified name of the
+	// StarAppService's GetMemberChoreNotificationSubscriptions RPC.
+	StarAppServiceGetMemberChoreNotificationSubscriptionsProcedure = "/starapp.api.v1.StarAppService/GetMemberChoreNotificationSubscriptions"
+	// StarAppServiceSaveMemberChoreNotificationSubscriptionsProcedure is the fully-qualified name of
+	// the StarAppService's SaveMemberChoreNotificationSubscriptions RPC.
+	StarAppServiceSaveMemberChoreNotificationSubscriptionsProcedure = "/starapp.api.v1.StarAppService/SaveMemberChoreNotificationSubscriptions"
 	// StarAppServiceListNotificationDeliveriesProcedure is the fully-qualified name of the
 	// StarAppService's ListNotificationDeliveries RPC.
 	StarAppServiceListNotificationDeliveriesProcedure = "/starapp.api.v1.StarAppService/ListNotificationDeliveries"
@@ -245,6 +245,9 @@ const (
 	// StarAppServiceGetMemberTodaysChoresProcedure is the fully-qualified name of the StarAppService's
 	// GetMemberTodaysChores RPC.
 	StarAppServiceGetMemberTodaysChoresProcedure = "/starapp.api.v1.StarAppService/GetMemberTodaysChores"
+	// StarAppServiceSendMemberTestNotificationProcedure is the fully-qualified name of the
+	// StarAppService's SendMemberTestNotification RPC.
+	StarAppServiceSendMemberTestNotificationProcedure = "/starapp.api.v1.StarAppService/SendMemberTestNotification"
 	// StarAppServiceListStarChartsProcedure is the fully-qualified name of the StarAppService's
 	// ListStarCharts RPC.
 	StarAppServiceListStarChartsProcedure = "/starapp.api.v1.StarAppService/ListStarCharts"
@@ -300,7 +303,6 @@ type StarAppServiceClient interface {
 	SaveUserPreferences(context.Context, *connect.Request[v1.SaveUserPreferencesRequest]) (*connect.Response[v1.SaveUserPreferencesResponse], error)
 	GetUsers(context.Context, *connect.Request[v1.GetUsersRequest]) (*connect.Response[v1.GetUsersResponse], error)
 	GetUser(context.Context, *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.GetUserResponse], error)
-	SendUserTestNotification(context.Context, *connect.Request[v1.SendUserTestNotificationRequest]) (*connect.Response[v1.SendUserTestNotificationResponse], error)
 	CreateUser(context.Context, *connect.Request[v1.CreateUserRequest]) (*connect.Response[v1.CreateUserResponse], error)
 	DeleteUser(context.Context, *connect.Request[v1.DeleteUserRequest]) (*connect.Response[v1.DeleteUserResponse], error)
 	ResetUserPassword(context.Context, *connect.Request[v1.ResetUserPasswordRequest]) (*connect.Response[v1.ResetUserPasswordResponse], error)
@@ -333,9 +335,10 @@ type StarAppServiceClient interface {
 	DeleteWebhook(context.Context, *connect.Request[v1.DeleteWebhookRequest]) (*connect.Response[v1.DeleteWebhookResponse], error)
 	ListWebhookDeliveries(context.Context, *connect.Request[v1.ListWebhookDeliveriesRequest]) (*connect.Response[v1.ListWebhookDeliveriesResponse], error)
 	FireTestWebhooks(context.Context, *connect.Request[v1.FireTestWebhooksRequest]) (*connect.Response[v1.FireTestWebhooksResponse], error)
-	TestAppriseNotification(context.Context, *connect.Request[v1.TestAppriseNotificationRequest]) (*connect.Response[v1.TestAppriseNotificationResponse], error)
 	GetMyChoreNotificationSubscriptions(context.Context, *connect.Request[v1.GetMyChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.GetMyChoreNotificationSubscriptionsResponse], error)
 	SaveMyChoreNotificationSubscriptions(context.Context, *connect.Request[v1.SaveMyChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.SaveMyChoreNotificationSubscriptionsResponse], error)
+	GetMemberChoreNotificationSubscriptions(context.Context, *connect.Request[v1.GetMemberChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.GetMemberChoreNotificationSubscriptionsResponse], error)
+	SaveMemberChoreNotificationSubscriptions(context.Context, *connect.Request[v1.SaveMemberChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.SaveMemberChoreNotificationSubscriptionsResponse], error)
 	ListNotificationDeliveries(context.Context, *connect.Request[v1.ListNotificationDeliveriesRequest]) (*connect.Response[v1.ListNotificationDeliveriesResponse], error)
 	GetMyFamily(context.Context, *connect.Request[v1.GetMyFamilyRequest]) (*connect.Response[v1.GetMyFamilyResponse], error)
 	CreateFamily(context.Context, *connect.Request[v1.CreateFamilyRequest]) (*connect.Response[v1.CreateFamilyResponse], error)
@@ -363,6 +366,7 @@ type StarAppServiceClient interface {
 	GetParentHomeSummary(context.Context, *connect.Request[v1.GetParentHomeSummaryRequest]) (*connect.Response[v1.GetParentHomeSummaryResponse], error)
 	GetChildHomeSummary(context.Context, *connect.Request[v1.GetChildHomeSummaryRequest]) (*connect.Response[v1.GetChildHomeSummaryResponse], error)
 	GetMemberTodaysChores(context.Context, *connect.Request[v1.GetMemberTodaysChoresRequest]) (*connect.Response[v1.GetMemberTodaysChoresResponse], error)
+	SendMemberTestNotification(context.Context, *connect.Request[v1.SendMemberTestNotificationRequest]) (*connect.Response[v1.SendMemberTestNotificationResponse], error)
 	ListStarCharts(context.Context, *connect.Request[v1.ListStarChartsRequest]) (*connect.Response[v1.ListStarChartsResponse], error)
 	CreateStarChart(context.Context, *connect.Request[v1.CreateStarChartRequest]) (*connect.Response[v1.CreateStarChartResponse], error)
 	UpdateStarChart(context.Context, *connect.Request[v1.UpdateStarChartRequest]) (*connect.Response[v1.UpdateStarChartResponse], error)
@@ -442,12 +446,6 @@ func NewStarAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+StarAppServiceGetUserProcedure,
 			connect.WithSchema(starAppServiceMethods.ByName("GetUser")),
-			connect.WithClientOptions(opts...),
-		),
-		sendUserTestNotification: connect.NewClient[v1.SendUserTestNotificationRequest, v1.SendUserTestNotificationResponse](
-			httpClient,
-			baseURL+StarAppServiceSendUserTestNotificationProcedure,
-			connect.WithSchema(starAppServiceMethods.ByName("SendUserTestNotification")),
 			connect.WithClientOptions(opts...),
 		),
 		createUser: connect.NewClient[v1.CreateUserRequest, v1.CreateUserResponse](
@@ -642,12 +640,6 @@ func NewStarAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(starAppServiceMethods.ByName("FireTestWebhooks")),
 			connect.WithClientOptions(opts...),
 		),
-		testAppriseNotification: connect.NewClient[v1.TestAppriseNotificationRequest, v1.TestAppriseNotificationResponse](
-			httpClient,
-			baseURL+StarAppServiceTestAppriseNotificationProcedure,
-			connect.WithSchema(starAppServiceMethods.ByName("TestAppriseNotification")),
-			connect.WithClientOptions(opts...),
-		),
 		getMyChoreNotificationSubscriptions: connect.NewClient[v1.GetMyChoreNotificationSubscriptionsRequest, v1.GetMyChoreNotificationSubscriptionsResponse](
 			httpClient,
 			baseURL+StarAppServiceGetMyChoreNotificationSubscriptionsProcedure,
@@ -658,6 +650,18 @@ func NewStarAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+StarAppServiceSaveMyChoreNotificationSubscriptionsProcedure,
 			connect.WithSchema(starAppServiceMethods.ByName("SaveMyChoreNotificationSubscriptions")),
+			connect.WithClientOptions(opts...),
+		),
+		getMemberChoreNotificationSubscriptions: connect.NewClient[v1.GetMemberChoreNotificationSubscriptionsRequest, v1.GetMemberChoreNotificationSubscriptionsResponse](
+			httpClient,
+			baseURL+StarAppServiceGetMemberChoreNotificationSubscriptionsProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("GetMemberChoreNotificationSubscriptions")),
+			connect.WithClientOptions(opts...),
+		),
+		saveMemberChoreNotificationSubscriptions: connect.NewClient[v1.SaveMemberChoreNotificationSubscriptionsRequest, v1.SaveMemberChoreNotificationSubscriptionsResponse](
+			httpClient,
+			baseURL+StarAppServiceSaveMemberChoreNotificationSubscriptionsProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("SaveMemberChoreNotificationSubscriptions")),
 			connect.WithClientOptions(opts...),
 		),
 		listNotificationDeliveries: connect.NewClient[v1.ListNotificationDeliveriesRequest, v1.ListNotificationDeliveriesResponse](
@@ -822,6 +826,12 @@ func NewStarAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(starAppServiceMethods.ByName("GetMemberTodaysChores")),
 			connect.WithClientOptions(opts...),
 		),
+		sendMemberTestNotification: connect.NewClient[v1.SendMemberTestNotificationRequest, v1.SendMemberTestNotificationResponse](
+			httpClient,
+			baseURL+StarAppServiceSendMemberTestNotificationProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("SendMemberTestNotification")),
+			connect.WithClientOptions(opts...),
+		),
 		listStarCharts: connect.NewClient[v1.ListStarChartsRequest, v1.ListStarChartsResponse](
 			httpClient,
 			baseURL+StarAppServiceListStarChartsProcedure,
@@ -911,92 +921,93 @@ func NewStarAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 
 // starAppServiceClient implements StarAppServiceClient.
 type starAppServiceClient struct {
-	init                                 *connect.Client[v1.InitRequest, v1.InitResponse]
-	getStatus                            *connect.Client[v1.GetStatusRequest, v1.GetStatusResponse]
-	loginWithUsernameAndPassword         *connect.Client[v1.LoginWithUsernameAndPasswordRequest, v1.LoginWithUsernameAndPasswordResponse]
-	logout                               *connect.Client[v1.LogoutRequest, v1.LogoutResponse]
-	changePassword                       *connect.Client[v1.ChangePasswordRequest, v1.ChangePasswordResponse]
-	getUserPreferences                   *connect.Client[v1.GetUserPreferencesRequest, v1.GetUserPreferencesResponse]
-	saveUserPreferences                  *connect.Client[v1.SaveUserPreferencesRequest, v1.SaveUserPreferencesResponse]
-	getUsers                             *connect.Client[v1.GetUsersRequest, v1.GetUsersResponse]
-	getUser                              *connect.Client[v1.GetUserRequest, v1.GetUserResponse]
-	sendUserTestNotification             *connect.Client[v1.SendUserTestNotificationRequest, v1.SendUserTestNotificationResponse]
-	createUser                           *connect.Client[v1.CreateUserRequest, v1.CreateUserResponse]
-	deleteUser                           *connect.Client[v1.DeleteUserRequest, v1.DeleteUserResponse]
-	resetUserPassword                    *connect.Client[v1.ResetUserPasswordRequest, v1.ResetUserPasswordResponse]
-	listRbacPermissions                  *connect.Client[v1.ListRbacPermissionsRequest, v1.ListRbacPermissionsResponse]
-	listRbacRoles                        *connect.Client[v1.ListRbacRolesRequest, v1.ListRbacRolesResponse]
-	createRbacRole                       *connect.Client[v1.CreateRbacRoleRequest, v1.CreateRbacRoleResponse]
-	updateRbacRole                       *connect.Client[v1.UpdateRbacRoleRequest, v1.RbacRole]
-	deleteRbacRole                       *connect.Client[v1.DeleteRbacRoleRequest, v1.DeleteRbacRoleResponse]
-	getUserRbacRoles                     *connect.Client[v1.GetUserRbacRolesRequest, v1.GetUserRbacRolesResponse]
-	getUserGroupRbacRoles                *connect.Client[v1.GetUserGroupRbacRolesRequest, v1.GetUserGroupRbacRolesResponse]
-	setUserGroupRbacRoles                *connect.Client[v1.SetUserGroupRbacRolesRequest, v1.SetUserGroupRbacRolesResponse]
-	getRbacRoleUsers                     *connect.Client[v1.GetRbacRoleUsersRequest, v1.GetRbacRoleUsersResponse]
-	getRbacRoleGroups                    *connect.Client[v1.GetRbacRoleGroupsRequest, v1.GetRbacRoleGroupsResponse]
-	getMyPermissionsAudit                *connect.Client[v1.GetMyPermissionsAuditRequest, v1.GetMyPermissionsAuditResponse]
-	listUserGroups                       *connect.Client[v1.ListUserGroupsRequest, v1.ListUserGroupsResponse]
-	createUserGroup                      *connect.Client[v1.CreateUserGroupRequest, v1.CreateUserGroupResponse]
-	deleteUserGroup                      *connect.Client[v1.DeleteUserGroupRequest, v1.DeleteUserGroupResponse]
-	getUserGroupMembers                  *connect.Client[v1.GetUserGroupMembersRequest, v1.GetUserGroupMembersResponse]
-	setUserGroupMembers                  *connect.Client[v1.SetUserGroupMembersRequest, v1.SetUserGroupMembersResponse]
-	impersonateUser                      *connect.Client[v1.ImpersonateUserRequest, v1.ImpersonateUserResponse]
-	stopImpersonation                    *connect.Client[v1.StopImpersonationRequest, v1.StopImpersonationResponse]
-	listApiKeys                          *connect.Client[v1.ListApiKeysRequest, v1.ListApiKeysResponse]
-	createApiKey                         *connect.Client[v1.CreateApiKeyRequest, v1.CreateApiKeyResponse]
-	deleteApiKey                         *connect.Client[v1.DeleteApiKeyRequest, v1.DeleteApiKeyResponse]
-	listCvars                            *connect.Client[v1.ListCvarsRequest, v1.ListCvarsResponse]
-	updateCvar                           *connect.Client[v1.UpdateCvarRequest, v1.Cvar]
-	listWebhooks                         *connect.Client[v1.ListWebhooksRequest, v1.ListWebhooksResponse]
-	createWebhook                        *connect.Client[v1.CreateWebhookRequest, v1.CreateWebhookResponse]
-	updateWebhook                        *connect.Client[v1.UpdateWebhookRequest, v1.Webhook]
-	deleteWebhook                        *connect.Client[v1.DeleteWebhookRequest, v1.DeleteWebhookResponse]
-	listWebhookDeliveries                *connect.Client[v1.ListWebhookDeliveriesRequest, v1.ListWebhookDeliveriesResponse]
-	fireTestWebhooks                     *connect.Client[v1.FireTestWebhooksRequest, v1.FireTestWebhooksResponse]
-	testAppriseNotification              *connect.Client[v1.TestAppriseNotificationRequest, v1.TestAppriseNotificationResponse]
-	getMyChoreNotificationSubscriptions  *connect.Client[v1.GetMyChoreNotificationSubscriptionsRequest, v1.GetMyChoreNotificationSubscriptionsResponse]
-	saveMyChoreNotificationSubscriptions *connect.Client[v1.SaveMyChoreNotificationSubscriptionsRequest, v1.SaveMyChoreNotificationSubscriptionsResponse]
-	listNotificationDeliveries           *connect.Client[v1.ListNotificationDeliveriesRequest, v1.ListNotificationDeliveriesResponse]
-	getMyFamily                          *connect.Client[v1.GetMyFamilyRequest, v1.GetMyFamilyResponse]
-	createFamily                         *connect.Client[v1.CreateFamilyRequest, v1.CreateFamilyResponse]
-	listMembers                          *connect.Client[v1.ListMembersRequest, v1.ListMembersResponse]
-	createChildMember                    *connect.Client[v1.CreateChildMemberRequest, v1.CreateChildMemberResponse]
-	updateMember                         *connect.Client[v1.UpdateMemberRequest, v1.UpdateMemberResponse]
-	assignMemberLogin                    *connect.Client[v1.AssignMemberLoginRequest, v1.AssignMemberLoginResponse]
-	deleteMember                         *connect.Client[v1.DeleteMemberRequest, v1.DeleteMemberResponse]
-	uploadMemberAvatar                   *connect.Client[v1.UploadMemberAvatarRequest, v1.UploadMemberAvatarResponse]
-	deleteMemberAvatar                   *connect.Client[v1.DeleteMemberAvatarRequest, v1.DeleteMemberAvatarResponse]
-	listMemberAvatars                    *connect.Client[v1.ListMemberAvatarsRequest, v1.ListMemberAvatarsResponse]
-	selectMemberAvatar                   *connect.Client[v1.SelectMemberAvatarRequest, v1.SelectMemberAvatarResponse]
-	awardStars                           *connect.Client[v1.AwardStarsRequest, v1.AwardStarsResponse]
-	revokeStars                          *connect.Client[v1.RevokeStarsRequest, v1.RevokeStarsResponse]
-	getMemberBalance                     *connect.Client[v1.GetMemberBalanceRequest, v1.GetMemberBalanceResponse]
-	listLedger                           *connect.Client[v1.ListLedgerRequest, v1.ListLedgerResponse]
-	listRewards                          *connect.Client[v1.ListRewardsRequest, v1.ListRewardsResponse]
-	createReward                         *connect.Client[v1.CreateRewardRequest, v1.CreateRewardResponse]
-	updateReward                         *connect.Client[v1.UpdateRewardRequest, v1.UpdateRewardResponse]
-	deleteReward                         *connect.Client[v1.DeleteRewardRequest, v1.DeleteRewardResponse]
-	requestRedemption                    *connect.Client[v1.RequestRedemptionRequest, v1.RequestRedemptionResponse]
-	approveRedemption                    *connect.Client[v1.ApproveRedemptionRequest, v1.ApproveRedemptionResponse]
-	rejectRedemption                     *connect.Client[v1.RejectRedemptionRequest, v1.RejectRedemptionResponse]
-	listRedemptions                      *connect.Client[v1.ListRedemptionsRequest, v1.ListRedemptionsResponse]
-	getParentHomeSummary                 *connect.Client[v1.GetParentHomeSummaryRequest, v1.GetParentHomeSummaryResponse]
-	getChildHomeSummary                  *connect.Client[v1.GetChildHomeSummaryRequest, v1.GetChildHomeSummaryResponse]
-	getMemberTodaysChores                *connect.Client[v1.GetMemberTodaysChoresRequest, v1.GetMemberTodaysChoresResponse]
-	listStarCharts                       *connect.Client[v1.ListStarChartsRequest, v1.ListStarChartsResponse]
-	createStarChart                      *connect.Client[v1.CreateStarChartRequest, v1.CreateStarChartResponse]
-	updateStarChart                      *connect.Client[v1.UpdateStarChartRequest, v1.UpdateStarChartResponse]
-	deleteStarChart                      *connect.Client[v1.DeleteStarChartRequest, v1.DeleteStarChartResponse]
-	listChores                           *connect.Client[v1.ListChoresRequest, v1.ListChoresResponse]
-	createChore                          *connect.Client[v1.CreateChoreRequest, v1.CreateChoreResponse]
-	updateChore                          *connect.Client[v1.UpdateChoreRequest, v1.UpdateChoreResponse]
-	deleteChore                          *connect.Client[v1.DeleteChoreRequest, v1.DeleteChoreResponse]
-	listChorePauses                      *connect.Client[v1.ListChorePausesRequest, v1.ListChorePausesResponse]
-	createChorePause                     *connect.Client[v1.CreateChorePauseRequest, v1.CreateChorePauseResponse]
-	deleteChorePause                     *connect.Client[v1.DeleteChorePauseRequest, v1.DeleteChorePauseResponse]
-	getWeeklyStarChart                   *connect.Client[v1.GetWeeklyStarChartRequest, v1.GetWeeklyStarChartResponse]
-	completeChore                        *connect.Client[v1.CompleteChoreRequest, v1.CompleteChoreResponse]
-	uncompleteChore                      *connect.Client[v1.UncompleteChoreRequest, v1.UncompleteChoreResponse]
+	init                                     *connect.Client[v1.InitRequest, v1.InitResponse]
+	getStatus                                *connect.Client[v1.GetStatusRequest, v1.GetStatusResponse]
+	loginWithUsernameAndPassword             *connect.Client[v1.LoginWithUsernameAndPasswordRequest, v1.LoginWithUsernameAndPasswordResponse]
+	logout                                   *connect.Client[v1.LogoutRequest, v1.LogoutResponse]
+	changePassword                           *connect.Client[v1.ChangePasswordRequest, v1.ChangePasswordResponse]
+	getUserPreferences                       *connect.Client[v1.GetUserPreferencesRequest, v1.GetUserPreferencesResponse]
+	saveUserPreferences                      *connect.Client[v1.SaveUserPreferencesRequest, v1.SaveUserPreferencesResponse]
+	getUsers                                 *connect.Client[v1.GetUsersRequest, v1.GetUsersResponse]
+	getUser                                  *connect.Client[v1.GetUserRequest, v1.GetUserResponse]
+	createUser                               *connect.Client[v1.CreateUserRequest, v1.CreateUserResponse]
+	deleteUser                               *connect.Client[v1.DeleteUserRequest, v1.DeleteUserResponse]
+	resetUserPassword                        *connect.Client[v1.ResetUserPasswordRequest, v1.ResetUserPasswordResponse]
+	listRbacPermissions                      *connect.Client[v1.ListRbacPermissionsRequest, v1.ListRbacPermissionsResponse]
+	listRbacRoles                            *connect.Client[v1.ListRbacRolesRequest, v1.ListRbacRolesResponse]
+	createRbacRole                           *connect.Client[v1.CreateRbacRoleRequest, v1.CreateRbacRoleResponse]
+	updateRbacRole                           *connect.Client[v1.UpdateRbacRoleRequest, v1.RbacRole]
+	deleteRbacRole                           *connect.Client[v1.DeleteRbacRoleRequest, v1.DeleteRbacRoleResponse]
+	getUserRbacRoles                         *connect.Client[v1.GetUserRbacRolesRequest, v1.GetUserRbacRolesResponse]
+	getUserGroupRbacRoles                    *connect.Client[v1.GetUserGroupRbacRolesRequest, v1.GetUserGroupRbacRolesResponse]
+	setUserGroupRbacRoles                    *connect.Client[v1.SetUserGroupRbacRolesRequest, v1.SetUserGroupRbacRolesResponse]
+	getRbacRoleUsers                         *connect.Client[v1.GetRbacRoleUsersRequest, v1.GetRbacRoleUsersResponse]
+	getRbacRoleGroups                        *connect.Client[v1.GetRbacRoleGroupsRequest, v1.GetRbacRoleGroupsResponse]
+	getMyPermissionsAudit                    *connect.Client[v1.GetMyPermissionsAuditRequest, v1.GetMyPermissionsAuditResponse]
+	listUserGroups                           *connect.Client[v1.ListUserGroupsRequest, v1.ListUserGroupsResponse]
+	createUserGroup                          *connect.Client[v1.CreateUserGroupRequest, v1.CreateUserGroupResponse]
+	deleteUserGroup                          *connect.Client[v1.DeleteUserGroupRequest, v1.DeleteUserGroupResponse]
+	getUserGroupMembers                      *connect.Client[v1.GetUserGroupMembersRequest, v1.GetUserGroupMembersResponse]
+	setUserGroupMembers                      *connect.Client[v1.SetUserGroupMembersRequest, v1.SetUserGroupMembersResponse]
+	impersonateUser                          *connect.Client[v1.ImpersonateUserRequest, v1.ImpersonateUserResponse]
+	stopImpersonation                        *connect.Client[v1.StopImpersonationRequest, v1.StopImpersonationResponse]
+	listApiKeys                              *connect.Client[v1.ListApiKeysRequest, v1.ListApiKeysResponse]
+	createApiKey                             *connect.Client[v1.CreateApiKeyRequest, v1.CreateApiKeyResponse]
+	deleteApiKey                             *connect.Client[v1.DeleteApiKeyRequest, v1.DeleteApiKeyResponse]
+	listCvars                                *connect.Client[v1.ListCvarsRequest, v1.ListCvarsResponse]
+	updateCvar                               *connect.Client[v1.UpdateCvarRequest, v1.Cvar]
+	listWebhooks                             *connect.Client[v1.ListWebhooksRequest, v1.ListWebhooksResponse]
+	createWebhook                            *connect.Client[v1.CreateWebhookRequest, v1.CreateWebhookResponse]
+	updateWebhook                            *connect.Client[v1.UpdateWebhookRequest, v1.Webhook]
+	deleteWebhook                            *connect.Client[v1.DeleteWebhookRequest, v1.DeleteWebhookResponse]
+	listWebhookDeliveries                    *connect.Client[v1.ListWebhookDeliveriesRequest, v1.ListWebhookDeliveriesResponse]
+	fireTestWebhooks                         *connect.Client[v1.FireTestWebhooksRequest, v1.FireTestWebhooksResponse]
+	getMyChoreNotificationSubscriptions      *connect.Client[v1.GetMyChoreNotificationSubscriptionsRequest, v1.GetMyChoreNotificationSubscriptionsResponse]
+	saveMyChoreNotificationSubscriptions     *connect.Client[v1.SaveMyChoreNotificationSubscriptionsRequest, v1.SaveMyChoreNotificationSubscriptionsResponse]
+	getMemberChoreNotificationSubscriptions  *connect.Client[v1.GetMemberChoreNotificationSubscriptionsRequest, v1.GetMemberChoreNotificationSubscriptionsResponse]
+	saveMemberChoreNotificationSubscriptions *connect.Client[v1.SaveMemberChoreNotificationSubscriptionsRequest, v1.SaveMemberChoreNotificationSubscriptionsResponse]
+	listNotificationDeliveries               *connect.Client[v1.ListNotificationDeliveriesRequest, v1.ListNotificationDeliveriesResponse]
+	getMyFamily                              *connect.Client[v1.GetMyFamilyRequest, v1.GetMyFamilyResponse]
+	createFamily                             *connect.Client[v1.CreateFamilyRequest, v1.CreateFamilyResponse]
+	listMembers                              *connect.Client[v1.ListMembersRequest, v1.ListMembersResponse]
+	createChildMember                        *connect.Client[v1.CreateChildMemberRequest, v1.CreateChildMemberResponse]
+	updateMember                             *connect.Client[v1.UpdateMemberRequest, v1.UpdateMemberResponse]
+	assignMemberLogin                        *connect.Client[v1.AssignMemberLoginRequest, v1.AssignMemberLoginResponse]
+	deleteMember                             *connect.Client[v1.DeleteMemberRequest, v1.DeleteMemberResponse]
+	uploadMemberAvatar                       *connect.Client[v1.UploadMemberAvatarRequest, v1.UploadMemberAvatarResponse]
+	deleteMemberAvatar                       *connect.Client[v1.DeleteMemberAvatarRequest, v1.DeleteMemberAvatarResponse]
+	listMemberAvatars                        *connect.Client[v1.ListMemberAvatarsRequest, v1.ListMemberAvatarsResponse]
+	selectMemberAvatar                       *connect.Client[v1.SelectMemberAvatarRequest, v1.SelectMemberAvatarResponse]
+	awardStars                               *connect.Client[v1.AwardStarsRequest, v1.AwardStarsResponse]
+	revokeStars                              *connect.Client[v1.RevokeStarsRequest, v1.RevokeStarsResponse]
+	getMemberBalance                         *connect.Client[v1.GetMemberBalanceRequest, v1.GetMemberBalanceResponse]
+	listLedger                               *connect.Client[v1.ListLedgerRequest, v1.ListLedgerResponse]
+	listRewards                              *connect.Client[v1.ListRewardsRequest, v1.ListRewardsResponse]
+	createReward                             *connect.Client[v1.CreateRewardRequest, v1.CreateRewardResponse]
+	updateReward                             *connect.Client[v1.UpdateRewardRequest, v1.UpdateRewardResponse]
+	deleteReward                             *connect.Client[v1.DeleteRewardRequest, v1.DeleteRewardResponse]
+	requestRedemption                        *connect.Client[v1.RequestRedemptionRequest, v1.RequestRedemptionResponse]
+	approveRedemption                        *connect.Client[v1.ApproveRedemptionRequest, v1.ApproveRedemptionResponse]
+	rejectRedemption                         *connect.Client[v1.RejectRedemptionRequest, v1.RejectRedemptionResponse]
+	listRedemptions                          *connect.Client[v1.ListRedemptionsRequest, v1.ListRedemptionsResponse]
+	getParentHomeSummary                     *connect.Client[v1.GetParentHomeSummaryRequest, v1.GetParentHomeSummaryResponse]
+	getChildHomeSummary                      *connect.Client[v1.GetChildHomeSummaryRequest, v1.GetChildHomeSummaryResponse]
+	getMemberTodaysChores                    *connect.Client[v1.GetMemberTodaysChoresRequest, v1.GetMemberTodaysChoresResponse]
+	sendMemberTestNotification               *connect.Client[v1.SendMemberTestNotificationRequest, v1.SendMemberTestNotificationResponse]
+	listStarCharts                           *connect.Client[v1.ListStarChartsRequest, v1.ListStarChartsResponse]
+	createStarChart                          *connect.Client[v1.CreateStarChartRequest, v1.CreateStarChartResponse]
+	updateStarChart                          *connect.Client[v1.UpdateStarChartRequest, v1.UpdateStarChartResponse]
+	deleteStarChart                          *connect.Client[v1.DeleteStarChartRequest, v1.DeleteStarChartResponse]
+	listChores                               *connect.Client[v1.ListChoresRequest, v1.ListChoresResponse]
+	createChore                              *connect.Client[v1.CreateChoreRequest, v1.CreateChoreResponse]
+	updateChore                              *connect.Client[v1.UpdateChoreRequest, v1.UpdateChoreResponse]
+	deleteChore                              *connect.Client[v1.DeleteChoreRequest, v1.DeleteChoreResponse]
+	listChorePauses                          *connect.Client[v1.ListChorePausesRequest, v1.ListChorePausesResponse]
+	createChorePause                         *connect.Client[v1.CreateChorePauseRequest, v1.CreateChorePauseResponse]
+	deleteChorePause                         *connect.Client[v1.DeleteChorePauseRequest, v1.DeleteChorePauseResponse]
+	getWeeklyStarChart                       *connect.Client[v1.GetWeeklyStarChartRequest, v1.GetWeeklyStarChartResponse]
+	completeChore                            *connect.Client[v1.CompleteChoreRequest, v1.CompleteChoreResponse]
+	uncompleteChore                          *connect.Client[v1.UncompleteChoreRequest, v1.UncompleteChoreResponse]
 }
 
 // Init calls starapp.api.v1.StarAppService.Init.
@@ -1042,11 +1053,6 @@ func (c *starAppServiceClient) GetUsers(ctx context.Context, req *connect.Reques
 // GetUser calls starapp.api.v1.StarAppService.GetUser.
 func (c *starAppServiceClient) GetUser(ctx context.Context, req *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.GetUserResponse], error) {
 	return c.getUser.CallUnary(ctx, req)
-}
-
-// SendUserTestNotification calls starapp.api.v1.StarAppService.SendUserTestNotification.
-func (c *starAppServiceClient) SendUserTestNotification(ctx context.Context, req *connect.Request[v1.SendUserTestNotificationRequest]) (*connect.Response[v1.SendUserTestNotificationResponse], error) {
-	return c.sendUserTestNotification.CallUnary(ctx, req)
 }
 
 // CreateUser calls starapp.api.v1.StarAppService.CreateUser.
@@ -1209,11 +1215,6 @@ func (c *starAppServiceClient) FireTestWebhooks(ctx context.Context, req *connec
 	return c.fireTestWebhooks.CallUnary(ctx, req)
 }
 
-// TestAppriseNotification calls starapp.api.v1.StarAppService.TestAppriseNotification.
-func (c *starAppServiceClient) TestAppriseNotification(ctx context.Context, req *connect.Request[v1.TestAppriseNotificationRequest]) (*connect.Response[v1.TestAppriseNotificationResponse], error) {
-	return c.testAppriseNotification.CallUnary(ctx, req)
-}
-
 // GetMyChoreNotificationSubscriptions calls
 // starapp.api.v1.StarAppService.GetMyChoreNotificationSubscriptions.
 func (c *starAppServiceClient) GetMyChoreNotificationSubscriptions(ctx context.Context, req *connect.Request[v1.GetMyChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.GetMyChoreNotificationSubscriptionsResponse], error) {
@@ -1224,6 +1225,18 @@ func (c *starAppServiceClient) GetMyChoreNotificationSubscriptions(ctx context.C
 // starapp.api.v1.StarAppService.SaveMyChoreNotificationSubscriptions.
 func (c *starAppServiceClient) SaveMyChoreNotificationSubscriptions(ctx context.Context, req *connect.Request[v1.SaveMyChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.SaveMyChoreNotificationSubscriptionsResponse], error) {
 	return c.saveMyChoreNotificationSubscriptions.CallUnary(ctx, req)
+}
+
+// GetMemberChoreNotificationSubscriptions calls
+// starapp.api.v1.StarAppService.GetMemberChoreNotificationSubscriptions.
+func (c *starAppServiceClient) GetMemberChoreNotificationSubscriptions(ctx context.Context, req *connect.Request[v1.GetMemberChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.GetMemberChoreNotificationSubscriptionsResponse], error) {
+	return c.getMemberChoreNotificationSubscriptions.CallUnary(ctx, req)
+}
+
+// SaveMemberChoreNotificationSubscriptions calls
+// starapp.api.v1.StarAppService.SaveMemberChoreNotificationSubscriptions.
+func (c *starAppServiceClient) SaveMemberChoreNotificationSubscriptions(ctx context.Context, req *connect.Request[v1.SaveMemberChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.SaveMemberChoreNotificationSubscriptionsResponse], error) {
+	return c.saveMemberChoreNotificationSubscriptions.CallUnary(ctx, req)
 }
 
 // ListNotificationDeliveries calls starapp.api.v1.StarAppService.ListNotificationDeliveries.
@@ -1361,6 +1374,11 @@ func (c *starAppServiceClient) GetMemberTodaysChores(ctx context.Context, req *c
 	return c.getMemberTodaysChores.CallUnary(ctx, req)
 }
 
+// SendMemberTestNotification calls starapp.api.v1.StarAppService.SendMemberTestNotification.
+func (c *starAppServiceClient) SendMemberTestNotification(ctx context.Context, req *connect.Request[v1.SendMemberTestNotificationRequest]) (*connect.Response[v1.SendMemberTestNotificationResponse], error) {
+	return c.sendMemberTestNotification.CallUnary(ctx, req)
+}
+
 // ListStarCharts calls starapp.api.v1.StarAppService.ListStarCharts.
 func (c *starAppServiceClient) ListStarCharts(ctx context.Context, req *connect.Request[v1.ListStarChartsRequest]) (*connect.Response[v1.ListStarChartsResponse], error) {
 	return c.listStarCharts.CallUnary(ctx, req)
@@ -1442,7 +1460,6 @@ type StarAppServiceHandler interface {
 	SaveUserPreferences(context.Context, *connect.Request[v1.SaveUserPreferencesRequest]) (*connect.Response[v1.SaveUserPreferencesResponse], error)
 	GetUsers(context.Context, *connect.Request[v1.GetUsersRequest]) (*connect.Response[v1.GetUsersResponse], error)
 	GetUser(context.Context, *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.GetUserResponse], error)
-	SendUserTestNotification(context.Context, *connect.Request[v1.SendUserTestNotificationRequest]) (*connect.Response[v1.SendUserTestNotificationResponse], error)
 	CreateUser(context.Context, *connect.Request[v1.CreateUserRequest]) (*connect.Response[v1.CreateUserResponse], error)
 	DeleteUser(context.Context, *connect.Request[v1.DeleteUserRequest]) (*connect.Response[v1.DeleteUserResponse], error)
 	ResetUserPassword(context.Context, *connect.Request[v1.ResetUserPasswordRequest]) (*connect.Response[v1.ResetUserPasswordResponse], error)
@@ -1475,9 +1492,10 @@ type StarAppServiceHandler interface {
 	DeleteWebhook(context.Context, *connect.Request[v1.DeleteWebhookRequest]) (*connect.Response[v1.DeleteWebhookResponse], error)
 	ListWebhookDeliveries(context.Context, *connect.Request[v1.ListWebhookDeliveriesRequest]) (*connect.Response[v1.ListWebhookDeliveriesResponse], error)
 	FireTestWebhooks(context.Context, *connect.Request[v1.FireTestWebhooksRequest]) (*connect.Response[v1.FireTestWebhooksResponse], error)
-	TestAppriseNotification(context.Context, *connect.Request[v1.TestAppriseNotificationRequest]) (*connect.Response[v1.TestAppriseNotificationResponse], error)
 	GetMyChoreNotificationSubscriptions(context.Context, *connect.Request[v1.GetMyChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.GetMyChoreNotificationSubscriptionsResponse], error)
 	SaveMyChoreNotificationSubscriptions(context.Context, *connect.Request[v1.SaveMyChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.SaveMyChoreNotificationSubscriptionsResponse], error)
+	GetMemberChoreNotificationSubscriptions(context.Context, *connect.Request[v1.GetMemberChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.GetMemberChoreNotificationSubscriptionsResponse], error)
+	SaveMemberChoreNotificationSubscriptions(context.Context, *connect.Request[v1.SaveMemberChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.SaveMemberChoreNotificationSubscriptionsResponse], error)
 	ListNotificationDeliveries(context.Context, *connect.Request[v1.ListNotificationDeliveriesRequest]) (*connect.Response[v1.ListNotificationDeliveriesResponse], error)
 	GetMyFamily(context.Context, *connect.Request[v1.GetMyFamilyRequest]) (*connect.Response[v1.GetMyFamilyResponse], error)
 	CreateFamily(context.Context, *connect.Request[v1.CreateFamilyRequest]) (*connect.Response[v1.CreateFamilyResponse], error)
@@ -1505,6 +1523,7 @@ type StarAppServiceHandler interface {
 	GetParentHomeSummary(context.Context, *connect.Request[v1.GetParentHomeSummaryRequest]) (*connect.Response[v1.GetParentHomeSummaryResponse], error)
 	GetChildHomeSummary(context.Context, *connect.Request[v1.GetChildHomeSummaryRequest]) (*connect.Response[v1.GetChildHomeSummaryResponse], error)
 	GetMemberTodaysChores(context.Context, *connect.Request[v1.GetMemberTodaysChoresRequest]) (*connect.Response[v1.GetMemberTodaysChoresResponse], error)
+	SendMemberTestNotification(context.Context, *connect.Request[v1.SendMemberTestNotificationRequest]) (*connect.Response[v1.SendMemberTestNotificationResponse], error)
 	ListStarCharts(context.Context, *connect.Request[v1.ListStarChartsRequest]) (*connect.Response[v1.ListStarChartsResponse], error)
 	CreateStarChart(context.Context, *connect.Request[v1.CreateStarChartRequest]) (*connect.Response[v1.CreateStarChartResponse], error)
 	UpdateStarChart(context.Context, *connect.Request[v1.UpdateStarChartRequest]) (*connect.Response[v1.UpdateStarChartResponse], error)
@@ -1580,12 +1599,6 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 		StarAppServiceGetUserProcedure,
 		svc.GetUser,
 		connect.WithSchema(starAppServiceMethods.ByName("GetUser")),
-		connect.WithHandlerOptions(opts...),
-	)
-	starAppServiceSendUserTestNotificationHandler := connect.NewUnaryHandler(
-		StarAppServiceSendUserTestNotificationProcedure,
-		svc.SendUserTestNotification,
-		connect.WithSchema(starAppServiceMethods.ByName("SendUserTestNotification")),
 		connect.WithHandlerOptions(opts...),
 	)
 	starAppServiceCreateUserHandler := connect.NewUnaryHandler(
@@ -1780,12 +1793,6 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 		connect.WithSchema(starAppServiceMethods.ByName("FireTestWebhooks")),
 		connect.WithHandlerOptions(opts...),
 	)
-	starAppServiceTestAppriseNotificationHandler := connect.NewUnaryHandler(
-		StarAppServiceTestAppriseNotificationProcedure,
-		svc.TestAppriseNotification,
-		connect.WithSchema(starAppServiceMethods.ByName("TestAppriseNotification")),
-		connect.WithHandlerOptions(opts...),
-	)
 	starAppServiceGetMyChoreNotificationSubscriptionsHandler := connect.NewUnaryHandler(
 		StarAppServiceGetMyChoreNotificationSubscriptionsProcedure,
 		svc.GetMyChoreNotificationSubscriptions,
@@ -1796,6 +1803,18 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 		StarAppServiceSaveMyChoreNotificationSubscriptionsProcedure,
 		svc.SaveMyChoreNotificationSubscriptions,
 		connect.WithSchema(starAppServiceMethods.ByName("SaveMyChoreNotificationSubscriptions")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceGetMemberChoreNotificationSubscriptionsHandler := connect.NewUnaryHandler(
+		StarAppServiceGetMemberChoreNotificationSubscriptionsProcedure,
+		svc.GetMemberChoreNotificationSubscriptions,
+		connect.WithSchema(starAppServiceMethods.ByName("GetMemberChoreNotificationSubscriptions")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceSaveMemberChoreNotificationSubscriptionsHandler := connect.NewUnaryHandler(
+		StarAppServiceSaveMemberChoreNotificationSubscriptionsProcedure,
+		svc.SaveMemberChoreNotificationSubscriptions,
+		connect.WithSchema(starAppServiceMethods.ByName("SaveMemberChoreNotificationSubscriptions")),
 		connect.WithHandlerOptions(opts...),
 	)
 	starAppServiceListNotificationDeliveriesHandler := connect.NewUnaryHandler(
@@ -1960,6 +1979,12 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 		connect.WithSchema(starAppServiceMethods.ByName("GetMemberTodaysChores")),
 		connect.WithHandlerOptions(opts...),
 	)
+	starAppServiceSendMemberTestNotificationHandler := connect.NewUnaryHandler(
+		StarAppServiceSendMemberTestNotificationProcedure,
+		svc.SendMemberTestNotification,
+		connect.WithSchema(starAppServiceMethods.ByName("SendMemberTestNotification")),
+		connect.WithHandlerOptions(opts...),
+	)
 	starAppServiceListStarChartsHandler := connect.NewUnaryHandler(
 		StarAppServiceListStarChartsProcedure,
 		svc.ListStarCharts,
@@ -2064,8 +2089,6 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 			starAppServiceGetUsersHandler.ServeHTTP(w, r)
 		case StarAppServiceGetUserProcedure:
 			starAppServiceGetUserHandler.ServeHTTP(w, r)
-		case StarAppServiceSendUserTestNotificationProcedure:
-			starAppServiceSendUserTestNotificationHandler.ServeHTTP(w, r)
 		case StarAppServiceCreateUserProcedure:
 			starAppServiceCreateUserHandler.ServeHTTP(w, r)
 		case StarAppServiceDeleteUserProcedure:
@@ -2130,12 +2153,14 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 			starAppServiceListWebhookDeliveriesHandler.ServeHTTP(w, r)
 		case StarAppServiceFireTestWebhooksProcedure:
 			starAppServiceFireTestWebhooksHandler.ServeHTTP(w, r)
-		case StarAppServiceTestAppriseNotificationProcedure:
-			starAppServiceTestAppriseNotificationHandler.ServeHTTP(w, r)
 		case StarAppServiceGetMyChoreNotificationSubscriptionsProcedure:
 			starAppServiceGetMyChoreNotificationSubscriptionsHandler.ServeHTTP(w, r)
 		case StarAppServiceSaveMyChoreNotificationSubscriptionsProcedure:
 			starAppServiceSaveMyChoreNotificationSubscriptionsHandler.ServeHTTP(w, r)
+		case StarAppServiceGetMemberChoreNotificationSubscriptionsProcedure:
+			starAppServiceGetMemberChoreNotificationSubscriptionsHandler.ServeHTTP(w, r)
+		case StarAppServiceSaveMemberChoreNotificationSubscriptionsProcedure:
+			starAppServiceSaveMemberChoreNotificationSubscriptionsHandler.ServeHTTP(w, r)
 		case StarAppServiceListNotificationDeliveriesProcedure:
 			starAppServiceListNotificationDeliveriesHandler.ServeHTTP(w, r)
 		case StarAppServiceGetMyFamilyProcedure:
@@ -2190,6 +2215,8 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 			starAppServiceGetChildHomeSummaryHandler.ServeHTTP(w, r)
 		case StarAppServiceGetMemberTodaysChoresProcedure:
 			starAppServiceGetMemberTodaysChoresHandler.ServeHTTP(w, r)
+		case StarAppServiceSendMemberTestNotificationProcedure:
+			starAppServiceSendMemberTestNotificationHandler.ServeHTTP(w, r)
 		case StarAppServiceListStarChartsProcedure:
 			starAppServiceListStarChartsHandler.ServeHTTP(w, r)
 		case StarAppServiceCreateStarChartProcedure:
@@ -2261,10 +2288,6 @@ func (UnimplementedStarAppServiceHandler) GetUsers(context.Context, *connect.Req
 
 func (UnimplementedStarAppServiceHandler) GetUser(context.Context, *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.GetUserResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.GetUser is not implemented"))
-}
-
-func (UnimplementedStarAppServiceHandler) SendUserTestNotification(context.Context, *connect.Request[v1.SendUserTestNotificationRequest]) (*connect.Response[v1.SendUserTestNotificationResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.SendUserTestNotification is not implemented"))
 }
 
 func (UnimplementedStarAppServiceHandler) CreateUser(context.Context, *connect.Request[v1.CreateUserRequest]) (*connect.Response[v1.CreateUserResponse], error) {
@@ -2395,16 +2418,20 @@ func (UnimplementedStarAppServiceHandler) FireTestWebhooks(context.Context, *con
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.FireTestWebhooks is not implemented"))
 }
 
-func (UnimplementedStarAppServiceHandler) TestAppriseNotification(context.Context, *connect.Request[v1.TestAppriseNotificationRequest]) (*connect.Response[v1.TestAppriseNotificationResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.TestAppriseNotification is not implemented"))
-}
-
 func (UnimplementedStarAppServiceHandler) GetMyChoreNotificationSubscriptions(context.Context, *connect.Request[v1.GetMyChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.GetMyChoreNotificationSubscriptionsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.GetMyChoreNotificationSubscriptions is not implemented"))
 }
 
 func (UnimplementedStarAppServiceHandler) SaveMyChoreNotificationSubscriptions(context.Context, *connect.Request[v1.SaveMyChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.SaveMyChoreNotificationSubscriptionsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.SaveMyChoreNotificationSubscriptions is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) GetMemberChoreNotificationSubscriptions(context.Context, *connect.Request[v1.GetMemberChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.GetMemberChoreNotificationSubscriptionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.GetMemberChoreNotificationSubscriptions is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) SaveMemberChoreNotificationSubscriptions(context.Context, *connect.Request[v1.SaveMemberChoreNotificationSubscriptionsRequest]) (*connect.Response[v1.SaveMemberChoreNotificationSubscriptionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.SaveMemberChoreNotificationSubscriptions is not implemented"))
 }
 
 func (UnimplementedStarAppServiceHandler) ListNotificationDeliveries(context.Context, *connect.Request[v1.ListNotificationDeliveriesRequest]) (*connect.Response[v1.ListNotificationDeliveriesResponse], error) {
@@ -2513,6 +2540,10 @@ func (UnimplementedStarAppServiceHandler) GetChildHomeSummary(context.Context, *
 
 func (UnimplementedStarAppServiceHandler) GetMemberTodaysChores(context.Context, *connect.Request[v1.GetMemberTodaysChoresRequest]) (*connect.Response[v1.GetMemberTodaysChoresResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.GetMemberTodaysChores is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) SendMemberTestNotification(context.Context, *connect.Request[v1.SendMemberTestNotificationRequest]) (*connect.Response[v1.SendMemberTestNotificationResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.SendMemberTestNotification is not implemented"))
 }
 
 func (UnimplementedStarAppServiceHandler) ListStarCharts(context.Context, *connect.Request[v1.ListStarChartsRequest]) (*connect.Response[v1.ListStarChartsResponse], error) {

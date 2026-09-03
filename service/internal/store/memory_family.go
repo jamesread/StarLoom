@@ -199,12 +199,62 @@ func (m *Memory) DeleteMember(_ context.Context, id int) error {
 	st := m.familyState()
 	st.mu.Lock()
 	defer st.mu.Unlock()
-	row, ok := st.members[id]
-	if !ok || row.Role != MemberRoleChild {
+	if _, ok := st.members[id]; !ok {
 		return fmt.Errorf("member not found")
 	}
+	for lid, row := range st.ledger {
+		if row.ChildMemberID == id {
+			delete(st.ledger, lid)
+		}
+	}
+	for rid, row := range st.redemptions {
+		if row.ChildMemberID == id {
+			delete(st.redemptions, rid)
+		}
+	}
 	delete(st.members, id)
+	st.mu.Unlock()
+	m.deleteMemberChoreData(id)
+	st.mu.Lock()
 	return nil
+}
+
+func (m *Memory) deleteMemberChoreData(memberID int) {
+	if m.chores == nil {
+		return
+	}
+	ch := m.choreState()
+	ch.mu.Lock()
+	defer ch.mu.Unlock()
+	removedAssignments := map[int]bool{}
+	for id, cw := range ch.chores {
+		filtered := cw.Assignments[:0]
+		for _, a := range cw.Assignments {
+			if a.ChildMemberID == memberID {
+				removedAssignments[a.ID] = true
+				continue
+			}
+			filtered = append(filtered, a)
+		}
+		cw.Assignments = filtered
+		ch.chores[id] = cw
+	}
+	for cid, c := range ch.completions {
+		if removedAssignments[c.AssignmentID] {
+			delete(ch.completions, cid)
+		}
+	}
+	if m.choreNotifications != nil {
+		for nid, row := range m.choreNotifications.rows {
+			if row.SubscriberMemberID == memberID {
+				delete(m.choreNotifications.rows, nid)
+				continue
+			}
+			if row.ChildMemberID != nil && *row.ChildMemberID == memberID {
+				delete(m.choreNotifications.rows, nid)
+			}
+		}
+	}
 }
 
 func (m *Memory) SetMemberAvatarPath(_ context.Context, id int, path string) error {

@@ -120,15 +120,6 @@ message GetUserResponse {
   repeated UserGroup user_groups = 3;
 }
 
-message SendUserTestNotificationRequest {
-  int32 user_id = 1;
-}
-
-message SendUserTestNotificationResponse {
-  StandardResponse standard_response = 1;
-  string tag = 2;
-}
-
 message CreateUserRequest {
   string username = 1;
   string password = 2;
@@ -439,13 +430,6 @@ message FireTestWebhooksResponse {
   int32 targets_fired = 2;
 }
 
-message TestAppriseNotificationRequest {}
-
-message TestAppriseNotificationResponse {
-  StandardResponse standard_response = 1;
-  string tag = 2;
-}
-
 message ChoreNotificationSubscription {
   int32 child_member_id = 1;
   int32 chore_id = 2;
@@ -464,6 +448,24 @@ message SaveMyChoreNotificationSubscriptionsRequest {
 }
 
 message SaveMyChoreNotificationSubscriptionsResponse {
+  StandardResponse standard_response = 1;
+}
+
+message GetMemberChoreNotificationSubscriptionsRequest {
+  int32 member_id = 1;
+}
+
+message GetMemberChoreNotificationSubscriptionsResponse {
+  repeated ChoreNotificationSubscription subscriptions = 1;
+  string notification_tag = 2;
+}
+
+message SaveMemberChoreNotificationSubscriptionsRequest {
+  int32 member_id = 1;
+  repeated ChoreNotificationSubscription subscriptions = 2;
+}
+
+message SaveMemberChoreNotificationSubscriptionsResponse {
   StandardResponse standard_response = 1;
 }
 
@@ -831,6 +833,15 @@ message GetMemberTodaysChoresResponse {
   repeated TodaysChore todays_chores = 1;
 }
 
+message SendMemberTestNotificationRequest {
+  int32 member_id = 1;
+}
+
+message SendMemberTestNotificationResponse {
+  StandardResponse standard_response = 1;
+  string tag = 2;
+}
+
 message Chore {
   int32 id = 1;
   int32 family_id = 2;
@@ -1044,7 +1055,6 @@ service StarAppService {
   rpc SaveUserPreferences(SaveUserPreferencesRequest) returns (SaveUserPreferencesResponse);
   rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
-  rpc SendUserTestNotification(SendUserTestNotificationRequest) returns (SendUserTestNotificationResponse);
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
   rpc ResetUserPassword(ResetUserPasswordRequest) returns (ResetUserPasswordResponse);
@@ -1077,9 +1087,10 @@ service StarAppService {
   rpc DeleteWebhook(DeleteWebhookRequest) returns (DeleteWebhookResponse);
   rpc ListWebhookDeliveries(ListWebhookDeliveriesRequest) returns (ListWebhookDeliveriesResponse);
   rpc FireTestWebhooks(FireTestWebhooksRequest) returns (FireTestWebhooksResponse);
-  rpc TestAppriseNotification(TestAppriseNotificationRequest) returns (TestAppriseNotificationResponse);
   rpc GetMyChoreNotificationSubscriptions(GetMyChoreNotificationSubscriptionsRequest) returns (GetMyChoreNotificationSubscriptionsResponse);
   rpc SaveMyChoreNotificationSubscriptions(SaveMyChoreNotificationSubscriptionsRequest) returns (SaveMyChoreNotificationSubscriptionsResponse);
+  rpc GetMemberChoreNotificationSubscriptions(GetMemberChoreNotificationSubscriptionsRequest) returns (GetMemberChoreNotificationSubscriptionsResponse);
+  rpc SaveMemberChoreNotificationSubscriptions(SaveMemberChoreNotificationSubscriptionsRequest) returns (SaveMemberChoreNotificationSubscriptionsResponse);
   rpc ListNotificationDeliveries(ListNotificationDeliveriesRequest) returns (ListNotificationDeliveriesResponse);
   rpc GetMyFamily(GetMyFamilyRequest) returns (GetMyFamilyResponse);
   rpc CreateFamily(CreateFamilyRequest) returns (CreateFamilyResponse);
@@ -1107,6 +1118,7 @@ service StarAppService {
   rpc GetParentHomeSummary(GetParentHomeSummaryRequest) returns (GetParentHomeSummaryResponse);
   rpc GetChildHomeSummary(GetChildHomeSummaryRequest) returns (GetChildHomeSummaryResponse);
   rpc GetMemberTodaysChores(GetMemberTodaysChoresRequest) returns (GetMemberTodaysChoresResponse);
+  rpc SendMemberTestNotification(SendMemberTestNotificationRequest) returns (SendMemberTestNotificationResponse);
   rpc ListStarCharts(ListStarChartsRequest) returns (ListStarChartsResponse);
   rpc CreateStarChart(CreateStarChartRequest) returns (CreateStarChartResponse);
   rpc UpdateStarChart(UpdateStarChartRequest) returns (UpdateStarChartResponse);

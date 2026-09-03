@@ -1742,6 +1742,64 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/GetMemberChoreNotificationSubscriptions": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetMemberChoreNotificationSubscriptions",
+        "operationId": "starapp.api.v1.StarAppService.GetMemberChoreNotificationSubscriptions",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetMemberChoreNotificationSubscriptionsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetMemberChoreNotificationSubscriptionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/GetMemberTodaysChores": {
       "post": {
         "tags": [
@@ -4004,6 +4062,64 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/SaveMemberChoreNotificationSubscriptions": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "SaveMemberChoreNotificationSubscriptions",
+        "operationId": "starapp.api.v1.StarAppService.SaveMemberChoreNotificationSubscriptions",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.SaveMemberChoreNotificationSubscriptionsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.SaveMemberChoreNotificationSubscriptionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/SaveMyChoreNotificationSubscriptions": {
       "post": {
         "tags": [
@@ -4178,13 +4294,13 @@
         }
       }
     },
-    "/api/starapp.api.v1.StarAppService/SendUserTestNotification": {
+    "/api/starapp.api.v1.StarAppService/SendMemberTestNotification": {
       "post": {
         "tags": [
           "starapp.api.v1.StarAppService"
         ],
-        "summary": "SendUserTestNotification",
-        "operationId": "starapp.api.v1.StarAppService.SendUserTestNotification",
+        "summary": "SendMemberTestNotification",
+        "operationId": "starapp.api.v1.StarAppService.SendMemberTestNotification",
         "parameters": [
           {
             "name": "Connect-Protocol-Version",
@@ -4206,7 +4322,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/starapp.api.v1.SendUserTestNotificationRequest"
+                "$ref": "#/components/schemas/starapp.api.v1.SendMemberTestNotificationRequest"
               }
             }
           },
@@ -4228,7 +4344,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/starapp.api.v1.SendUserTestNotificationResponse"
+                  "$ref": "#/components/schemas/starapp.api.v1.SendMemberTestNotificationResponse"
                 }
               }
             }
@@ -4403,64 +4519,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/starapp.api.v1.StopImpersonationResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/starapp.api.v1.StarAppService/TestAppriseNotification": {
-      "post": {
-        "tags": [
-          "starapp.api.v1.StarAppService"
-        ],
-        "summary": "TestAppriseNotification",
-        "operationId": "starapp.api.v1.StarAppService.TestAppriseNotification",
-        "parameters": [
-          {
-            "name": "Connect-Protocol-Version",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/connect-protocol-version"
-            }
-          },
-          {
-            "name": "Connect-Timeout-Ms",
-            "in": "header",
-            "schema": {
-              "$ref": "#/components/schemas/connect-timeout-header"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/starapp.api.v1.TestAppriseNotificationRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "default": {
-            "description": "Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/connect.error"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/starapp.api.v1.TestAppriseNotificationResponse"
                 }
               }
             }
@@ -6266,6 +6324,36 @@
         "title": "GetMemberBalanceResponse",
         "additionalProperties": false
       },
+      "starapp.api.v1.GetMemberChoreNotificationSubscriptionsRequest": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "integer",
+            "title": "member_id",
+            "format": "int32"
+          }
+        },
+        "title": "GetMemberChoreNotificationSubscriptionsRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetMemberChoreNotificationSubscriptionsResponse": {
+        "type": "object",
+        "properties": {
+          "subscriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.ChoreNotificationSubscription"
+            },
+            "title": "subscriptions"
+          },
+          "notificationTag": {
+            "type": "string",
+            "title": "notification_tag"
+          }
+        },
+        "title": "GetMemberChoreNotificationSubscriptionsResponse",
+        "additionalProperties": false
+      },
       "starapp.api.v1.GetMemberTodaysChoresRequest": {
         "type": "object",
         "properties": {
@@ -7624,6 +7712,36 @@
         "title": "Reward",
         "additionalProperties": false
       },
+      "starapp.api.v1.SaveMemberChoreNotificationSubscriptionsRequest": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "integer",
+            "title": "member_id",
+            "format": "int32"
+          },
+          "subscriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.ChoreNotificationSubscription"
+            },
+            "title": "subscriptions"
+          }
+        },
+        "title": "SaveMemberChoreNotificationSubscriptionsRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.SaveMemberChoreNotificationSubscriptionsResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "SaveMemberChoreNotificationSubscriptionsResponse",
+        "additionalProperties": false
+      },
       "starapp.api.v1.SaveMyChoreNotificationSubscriptionsRequest": {
         "type": "object",
         "properties": {
@@ -7710,19 +7828,19 @@
         "title": "SelectMemberAvatarResponse",
         "additionalProperties": false
       },
-      "starapp.api.v1.SendUserTestNotificationRequest": {
+      "starapp.api.v1.SendMemberTestNotificationRequest": {
         "type": "object",
         "properties": {
-          "userId": {
+          "memberId": {
             "type": "integer",
-            "title": "user_id",
+            "title": "member_id",
             "format": "int32"
           }
         },
-        "title": "SendUserTestNotificationRequest",
+        "title": "SendMemberTestNotificationRequest",
         "additionalProperties": false
       },
-      "starapp.api.v1.SendUserTestNotificationResponse": {
+      "starapp.api.v1.SendMemberTestNotificationResponse": {
         "type": "object",
         "properties": {
           "standardResponse": {
@@ -7734,7 +7852,7 @@
             "title": "tag"
           }
         },
-        "title": "SendUserTestNotificationResponse",
+        "title": "SendMemberTestNotificationResponse",
         "additionalProperties": false
       },
       "starapp.api.v1.SetUserGroupMembersRequest": {
@@ -7946,26 +8064,6 @@
           }
         },
         "title": "StopImpersonationResponse",
-        "additionalProperties": false
-      },
-      "starapp.api.v1.TestAppriseNotificationRequest": {
-        "type": "object",
-        "title": "TestAppriseNotificationRequest",
-        "additionalProperties": false
-      },
-      "starapp.api.v1.TestAppriseNotificationResponse": {
-        "type": "object",
-        "properties": {
-          "standardResponse": {
-            "title": "standard_response",
-            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
-          },
-          "tag": {
-            "type": "string",
-            "title": "tag"
-          }
-        },
-        "title": "TestAppriseNotificationResponse",
         "additionalProperties": false
       },
       "starapp.api.v1.TodaysChore": {

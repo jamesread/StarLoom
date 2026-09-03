@@ -182,10 +182,10 @@ export const starapp = {
       body,
     )
   },
-  testAppriseNotification() {
+  sendMemberTestNotification(body: { memberId: number }) {
     return connectFetch<{ standardResponse?: StandardResponse; tag?: string }>(
-      '/starapp.api.v1.StarAppService/TestAppriseNotification',
-      {},
+      '/starapp.api.v1.StarAppService/SendMemberTestNotification',
+      body,
     )
   },
   getMyChoreNotificationSubscriptions() {
@@ -194,9 +194,24 @@ export const starapp = {
       {},
     )
   },
+  getMemberChoreNotificationSubscriptions(body: { memberId: number }) {
+    return connectFetch<{ subscriptions?: ChoreNotificationSubscription[]; notificationTag?: string }>(
+      '/starapp.api.v1.StarAppService/GetMemberChoreNotificationSubscriptions',
+      body,
+    )
+  },
   saveMyChoreNotificationSubscriptions(body: { subscriptions: ChoreNotificationSubscription[] }) {
     return connectFetch<{ standardResponse?: StandardResponse }>(
       '/starapp.api.v1.StarAppService/SaveMyChoreNotificationSubscriptions',
+      body,
+    )
+  },
+  saveMemberChoreNotificationSubscriptions(body: {
+    memberId: number
+    subscriptions: ChoreNotificationSubscription[]
+  }) {
+    return connectFetch<{ standardResponse?: StandardResponse }>(
+      '/starapp.api.v1.StarAppService/SaveMemberChoreNotificationSubscriptions',
       body,
     )
   },
@@ -222,12 +237,6 @@ export const starapp = {
   getUser(body: { userId: number }) {
     return connectFetch<{ user?: UserAccount; linkedMember?: FamilyMember; userGroups?: UserGroup[] }>(
       '/starapp.api.v1.StarAppService/GetUser',
-      body,
-    )
-  },
-  sendUserTestNotification(body: { userId: number }) {
-    return connectFetch<{ standardResponse?: StandardResponse; tag?: string }>(
-      '/starapp.api.v1.StarAppService/SendUserTestNotification',
       body,
     )
   },

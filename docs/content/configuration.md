@@ -29,13 +29,13 @@ Changes apply immediately; you do not restart the container.
 
 | Setting | What it does |
 |---------|----------------|
-| Apprise URL | Apprise API notify URL for redemption approval requests. Leave empty to disable |
+| Apprise URL | Persistent Apprise notify URL including the configuration key (e.g. `http://apprise:8000/notify/mykey`). Bare `/notify` is not supported. Leave empty to disable |
 | External base URL | Public site origin used in deep links inside notification messages (no trailing slash) |
 | Apprise redemption message | Message body template. Supports `{{approval_url}}`, `{{requestor_name}}`, `{{reward_name}}`, `{{stars}}`, `{{redemption_id}}`, and `{{requestor_id}}`. Empty uses the built-in default |
 
 When a child requests a reward that needs approval, StarLoom POSTs to the Apprise URL once per parent, using tag `starloom_uid_X` where **X** is that parent’s person (family member) id. Configure Apprise endpoints with matching tags so each parent’s devices receive the alert.
 
-From **User Control Panel** (click your username), use **Send test notification** to verify your tag reaches your devices.
+From a **person profile** (Family → People → open a person), use **Send test notification** to verify that person's tag reaches their devices. Users with **members.manage** can also edit chore notification subscriptions for any family person from that profile; everyone sees the Apprise tag (`starloom_uid_X`) on the profile.
 
 ### Theme
 

@@ -15,7 +15,7 @@ import (
 	"github.com/jamesread/starapp/service/internal/store"
 )
 
-func (s *Server) TestAppriseNotification(ctx context.Context, _ *connect.Request[apiv1.TestAppriseNotificationRequest]) (*connect.Response[apiv1.TestAppriseNotificationResponse], error) {
+func (s *Server) SendMemberTestNotification(ctx context.Context, req *connect.Request[apiv1.SendMemberTestNotificationRequest]) (*connect.Response[apiv1.SendMemberTestNotificationResponse], error) {
 	if _, err := s.requireWrite(ctx); err != nil {
 		return nil, err
 	}
@@ -23,49 +23,16 @@ func (s *Server) TestAppriseNotification(ctx context.Context, _ *connect.Request
 	if err != nil {
 		return nil, err
 	}
-	url := strings.TrimSpace(s.stringCvar(ctx, cvar.KeyAppriseURL))
-	if url == "" {
-		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("Apprise URL is not configured (Control Panel → Settings → Notifications)"))
+	memberID := int(req.Msg.MemberId)
+	if memberID <= 0 {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("member_id required"))
 	}
-	tag := apprise.PersonTag(fc.member.ID)
-	client := &http.Client{Timeout: 15 * time.Second}
-	payload := apprise.Payload{
-		Title: "StarLoom test notification",
-		Body:  fmt.Sprintf("Test notification for %s (tag %s).", fc.member.DisplayName, tag),
-		Type:  "info",
-		Tag:   tag,
+	member, err := s.store.GetMemberByID(ctx, memberID)
+	if err != nil || member == nil || !isFamilyStarMember(member, fc.family.ID) {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("person not found"))
 	}
-	if err := s.deliverApprise(ctx, client, url, payload, fc.family.ID, fc.member.ID, store.NotificationTypeTest); err != nil {
-		s.log.WithError(err).Warn("apprise: test notification failed")
-		return nil, connect.NewError(connect.CodeUnavailable, fmt.Errorf("apprise notify failed: %w", err))
-	}
-	return connect.NewResponse(&apiv1.TestAppriseNotificationResponse{
-		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Test notification sent"},
-		Tag:              tag,
-	}), nil
-}
-
-func (s *Server) SendUserTestNotification(ctx context.Context, req *connect.Request[apiv1.SendUserTestNotificationRequest]) (*connect.Response[apiv1.SendUserTestNotificationResponse], error) {
-	if _, err := s.requireWrite(ctx); err != nil {
-		return nil, err
-	}
-	userID := int(req.Msg.UserId)
-	if userID <= 0 {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("user_id required"))
-	}
-	user, err := s.store.GetUserByID(ctx, userID)
-	if err != nil {
-		return nil, mapStoreError(err)
-	}
-	if user == nil {
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
-	}
-	member, err := s.store.GetMemberByAccountID(ctx, userID)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-	if member == nil {
-		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("user is not linked to a family person"))
+	if !s.canViewMember(fc.au, fc.member, member) {
+		return nil, connect.NewError(connect.CodePermissionDenied, fmt.Errorf("forbidden"))
 	}
 	url := strings.TrimSpace(s.stringCvar(ctx, cvar.KeyAppriseURL))
 	if url == "" {
@@ -80,10 +47,10 @@ func (s *Server) SendUserTestNotification(ctx context.Context, req *connect.Requ
 		Tag:   tag,
 	}
 	if err := s.deliverApprise(ctx, client, url, payload, member.FamilyID, member.ID, store.NotificationTypeTest); err != nil {
-		s.log.WithError(err).WithField("user_id", userID).Warn("apprise: admin user test notification failed")
+		s.log.WithError(err).WithField("member_id", memberID).Warn("apprise: member test notification failed")
 		return nil, connect.NewError(connect.CodeUnavailable, fmt.Errorf("apprise notify failed: %w", err))
 	}
-	return connect.NewResponse(&apiv1.SendUserTestNotificationResponse{
+	return connect.NewResponse(&apiv1.SendMemberTestNotificationResponse{
 		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Test notification sent"},
 		Tag:              tag,
 	}), nil

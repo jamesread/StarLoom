@@ -69,7 +69,7 @@ func TestGetUserIncludesUserGroups(t *testing.T) {
 	require.Contains(t, names, "Parents")
 }
 
-func TestSendUserTestNotification(t *testing.T) {
+func TestSendMemberTestNotification(t *testing.T) {
 	st := store.OpenMemory()
 	t.Cleanup(func() { _ = st.Close() })
 	ctx := context.Background()
@@ -89,19 +89,20 @@ func TestSendUserTestNotification(t *testing.T) {
 	require.NoError(t, err)
 
 	require.NoError(t, st.InsertCvarIfMissing(ctx, store.CvarRow{
-		Key: "apprise_url", MainType: "string", ValueString: "http://example.test/notify",
+		Key: "apprise_url", MainType: "string", ValueString: "http://example.test/notify/testkey",
 	}))
 
 	called := false
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		called = true
-		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"error":null,"details":[]}`))
 	}))
 	t.Cleanup(func() { srv.Close() })
-	require.NoError(t, st.UpdateCvar(ctx, "apprise_url", 0, srv.URL))
+	require.NoError(t, st.UpdateCvar(ctx, "apprise_url", 0, srv.URL+"/notify/testkey"))
 
-	sent, err := svc.SendUserTestNotification(parentCtx, connect.NewRequest(&apiv1.SendUserTestNotificationRequest{
-		UserId: int32(childID),
+	sent, err := svc.SendMemberTestNotification(parentCtx, connect.NewRequest(&apiv1.SendMemberTestNotificationRequest{
+		MemberId: int32(childMemberID),
 	}))
 	require.NoError(t, err)
 	require.True(t, sent.Msg.StandardResponse.Success)
@@ -115,7 +116,7 @@ func TestSendUserTestNotification(t *testing.T) {
 	require.True(t, list[0].Success)
 }
 
-func TestSendUserTestNotificationRequiresLinkedMember(t *testing.T) {
+func TestSendMemberTestNotificationRequiresFamilyMember(t *testing.T) {
 	st := store.OpenMemory()
 	t.Cleanup(func() { _ = st.Close() })
 	ctx := context.Background()
@@ -124,14 +125,15 @@ func TestSendUserTestNotificationRequiresLinkedMember(t *testing.T) {
 
 	parentID, err := st.CreateUserAccount(ctx, "parent", "hash", store.UserCreatedByAdmin)
 	require.NoError(t, err)
-	orphanID, err := st.CreateUserAccount(ctx, "orphan", "hash", store.UserCreatedByAdmin)
-	require.NoError(t, err)
 
 	svc := New(&config.Config{}, st, nil, logrus.New())
 	parentCtx := userCtx(parentID, "parent", true)
-	_, err = svc.SendUserTestNotification(parentCtx, connect.NewRequest(&apiv1.SendUserTestNotificationRequest{
-		UserId: int32(orphanID),
+	_, err = svc.CreateFamily(parentCtx, connect.NewRequest(&apiv1.CreateFamilyRequest{Name: "Household"}))
+	require.NoError(t, err)
+
+	_, err = svc.SendMemberTestNotification(parentCtx, connect.NewRequest(&apiv1.SendMemberTestNotificationRequest{
+		MemberId: 999,
 	}))
 	require.Error(t, err)
-	require.Equal(t, connect.CodeFailedPrecondition, connect.CodeOf(err))
+	require.Equal(t, connect.CodeNotFound, connect.CodeOf(err))
 }

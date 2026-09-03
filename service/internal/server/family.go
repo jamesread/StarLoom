@@ -265,18 +265,40 @@ func (s *Server) DeleteMember(ctx context.Context, req *connect.Request[apiv1.De
 		return nil, err
 	}
 	member, err := s.store.GetMemberByID(ctx, int(req.Msg.MemberId))
-	if err != nil || member == nil || member.FamilyID != fc.family.ID || member.Role != store.MemberRoleChild {
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("member not found"))
+	if err != nil || member == nil || !isFamilyStarMember(member, fc.family.ID) {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("person not found"))
 	}
-	if member.UserAccountID != nil {
+	if fc.member != nil && fc.member.ID == member.ID {
+		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("cannot remove your own person profile"))
+	}
+	if member.Role == store.MemberRoleParent {
+		members, err := s.store.ListMembersByFamily(ctx, fc.family.ID)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+		parentCount := 0
+		for i := range members {
+			if members[i].Role == store.MemberRoleParent {
+				parentCount++
+			}
+		}
+		if parentCount <= 1 {
+			return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("cannot remove the last parent from the family"))
+		}
+	}
+	if member.UserAccountID != nil && member.Role == store.MemberRoleChild {
 		_ = s.store.DeleteUserAccount(ctx, *member.UserAccountID)
 	}
 	_ = avatar.DeleteAll(s.cfg.ConfigDir, member.ID)
 	if err := s.store.DeleteMember(ctx, member.ID); err != nil {
 		return nil, mapStoreError(err)
 	}
+	msg := "Person removed from the family"
+	if member.Role == store.MemberRoleParent && member.UserAccountID != nil {
+		msg = "Person removed from the family; their sign-in account was kept"
+	}
 	return connect.NewResponse(&apiv1.DeleteMemberResponse{
-		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Member deleted"},
+		StandardResponse: &apiv1.StandardResponse{Success: true, Message: msg},
 	}), nil
 }
 

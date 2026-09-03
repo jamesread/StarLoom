@@ -2,20 +2,16 @@
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
-import NotificationBlock from 'picocrank/vue/components/NotificationBlock.vue'
 import DangerZone from 'picocrank/vue/components/DangerZone.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import {
   ArrowLeft01Icon,
-  Notification03Icon,
   UserIcon,
 } from '@hugeicons/core-free-icons'
 import { starapp, type FamilyMember, type UserAccount, type UserGroup } from '../api/client'
 import MemberAvatar from '../components/MemberAvatar.vue'
 import { useStatus } from '../composables/useStatus'
 import { canViewFamilyHomeFromStatus, hasPermission } from '../lib/rbacAccess'
-
-const iconStrokeWidth = 2.5
 
 const route = useRoute()
 const router = useRouter()
@@ -27,10 +23,6 @@ const linkedMember = ref<FamilyMember | null>(null)
 const userGroups = ref<UserGroup[]>([])
 const loading = ref(true)
 const error = ref('')
-const testingNotify = ref(false)
-const notifyError = ref('')
-const notifySuccess = ref('')
-const personTag = ref('')
 const deleteError = ref('')
 const deleting = ref(false)
 
@@ -41,9 +33,6 @@ const canDelete = computed(
     user.value?.username !== status.status?.username,
 )
 
-const canSendTest = computed(
-  () => hasPermission(status.status, 'users.view') && Boolean(linkedMember.value?.id),
-)
 const showPersonLink = computed(
   () => Boolean(linkedMember.value?.id) && canViewFamilyHomeFromStatus(status.status),
 )
@@ -63,34 +52,13 @@ async function load() {
     user.value = res.user || null
     linkedMember.value = res.linkedMember || null
     userGroups.value = res.userGroups || []
-    personTag.value = linkedMember.value?.id ? `starloom_uid_${linkedMember.value.id}` : ''
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
     user.value = null
     linkedMember.value = null
     userGroups.value = []
-    personTag.value = ''
   } finally {
     loading.value = false
-  }
-}
-
-async function sendTestNotification() {
-  if (!user.value?.id || !linkedMember.value?.id) return
-  testingNotify.value = true
-  notifyError.value = ''
-  notifySuccess.value = ''
-  try {
-    const res = await starapp.sendUserTestNotification({ userId: user.value.id })
-    const tag = res.tag || personTag.value
-    if (tag) personTag.value = tag
-    notifySuccess.value = res.standardResponse?.message
-      ? `${res.standardResponse.message}${tag ? ` (tag ${tag})` : ''}`
-      : 'Test notification sent'
-  } catch (e) {
-    notifyError.value = e instanceof Error ? e.message : String(e)
-  } finally {
-    testingNotify.value = false
   }
 }
 
@@ -170,38 +138,6 @@ onMounted(load)
         <MemberAvatar :member="linkedMember" size="lg" />
       </div>
     </template>
-  </Section>
-
-  <Section
-    v-if="user && canSendTest"
-    title="Notifications"
-    :padding="true"
-  >
-    <p>
-      Send a test Apprise notification to this user's devices.
-      <template v-if="personTag"> Uses tag <code>{{ personTag }}</code>.</template>
-    </p>
-    <p v-if="notifyError" class="inline-notification error">{{ notifyError }}</p>
-    <NotificationBlock
-      v-if="notifySuccess"
-      type="success"
-      :message="notifySuccess"
-    />
-    <button
-      type="button"
-      class="inline-icon neutral"
-      :disabled="testingNotify"
-      @click="sendTestNotification"
-    >
-      <HugeiconsIcon
-        :icon="Notification03Icon"
-        width="1em"
-        height="1em"
-        :strokeWidth="iconStrokeWidth"
-        aria-hidden="true"
-      />
-      <span>{{ testingNotify ? 'Sending…' : 'Send test notification' }}</span>
-    </button>
   </Section>
 
   <DangerZone

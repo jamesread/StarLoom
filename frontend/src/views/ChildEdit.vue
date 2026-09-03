@@ -10,7 +10,7 @@ import { ArrowLeft01Icon, UserIcon } from '@hugeicons/core-free-icons'
 import { starapp, memberAvatarFileUrl, type FamilyMember, type MemberAvatarEntry } from '../api/client'
 import MemberAvatar from '../components/MemberAvatar.vue'
 import { useStatus } from '../composables/useStatus'
-import { hasPermission } from '../lib/rbacAccess'
+import { canManageFamilyFromStatus, hasPermission } from '../lib/rbacAccess'
 import { memberAvatarStyle, memberStarColor, memberStarStyle } from '../lib/memberStarColor'
 
 const route = useRoute()
@@ -45,6 +45,24 @@ const hasLogin = computed(() => Boolean(member.value?.userAccountId))
 const canAwardStars = computed(() => hasPermission(statusState.status, 'stars.award'))
 const canRevokeStars = computed(() => hasPermission(statusState.status, 'stars.revoke'))
 const canAdjustStars = computed(() => canAwardStars.value || canRevokeStars.value)
+const myMemberId = ref(0)
+const isOwnProfile = computed(
+  () => Boolean(myMemberId.value) && memberId.value === myMemberId.value,
+)
+const canRemovePerson = computed(
+  () => canManageFamilyFromStatus(statusState.status) && Boolean(member.value) && !isOwnProfile.value,
+)
+const removePersonWarning = computed(() => {
+  if (!member.value) return ''
+  const base = `Removing ${member.value.displayName} deletes their star balance, chore assignments, and history from this family. This cannot be undone.`
+  if (member.value.role === 'parent' && member.value.userAccountId) {
+    return `${base} Their sign-in account will be kept.`
+  }
+  if (member.value.userAccountId) {
+    return `${base} Their sign-in account will also be deleted.`
+  }
+  return base
+})
 
 const canAssignLogin = computed(() => {
   if (!loginForm.username.trim()) return false
@@ -59,8 +77,12 @@ async function load() {
   loading.value = true
   error.value = ''
   try {
-    const members = await starapp.listMembers()
-    member.value = (members.members || []).find((m) => m.id === memberId.value) || null
+    const [membersRes, familyRes] = await Promise.all([
+      starapp.listMembers(),
+      starapp.getMyFamily().catch(() => null),
+    ])
+    myMemberId.value = familyRes?.callerMember?.id || 0
+    member.value = (membersRes.members || []).find((m) => m.id === memberId.value) || null
     if (!member.value) {
       error.value = 'Person not found'
       return
@@ -372,10 +394,10 @@ onMounted(load)
   </Section>
 
   <DangerZone
-    v-if="member?.role === 'child'"
+    v-if="canRemovePerson"
     title="Danger zone"
     subtitle="Remove this person from the family"
-    :warning="`Removing ${member.displayName} deletes their star balance and history. This cannot be undone.`"
+    :warning="removePersonWarning"
   >
     <div role="toolbar" class="danger-zone-actions">
       <button type="button" class="bad" @click="removePerson">Remove person</button>

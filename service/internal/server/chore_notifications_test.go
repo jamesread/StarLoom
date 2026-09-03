@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	apiv1 "github.com/jamesread/starapp/service/gen/starapp/api/v1"
+	"github.com/jamesread/starapp/service/internal/apprise"
 	"github.com/jamesread/starapp/service/internal/config"
 	"github.com/jamesread/starapp/service/internal/store"
 )
@@ -118,4 +119,83 @@ func TestChoreNotificationSelfAllChoresSubscription(t *testing.T) {
 	match, err := st.MatchingChoreNotificationSubscribers(ctx, int(created.Msg.Family.Id), parentMemberID, choreID)
 	require.NoError(t, err)
 	require.Equal(t, []int{parentMemberID}, match)
+}
+
+func TestMemberChoreNotificationSubscriptionsAdminEdit(t *testing.T) {
+	st := store.OpenMemory()
+	t.Cleanup(func() { _ = st.Close() })
+	ctx := context.Background()
+	require.NoError(t, st.EnsureRBACBootstrap(ctx))
+	require.NoError(t, st.SeedDomainRBAC(ctx))
+
+	parentID, err := st.CreateUserAccount(ctx, "parent", "hash", store.UserCreatedByAdmin)
+	require.NoError(t, err)
+	childID, err := st.CreateUserAccount(ctx, "child", "hash", store.UserCreatedByAdmin)
+	require.NoError(t, err)
+
+	svc := New(&config.Config{}, st, nil, logrus.New())
+	parentCtx := userCtx(parentID, "parent", true)
+	created, err := svc.CreateFamily(parentCtx, connect.NewRequest(&apiv1.CreateFamilyRequest{Name: "Household"}))
+	require.NoError(t, err)
+	childMemberID, err := st.CreateMember(ctx, int(created.Msg.Family.Id), "Sam", store.MemberRoleChild, &childID, "")
+	require.NoError(t, err)
+
+	choreRes, err := svc.CreateChore(parentCtx, connect.NewRequest(&apiv1.CreateChoreRequest{
+		Title:          "Make bed",
+		StarReward:     1,
+		Weekdays:       []int32{1, 2, 3, 4, 5, 6, 7},
+		ChildMemberIds: []int32{int32(childMemberID)},
+	}))
+	require.NoError(t, err)
+	choreID := int(choreRes.Msg.Chore.Id)
+
+	_, err = svc.SaveMemberChoreNotificationSubscriptions(parentCtx, connect.NewRequest(&apiv1.SaveMemberChoreNotificationSubscriptionsRequest{
+		MemberId: int32(childMemberID),
+		Subscriptions: []*apiv1.ChoreNotificationSubscription{
+			{ChildMemberId: int32(childMemberID), ChoreId: int32(choreID)},
+		},
+	}))
+	require.NoError(t, err)
+
+	got, err := svc.GetMemberChoreNotificationSubscriptions(parentCtx, connect.NewRequest(&apiv1.GetMemberChoreNotificationSubscriptionsRequest{
+		MemberId: int32(childMemberID),
+	}))
+	require.NoError(t, err)
+	require.Len(t, got.Msg.Subscriptions, 1)
+	require.Equal(t, apprise.PersonTag(childMemberID), got.Msg.NotificationTag)
+
+	match, err := st.MatchingChoreNotificationSubscribers(ctx, int(created.Msg.Family.Id), childMemberID, choreID)
+	require.NoError(t, err)
+	require.Equal(t, []int{childMemberID}, match)
+}
+
+func TestMemberChoreNotificationSubscriptionsForbiddenForOtherMember(t *testing.T) {
+	st := store.OpenMemory()
+	t.Cleanup(func() { _ = st.Close() })
+	ctx := context.Background()
+	require.NoError(t, st.EnsureRBACBootstrap(ctx))
+	require.NoError(t, st.SeedDomainRBAC(ctx))
+
+	parentID, err := st.CreateUserAccount(ctx, "parent", "hash", store.UserCreatedByAdmin)
+	require.NoError(t, err)
+	childID, err := st.CreateUserAccount(ctx, "child", "hash", store.UserCreatedByAdmin)
+	require.NoError(t, err)
+
+	svc := New(&config.Config{}, st, nil, logrus.New())
+	parentCtx := userCtx(parentID, "parent", true)
+	childCtx := userCtx(childID, "child", false)
+	created, err := svc.CreateFamily(parentCtx, connect.NewRequest(&apiv1.CreateFamilyRequest{Name: "Household"}))
+	require.NoError(t, err)
+	parentMemberID := int(created.Msg.CallerMember.Id)
+	childMemberID, err := st.CreateMember(ctx, int(created.Msg.Family.Id), "Sam", store.MemberRoleChild, &childID, "")
+	require.NoError(t, err)
+
+	_, err = svc.SaveMemberChoreNotificationSubscriptions(childCtx, connect.NewRequest(&apiv1.SaveMemberChoreNotificationSubscriptionsRequest{
+		MemberId: int32(parentMemberID),
+		Subscriptions: []*apiv1.ChoreNotificationSubscription{
+			{ChildMemberId: int32(childMemberID)},
+		},
+	}))
+	require.Error(t, err)
+	require.Equal(t, connect.CodePermissionDenied, connect.CodeOf(err))
 }

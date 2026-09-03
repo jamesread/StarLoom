@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
 import Table from 'picocrank/vue/components/Table.vue'
 import FormField from 'picocrank/vue/components/FormField.vue'
 import FormLayout from 'picocrank/vue/components/FormLayout.vue'
+import NotificationBlock from 'picocrank/vue/components/NotificationBlock.vue'
+import DangerZone from 'picocrank/vue/components/DangerZone.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import {
   ArrowLeft01Icon,
   Clock01Icon,
+  Notification03Icon,
   PencilEdit01Icon,
   Refresh01Icon,
   StarIcon,
@@ -22,10 +25,12 @@ import {
 } from '../api/client'
 import MemberAvatar from '../components/MemberAvatar.vue'
 import TodaysStarChart from '../components/TodaysStarChart.vue'
+import ChoreNotificationSubscriptionsEditor from '../components/ChoreNotificationSubscriptionsEditor.vue'
 import { useStatus } from '../composables/useStatus'
 import {
   canCompleteChoresFromStatus,
   canCompleteOwnChoresFromStatus,
+  canManageFamilyFromStatus,
   canViewChoresFromStatus,
   hasPermission,
 } from '../lib/rbacAccess'
@@ -34,6 +39,7 @@ import { memberStarStyle } from '../lib/memberStarColor'
 const iconStrokeWidth = 2.5
 
 const route = useRoute()
+const router = useRouter()
 const statusState = useStatus()
 const memberId = computed(() => Number(route.params.id))
 
@@ -50,6 +56,12 @@ const awarding = ref(false)
 const revokingId = ref<number | null>(null)
 const todaysChoreBusyKey = ref('')
 const awardForm = reactive({ amount: 1, note: '' })
+const testingNotify = ref(false)
+const notifyError = ref('')
+const notifySuccess = ref('')
+const removing = ref(false)
+const removeError = ref('')
+const personTag = computed(() => (member.value?.id ? `starloom_uid_${member.value.id}` : ''))
 
 const starStyle = computed(() => memberStarStyle(member.value))
 const canRevoke = computed(() => hasPermission(statusState.status, 'stars.revoke'))
@@ -68,6 +80,27 @@ const canToggleTodaysChores = computed(
     canCompleteChoresFromStatus(statusState.status) ||
     (isOwnProfile.value && canCompleteOwnChoresFromStatus(statusState.status)),
 )
+const canEditNotificationPrefs = computed(
+  () => isOwnProfile.value || canManageFamilyFromStatus(statusState.status),
+)
+const showUserAccountLink = computed(
+  () =>
+    hasPermission(statusState.status, 'users.view') && Boolean(member.value?.userAccountId),
+)
+const canRemovePerson = computed(
+  () => canManageFamilyFromStatus(statusState.status) && Boolean(member.value) && !isOwnProfile.value,
+)
+const removePersonWarning = computed(() => {
+  if (!member.value) return ''
+  const base = `Removing ${member.value.displayName} deletes their star balance, chore assignments, and history from this family. This cannot be undone.`
+  if (member.value.role === 'parent' && member.value.userAccountId) {
+    return `${base} Their sign-in account will be kept.`
+  }
+  if (member.value.userAccountId) {
+    return `${base} Their sign-in account will also be deleted.`
+  }
+  return base
+})
 
 const ledgerHeaders = [
   { key: 'createdAt', label: 'Date', sortable: true, width: '11rem' },
@@ -178,6 +211,39 @@ async function revokeEntry(entry: StarLedgerEntry) {
   }
 }
 
+async function sendTestNotification() {
+  if (!member.value?.id) return
+  testingNotify.value = true
+  notifyError.value = ''
+  notifySuccess.value = ''
+  try {
+    const res = await starapp.sendMemberTestNotification({ memberId: member.value.id })
+    const tag = res.tag || personTag.value
+    notifySuccess.value = res.standardResponse?.message
+      ? `${res.standardResponse.message}${tag ? ` (tag ${tag})` : ''}`
+      : 'Test notification sent'
+  } catch (e) {
+    notifyError.value = e instanceof Error ? e.message : String(e)
+  } finally {
+    testingNotify.value = false
+  }
+}
+
+async function removePerson() {
+  if (!member.value?.id) return
+  if (!confirm(`Remove ${member.value.displayName} from the family?`)) return
+  removing.value = true
+  removeError.value = ''
+  try {
+    await starapp.deleteMember({ memberId: member.value.id })
+    await router.push({ name: 'familyPeople' })
+  } catch (e) {
+    removeError.value = e instanceof Error ? e.message : String(e)
+  } finally {
+    removing.value = false
+  }
+}
+
 async function toggleTodaysChore(chore: TodaysChore) {
   if (!canToggleTodaysChores.value || chore.paused || !chore.choreId || !chore.childMemberId) return
   todaysChoreBusyKey.value = `${chore.choreId}-${chore.childMemberId}`
@@ -212,6 +278,14 @@ onMounted(load)
         <span>People</span>
       </RouterLink>
       <RouterLink
+        v-if="showUserAccountLink"
+        :to="{ name: 'userInfo', params: { id: member?.userAccountId } }"
+        class="button inline-icon neutral"
+      >
+        <HugeiconsIcon :icon="UserIcon" width="1em" height="1em" aria-hidden="true" />
+        <span>{{ member?.username || 'User account' }}</span>
+      </RouterLink>
+      <RouterLink
         :to="{ name: 'familyPersonEdit', params: { id: memberId } }"
         class="button inline-icon good"
       >
@@ -235,6 +309,43 @@ onMounted(load)
         <div class="balance" :style="starStyle">★ {{ balance }}</div>
       </div>
     </template>
+  </Section>
+
+  <Section v-if="member" title="Notifications" :icon="Notification03Icon" :padding="true">
+    <dl v-if="personTag" class="notification-tag">
+      <dt>Apprise tag</dt>
+      <dd><code>{{ personTag }}</code></dd>
+    </dl>
+    <p class="subtle">
+      Configure Apprise with this tag so notifications for {{ member.displayName }} reach the right devices.
+    </p>
+    <p v-if="notifyError" class="inline-notification error">{{ notifyError }}</p>
+    <NotificationBlock
+      v-if="notifySuccess"
+      type="success"
+      :message="notifySuccess"
+    />
+    <button
+      type="button"
+      class="inline-icon neutral"
+      :disabled="testingNotify"
+      @click="sendTestNotification"
+    >
+      <HugeiconsIcon
+        :icon="Notification03Icon"
+        width="1em"
+        height="1em"
+        :strokeWidth="iconStrokeWidth"
+        aria-hidden="true"
+      />
+      <span>{{ testingNotify ? 'Sending…' : 'Send test notification' }}</span>
+    </button>
+
+    <ChoreNotificationSubscriptionsEditor
+      v-if="canEditNotificationPrefs"
+      :subscriber-member-id="member.id"
+      :subscriber-display-name="member.displayName"
+    />
   </Section>
 
   <Section
@@ -353,6 +464,20 @@ onMounted(load)
       </Table>
     </template>
   </Section>
+
+  <DangerZone
+    v-if="member && canRemovePerson"
+    title="Danger zone"
+    subtitle="Remove this person from the family"
+    :warning="removePersonWarning"
+  >
+    <p v-if="removeError" class="inline-notification error">{{ removeError }}</p>
+    <div role="toolbar" class="danger-zone-actions">
+      <button type="button" class="bad" :disabled="removing" @click="removePerson">
+        {{ removing ? 'Removing…' : 'Remove person' }}
+      </button>
+    </div>
+  </DangerZone>
 </template>
 
 <style scoped>
@@ -382,6 +507,18 @@ onMounted(load)
   gap: 1rem;
   align-items: center;
   margin-bottom: 1.5rem;
+}
+.notification-tag {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  column-gap: 1em;
+  margin: 0 0 0.75rem;
+}
+.notification-tag dt {
+  font-weight: bold;
+}
+.notification-tag dd {
+  margin: 0;
 }
 .balance {
   font-size: 1.75rem;

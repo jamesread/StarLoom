@@ -12,6 +12,7 @@ import (
 	apiv1 "github.com/jamesread/starapp/service/gen/starapp/api/v1"
 	"github.com/jamesread/starapp/service/internal/apprise"
 	"github.com/jamesread/starapp/service/internal/cvar"
+	"github.com/jamesread/starapp/service/internal/rbac"
 	"github.com/jamesread/starapp/service/internal/store"
 )
 
@@ -20,7 +21,97 @@ func (s *Server) GetMyChoreNotificationSubscriptions(ctx context.Context, _ *con
 	if err != nil {
 		return nil, err
 	}
-	rows, err := s.store.ListChoreNotificationSubscriptions(ctx, fc.member.ID)
+	subs, err := s.listChoreNotificationSubscriptions(ctx, fc, fc.member.ID)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&apiv1.GetMyChoreNotificationSubscriptionsResponse{Subscriptions: subs}), nil
+}
+
+func (s *Server) SaveMyChoreNotificationSubscriptions(ctx context.Context, req *connect.Request[apiv1.SaveMyChoreNotificationSubscriptionsRequest]) (*connect.Response[apiv1.SaveMyChoreNotificationSubscriptionsResponse], error) {
+	if _, err := s.requireWrite(ctx); err != nil {
+		return nil, err
+	}
+	fc, err := s.requireFamilyContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.saveChoreNotificationSubscriptions(ctx, fc, fc.member.ID, req.Msg.GetSubscriptions()); err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&apiv1.SaveMyChoreNotificationSubscriptionsResponse{
+		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Notification subscriptions saved"},
+	}), nil
+}
+
+func (s *Server) GetMemberChoreNotificationSubscriptions(ctx context.Context, req *connect.Request[apiv1.GetMemberChoreNotificationSubscriptionsRequest]) (*connect.Response[apiv1.GetMemberChoreNotificationSubscriptionsResponse], error) {
+	fc, err := s.requireFamilyContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	memberID := int(req.Msg.MemberId)
+	if memberID <= 0 {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("member_id required"))
+	}
+	target, err := s.store.GetMemberByID(ctx, memberID)
+	if err != nil || target == nil || !isFamilyStarMember(target, fc.family.ID) {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("person not found"))
+	}
+	if err := s.authorizeMemberNotificationEdit(fc, target); err != nil {
+		return nil, err
+	}
+	subs, err := s.listChoreNotificationSubscriptions(ctx, fc, memberID)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&apiv1.GetMemberChoreNotificationSubscriptionsResponse{
+		Subscriptions:   subs,
+		NotificationTag: apprise.PersonTag(memberID),
+	}), nil
+}
+
+func (s *Server) SaveMemberChoreNotificationSubscriptions(ctx context.Context, req *connect.Request[apiv1.SaveMemberChoreNotificationSubscriptionsRequest]) (*connect.Response[apiv1.SaveMemberChoreNotificationSubscriptionsResponse], error) {
+	if _, err := s.requireWrite(ctx); err != nil {
+		return nil, err
+	}
+	fc, err := s.requireFamilyContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	memberID := int(req.Msg.MemberId)
+	if memberID <= 0 {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("member_id required"))
+	}
+	target, err := s.store.GetMemberByID(ctx, memberID)
+	if err != nil || target == nil || !isFamilyStarMember(target, fc.family.ID) {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("person not found"))
+	}
+	if err := s.authorizeMemberNotificationEdit(fc, target); err != nil {
+		return nil, err
+	}
+	if err := s.saveChoreNotificationSubscriptions(ctx, fc, memberID, req.Msg.GetSubscriptions()); err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&apiv1.SaveMemberChoreNotificationSubscriptionsResponse{
+		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Notification subscriptions saved"},
+	}), nil
+}
+
+func (s *Server) authorizeMemberNotificationEdit(fc *familyContext, target *store.FamilyMemberRow) error {
+	if fc.member != nil && target != nil && fc.member.ID == target.ID {
+		return nil
+	}
+	if !fc.au.HasPermission(rbac.PermissionMembersManage) {
+		return connect.NewError(connect.CodePermissionDenied, fmt.Errorf("forbidden"))
+	}
+	if !s.canViewMember(fc.au, fc.member, target) {
+		return connect.NewError(connect.CodePermissionDenied, fmt.Errorf("forbidden"))
+	}
+	return nil
+}
+
+func (s *Server) listChoreNotificationSubscriptions(ctx context.Context, fc *familyContext, subscriberMemberID int) ([]*apiv1.ChoreNotificationSubscription, error) {
+	rows, err := s.store.ListChoreNotificationSubscriptions(ctx, subscriberMemberID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
@@ -32,27 +123,18 @@ func (s *Server) GetMyChoreNotificationSubscriptions(ctx context.Context, _ *con
 	for i := range rows {
 		out = append(out, toProtoChoreNotificationSubscription(&rows[i], memberName, choreTitle))
 	}
-	return connect.NewResponse(&apiv1.GetMyChoreNotificationSubscriptionsResponse{Subscriptions: out}), nil
+	return out, nil
 }
 
-func (s *Server) SaveMyChoreNotificationSubscriptions(ctx context.Context, req *connect.Request[apiv1.SaveMyChoreNotificationSubscriptionsRequest]) (*connect.Response[apiv1.SaveMyChoreNotificationSubscriptionsResponse], error) {
-	if _, err := s.requireWrite(ctx); err != nil {
-		return nil, err
-	}
-	fc, err := s.requireFamilyContext(ctx)
+func (s *Server) saveChoreNotificationSubscriptions(ctx context.Context, fc *familyContext, subscriberMemberID int, subs []*apiv1.ChoreNotificationSubscription) error {
+	normalized, err := s.normalizeChoreNotificationSubscriptions(ctx, fc, subs)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	normalized, err := s.normalizeChoreNotificationSubscriptions(ctx, fc, req.Msg.GetSubscriptions())
-	if err != nil {
-		return nil, err
+	if err := s.store.ReplaceChoreNotificationSubscriptions(ctx, fc.family.ID, subscriberMemberID, normalized); err != nil {
+		return connect.NewError(connect.CodeInternal, err)
 	}
-	if err := s.store.ReplaceChoreNotificationSubscriptions(ctx, fc.family.ID, fc.member.ID, normalized); err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-	return connect.NewResponse(&apiv1.SaveMyChoreNotificationSubscriptionsResponse{
-		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Notification subscriptions saved"},
-	}), nil
+	return nil
 }
 
 func (s *Server) normalizeChoreNotificationSubscriptions(ctx context.Context, fc *familyContext, subs []*apiv1.ChoreNotificationSubscription) ([]store.ChoreNotificationSubscriptionRow, error) {

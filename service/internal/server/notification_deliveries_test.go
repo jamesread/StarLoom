@@ -35,11 +35,12 @@ func TestNotificationDeliveryHistoryRecorded(t *testing.T) {
 	called := false
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		called = true
-		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"error":null,"details":[]}`))
 	}))
 	t.Cleanup(func() { srv.Close() })
 
-	err = svc.deliverApprise(ctx, &http.Client{Timeout: 2 * time.Second}, srv.URL, apprise.Payload{
+	err = svc.deliverApprise(ctx, &http.Client{Timeout: 2 * time.Second}, srv.URL+"/notify/testkey", apprise.Payload{
 		Title: "Test title",
 		Body:  "Hello",
 		Tag:   apprise.PersonTag(parentMemberID),
@@ -54,4 +55,38 @@ func TestNotificationDeliveryHistoryRecorded(t *testing.T) {
 	require.Equal(t, int32(parentMemberID), list.Msg.Deliveries[0].RecipientMemberId)
 	require.True(t, list.Msg.Deliveries[0].Success)
 	require.Equal(t, store.NotificationTypeTest, list.Msg.Deliveries[0].NotificationType)
+}
+
+func TestNotificationDeliveryHistoryRecordsFailureOnNoContent(t *testing.T) {
+	st := store.OpenMemory()
+	t.Cleanup(func() { _ = st.Close() })
+	ctx := context.Background()
+	require.NoError(t, st.EnsureRBACBootstrap(ctx))
+	require.NoError(t, st.SeedDomainRBAC(ctx))
+
+	parentID, err := st.CreateUserAccount(ctx, "parent", "hash", store.UserCreatedByAdmin)
+	require.NoError(t, err)
+	svc := New(&config.Config{}, st, nil, logrus.New())
+	parentCtx := userCtx(parentID, "parent", true)
+	created, err := svc.CreateFamily(parentCtx, connect.NewRequest(&apiv1.CreateFamilyRequest{Name: "Household"}))
+	require.NoError(t, err)
+	parentMemberID := int(created.Msg.CallerMember.Id)
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	t.Cleanup(func() { srv.Close() })
+
+	err = svc.deliverApprise(ctx, &http.Client{Timeout: 2 * time.Second}, srv.URL+"/notify/testkey", apprise.Payload{
+		Title: "Test title",
+		Body:  "Hello",
+		Tag:   apprise.PersonTag(parentMemberID),
+	}, int(created.Msg.Family.Id), parentMemberID, store.NotificationTypeTest)
+	require.Error(t, err)
+
+	list, err := svc.ListNotificationDeliveries(parentCtx, connect.NewRequest(&apiv1.ListNotificationDeliveriesRequest{Limit: 30}))
+	require.NoError(t, err)
+	require.Len(t, list.Msg.Deliveries, 1)
+	require.False(t, list.Msg.Deliveries[0].Success)
+	require.NotEmpty(t, list.Msg.Deliveries[0].ErrorMessage)
 }

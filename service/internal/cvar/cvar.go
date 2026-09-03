@@ -94,8 +94,8 @@ func Defaults(siteTitle string, showFooter bool) []Def {
 		{
 			Key: KeyAppriseURL, MainType: TypeString, ValueString: "",
 			Title: "Apprise URL",
-			Description: "Apprise API notify URL for redemption approval requests " +
-				"(e.g. http://apprise:8000/notify/ or http://apprise:8000/notify/mykey). Leave empty to disable.",
+			Description: "Apprise API persistent notify URL including the configuration key " +
+				"(e.g. http://apprise:8000/notify/mykey). Bare /notify is not supported. Leave empty to disable.",
 			Category: CategoryNotifications, Ordinal: 10,
 		},
 		{

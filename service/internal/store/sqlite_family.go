@@ -179,8 +179,18 @@ func (s *SQLite) SetMemberUserAccount(ctx context.Context, id int, accountID int
 }
 
 func (s *SQLite) DeleteMember(ctx context.Context, id int) error {
-	_, err := s.db.ExecContext(ctx, `DELETE FROM family_members WHERE id = ? AND role = ?`, id, MemberRoleChild)
-	return err
+	res, err := s.db.ExecContext(ctx, `DELETE FROM family_members WHERE id = ?`, id)
+	if err != nil {
+		return err
+	}
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n == 0 {
+		return fmt.Errorf("member not found")
+	}
+	return nil
 }
 
 func (s *SQLite) SetMemberAvatarPath(ctx context.Context, id int, path string) error {
