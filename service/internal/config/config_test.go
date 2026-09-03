@@ -3,14 +3,76 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestRequiredMigration(t *testing.T) {
-	if RequiredMigration != "12.webhook-deliveries.sql" {
-		t.Fatalf("migration=%s", RequiredMigration)
+	latest, err := latestSQLiteMigration()
+	require.NoError(t, err)
+	require.Equal(t, latest, RequiredMigration,
+		"update RequiredMigration in config.go when adding sqlite migrations")
+}
+
+func latestSQLiteMigration() (string, error) {
+	root, err := repoRoot()
+	if err != nil {
+		return "", err
+	}
+	migrationsDir := filepath.Join(root, "database", "sqlite", "migrations")
+	entries, err := os.ReadDir(migrationsDir)
+	if err != nil {
+		return "", err
+	}
+	var latest string
+	var latestID = -1
+	for _, entry := range entries {
+		name := entry.Name()
+		if entry.IsDir() || !strings.HasSuffix(name, ".sql") {
+			continue
+		}
+		id, ok := migrationNumericPrefix(name)
+		if !ok || id <= latestID {
+			continue
+		}
+		latestID = id
+		latest = name
+	}
+	if latest == "" {
+		return "", os.ErrNotExist
+	}
+	return latest, nil
+}
+
+func migrationNumericPrefix(name string) (int, bool) {
+	dot := strings.IndexByte(name, '.')
+	if dot <= 0 {
+		return 0, false
+	}
+	id, err := strconv.Atoi(name[:dot])
+	if err != nil {
+		return 0, false
+	}
+	return id, true
+}
+
+func repoRoot() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	for {
+		if _, err := os.Stat(filepath.Join(dir, "database", "sqlite", "migrations")); err == nil {
+			return dir, nil
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return "", os.ErrNotExist
+		}
+		dir = parent
 	}
 }
 

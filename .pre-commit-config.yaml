@@ -29,3 +29,9 @@ repos:
         language: system
         pass_filenames: false
         files: ^(service/|frontend/|protocol/|Makefile|\.github/)
+      - id: make-test
+        name: make test
+        entry: make test
+        language: system
+        pass_filenames: false
+        files: ^(service/|frontend/|protocol/|database/|Makefile|\.github/)
