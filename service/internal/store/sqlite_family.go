@@ -484,3 +484,18 @@ func (s *SQLite) CountPendingRedemptions(ctx context.Context, familyID int) (int
 	).Scan(&n)
 	return n, err
 }
+
+func (s *SQLite) CountApprovedRedemptionsForMemberRewardBetween(ctx context.Context, childMemberID, rewardID int, startDate, endDate string) (int, error) {
+	var n int
+	err := s.db.QueryRowContext(ctx, `
+		SELECT COUNT(*) FROM redemptions
+		WHERE child_member_id = ? AND reward_id = ? AND status = ?
+		  AND date(COALESCE(NULLIF(resolved_at, ''), created_at)) >= date(?)
+		  AND date(COALESCE(NULLIF(resolved_at, ''), created_at)) <= date(?)`,
+		childMemberID, rewardID, RedemptionApproved, startDate, endDate,
+	).Scan(&n)
+	if err != nil {
+		return 0, fmt.Errorf("count approved redemptions: %w", err)
+	}
+	return n, nil
+}

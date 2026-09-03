@@ -437,7 +437,7 @@ func (s *Server) CompleteChore(ctx context.Context, req *connect.Request[apiv1.C
 	if _, err := s.requireWrite(ctx); err != nil {
 		return nil, err
 	}
-	if _, err := s.requirePermission(ctx, rbac.PermissionChoresComplete); err != nil {
+	if err := s.authorizeChoreToggle(fc, int(req.Msg.ChildMemberId)); err != nil {
 		return nil, err
 	}
 	return s.toggleChoreCompletion(ctx, fc, int(req.Msg.ChoreId), int(req.Msg.ChildMemberId), req.Msg.Date, true)
@@ -451,7 +451,7 @@ func (s *Server) UncompleteChore(ctx context.Context, req *connect.Request[apiv1
 	if _, err := s.requireWrite(ctx); err != nil {
 		return nil, err
 	}
-	if _, err := s.requirePermission(ctx, rbac.PermissionChoresComplete); err != nil {
+	if err := s.authorizeChoreToggle(fc, int(req.Msg.ChildMemberId)); err != nil {
 		return nil, err
 	}
 	resp, err := s.toggleChoreCompletion(ctx, fc, int(req.Msg.ChoreId), int(req.Msg.ChildMemberId), req.Msg.Date, false)
@@ -516,6 +516,7 @@ func (s *Server) toggleChoreCompletion(ctx context.Context, fc *familyContext, c
 			"amount": cw.Chore.StarReward, "note": fmt.Sprintf("Chore: %s", cw.Chore.Title),
 			"created_by_member_id": createdBy, "chore_id": choreID,
 		})
+		s.notifyChoreCompleted(ctx, fc.family.ID, childMemberID, choreID, cw.Chore.Title, cw.Chore.StarReward, date, createdBy)
 	} else {
 		if existing == nil {
 			balance, _ := s.store.GetMemberBalance(ctx, childMemberID)

@@ -15,9 +15,10 @@ const (
 	KeyDefaultAwardStars        = "default_award_stars"
 	KeyEnableRedemptionApproval = "enable_redemption_approval"
 
-	KeyAppriseURL               = "apprise_url"
-	KeyExternalBaseURL          = "external_base_url"
-	KeyAppriseRedemptionMessage = "apprise_redemption_message"
+	KeyAppriseURL                   = "apprise_url"
+	KeyExternalBaseURL              = "external_base_url"
+	KeyAppriseRedemptionMessage     = "apprise_redemption_message"
+	KeyAppriseChoreCompletedMessage = "apprise_chore_completed_message"
 
 	KeyThemeColorSchemeSwitcherEnabled = "theme_color_scheme_switcher_enabled"
 	KeyThemeName                       = "theme_name"
@@ -111,6 +112,14 @@ func Defaults(siteTitle string, showFooter bool) []Def {
 				"{{approval_url}}, {{requestor_name}}, {{reward_name}}, {{stars}}, {{redemption_id}}, {{requestor_id}}. " +
 				"Leave empty to use the built-in default.",
 			Category: CategoryNotifications, Ordinal: 30,
+		},
+		{
+			Key: KeyAppriseChoreCompletedMessage, MainType: TypeTextarea, ValueString: "",
+			Title: "Apprise chore completed message",
+			Description: "Message body for chore completion notifications. Placeholders: " +
+				"{{child_name}}, {{chore_title}}, {{stars}}, {{date}}, {{completed_by_name}}. " +
+				"Leave empty to use the built-in default.",
+			Category: CategoryNotifications, Ordinal: 40,
 		},
 		{
 			Key: KeyThemeColorSchemeSwitcherEnabled, MainType: TypeBool, ValueInt: 0,

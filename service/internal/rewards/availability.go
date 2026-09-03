@@ -13,39 +13,45 @@ import (
 // AvailabilityEnv is the variable set exposed to reward availability expressions.
 // Times use the server local timezone.
 type AvailabilityEnv struct {
-	Hour      int
-	Minute    int
-	DayName   string
-	Day       int
-	Month     int
-	Year      int
-	Balance   int
-	CostStars int
+	Hour         int
+	Minute       int
+	DayName      string
+	Day          int
+	Month        int
+	Year         int
+	Balance      int
+	CostStars    int
+	CountPerDay  int
+	CountPerWeek int
 }
 
 var programCache sync.Map
 
 var availabilityEnvTypes = map[string]any{
-	"hour":      0,
-	"minute":    0,
-	"dayName":   "",
-	"day":       0,
-	"month":     0,
-	"year":      0,
-	"balance":   0,
-	"costStars": 0,
+	"hour":         0,
+	"minute":       0,
+	"dayName":      "",
+	"day":          0,
+	"month":        0,
+	"year":         0,
+	"balance":      0,
+	"costStars":    0,
+	"countPerDay":  0,
+	"countPerWeek": 0,
 }
 
 func availabilityEnvMap(env AvailabilityEnv) map[string]any {
 	return map[string]any{
-		"hour":      env.Hour,
-		"minute":    env.Minute,
-		"dayName":   env.DayName,
-		"day":       env.Day,
-		"month":     env.Month,
-		"year":      env.Year,
-		"balance":   env.Balance,
-		"costStars": env.CostStars,
+		"hour":         env.Hour,
+		"minute":       env.Minute,
+		"dayName":      env.DayName,
+		"day":          env.Day,
+		"month":        env.Month,
+		"year":         env.Year,
+		"balance":      env.Balance,
+		"costStars":    env.CostStars,
+		"countPerDay":  env.CountPerDay,
+		"countPerWeek": env.CountPerWeek,
 	}
 }
 

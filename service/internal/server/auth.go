@@ -78,6 +78,7 @@ func (s *Server) GetStatus(ctx context.Context, req *connect.Request[apiv1.GetSt
 
 	if au != nil && au.User != nil && au.User.ID > 0 {
 		res.Username = au.User.Username
+		res.DisplayName = s.accountDisplayName(ctx, au.User.ID, au.User.Username)
 		res.IsLoggedIn = true
 		if user, uerr := s.store.GetUserByID(ctx, au.User.ID); uerr == nil && user != nil {
 			res.AccountCreatedAt = user.CreatedAt
@@ -196,6 +197,16 @@ func toProtoUser(u *store.UserAccountRow) *apiv1.UserAccount {
 		CreatedAt: u.CreatedAt,
 		CreatedBy: u.CreatedBy,
 	}
+}
+
+func (s *Server) accountDisplayName(ctx context.Context, userID int, username string) string {
+	member, err := s.store.GetMemberByAccountID(ctx, userID)
+	if err == nil && member != nil {
+		if name := strings.TrimSpace(member.DisplayName); name != "" {
+			return name
+		}
+	}
+	return username
 }
 
 func (s *Server) requireAuth(ctx context.Context) (*auth.AuthenticatedUser, error) {

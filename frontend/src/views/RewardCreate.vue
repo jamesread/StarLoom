@@ -119,7 +119,7 @@ async function createReward() {
       <FormField
         label="Availability expression"
         for="reward-create-availability"
-        description="Optional. expr language; must evaluate to true when the reward can be redeemed. Leave blank for always available. Variables: hour, minute, dayName (Mon–Sun), day, month, year, balance, costStars. Times use server local timezone."
+        description="Optional. expr language; must evaluate to true when the reward can be redeemed. Leave blank for always available. Variables: hour, minute, dayName (Mon–Sun), day, month, year, balance, costStars, countPerDay, countPerWeek. Times use server local timezone."
       >
         <textarea
           id="reward-create-availability"

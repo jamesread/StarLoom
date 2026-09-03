@@ -1742,6 +1742,122 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/GetMemberTodaysChores": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetMemberTodaysChores",
+        "operationId": "starapp.api.v1.StarAppService.GetMemberTodaysChores",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetMemberTodaysChoresRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetMemberTodaysChoresResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/GetMyChoreNotificationSubscriptions": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "GetMyChoreNotificationSubscriptions",
+        "operationId": "starapp.api.v1.StarAppService.GetMyChoreNotificationSubscriptions",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.GetMyChoreNotificationSubscriptionsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.GetMyChoreNotificationSubscriptionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/GetMyFamily": {
       "post": {
         "tags": [
@@ -3018,6 +3134,64 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/ListNotificationDeliveries": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ListNotificationDeliveries",
+        "operationId": "starapp.api.v1.StarAppService.ListNotificationDeliveries",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ListNotificationDeliveriesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ListNotificationDeliveriesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/ListRbacPermissions": {
       "post": {
         "tags": [
@@ -3830,6 +4004,64 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/SaveMyChoreNotificationSubscriptions": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "SaveMyChoreNotificationSubscriptions",
+        "operationId": "starapp.api.v1.StarAppService.SaveMyChoreNotificationSubscriptions",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.SaveMyChoreNotificationSubscriptionsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.SaveMyChoreNotificationSubscriptionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/SaveUserPreferences": {
       "post": {
         "tags": [
@@ -3939,6 +4171,64 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/starapp.api.v1.SelectMemberAvatarResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/starapp.api.v1.StarAppService/SendUserTestNotification": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "SendUserTestNotification",
+        "operationId": "starapp.api.v1.StarAppService.SendUserTestNotification",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.SendUserTestNotificationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.SendUserTestNotificationResponse"
                 }
               }
             }
@@ -4964,6 +5254,13 @@
           "lastAward": {
             "title": "last_award",
             "$ref": "#/components/schemas/starapp.api.v1.StarLedgerEntry"
+          },
+          "todayStarChartProgress": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.StarChartDayProgress"
+            },
+            "title": "today_star_chart_progress"
           }
         },
         "title": "ChildHomeSummary",
@@ -5022,6 +5319,31 @@
           }
         },
         "title": "Chore",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ChoreNotificationSubscription": {
+        "type": "object",
+        "properties": {
+          "childMemberId": {
+            "type": "integer",
+            "title": "child_member_id",
+            "format": "int32"
+          },
+          "choreId": {
+            "type": "integer",
+            "title": "chore_id",
+            "format": "int32"
+          },
+          "childDisplayName": {
+            "type": "string",
+            "title": "child_display_name"
+          },
+          "choreTitle": {
+            "type": "string",
+            "title": "chore_title"
+          }
+        },
+        "title": "ChoreNotificationSubscription",
         "additionalProperties": false
       },
       "starapp.api.v1.ChorePause": {
@@ -5908,6 +6230,13 @@
               "format": "int32"
             },
             "title": "unavailable_reward_ids"
+          },
+          "todaysChores": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.TodaysChore"
+            },
+            "title": "todays_chores"
           }
         },
         "title": "GetChildHomeSummaryResponse",
@@ -5935,6 +6264,51 @@
           }
         },
         "title": "GetMemberBalanceResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetMemberTodaysChoresRequest": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "integer",
+            "title": "member_id",
+            "format": "int32"
+          }
+        },
+        "title": "GetMemberTodaysChoresRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetMemberTodaysChoresResponse": {
+        "type": "object",
+        "properties": {
+          "todaysChores": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.TodaysChore"
+            },
+            "title": "todays_chores"
+          }
+        },
+        "title": "GetMemberTodaysChoresResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetMyChoreNotificationSubscriptionsRequest": {
+        "type": "object",
+        "title": "GetMyChoreNotificationSubscriptionsRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.GetMyChoreNotificationSubscriptionsResponse": {
+        "type": "object",
+        "properties": {
+          "subscriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.ChoreNotificationSubscription"
+            },
+            "title": "subscriptions"
+          }
+        },
+        "title": "GetMyChoreNotificationSubscriptionsResponse",
         "additionalProperties": false
       },
       "starapp.api.v1.GetMyFamilyRequest": {
@@ -6017,6 +6391,13 @@
             "type": "integer",
             "title": "pending_redemptions",
             "format": "int32"
+          },
+          "todaysChores": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.TodaysChore"
+            },
+            "title": "todays_chores"
           }
         },
         "title": "GetParentHomeSummaryResponse",
@@ -6155,6 +6536,10 @@
           "accountCreatedAt": {
             "type": "string",
             "title": "account_created_at"
+          },
+          "displayName": {
+            "type": "string",
+            "title": "display_name"
           }
         },
         "title": "GetStatusResponse",
@@ -6287,6 +6672,17 @@
           "user": {
             "title": "user",
             "$ref": "#/components/schemas/starapp.api.v1.UserAccount"
+          },
+          "linkedMember": {
+            "title": "linked_member",
+            "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
+          },
+          "userGroups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.UserGroup"
+            },
+            "title": "user_groups"
           }
         },
         "title": "GetUserResponse",
@@ -6602,6 +6998,32 @@
         "title": "ListMembersResponse",
         "additionalProperties": false
       },
+      "starapp.api.v1.ListNotificationDeliveriesRequest": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "title": "limit",
+            "format": "int32"
+          }
+        },
+        "title": "ListNotificationDeliveriesRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ListNotificationDeliveriesResponse": {
+        "type": "object",
+        "properties": {
+          "deliveries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.NotificationDelivery"
+            },
+            "title": "deliveries"
+          }
+        },
+        "title": "ListNotificationDeliveriesResponse",
+        "additionalProperties": false
+      },
       "starapp.api.v1.ListRbacPermissionsRequest": {
         "type": "object",
         "title": "ListRbacPermissionsRequest",
@@ -6696,6 +7118,10 @@
           "includeInactive": {
             "type": "boolean",
             "title": "include_inactive"
+          },
+          "assignedToMe": {
+            "type": "boolean",
+            "title": "assigned_to_me"
           }
         },
         "title": "ListStarChartsRequest",
@@ -6867,6 +7293,47 @@
           }
         },
         "title": "MyPermissionAuditRow",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.NotificationDelivery": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          },
+          "recipientMemberId": {
+            "type": "integer",
+            "title": "recipient_member_id",
+            "format": "int32"
+          },
+          "recipientDisplayName": {
+            "type": "string",
+            "title": "recipient_display_name"
+          },
+          "notificationType": {
+            "type": "string",
+            "title": "notification_type"
+          },
+          "title": {
+            "type": "string",
+            "title": "title"
+          },
+          "success": {
+            "type": "boolean",
+            "title": "success"
+          },
+          "errorMessage": {
+            "type": "string",
+            "title": "error_message"
+          },
+          "sentAt": {
+            "type": "string",
+            "title": "sent_at"
+          }
+        },
+        "title": "NotificationDelivery",
         "additionalProperties": false
       },
       "starapp.api.v1.RbacPermission": {
@@ -7157,6 +7624,31 @@
         "title": "Reward",
         "additionalProperties": false
       },
+      "starapp.api.v1.SaveMyChoreNotificationSubscriptionsRequest": {
+        "type": "object",
+        "properties": {
+          "subscriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.ChoreNotificationSubscription"
+            },
+            "title": "subscriptions"
+          }
+        },
+        "title": "SaveMyChoreNotificationSubscriptionsRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.SaveMyChoreNotificationSubscriptionsResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "SaveMyChoreNotificationSubscriptionsResponse",
+        "additionalProperties": false
+      },
       "starapp.api.v1.SaveUserPreferencesRequest": {
         "type": "object",
         "properties": {
@@ -7216,6 +7708,33 @@
           }
         },
         "title": "SelectMemberAvatarResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.SendUserTestNotificationRequest": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "title": "user_id",
+            "format": "int32"
+          }
+        },
+        "title": "SendUserTestNotificationRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.SendUserTestNotificationResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          },
+          "tag": {
+            "type": "string",
+            "title": "tag"
+          }
+        },
+        "title": "SendUserTestNotificationResponse",
         "additionalProperties": false
       },
       "starapp.api.v1.SetUserGroupMembersRequest": {
@@ -7334,6 +7853,36 @@
         "title": "StarChart",
         "additionalProperties": false
       },
+      "starapp.api.v1.StarChartDayProgress": {
+        "type": "object",
+        "properties": {
+          "starChartId": {
+            "type": "integer",
+            "title": "star_chart_id",
+            "format": "int32"
+          },
+          "starChartName": {
+            "type": "string",
+            "title": "star_chart_name"
+          },
+          "completed": {
+            "type": "integer",
+            "title": "completed",
+            "format": "int32"
+          },
+          "scheduled": {
+            "type": "integer",
+            "title": "scheduled",
+            "format": "int32"
+          },
+          "paused": {
+            "type": "boolean",
+            "title": "paused"
+          }
+        },
+        "title": "StarChartDayProgress",
+        "additionalProperties": false
+      },
       "starapp.api.v1.StarLedgerEntry": {
         "type": "object",
         "properties": {
@@ -7417,6 +7966,57 @@
           }
         },
         "title": "TestAppriseNotificationResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.TodaysChore": {
+        "type": "object",
+        "properties": {
+          "choreId": {
+            "type": "integer",
+            "title": "chore_id",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string",
+            "title": "title"
+          },
+          "starReward": {
+            "type": "integer",
+            "title": "star_reward",
+            "format": "int32"
+          },
+          "childMemberId": {
+            "type": "integer",
+            "title": "child_member_id",
+            "format": "int32"
+          },
+          "child": {
+            "title": "child",
+            "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
+          },
+          "completed": {
+            "type": "boolean",
+            "title": "completed"
+          },
+          "paused": {
+            "type": "boolean",
+            "title": "paused"
+          },
+          "date": {
+            "type": "string",
+            "title": "date"
+          },
+          "starChartId": {
+            "type": "integer",
+            "title": "star_chart_id",
+            "format": "int32"
+          },
+          "starChartName": {
+            "type": "string",
+            "title": "star_chart_name"
+          }
+        },
+        "title": "TodaysChore",
         "additionalProperties": false
       },
       "starapp.api.v1.UncompleteChoreRequest": {
@@ -7552,6 +8152,16 @@
           "starColor": {
             "type": "string",
             "title": "star_color"
+          },
+          "starAdjustment": {
+            "type": "integer",
+            "title": "star_adjustment",
+            "format": "int32",
+            "description": "Signed delta applied to the member's star balance (0 = no change)."
+          },
+          "adjustmentNote": {
+            "type": "string",
+            "title": "adjustment_note"
           }
         },
         "title": "UpdateMemberRequest",
@@ -7567,6 +8177,11 @@
           "member": {
             "title": "member",
             "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
+          },
+          "newBalance": {
+            "type": "integer",
+            "title": "new_balance",
+            "format": "int32"
           }
         },
         "title": "UpdateMemberResponse",

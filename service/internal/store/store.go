@@ -62,6 +62,7 @@ type Store interface {
 	CreateRedemption(ctx context.Context, familyID, childMemberID, rewardID, starsSpent int, status string, ledgerEntryID *int) (int, error)
 	ResolveRedemption(ctx context.Context, id int, status string, resolvedByMemberID int, ledgerEntryID *int) error
 	CountPendingRedemptions(ctx context.Context, familyID int) (int, error)
+	CountApprovedRedemptionsForMemberRewardBetween(ctx context.Context, childMemberID, rewardID int, startDate, endDate string) (int, error)
 
 	ListChores(ctx context.Context, familyID int, starChartID int, includeInactive bool) ([]ChoreWithAssignments, error)
 	GetChoreByID(ctx context.Context, id int) (*ChoreWithAssignments, error)
@@ -90,4 +91,11 @@ type Store interface {
 	ListCompletionsForWeek(ctx context.Context, familyID int, weekStart, weekEnd string) ([]WeeklyChartCompletion, error)
 	ListChoreLedgerEntryIDs(ctx context.Context, familyID int) ([]int, error)
 	ListBonusStarsForWeek(ctx context.Context, familyID int, weekStart, weekEnd string, choreLedgerIDs []int) (map[int]map[string]int, error)
+
+	ListChoreNotificationSubscriptions(ctx context.Context, subscriberMemberID int) ([]ChoreNotificationSubscriptionRow, error)
+	ReplaceChoreNotificationSubscriptions(ctx context.Context, familyID, subscriberMemberID int, subs []ChoreNotificationSubscriptionRow) error
+	MatchingChoreNotificationSubscribers(ctx context.Context, familyID, childMemberID, choreID int) ([]int, error)
+
+	InsertNotificationDelivery(ctx context.Context, row NotificationDeliveryRow) (int, error)
+	ListNotificationDeliveries(ctx context.Context, limit int) ([]NotificationDeliveryRow, error)
 }

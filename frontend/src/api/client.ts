@@ -15,6 +15,7 @@ export type StandardResponse = {
 
 export type GetStatusResponse = {
   username?: string
+  displayName?: string
   isLoggedIn?: boolean
   rbacPermissions?: string[]
   rbacIsSuperuser?: boolean
@@ -81,6 +82,17 @@ export type WebhookDelivery = {
   httpStatus?: number
   errorMessage?: string
   firedAt?: string
+}
+
+export type NotificationDelivery = {
+  id?: number
+  recipientMemberId?: number
+  recipientDisplayName?: string
+  notificationType?: string
+  title?: string
+  success?: boolean
+  errorMessage?: string
+  sentAt?: string
 }
 
 export type Cvar = {
@@ -176,6 +188,18 @@ export const starapp = {
       {},
     )
   },
+  getMyChoreNotificationSubscriptions() {
+    return connectFetch<{ subscriptions?: ChoreNotificationSubscription[] }>(
+      '/starapp.api.v1.StarAppService/GetMyChoreNotificationSubscriptions',
+      {},
+    )
+  },
+  saveMyChoreNotificationSubscriptions(body: { subscriptions: ChoreNotificationSubscription[] }) {
+    return connectFetch<{ standardResponse?: StandardResponse }>(
+      '/starapp.api.v1.StarAppService/SaveMyChoreNotificationSubscriptions',
+      body,
+    )
+  },
   getUserPreferences() {
     return connectFetch<{
       language?: string
@@ -194,6 +218,18 @@ export const starapp = {
   },
   getUsers() {
     return connectFetch<{ users: UserAccount[] }>('/starapp.api.v1.StarAppService/GetUsers', {})
+  },
+  getUser(body: { userId: number }) {
+    return connectFetch<{ user?: UserAccount; linkedMember?: FamilyMember; userGroups?: UserGroup[] }>(
+      '/starapp.api.v1.StarAppService/GetUser',
+      body,
+    )
+  },
+  sendUserTestNotification(body: { userId: number }) {
+    return connectFetch<{ standardResponse?: StandardResponse; tag?: string }>(
+      '/starapp.api.v1.StarAppService/SendUserTestNotification',
+      body,
+    )
   },
   createUser(body: { username: string; password?: string }) {
     return connectFetch<{ standardResponse?: StandardResponse; user?: UserAccount }>(
@@ -327,6 +363,12 @@ export const starapp = {
       body,
     )
   },
+  listNotificationDeliveries(body: { limit?: number } = {}) {
+    return connectFetch<{ deliveries: NotificationDelivery[] }>(
+      '/starapp.api.v1.StarAppService/ListNotificationDeliveries',
+      body,
+    )
+  },
   fireTestWebhooks() {
     return connectFetch<{ standardResponse?: StandardResponse; targetsFired?: number }>(
       '/starapp.api.v1.StarAppService/FireTestWebhooks',
@@ -357,8 +399,14 @@ export const starapp = {
       body,
     )
   },
-  updateMember(body: { memberId: number; displayName: string; starColor?: string }) {
-    return connectFetch<{ standardResponse?: StandardResponse; member?: FamilyMember }>(
+  updateMember(body: {
+    memberId: number
+    displayName: string
+    starColor?: string
+    starAdjustment?: number
+    adjustmentNote?: string
+  }) {
+    return connectFetch<{ standardResponse?: StandardResponse; member?: FamilyMember; newBalance?: number }>(
       '/starapp.api.v1.StarAppService/UpdateMember',
       body,
     )
@@ -499,6 +547,12 @@ export const starapp = {
       {},
     )
   },
+  getMemberTodaysChores(body: { memberId: number }) {
+    return connectFetch<{ todaysChores?: TodaysChore[] }>(
+      '/starapp.api.v1.StarAppService/GetMemberTodaysChores',
+      body,
+    )
+  },
   listChores(body: { includeInactive?: boolean; starChartId?: number } = {}) {
     return connectFetch<{ chores: Chore[] }>(
       '/starapp.api.v1.StarAppService/ListChores',
@@ -561,7 +615,7 @@ export const starapp = {
       body,
     )
   },
-  listStarCharts(body: { includeInactive?: boolean } = {}) {
+  listStarCharts(body: { includeInactive?: boolean; assignedToMe?: boolean } = {}) {
     return connectFetch<{ starCharts: StarChart[] }>(
       '/starapp.api.v1.StarAppService/ListStarCharts',
       body,
@@ -585,13 +639,13 @@ export const starapp = {
       body,
     )
   },
-  completeChore(body: { choreId: number; childMemberId: number; date: string }) {
+  completeChore(body: { choreId: number; childMemberId: number; date?: string }) {
     return connectFetch<{ standardResponse?: StandardResponse; newBalance?: number }>(
       '/starapp.api.v1.StarAppService/CompleteChore',
       body,
     )
   },
-  uncompleteChore(body: { choreId: number; childMemberId: number; date: string }) {
+  uncompleteChore(body: { choreId: number; childMemberId: number; date?: string }) {
     return connectFetch<{ standardResponse?: StandardResponse; newBalance?: number }>(
       '/starapp.api.v1.StarAppService/UncompleteChore',
       body,
@@ -658,6 +712,34 @@ export type Redemption = {
   childDisplayName?: string
 }
 
+export type TodaysChore = {
+  choreId: number
+  title: string
+  starReward: number
+  childMemberId: number
+  child?: FamilyMember
+  completed?: boolean
+  paused?: boolean
+  date?: string
+  starChartId?: number
+  starChartName?: string
+}
+
+export type StarChartDayProgress = {
+  starChartId?: number
+  starChartName?: string
+  completed?: number
+  scheduled?: number
+  paused?: boolean
+}
+
+export type ChoreNotificationSubscription = {
+  childMemberId?: number
+  choreId?: number
+  childDisplayName?: string
+  choreTitle?: string
+}
+
 export type ChildHomeSummary = {
   member?: FamilyMember
   balance?: number
@@ -665,6 +747,7 @@ export type ChildHomeSummary = {
   rewards?: Reward[]
   pendingRewardIds?: number[]
   unavailableRewardIds?: number[]
+  todaysChores?: TodaysChore[]
 }
 
 export type ParentHomeSummary = {
@@ -673,8 +756,10 @@ export type ParentHomeSummary = {
     member?: FamilyMember
     balance?: number
     lastAward?: StarLedgerEntry
+    todayStarChartProgress?: StarChartDayProgress[]
   }>
   pendingRedemptions?: number
+  todaysChores?: TodaysChore[]
 }
 
 export type Chore = {

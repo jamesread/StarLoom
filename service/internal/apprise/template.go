@@ -11,6 +11,8 @@ const DefaultRedemptionMessage = `{{requestor_name}} requested "{{reward_name}}"
 
 Approve here: {{approval_url}}`
 
+const DefaultChoreCompletedMessage = `{{child_name}} completed "{{chore_title}}" (+{{stars}} stars) on {{date}}.`
+
 // RedemptionPlaceholders holds values substituted into the message template.
 type RedemptionPlaceholders struct {
 	ApprovalURL   string
@@ -68,5 +70,32 @@ func RenderRedemptionMessage(tmpl string, p RedemptionPlaceholders) string {
 		"stars":          strconv.Itoa(p.Stars),
 		"redemption_id":  strconv.Itoa(p.RedemptionID),
 		"requestor_id":   strconv.Itoa(p.RequestorID),
+	})
+}
+
+// ChoreCompletedPlaceholders holds values substituted into the chore-completed template.
+type ChoreCompletedPlaceholders struct {
+	ChildName       string
+	ChoreTitle      string
+	Stars           int
+	Date            string
+	CompletedByName string
+}
+
+// RenderChoreCompletedMessage fills the chore completed notification template.
+func RenderChoreCompletedMessage(tmpl string, p ChoreCompletedPlaceholders) string {
+	if strings.TrimSpace(tmpl) == "" {
+		tmpl = DefaultChoreCompletedMessage
+	}
+	completedBy := strings.TrimSpace(p.CompletedByName)
+	if completedBy == "" {
+		completedBy = p.ChildName
+	}
+	return RenderTemplate(tmpl, map[string]string{
+		"child_name":        p.ChildName,
+		"chore_title":       p.ChoreTitle,
+		"stars":             strconv.Itoa(p.Stars),
+		"date":              p.Date,
+		"completed_by_name": completedBy,
 	})
 }

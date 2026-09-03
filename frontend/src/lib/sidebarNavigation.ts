@@ -4,6 +4,32 @@ export type SidebarNavigation = {
   addRouterLink: (link: string, altTitle?: string | null, options?: Record<string, unknown>) => void
 }
 
+export type TopBarNavigation = SidebarNavigation & {
+  addCallback: (title: string, callback: () => void, options?: Record<string, unknown>) => void
+}
+
+export type TopBarStarChart = {
+  id: number
+  name: string
+  choreCount?: number
+}
+
+export function appendTopBarStarChartLinks(
+  navigation: TopBarNavigation,
+  charts: TopBarStarChart[],
+  onOpen: (chartId: number) => void,
+  icon: unknown,
+) {
+  for (const chart of charts) {
+    const count = chart.choreCount ?? 0
+    navigation.addCallback(chart.name, () => onOpen(chart.id), {
+      name: `topbar-star-chart-${chart.id}`,
+      icon,
+      description: count === 1 ? '1 chore for you' : `${count} chores for you`,
+    })
+  }
+}
+
 export function setupSidebarNavigation(
   navigation: SidebarNavigation,
   {

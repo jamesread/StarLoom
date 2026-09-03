@@ -51,6 +51,7 @@ message GetStatusResponse {
   repeated string webhook_events = 15;
   bool uses_secure_cookies = 16;
   string account_created_at = 17;
+  string display_name = 18;
 }
 
 message LoginWithUsernameAndPasswordRequest {
@@ -115,6 +116,17 @@ message GetUserRequest {
 
 message GetUserResponse {
   UserAccount user = 1;
+  FamilyMember linked_member = 2;
+  repeated UserGroup user_groups = 3;
+}
+
+message SendUserTestNotificationRequest {
+  int32 user_id = 1;
+}
+
+message SendUserTestNotificationResponse {
+  StandardResponse standard_response = 1;
+  string tag = 2;
 }
 
 message CreateUserRequest {
@@ -434,6 +446,46 @@ message TestAppriseNotificationResponse {
   string tag = 2;
 }
 
+message ChoreNotificationSubscription {
+  int32 child_member_id = 1;
+  int32 chore_id = 2;
+  string child_display_name = 3;
+  string chore_title = 4;
+}
+
+message GetMyChoreNotificationSubscriptionsRequest {}
+
+message GetMyChoreNotificationSubscriptionsResponse {
+  repeated ChoreNotificationSubscription subscriptions = 1;
+}
+
+message SaveMyChoreNotificationSubscriptionsRequest {
+  repeated ChoreNotificationSubscription subscriptions = 1;
+}
+
+message SaveMyChoreNotificationSubscriptionsResponse {
+  StandardResponse standard_response = 1;
+}
+
+message NotificationDelivery {
+  int32 id = 1;
+  int32 recipient_member_id = 2;
+  string recipient_display_name = 3;
+  string notification_type = 4;
+  string title = 5;
+  bool success = 6;
+  string error_message = 7;
+  string sent_at = 8;
+}
+
+message ListNotificationDeliveriesRequest {
+  int32 limit = 1;
+}
+
+message ListNotificationDeliveriesResponse {
+  repeated NotificationDelivery deliveries = 1;
+}
+
 message Family {
   int32 id = 1;
   string name = 2;
@@ -528,11 +580,15 @@ message UpdateMemberRequest {
   int32 member_id = 1;
   string display_name = 2;
   string star_color = 3;
+  // Signed delta applied to the member's star balance (0 = no change).
+  int32 star_adjustment = 4;
+  string adjustment_note = 5;
 }
 
 message UpdateMemberResponse {
   StandardResponse standard_response = 1;
   FamilyMember member = 2;
+  int32 new_balance = 3;
 }
 
 message AssignMemberLoginRequest {
@@ -718,18 +774,41 @@ message ListRedemptionsResponse {
   repeated Redemption redemptions = 1;
 }
 
+message StarChartDayProgress {
+  int32 star_chart_id = 1;
+  string star_chart_name = 2;
+  int32 completed = 3;
+  int32 scheduled = 4;
+  bool paused = 5;
+}
+
 message ChildHomeSummary {
   FamilyMember member = 1;
   int32 balance = 2;
   StarLedgerEntry last_award = 3;
+  repeated StarChartDayProgress today_star_chart_progress = 4;
 }
 
 message GetParentHomeSummaryRequest {}
+
+message TodaysChore {
+  int32 chore_id = 1;
+  string title = 2;
+  int32 star_reward = 3;
+  int32 child_member_id = 4;
+  FamilyMember child = 5;
+  bool completed = 6;
+  bool paused = 7;
+  string date = 8;
+  int32 star_chart_id = 9;
+  string star_chart_name = 10;
+}
 
 message GetParentHomeSummaryResponse {
   Family family = 1;
   repeated ChildHomeSummary children = 2;
   int32 pending_redemptions = 3;
+  repeated TodaysChore todays_chores = 4;
 }
 
 message GetChildHomeSummaryRequest {}
@@ -741,6 +820,15 @@ message GetChildHomeSummaryResponse {
   repeated Reward rewards = 4;
   repeated int32 pending_reward_ids = 5;
   repeated int32 unavailable_reward_ids = 6;
+  repeated TodaysChore todays_chores = 7;
+}
+
+message GetMemberTodaysChoresRequest {
+  int32 member_id = 1;
+}
+
+message GetMemberTodaysChoresResponse {
+  repeated TodaysChore todays_chores = 1;
 }
 
 message Chore {
@@ -767,6 +855,7 @@ message StarChart {
 
 message ListStarChartsRequest {
   bool include_inactive = 1;
+  bool assigned_to_me = 2;
 }
 
 message ListStarChartsResponse {
@@ -955,6 +1044,7 @@ service StarAppService {
   rpc SaveUserPreferences(SaveUserPreferencesRequest) returns (SaveUserPreferencesResponse);
   rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc SendUserTestNotification(SendUserTestNotificationRequest) returns (SendUserTestNotificationResponse);
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
   rpc ResetUserPassword(ResetUserPasswordRequest) returns (ResetUserPasswordResponse);
@@ -988,6 +1078,9 @@ service StarAppService {
   rpc ListWebhookDeliveries(ListWebhookDeliveriesRequest) returns (ListWebhookDeliveriesResponse);
   rpc FireTestWebhooks(FireTestWebhooksRequest) returns (FireTestWebhooksResponse);
   rpc TestAppriseNotification(TestAppriseNotificationRequest) returns (TestAppriseNotificationResponse);
+  rpc GetMyChoreNotificationSubscriptions(GetMyChoreNotificationSubscriptionsRequest) returns (GetMyChoreNotificationSubscriptionsResponse);
+  rpc SaveMyChoreNotificationSubscriptions(SaveMyChoreNotificationSubscriptionsRequest) returns (SaveMyChoreNotificationSubscriptionsResponse);
+  rpc ListNotificationDeliveries(ListNotificationDeliveriesRequest) returns (ListNotificationDeliveriesResponse);
   rpc GetMyFamily(GetMyFamilyRequest) returns (GetMyFamilyResponse);
   rpc CreateFamily(CreateFamilyRequest) returns (CreateFamilyResponse);
   rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);
@@ -1013,6 +1106,7 @@ service StarAppService {
   rpc ListRedemptions(ListRedemptionsRequest) returns (ListRedemptionsResponse);
   rpc GetParentHomeSummary(GetParentHomeSummaryRequest) returns (GetParentHomeSummaryResponse);
   rpc GetChildHomeSummary(GetChildHomeSummaryRequest) returns (GetChildHomeSummaryResponse);
+  rpc GetMemberTodaysChores(GetMemberTodaysChoresRequest) returns (GetMemberTodaysChoresResponse);
   rpc ListStarCharts(ListStarChartsRequest) returns (ListStarChartsResponse);
   rpc CreateStarChart(CreateStarChartRequest) returns (CreateStarChartResponse);
   rpc UpdateStarChart(UpdateStarChartRequest) returns (UpdateStarChartResponse);

@@ -188,10 +188,15 @@ func (s *Server) UpdateMember(ctx context.Context, req *connect.Request[apiv1.Up
 	if err := s.store.UpdateMember(ctx, member.ID, displayName, starColor); err != nil {
 		return nil, mapStoreError(err)
 	}
+	balance, err := s.applyMemberStarAdjustment(ctx, fc, member, int(req.Msg.StarAdjustment), req.Msg.AdjustmentNote)
+	if err != nil {
+		return nil, err
+	}
 	member, _ = s.store.GetMemberByID(ctx, member.ID)
 	return connect.NewResponse(&apiv1.UpdateMemberResponse{
 		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Member updated"},
 		Member:           toProtoMember(member),
+		NewBalance:       int32(balance),
 	}), nil
 }
 

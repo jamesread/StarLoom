@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
 import Table from 'picocrank/vue/components/Table.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { PlusSignIcon, Refresh01Icon, StarIcon } from '@hugeicons/core-free-icons'
+import { ArrowLeft01Icon, PlusSignIcon, Refresh01Icon, StarIcon } from '@hugeicons/core-free-icons'
 import { starapp, type StarChart } from '../api/client'
 
 const iconStrokeWidth = 2.5
@@ -61,6 +61,10 @@ onMounted(load)
     </template>
 
     <template #toolbar>
+      <RouterLink :to="{ name: 'controlPanel' }" class="button inline-icon neutral">
+        <HugeiconsIcon :icon="ArrowLeft01Icon" width="1em" height="1em" aria-hidden="true" />
+        <span>Control Panel</span>
+      </RouterLink>
       <button
         type="button"
         class="inline-icon neutral"

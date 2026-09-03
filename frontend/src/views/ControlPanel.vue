@@ -15,7 +15,7 @@ import { useRouter } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
 import Navigation from 'picocrank/vue/components/Navigation.vue'
 import NavigationGrid from 'picocrank/vue/components/NavigationGrid.vue'
-import { Settings01Icon, Task01Icon, UserMultipleIcon, UserShield01Icon, WebhookIcon } from '@hugeicons/core-free-icons'
+import { Settings01Icon, StarIcon, Task01Icon, UserMultipleIcon, UserShield01Icon, WebhookIcon, GiftIcon, Notification03Icon } from '@hugeicons/core-free-icons'
 import { fetchAppStatus, useStatus } from '../composables/useStatus'
 import {
   canAccessControlPanelFromStatus,
@@ -63,6 +63,12 @@ function populateHubTiles() {
       name: 'settings',
       description: 'Configure system settings',
     })
+    tileCount += 1
+    nav.addCallback('Notifications', () => router.push({ name: 'notificationHistory' }), {
+      icon: Notification03Icon,
+      name: 'notificationHistory',
+      description: 'Apprise notification delivery history',
+    })
   }
   if (canAccessWebhooksFromStatus(st)) {
     tileCount += 1
@@ -73,7 +79,7 @@ function populateHubTiles() {
     })
   }
   if (canViewFamilyHomeFromStatus(st)) {
-    tileCount += 2
+    tileCount += 4
     nav.addCallback('People', () => router.push({ name: 'familyPeople' }), {
       icon: UserMultipleIcon,
       name: 'familyPeople',
@@ -83,6 +89,16 @@ function populateHubTiles() {
       icon: Task01Icon,
       name: 'familyChores',
       description: 'Chore definitions',
+    })
+    nav.addCallback('Star Charts', () => router.push({ name: 'familyStarCharts' }), {
+      icon: StarIcon,
+      name: 'familyStarCharts',
+      description: 'Manage star charts',
+    })
+    nav.addCallback('Rewards', () => router.push({ name: 'familyRewards' }), {
+      icon: GiftIcon,
+      name: 'familyRewards',
+      description: 'Reward catalog',
     })
   }
   if (tileCount === 0) {

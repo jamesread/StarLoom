@@ -85,3 +85,7 @@ export function canViewChoresFromStatus(st: StatusLike | null | undefined): bool
 export function canCompleteChoresFromStatus(st: StatusLike | null | undefined): boolean {
   return hasPermission(st, 'chores.complete')
 }
+
+export function canCompleteOwnChoresFromStatus(st: StatusLike | null | undefined): boolean {
+  return canCompleteChoresFromStatus(st) || canViewChildHomeFromStatus(st)
+}

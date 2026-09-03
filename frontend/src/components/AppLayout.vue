@@ -2,13 +2,16 @@
 import Header from 'picocrank/vue/components/Header.vue'
 import Navigation from 'picocrank/vue/components/Navigation.vue'
 import Sidebar from 'picocrank/vue/components/Sidebar.vue'
+import { StarIcon } from '@hugeicons/core-free-icons'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import AppFooter from './AppFooter.vue'
 import { useInit } from '../composables/useInit'
 import { useStatus } from '../composables/useStatus'
 import { canAccessControlPanelFromStatus, canViewFamilyHomeFromStatus } from '../lib/rbacAccess'
-import { setupSidebarNavigation } from '../lib/sidebarNavigation'
+import { listMemberStarCharts } from '../lib/memberStarCharts'
+import { appendTopBarStarChartLinks, setupSidebarNavigation } from '../lib/sidebarNavigation'
+import { headerDisplayName } from '../lib/statusDisplayName'
 
 defineProps<{
   sidebarPreferenceEnabled?: boolean
@@ -24,7 +27,7 @@ const sidebar = ref<InstanceType<typeof Sidebar> | null>(null)
 
 const siteTitle = computed(() => status.status?.siteTitle || 'StarApp')
 const showFooter = computed(() => init.init?.showFooter !== false)
-const username = computed(() => (status.status?.isLoggedIn ? status.status.username || '' : ''))
+const username = computed(() => headerDisplayName(status.status))
 const isLoggedIn = computed(() => Boolean(status.status?.isLoggedIn))
 
 watch(
@@ -43,17 +46,31 @@ watch(
     if (navigation.value) {
       setupSidebarNavigation(navigation.value, { showControlPanel, showFamilyNav })
     }
-    if (topBarNavigation.value) {
-      setupSidebarNavigation(topBarNavigation.value, {
-        showControlPanel,
-        showFamilyNav,
-        excludeRoutes: ['controlPanel'],
-        flat: true,
-      })
-    }
+    void refreshTopBarNavigation(showControlPanel, showFamilyNav)
   },
   { immediate: true, flush: 'post' },
 )
+
+async function refreshTopBarNavigation(showControlPanel: boolean, showFamilyNav: boolean) {
+  const nav = topBarNavigation.value
+  if (!nav) return
+  setupSidebarNavigation(nav, {
+    showControlPanel,
+    showFamilyNav,
+    excludeRoutes: ['controlPanel', 'familyStarCharts', 'familyRewards'],
+    flat: true,
+  })
+  if (!status.status?.isLoggedIn) return
+  const charts = await listMemberStarCharts(status.status)
+  appendTopBarStarChartLinks(
+    nav,
+    charts,
+    (chartId) => {
+      void router.push({ name: 'familyStarChartView', params: { id: chartId } })
+    },
+    StarIcon,
+  )
+}
 
 function toggleSidebar() {
   sidebar.value?.toggle()

@@ -18,10 +18,17 @@ import {
   starapp,
   type FamilyMember,
   type StarLedgerEntry,
+  type TodaysChore,
 } from '../api/client'
 import MemberAvatar from '../components/MemberAvatar.vue'
+import TodaysStarChart from '../components/TodaysStarChart.vue'
 import { useStatus } from '../composables/useStatus'
-import { hasPermission } from '../lib/rbacAccess'
+import {
+  canCompleteChoresFromStatus,
+  canCompleteOwnChoresFromStatus,
+  canViewChoresFromStatus,
+  hasPermission,
+} from '../lib/rbacAccess'
 import { memberStarStyle } from '../lib/memberStarColor'
 
 const iconStrokeWidth = 2.5
@@ -33,12 +40,15 @@ const memberId = computed(() => Number(route.params.id))
 const member = ref<FamilyMember | null>(null)
 const balance = ref(0)
 const ledger = ref<StarLedgerEntry[]>([])
+const todaysChores = ref<TodaysChore[]>([])
 const error = ref('')
 const awardError = ref('')
 const ledgerError = ref('')
+const todaysChoreError = ref('')
 const loading = ref(true)
 const awarding = ref(false)
 const revokingId = ref<number | null>(null)
+const todaysChoreBusyKey = ref('')
 const awardForm = reactive({ amount: 1, note: '' })
 
 const starStyle = computed(() => memberStarStyle(member.value))
@@ -49,6 +59,14 @@ const isOwnProfile = computed(
 )
 const canAwardBonus = computed(
   () => hasPermission(statusState.status, 'stars.award') && !isOwnProfile.value,
+)
+const showTodaysChores = computed(
+  () => Boolean(member.value) && (canViewChoresFromStatus(statusState.status) || isOwnProfile.value),
+)
+const canToggleTodaysChores = computed(
+  () =>
+    canCompleteChoresFromStatus(statusState.status) ||
+    (isOwnProfile.value && canCompleteOwnChoresFromStatus(statusState.status)),
 )
 
 const ledgerHeaders = [
@@ -103,7 +121,14 @@ async function load() {
     }
     const bal = await starapp.getMemberBalance({ memberId: memberId.value })
     balance.value = bal.balance ?? 0
-    ledger.value = (await starapp.listLedger({ memberId: memberId.value, limit: 100 })).entries || []
+    const [ledgerRes, choresRes] = await Promise.all([
+      starapp.listLedger({ memberId: memberId.value, limit: 100 }),
+      showTodaysChores.value
+        ? starapp.getMemberTodaysChores({ memberId: memberId.value })
+        : Promise.resolve({ todaysChores: [] as TodaysChore[] }),
+    ])
+    ledger.value = ledgerRes.entries || []
+    todaysChores.value = choresRes.todaysChores || []
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
   } finally {
@@ -153,6 +178,29 @@ async function revokeEntry(entry: StarLedgerEntry) {
   }
 }
 
+async function toggleTodaysChore(chore: TodaysChore) {
+  if (!canToggleTodaysChores.value || chore.paused || !chore.choreId || !chore.childMemberId) return
+  todaysChoreBusyKey.value = `${chore.choreId}-${chore.childMemberId}`
+  todaysChoreError.value = ''
+  try {
+    const body = {
+      choreId: chore.choreId,
+      childMemberId: chore.childMemberId,
+      date: chore.date || undefined,
+    }
+    if (chore.completed) {
+      await starapp.uncompleteChore(body)
+    } else {
+      await starapp.completeChore(body)
+    }
+    await load()
+  } catch (e) {
+    todaysChoreError.value = e instanceof Error ? e.message : String(e)
+  } finally {
+    todaysChoreBusyKey.value = ''
+  }
+}
+
 onMounted(load)
 </script>
 
@@ -187,6 +235,32 @@ onMounted(load)
         <div class="balance" :style="starStyle">★ {{ balance }}</div>
       </div>
     </template>
+  </Section>
+
+  <Section
+    v-if="member && showTodaysChores"
+    title="Today's chores"
+    subtitle="Tap today's cell to mark a chore done and award stars."
+    :padding="false"
+  >
+    <template #title>
+      <span class="section-title-with-icon">
+        <HugeiconsIcon :icon="StarIcon" width="22" height="22" aria-hidden="true" />
+        Today's chores
+      </span>
+    </template>
+
+    <p v-if="todaysChoreError" class="inline-notification error list-banner-pad">{{ todaysChoreError }}</p>
+    <p v-if="!loading && !todaysChores.length" class="inline-notification note list-banner-pad">
+      No chores scheduled for today.
+    </p>
+    <TodaysStarChart
+      v-else-if="todaysChores.length"
+      :chores="todaysChores"
+      :busy-key="todaysChoreBusyKey"
+      :interactive="canToggleTodaysChores"
+      @toggle="toggleTodaysChore"
+    />
   </Section>
 
   <Section

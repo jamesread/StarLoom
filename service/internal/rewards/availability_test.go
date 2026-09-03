@@ -12,8 +12,8 @@ func TestValidateAvailabilityExpression(t *testing.T) {
 	if err := ValidateAvailabilityExpression(`hour > 9 && hour < 18`); err != nil {
 		t.Fatalf("valid: %v", err)
 	}
-	if err := ValidateAvailabilityExpression(`dayName == "Sat"`); err != nil {
-		t.Fatalf("dayName: %v", err)
+	if err := ValidateAvailabilityExpression(`countPerDay < 2 && countPerWeek < 5`); err != nil {
+		t.Fatalf("count vars: %v", err)
 	}
 	if err := ValidateAvailabilityExpression(`unknownVar == 1`); err == nil {
 		t.Fatal("unknown var should fail")
@@ -40,6 +40,16 @@ func TestEvaluateAvailabilityExpression(t *testing.T) {
 	ok, err = EvaluateAvailabilityExpression("", env)
 	if err != nil || !ok {
 		t.Fatalf("empty means always available: ok=%v err=%v", ok, err)
+	}
+	env.CountPerDay = 2
+	ok, err = EvaluateAvailabilityExpression(`countPerDay < 2`, env)
+	if err != nil || ok {
+		t.Fatalf("countPerDay limit: ok=%v err=%v", ok, err)
+	}
+	env.CountPerWeek = 4
+	ok, err = EvaluateAvailabilityExpression(`countPerWeek < 5`, env)
+	if err != nil || !ok {
+		t.Fatalf("countPerWeek under limit: ok=%v err=%v", ok, err)
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 
 	"connectrpc.com/connect"
@@ -155,15 +156,48 @@ func (s *Server) GetUser(ctx context.Context, req *connect.Request[apiv1.GetUser
 	if _, err := s.requireAuth(ctx); err != nil {
 		return nil, err
 	}
-	user, err := s.store.GetUserByID(ctx, int(req.Msg.UserId))
+	out, err := s.getUserResponse(ctx, int(req.Msg.UserId))
 	if err != nil {
+		if connect.CodeOf(err) == connect.CodeNotFound {
+			return nil, err
+		}
 		s.log.WithError(err).Error("get user")
+		return nil, err
+	}
+	return connect.NewResponse(out), nil
+}
+
+func (s *Server) getUserResponse(ctx context.Context, userID int) (*apiv1.GetUserResponse, error) {
+	user, err := s.store.GetUserByID(ctx, userID)
+	if err != nil {
 		return nil, mapStoreError(err)
 	}
 	if user == nil {
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
 	}
-	return connect.NewResponse(&apiv1.GetUserResponse{User: toProtoUser(user)}), nil
+	out := &apiv1.GetUserResponse{User: toProtoUser(user)}
+	member, err := s.store.GetMemberByAccountID(ctx, userID)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	if member != nil {
+		out.LinkedMember = toProtoMember(member)
+	}
+	groupIDs, err := s.store.ListUserGroupIDsForUser(ctx, userID)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	for _, groupID := range groupIDs {
+		group, err := s.store.GetUserGroupByID(ctx, groupID)
+		if err != nil || group == nil {
+			continue
+		}
+		out.UserGroups = append(out.UserGroups, toProtoUserGroup(group))
+	}
+	sort.Slice(out.UserGroups, func(i, j int) bool {
+		return out.UserGroups[i].Name < out.UserGroups[j].Name
+	})
+	return out, nil
 }
 
 func (s *Server) CreateUser(ctx context.Context, req *connect.Request[apiv1.CreateUserRequest]) (*connect.Response[apiv1.CreateUserResponse], error) {

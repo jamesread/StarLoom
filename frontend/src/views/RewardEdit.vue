@@ -53,7 +53,7 @@ async function load() {
     form.description = reward.value.description || ''
     form.costStars = reward.value.costStars
     form.active = reward.value.active !== false
-    form.approvalRequired = reward.value.approvalRequired !== false
+    form.approvalRequired = reward.value.approvalRequired === true
     form.availabilityExpression = reward.value.availabilityExpression || ''
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
@@ -139,7 +139,7 @@ onMounted(load)
       <FormField
         label="Availability expression"
         for="reward-edit-availability"
-        description="Optional. expr language; must evaluate to true when the reward can be redeemed. Leave blank for always available. Variables: hour, minute, dayName (Mon–Sun), day, month, year, balance, costStars. Times use server local timezone."
+        description="Optional. expr language; must evaluate to true when the reward can be redeemed. Leave blank for always available. Variables: hour, minute, dayName (Mon–Sun), day, month, year, balance, costStars, countPerDay, countPerWeek. Times use server local timezone."
       >
         <textarea
           id="reward-edit-availability"

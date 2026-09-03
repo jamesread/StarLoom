@@ -2,12 +2,14 @@
 import { computed, inject, ref, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import { memberStarStyle } from '../lib/memberStarColor'
 
 type NavLink = {
   name: string
   type: string
   title: string
   description?: string | null
+  starCount?: number | null
   disabled?: boolean
   rewardBlocked?: boolean
   icon?: unknown
@@ -19,10 +21,14 @@ type NavLink = {
   count?: number | null
 }
 
-defineProps({
+const props = defineProps({
   iconSize: {
     type: String,
     default: '1.5em',
+  },
+  member: {
+    type: Object as () => { id?: number; starColor?: string } | null,
+    default: null,
   },
 })
 
@@ -39,6 +45,8 @@ const filteredLinks = computed(() =>
     (link) => link.type !== 'separator' && link.type !== 'html' && link.type !== 'section',
   ),
 )
+
+const starStyle = computed(() => memberStarStyle(props.member))
 
 function handleLinkClick(link: NavLink) {
   if (link.disabled) return
@@ -85,8 +93,12 @@ function linkClasses(link: NavLink) {
           </div>
           <div class="nav-button-label">{{ link.title }}</div>
         </div>
-        <div v-if="link.description" class="nav-button-description">
-          {{ link.description }}
+        <div v-if="link.description || link.starCount != null" class="nav-button-description">
+          <template v-if="link.starCount != null">
+            <span class="star-count" :style="starStyle">★{{ link.starCount }}</span>
+            <span v-if="link.description">{{ ' ' + link.description }}</span>
+          </template>
+          <template v-else>{{ link.description }}</template>
         </div>
       </button>
     </div>
@@ -95,3 +107,9 @@ function linkClasses(link: NavLink) {
     </div>
   </div>
 </template>
+
+<style scoped>
+.star-count {
+  font-weight: 800;
+}
+</style>

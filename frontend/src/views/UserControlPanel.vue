@@ -4,7 +4,7 @@ import NavigationGrid from 'picocrank/vue/components/NavigationGrid.vue'
 import Section from 'picocrank/vue/components/Section.vue'
 import NotificationBlock from 'picocrank/vue/components/NotificationBlock.vue'
 import { computed, nextTick, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import {
   DashboardSquareSettingIcon,
@@ -15,7 +15,7 @@ import {
 } from '@hugeicons/core-free-icons'
 import { fetchAppStatus, invalidateAppStatus, useStatus } from '../composables/useStatus'
 import { starapp } from '../api/client'
-import { canAccessControlPanelFromStatus } from '../lib/rbacAccess'
+import { canAccessControlPanelFromStatus, canViewFamilyHomeFromStatus } from '../lib/rbacAccess'
 
 const iconStrokeWidth = 2.5
 
@@ -28,13 +28,19 @@ const testingNotify = ref(false)
 const notifyError = ref('')
 const notifySuccess = ref('')
 const personTag = ref('')
+const personId = ref<number | null>(null)
+const personName = ref('')
 
 const userData = computed(() => status.status)
+const showPersonLink = computed(
+  () => Boolean(personId.value) && canViewFamilyHomeFromStatus(status.status),
+)
 
 async function refreshUserData() {
   error.value = ''
   try {
     await fetchAppStatus({ force: true })
+    await loadPerson()
     await nextTick()
     setupQuickActions()
   } catch (e) {
@@ -42,12 +48,16 @@ async function refreshUserData() {
   }
 }
 
-async function loadPersonTag() {
+async function loadPerson() {
   try {
     const fam = await starapp.getMyFamily()
     const id = fam.callerMember?.id
+    personId.value = id || null
+    personName.value = fam.callerMember?.displayName?.trim() || ''
     personTag.value = id ? `starloom_uid_${id}` : ''
   } catch {
+    personId.value = null
+    personName.value = ''
     personTag.value = ''
   }
 }
@@ -60,6 +70,11 @@ function setupQuickActions() {
     icon: Settings01Icon,
     name: 'user-preferences',
     description: 'Language and personal settings',
+  })
+  nav.addCallback('Chore notifications', () => router.push({ name: 'choreNotifications' }), {
+    icon: Notification03Icon,
+    name: 'chore-notifications',
+    description: 'Apprise alerts when family members complete chores',
   })
   nav.addCallback('Change Password', () => router.push({ name: 'changePassword' }), {
     icon: Key01Icon,
@@ -121,11 +136,8 @@ function formatDate(value?: string) {
   return Number.isNaN(d.getTime()) ? value : d.toLocaleString()
 }
 
-onMounted(async () => {
-  await refreshUserData()
-  await loadPersonTag()
-  await nextTick()
-  setupQuickActions()
+onMounted(() => {
+  void refreshUserData()
 })
 </script>
 
@@ -139,19 +151,33 @@ onMounted(async () => {
       </button>
     </template>
 
-    <h3>{{ userData.username }}</h3>
+    <h3>{{ userData.displayName?.trim() || userData.username }}</h3>
     <dl class="account-info">
       <dt>Username</dt>
       <dd>{{ userData.username }}</dd>
       <dt>Account created</dt>
       <dd>{{ formatDate(userData.accountCreatedAt) }}</dd>
+      <template v-if="showPersonLink">
+        <dt>Person</dt>
+        <dd>
+          <RouterLink
+            :to="{ name: 'familyPersonDetail', params: { id: personId } }"
+            class="title-link"
+          >
+            {{ personName || 'View person' }}
+          </RouterLink>
+        </dd>
+      </template>
     </dl>
   </Section>
 
   <Section v-if="userData?.isLoggedIn" title="Notifications" :padding="true">
     <p>
-      Send a test Apprise notification to your devices.
+      Send a test Apprise notification to your devices, or choose which chore completions should notify you.
       <template v-if="personTag"> Uses tag <code>{{ personTag }}</code>.</template>
+    </p>
+    <p>
+      <RouterLink :to="{ name: 'choreNotifications' }">Manage chore completion subscriptions</RouterLink>
     </p>
     <p v-if="notifyError" class="inline-notification error">{{ notifyError }}</p>
     <NotificationBlock
@@ -202,5 +228,15 @@ onMounted(async () => {
 }
 .account-info dd {
   margin: 0;
+}
+
+.title-link {
+  font: inherit;
+  color: var(--pico-primary);
+  text-decoration: none;
+}
+
+.title-link:hover {
+  text-decoration: underline;
 }
 </style>

@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"connectrpc.com/connect"
 
@@ -11,6 +12,68 @@ import (
 	"github.com/jamesread/starapp/service/internal/rbac"
 	"github.com/jamesread/starapp/service/internal/store"
 )
+
+func (s *Server) applyMemberStarAdjustment(ctx context.Context, fc *familyContext, member *store.FamilyMemberRow, adjustment int, note string) (int, error) {
+	if adjustment == 0 {
+		balance, err := s.store.GetMemberBalance(ctx, member.ID)
+		return balance, err
+	}
+	if !isFamilyStarMember(member, fc.family.ID) {
+		return 0, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("member cannot hold stars"))
+	}
+	note = strings.TrimSpace(note)
+	if note == "" {
+		note = "Manual adjustment"
+	}
+	createdBy := fc.member.ID
+	if adjustment > 0 {
+		if _, err := s.requirePermission(ctx, rbac.PermissionStarsAward); err != nil {
+			return 0, err
+		}
+		if adjustment > cvar.MaxAwardStars {
+			return 0, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("adjustment must be between -%d and %d", cvar.MaxAwardStars, cvar.MaxAwardStars))
+		}
+		_, err := s.store.InsertLedgerEntry(ctx, store.StarLedgerRow{
+			FamilyID: fc.family.ID, ChildMemberID: member.ID, Amount: adjustment,
+			EntryType: store.LedgerTypeAward, Note: note, CreatedByMemberID: &createdBy,
+		})
+		if err != nil {
+			return 0, mapStoreError(err)
+		}
+		s.webhooks.Dispatch(ctx, "stars.awarded", map[string]any{
+			"family_id": fc.family.ID, "child_member_id": member.ID, "amount": adjustment,
+			"note": note, "created_by_member_id": createdBy,
+		})
+	} else {
+		if _, err := s.requirePermission(ctx, rbac.PermissionStarsRevoke); err != nil {
+			return 0, err
+		}
+		amount := -adjustment
+		if amount > cvar.MaxAwardStars {
+			return 0, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("adjustment must be between -%d and %d", cvar.MaxAwardStars, cvar.MaxAwardStars))
+		}
+		balance, err := s.store.GetMemberBalance(ctx, member.ID)
+		if err != nil {
+			return 0, connect.NewError(connect.CodeInternal, err)
+		}
+		if amount > balance {
+			amount = balance
+		}
+		if amount == 0 {
+			return balance, nil
+		}
+		neg := -amount
+		_, err = s.store.InsertLedgerEntry(ctx, store.StarLedgerRow{
+			FamilyID: fc.family.ID, ChildMemberID: member.ID, Amount: neg,
+			EntryType: store.LedgerTypeRevoke, Note: note, CreatedByMemberID: &createdBy,
+		})
+		if err != nil {
+			return 0, mapStoreError(err)
+		}
+	}
+	balance, err := s.store.GetMemberBalance(ctx, member.ID)
+	return balance, err
+}
 
 func (s *Server) AwardStars(ctx context.Context, req *connect.Request[apiv1.AwardStarsRequest]) (*connect.Response[apiv1.AwardStarsResponse], error) {
 	fc, err := s.requireFamilyContext(ctx)

@@ -34,12 +34,25 @@ func (s *Server) GetParentHomeSummary(ctx context.Context, _ *connect.Request[ap
 		}
 		balance, _ := s.store.GetMemberBalance(ctx, members[i].ID)
 		last, _ := s.store.GetLastAward(ctx, members[i].ID)
+		progress, err := s.memberTodayStarChartProgress(ctx, fc, members[i].ID)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
 		out.Children = append(out.Children, &apiv1.ChildHomeSummary{
-			Member:    toProtoMember(&members[i]),
-			Balance:   int32(balance),
-			LastAward: toProtoLedger(last),
+			Member:                 toProtoMember(&members[i]),
+			Balance:                int32(balance),
+			LastAward:              toProtoLedger(last),
+			TodayStarChartProgress: progress,
 		})
 	}
+	if fc.member == nil {
+		return connect.NewResponse(out), nil
+	}
+	chores, err := s.listTodaysChores(ctx, fc, fc.member.ID)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	out.TodaysChores = chores
 	return connect.NewResponse(out), nil
 }
 
@@ -92,7 +105,7 @@ func (s *Server) GetChildHomeSummary(ctx context.Context, _ *connect.Request[api
 		}
 		out.Rewards = append(out.Rewards, toProtoReward(&rewards[i]))
 		rewardIncluded[rewards[i].ID] = true
-		if rewardUnavailableDueToSchedule(&rewards[i], balance, now) {
+		if s.rewardUnavailableDueToSchedule(ctx, &rewards[i], fc.member.ID, balance, now) {
 			out.UnavailableRewardIds = append(out.UnavailableRewardIds, int32(rewards[i].ID))
 		}
 	}
@@ -106,5 +119,10 @@ func (s *Server) GetChildHomeSummary(ctx context.Context, _ *connect.Request[api
 		}
 		out.Rewards = append(out.Rewards, toProtoReward(reward))
 	}
+	chores, err := s.listTodaysChores(ctx, fc, fc.member.ID)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	out.TodaysChores = chores
 	return connect.NewResponse(out), nil
 }

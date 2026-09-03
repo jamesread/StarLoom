@@ -14,7 +14,7 @@ import {
 } from '../api/client'
 import MemberAvatar from '../components/MemberAvatar.vue'
 import { fetchAppStatus, useStatus } from '../composables/useStatus'
-import { canCompleteChoresFromStatus, canViewFamilyHomeFromStatus } from '../lib/rbacAccess'
+import { canCompleteOwnChoresFromStatus, canViewFamilyHomeFromStatus } from '../lib/rbacAccess'
 import { memberStarStyle } from '../lib/memberStarColor'
 
 const statusState = useStatus()
@@ -30,7 +30,7 @@ const weekStart = ref('')
 
 const iconStrokeWidth = 2.5
 
-const canComplete = computed(() => canCompleteChoresFromStatus(statusState.status))
+const canComplete = computed(() => canCompleteOwnChoresFromStatus(statusState.status))
 const canAddChores = computed(() => canViewFamilyHomeFromStatus(statusState.status))
 const hasChores = computed(() => (chart.value?.rows?.length ?? 0) > 0)
 const sectionTitle = computed(() => chart.value?.starChartName || 'Star Chart')
@@ -123,14 +123,6 @@ function bonusChildHasStars(child: WeeklyStarChartBonusChild): boolean {
 const visibleBonusChildren = computed(() =>
   (chart.value?.bonusChildren || []).filter(bonusChildHasStars),
 )
-
-function starsForRow(children: WeeklyStarChartChild[] | undefined, index: number): number {
-  let total = 0
-  for (const child of children || []) {
-    total += dayForChild(child, index)?.starsEarned || 0
-  }
-  return total
-}
 
 function cellClass(day: WeeklyStarChartDay | undefined): string {
   if (!day) return ''
@@ -245,94 +237,73 @@ watch(starChartId, () => {
         <thead>
           <tr>
             <th class="chore-col">Chore</th>
+            <th class="person-col"><span class="visually-hidden">Person</span></th>
             <th v-for="(label, i) in dayLabels" :key="i">{{ label }}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="row in chart.rows" :key="row.choreId">
-            <td class="chore-col">
-              <span class="chore-title">{{ row.title }}</span>
-              <span class="reward">★{{ row.starReward }}</span>
-              <span class="child-icons">
-                <template v-for="child in row.children" :key="child.assignmentId">
-                  <MemberAvatar
-                    v-if="child.child?.id"
-                    :member="child.child"
-                    size="md"
-                    :to="{ name: 'familyPersonDetail', params: { id: child.child.id } }"
-                  />
-                </template>
-              </span>
-            </td>
-            <td
-              v-for="(_, dayIndex) in dayLabels"
-              :key="dayIndex"
-              :class="cellClass(dayForChild(row.children?.[0], dayIndex))"
-            >
-              <template v-if="row.children?.length === 1">
+          <template v-for="row in chart.rows" :key="row.choreId">
+            <tr v-for="(child, childIndex) in row.children" :key="child.assignmentId">
+              <td v-if="childIndex === 0" class="chore-col" :rowspan="row.children?.length || 1">
+                <span class="chore-title">{{ row.title }}</span>
+                <span class="reward">★{{ row.starReward }}</span>
+              </td>
+              <td class="person-col">
+                <MemberAvatar
+                  v-if="child.child?.id"
+                  :member="child.child"
+                  size="sm"
+                  :to="{ name: 'familyPersonDetail', params: { id: child.child.id } }"
+                />
+              </td>
+              <td
+                v-for="(_, dayIndex) in dayLabels"
+                :key="dayIndex"
+                :class="cellClass(dayForChild(child, dayIndex))"
+              >
                 <button
-                  v-if="canComplete && dayForChild(row.children[0], dayIndex)?.scheduled && !dayForChild(row.children[0], dayIndex)?.paused"
+                  v-if="canComplete && dayForChild(child, dayIndex)?.scheduled && !dayForChild(child, dayIndex)?.paused"
                   type="button"
                   class="cell-btn"
-                  @click="toggleCell(row.choreId!, row.children[0], dayIndex)"
+                  @click="toggleCell(row.choreId!, child, dayIndex)"
                 >
-                  <span v-if="dayForChild(row.children[0], dayIndex)?.completed" class="star star-lg" :style="memberStarStyle(row.children[0].child)">★{{ row.starReward }}</span>
+                  <span v-if="dayForChild(child, dayIndex)?.completed" class="star star-lg" :style="memberStarStyle(child.child)">★{{ row.starReward }}</span>
                   <span v-else class="dot dot-lg">○</span>
                 </button>
-                <span v-else-if="dayForChild(row.children[0], dayIndex)?.completed" class="star star-lg" :style="memberStarStyle(row.children[0].child)">★{{ row.starReward }}</span>
-                <span v-else-if="dayForChild(row.children[0], dayIndex)?.paused" class="muted">—</span>
-                <span v-else-if="!dayForChild(row.children[0], dayIndex)?.scheduled" class="muted">·</span>
-              </template>
-              <template v-else>
-                <div class="multi-child">
-                  <button
-                    v-for="child in row.children"
-                    :key="child.assignmentId"
-                    type="button"
-                    class="cell-btn mini"
-                    :disabled="!canComplete || !dayForChild(child, dayIndex)?.scheduled || dayForChild(child, dayIndex)?.paused"
-                    @click="toggleCell(row.choreId!, child, dayIndex)"
-                  >
-                    <span v-if="dayForChild(child, dayIndex)?.completed" class="star star-md" :style="memberStarStyle(child.child)">
-                      ★{{ row.starReward }}
-                    </span>
-                    <span v-else-if="dayForChild(child, dayIndex)?.scheduled && !dayForChild(child, dayIndex)?.paused" class="dot dot-md">○</span>
-                  </button>
-                </div>
-                <span v-if="starsForRow(row.children, dayIndex) > 0 && !canComplete" class="star star-md bonus-stars">
-                  ★{{ starsForRow(row.children, dayIndex) }}
-                </span>
-              </template>
-            </td>
-          </tr>
-          <tr v-if="visibleBonusChildren.length" class="bonus-row">
-            <td class="chore-col">
-              <strong>Bonus stars</strong>
-              <span class="child-icons">
-                <template v-for="child in visibleBonusChildren" :key="child.child?.id">
-                  <MemberAvatar
-                    v-if="child.child?.id"
-                    :member="child.child"
-                    size="md"
-                    :to="{ name: 'familyPersonDetail', params: { id: child.child.id } }"
-                  />
-                </template>
-              </span>
-            </td>
-            <td v-for="(_, dayIndex) in dayLabels" :key="dayIndex">
-              <div class="multi-child">
+                <span v-else-if="dayForChild(child, dayIndex)?.completed" class="star star-lg" :style="memberStarStyle(child.child)">★{{ row.starReward }}</span>
+                <span v-else-if="dayForChild(child, dayIndex)?.paused" class="muted">—</span>
+                <span v-else-if="!dayForChild(child, dayIndex)?.scheduled" class="muted">·</span>
+              </td>
+            </tr>
+          </template>
+          <template v-if="visibleBonusChildren.length">
+            <tr
+              v-for="(child, childIndex) in visibleBonusChildren"
+              :key="child.child?.id"
+              class="bonus-row"
+            >
+              <td v-if="childIndex === 0" class="chore-col" :rowspan="visibleBonusChildren.length">
+                <strong>Bonus stars</strong>
+              </td>
+              <td class="person-col">
+                <MemberAvatar
+                  v-if="child.child?.id"
+                  :member="child.child"
+                  size="sm"
+                  :to="{ name: 'familyPersonDetail', params: { id: child.child.id } }"
+                />
+              </td>
+              <td v-for="(_, dayIndex) in dayLabels" :key="dayIndex">
                 <span
-                  v-for="child in visibleBonusChildren"
-                  :key="`${child.child?.id}-${dayIndex}`"
-                  v-show="bonusStarsForChild(child, dayIndex) > 0"
+                  v-if="bonusStarsForChild(child, dayIndex) > 0"
                   class="star star-md bonus-stars"
                   :style="memberStarStyle(child.child)"
                 >
                   ★{{ bonusStarsForChild(child, dayIndex) }}
                 </span>
-              </div>
-            </td>
-          </tr>
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>
@@ -388,6 +359,10 @@ watch(starChartId, () => {
   text-align: left !important;
   min-width: 10rem;
 }
+.person-col {
+  width: 3rem;
+  padding-inline: 0.35rem;
+}
 .chore-title {
   display: block;
   font-weight: 600;
@@ -396,21 +371,12 @@ watch(starChartId, () => {
   font-size: 0.85rem;
   color: var(--pico-muted-color);
 }
-.child-icons {
-  display: flex;
-  gap: 0.25rem;
-  margin-top: 0.25rem;
-}
 .cell-btn {
   background: none;
   border: none;
   padding: 0.35rem;
   cursor: pointer;
   min-width: 2.75rem;
-}
-.cell-btn.mini {
-  font-size: 0.85rem;
-  min-width: 2.5rem;
 }
 .cell-btn:disabled {
   cursor: default;
@@ -452,10 +418,5 @@ td.paused {
 }
 .bonus-row td {
   border-top: 2px solid var(--pico-muted-border-color);
-}
-.multi-child {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
 }
 </style>

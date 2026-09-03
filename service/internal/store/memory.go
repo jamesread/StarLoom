@@ -14,12 +14,14 @@ var errCvarNotFound = errors.New("cvar not found")
 // Memory is an in-memory Store for tests that bypass migration checks.
 type Memory struct {
 	*iamsqlite.SQLite
-	cvars      map[string]CvarRow
-	userPrefs  map[int]UserPreferencesRow
-	webhooks   *memoryWebhook
-	family     *memoryFamily
-	chores     *memoryChore
-	starCharts *memoryStarChart
+	cvars                  map[string]CvarRow
+	userPrefs              map[int]UserPreferencesRow
+	webhooks               *memoryWebhook
+	family                 *memoryFamily
+	chores                 *memoryChore
+	choreNotifications     *memoryChoreNotifications
+	notificationDeliveries *memoryNotificationDeliveries
+	starCharts             *memoryStarChart
 }
 
 // OpenMemory returns a new in-memory store.

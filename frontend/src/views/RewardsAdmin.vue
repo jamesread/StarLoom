@@ -7,7 +7,7 @@ import FormField from 'picocrank/vue/components/FormField.vue'
 import FormLayout from 'picocrank/vue/components/FormLayout.vue'
 import RadioGroup from 'picocrank/vue/components/RadioGroup.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { GiftIcon, PlusSignIcon, Refresh01Icon, TaskDone01Icon } from '@hugeicons/core-free-icons'
+import { GiftIcon, PlusSignIcon, Refresh01Icon, TaskDone01Icon, ArrowLeft01Icon } from '@hugeicons/core-free-icons'
 import { starapp, type FamilyMember, type Redemption, type Reward } from '../api/client'
 
 const iconStrokeWidth = 2.5
@@ -79,7 +79,7 @@ const listRows = computed(() =>
     costStars: r.costStars,
     availability: availabilityLabel(r.availabilityExpression),
     status: r.active !== false ? 'Active' : 'Inactive',
-    approval: r.approvalRequired !== false ? 'Required' : 'Auto',
+    approval: r.approvalRequired === true ? 'Required' : 'Auto',
     active: r.active !== false,
     actions: '',
   })),
@@ -322,7 +322,7 @@ onMounted(load)
       <FormField
         label="Availability expression"
         for="reward-create-availability"
-        description="Optional. Leave blank for always available."
+        description="Optional. expr language; leave blank for always available. Variables include balance, costStars, countPerDay, countPerWeek, hour, dayName, etc."
       >
         <textarea
           id="reward-create-availability"
@@ -386,6 +386,10 @@ onMounted(load)
     </template>
 
     <template #toolbar>
+      <RouterLink :to="{ name: 'controlPanel' }" class="button inline-icon neutral">
+        <HugeiconsIcon :icon="ArrowLeft01Icon" width="1em" height="1em" aria-hidden="true" />
+        <span>Control Panel</span>
+      </RouterLink>
       <button
         type="button"
         class="inline-icon neutral"

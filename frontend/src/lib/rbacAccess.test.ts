@@ -5,6 +5,7 @@ import {
   canAccessIamFromStatus,
   canAccessSettingsFromStatus,
   canAccessWebhooksFromStatus,
+  canCompleteOwnChoresFromStatus,
 } from './rbacAccess.ts'
 
 test('control panel is hidden when logged out', () => {
@@ -88,4 +89,15 @@ test('webhooks tile follows system.settings', () => {
     rbacIsSuperuser: false,
     rbacPermissions: ['users.view'],
   }), false)
+})
+
+test('children can mark their own chores complete', () => {
+  assert.equal(canCompleteOwnChoresFromStatus({
+    isLoggedIn: true,
+    rbacPermissions: ['stars.view_own', 'chores.view_family'],
+  }), true)
+  assert.equal(canCompleteOwnChoresFromStatus({
+    isLoggedIn: true,
+    rbacPermissions: ['stars.view_family', 'chores.complete'],
+  }), true)
 })

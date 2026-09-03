@@ -9,10 +9,13 @@ import { HugeiconsIcon } from '@hugeicons/vue'
 import { ArrowLeft01Icon, UserIcon } from '@hugeicons/core-free-icons'
 import { starapp, memberAvatarFileUrl, type FamilyMember, type MemberAvatarEntry } from '../api/client'
 import MemberAvatar from '../components/MemberAvatar.vue'
-import { memberAvatarStyle, memberStarColor } from '../lib/memberStarColor'
+import { useStatus } from '../composables/useStatus'
+import { hasPermission } from '../lib/rbacAccess'
+import { memberAvatarStyle, memberStarColor, memberStarStyle } from '../lib/memberStarColor'
 
 const route = useRoute()
 const router = useRouter()
+const statusState = useStatus()
 const memberId = computed(() => Number(route.params.id))
 
 const member = ref<FamilyMember | null>(null)
@@ -23,6 +26,9 @@ const assigningLogin = ref(false)
 const loginError = ref('')
 const displayName = ref('')
 const starColor = ref('#3498db')
+const balance = ref(0)
+const starAdjustment = ref(0)
+const adjustmentNote = ref('')
 const loginForm = reactive({
   username: '',
   password: '',
@@ -32,8 +38,13 @@ const avatarLoading = ref(false)
 const selectingAvatar = ref('')
 
 const avatarBorderStyle = computed(() => memberAvatarStyle(member.value))
+const starStyle = computed(() => memberStarStyle(member.value))
 
 const hasLogin = computed(() => Boolean(member.value?.userAccountId))
+
+const canAwardStars = computed(() => hasPermission(statusState.status, 'stars.award'))
+const canRevokeStars = computed(() => hasPermission(statusState.status, 'stars.revoke'))
+const canAdjustStars = computed(() => canAwardStars.value || canRevokeStars.value)
 
 const canAssignLogin = computed(() => {
   if (!loginForm.username.trim()) return false
@@ -56,6 +67,12 @@ async function load() {
     }
     displayName.value = member.value.displayName
     starColor.value = memberStarColor(member.value)
+    starAdjustment.value = 0
+    adjustmentNote.value = ''
+    if (canAdjustStars.value) {
+      const bal = await starapp.getMemberBalance({ memberId: memberId.value })
+      balance.value = bal.balance
+    }
     await loadAvatarHistory()
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
@@ -98,6 +115,15 @@ async function assignLogin() {
 
 async function saveProfile() {
   if (!member.value) return
+  const adjustment = Number(starAdjustment.value) || 0
+  if (adjustment > 0 && !canAwardStars.value) {
+    error.value = 'You cannot add stars'
+    return
+  }
+  if (adjustment < 0 && !canRevokeStars.value) {
+    error.value = 'You cannot remove stars'
+    return
+  }
   savingProfile.value = true
   error.value = ''
   try {
@@ -105,9 +131,18 @@ async function saveProfile() {
       memberId: memberId.value,
       displayName: displayName.value.trim(),
       starColor: starColor.value,
+      ...(adjustment !== 0
+        ? {
+            starAdjustment: adjustment,
+            adjustmentNote: adjustmentNote.value.trim() || undefined,
+          }
+        : {}),
     })
     member.value = res.member || member.value
     starColor.value = memberStarColor(member.value)
+    if (typeof res.newBalance === 'number') {
+      balance.value = res.newBalance
+    }
     router.push({ name: 'familyPersonDetail', params: { id: memberId.value } })
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
@@ -240,6 +275,43 @@ onMounted(load)
         <FormField label="Star color" for="star-color" description="Used for stars on the chart and avatar border.">
           <input id="star-color" v-model="starColor" type="color" :disabled="savingProfile" />
         </FormField>
+        <template v-if="canAdjustStars">
+          <FormField label="Current balance">
+            <p class="balance-display">
+              <span class="star-count" :style="starStyle">{{ balance }}</span>
+              <span class="subtle">stars</span>
+            </p>
+          </FormField>
+          <FormField
+            label="Star adjustment"
+            for="star-adjustment"
+            description="Add or remove stars in one step. Leave at 0 to keep the balance unchanged."
+          >
+            <input
+              id="star-adjustment"
+              v-model.number="starAdjustment"
+              type="number"
+              min="-100"
+              max="100"
+              step="1"
+              :disabled="savingProfile"
+            />
+          </FormField>
+          <FormField
+            v-if="starAdjustment !== 0"
+            label="Adjustment note"
+            for="adjustment-note"
+            description="Optional note for the ledger entry."
+          >
+            <input
+              id="adjustment-note"
+              v-model="adjustmentNote"
+              type="text"
+              maxlength="200"
+              :disabled="savingProfile"
+            />
+          </FormField>
+        </template>
         <template #actions>
           <button type="submit" class="good" :disabled="savingProfile || !displayName.trim()">
             {{ savingProfile ? 'Saving…' : 'Save' }}
@@ -363,5 +435,15 @@ onMounted(load)
 }
 .login-form {
   margin-top: 1rem;
+}
+.balance-display {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+.star-count {
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 </style>

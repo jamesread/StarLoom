@@ -52,5 +52,28 @@ func TestGetStatusIncludesAccountCreated(t *testing.T) {
 	res, err := svc.GetStatus(authCtx, connect.NewRequest(&apiv1.GetStatusRequest{}))
 	require.NoError(t, err)
 	require.Equal(t, "admin", res.Msg.Username)
+	require.Equal(t, "admin", res.Msg.DisplayName)
 	require.NotEmpty(t, res.Msg.AccountCreatedAt)
+}
+
+func TestGetStatusUsesMemberDisplayName(t *testing.T) {
+	st := store.OpenMemory()
+	t.Cleanup(func() { _ = st.Close() })
+	ctx := context.Background()
+	id, err := st.CreateUserAccount(ctx, "admin_login", "hash", store.UserCreatedByAdmin)
+	require.NoError(t, err)
+	familyID, err := st.CreateFamily(ctx, "Household")
+	require.NoError(t, err)
+	_, err = st.CreateMember(ctx, familyID, "Alex", store.MemberRoleParent, &id, "")
+	require.NoError(t, err)
+
+	authCtx := authn.SetInfo(ctx, &auth.AuthenticatedUser{
+		User: &store.UserAccountRow{ID: id, Username: "admin_login"},
+		RBAC: &rbac.EffectiveRBAC{IsSuperuser: true, Permissions: map[string]bool{}},
+	})
+	svc := New(nil, st, nil, nil)
+	res, err := svc.GetStatus(authCtx, connect.NewRequest(&apiv1.GetStatusRequest{}))
+	require.NoError(t, err)
+	require.Equal(t, "admin_login", res.Msg.Username)
+	require.Equal(t, "Alex", res.Msg.DisplayName)
 }

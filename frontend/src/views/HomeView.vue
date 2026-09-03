@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink } from 'vue-router'
 import Section from 'picocrank/vue/components/Section.vue'
 import Navigation from 'picocrank/vue/components/Navigation.vue'
-import NavigationGrid from 'picocrank/vue/components/NavigationGrid.vue'
 import RewardNavigationGrid from '../components/RewardNavigationGrid.vue'
 import RecentAwardsList from '../components/RecentAwardsList.vue'
 import FormField from 'picocrank/vue/components/FormField.vue'
 import FormLayout from 'picocrank/vue/components/FormLayout.vue'
 import { StarIcon, PlusSignIcon, GiftIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { starapp, type ParentHomeSummary, type ChildHomeSummary, type StarChart, type Reward } from '../api/client'
+import { starapp, type ParentHomeSummary, type ChildHomeSummary, type Reward, type TodaysChore } from '../api/client'
 import MemberAvatar from '../components/MemberAvatar.vue'
+import TodaysStarChart from '../components/TodaysStarChart.vue'
+import TodayChoreProgress from '../components/TodayChoreProgress.vue'
 import { fetchAppStatus, useStatus } from '../composables/useStatus'
 import {
   canViewChildHomeFromStatus,
-  canViewChoresFromStatus,
   canViewFamilyHomeFromStatus,
   canApproveRedemptionsFromStatus,
   hasPermission,
@@ -25,7 +25,6 @@ import { memberStarStyle } from '../lib/memberStarColor'
 const iconStrokeWidth = 2.5
 
 const statusState = useStatus()
-const router = useRouter()
 const error = ref('')
 const loading = ref(true)
 const familyName = ref('')
@@ -33,11 +32,12 @@ const creating = ref(false)
 
 const parentSummary = ref<ParentHomeSummary | null>(null)
 const childSummary = ref<ChildHomeSummary | null>(null)
-const starCharts = ref<StarChart[]>([])
-const starChartNavRef = ref<InstanceType<typeof Navigation> | null>(null)
+const personalSummary = ref<ChildHomeSummary | null>(null)
 const rewardNavRef = ref<InstanceType<typeof Navigation> | null>(null)
 const redeemingRewardId = ref<number | null>(null)
 const redeemError = ref('')
+const todaysChoreError = ref('')
+const todaysChoreBusyKey = ref('')
 
 const isParentHome = computed(
   () =>
@@ -54,20 +54,57 @@ const showAddPerson = computed(
 const isChildHome = computed(
   () => !isParentHome.value && canViewChildHomeFromStatus(statusState.status),
 )
-const showStarChartsSection = computed(() => {
-  if (loading.value || needsFamily.value) return false
-  if (isParentHome.value) return true
-  return isChildHome.value && canViewChoresFromStatus(statusState.status)
-})
 const showChildRewardsSection = computed(() => isChildHome.value && !loading.value && Boolean(childSummary.value))
 const showChildAwardsSection = computed(() => isChildHome.value && !loading.value && Boolean(childSummary.value))
+const showPersonalRewardsSection = computed(
+  () =>
+    isParentHome.value &&
+    !loading.value &&
+    Boolean(personalSummary.value) &&
+    hasPermission(statusState.status, 'redemptions.request'),
+)
+const showPersonalAwardsSection = computed(
+  () =>
+    isParentHome.value &&
+    !loading.value &&
+    Boolean(personalSummary.value) &&
+    hasPermission(statusState.status, 'stars.view_own'),
+)
+const rewardsSummary = computed(() =>
+  isChildHome.value ? childSummary.value : personalSummary.value,
+)
+const todaysChores = computed<TodaysChore[]>(() => {
+  if (isParentHome.value) {
+    return parentSummary.value?.todaysChores || []
+  }
+  return childSummary.value?.todaysChores || []
+})
+const todaysChoresByChart = computed(() => {
+  const groups = new Map<number, { id: number; name: string; chores: TodaysChore[] }>()
+  for (const chore of todaysChores.value) {
+    const id = chore.starChartId ?? 0
+    const name = chore.starChartName?.trim() || 'Star Chart'
+    let group = groups.get(id)
+    if (!group) {
+      group = { id, name, chores: [] }
+      groups.set(id, group)
+    }
+    group.chores.push(chore)
+  }
+  return [...groups.values()].sort((a, b) =>
+    a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+  )
+})
+const showTodaysChores = computed(
+  () => !loading.value && !needsFamily.value && todaysChoresByChart.value.length > 0,
+)
 
 const pendingRewardIds = computed(
-  () => new Set(childSummary.value?.pendingRewardIds || []),
+  () => new Set(rewardsSummary.value?.pendingRewardIds || []),
 )
 
 const unavailableRewardIds = computed(
-  () => new Set(childSummary.value?.unavailableRewardIds || []),
+  () => new Set(rewardsSummary.value?.unavailableRewardIds || []),
 )
 
 const sectionTitle = computed(() => {
@@ -79,72 +116,48 @@ const sectionTitle = computed(() => {
   return childSummary.value?.member?.displayName || 'My stars'
 })
 
+async function loadPersonalSummary() {
+  personalSummary.value = null
+  if (!hasPermission(statusState.status, 'redemptions.request')) {
+    return
+  }
+  try {
+    personalSummary.value = await starapp.getChildHomeSummary()
+    redeemError.value = ''
+    await nextTick()
+    setupRewardNav()
+  } catch {
+    personalSummary.value = null
+  }
+}
+
 async function loadParent() {
   error.value = ''
   try {
     parentSummary.value = await starapp.getParentHomeSummary()
     if (parentSummary.value?.family?.id) {
-      await loadStarCharts()
+      await loadPersonalSummary()
     } else {
-      starCharts.value = []
+      personalSummary.value = null
     }
     return
   } catch {
     parentSummary.value = null
-    starCharts.value = []
+    personalSummary.value = null
   }
   try {
     const fam = await starapp.getMyFamily()
     if (fam.family?.id) {
       parentSummary.value = { family: fam.family, children: [] }
-      await loadStarCharts()
+      await loadPersonalSummary()
     }
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
   }
 }
 
-async function loadStarCharts() {
-  try {
-    const res = await starapp.listStarCharts()
-    starCharts.value = (res.starCharts || []).filter((chart) => chart.active !== false)
-  } catch {
-    starCharts.value = []
-  }
-  await nextTick()
-  setupStarChartNav()
-}
-
-function choreCountLabel(count: number) {
-  const n = count ?? 0
-  if (isChildHome.value) {
-    return n === 1 ? '1 chore for you' : `${n} chores for you`
-  }
-  return n === 1 ? '1 chore' : `${n} chores`
-}
-
-function setupStarChartNav() {
-  const nav = starChartNavRef.value
-  if (!nav) return
-  nav.clearNavigationLinks()
-  for (const chart of starCharts.value) {
-    const count = chart.choreCount ?? 0
-    nav.addCallback(
-      chart.name,
-      () => {
-        void router.push({ name: 'familyStarChartView', params: { id: chart.id } })
-      },
-      {
-        name: `star-chart-${chart.id}`,
-        icon: StarIcon,
-        description: choreCountLabel(count),
-      },
-    )
-  }
-}
-
 function starsNeeded(reward: Pick<Reward, 'costStars'>) {
-  const balance = childSummary.value?.balance ?? 0
+  const balance = rewardsSummary.value?.balance ?? 0
   const cost = reward.costStars ?? 0
   return Math.max(0, cost - balance)
 }
@@ -162,35 +175,42 @@ function isSelfApprovalBlocked(reward: Pick<Reward, 'approvalRequired'>) {
   return Boolean(reward.approvalRequired) && canApproveRedemptionsFromStatus(statusState.status)
 }
 
-function rewardDescription(reward: Reward) {
+function rewardDescriptionParts(reward: Reward): { description: string; starCount?: number } {
   if (isPendingApproval(reward.id)) {
-    return 'Pending approval'
+    return { description: 'Pending approval' }
   }
   if (isSelfApprovalBlocked(reward)) {
-    return 'Needs another parent to award'
+    return { description: 'Needs another parent to award' }
   }
   if (isUnavailableNow(reward.id)) {
-    return 'Not currently available'
+    return { description: 'Not currently available' }
   }
   const needed = starsNeeded(reward)
   if (needed > 0) {
-    return needed === 1 ? '1 more star' : `${needed} more stars`
+    return {
+      starCount: needed,
+      description: needed === 1 ? 'more star' : 'more stars',
+    }
   }
   const cost = reward.costStars ?? 0
-  return cost === 1 ? '1 star · Tap to redeem' : `${cost} stars · Tap to redeem`
+  return {
+    starCount: cost,
+    description: cost === 1 ? 'star · Tap to redeem' : 'stars · Tap to redeem',
+  }
 }
 
 function setupRewardNav() {
   const nav = rewardNavRef.value
   if (!nav) return
   nav.clearNavigationLinks()
-  for (const reward of childSummary.value?.rewards || []) {
+  for (const reward of rewardsSummary.value?.rewards || []) {
     const needed = starsNeeded(reward)
     const pending = isPendingApproval(reward.id)
     const unavailable = isUnavailableNow(reward.id)
     const selfBlocked = isSelfApprovalBlocked(reward)
     const blocked = pending || unavailable || selfBlocked || needed > 0
     const disabled = blocked || redeemingRewardId.value === reward.id
+    const { description, starCount } = rewardDescriptionParts(reward)
     nav.addNavigationLink({
       name: `reward-${reward.id}`,
       type: 'callback',
@@ -199,7 +219,8 @@ function setupRewardNav() {
         void redeem(reward.id)
       },
       title: reward.title,
-      description: rewardDescription(reward),
+      description,
+      starCount,
       disabled,
       rewardBlocked: disabled,
     })
@@ -211,11 +232,6 @@ async function loadChild() {
     childSummary.value = await starapp.getChildHomeSummary()
     error.value = ''
     redeemError.value = ''
-    if (canViewChoresFromStatus(statusState.status)) {
-      await loadStarCharts()
-    } else {
-      starCharts.value = []
-    }
     await nextTick()
     setupRewardNav()
   } catch (e) {
@@ -230,6 +246,7 @@ async function loadChild() {
 async function load() {
   loading.value = true
   error.value = ''
+  todaysChoreError.value = ''
   try {
     await fetchAppStatus()
     const st = statusState.status
@@ -268,8 +285,35 @@ function formatAward(entry?: { amount?: number; note?: string; createdAt?: strin
   return `+${entry.amount}${note}`
 }
 
+async function toggleTodaysChore(chore: TodaysChore) {
+  if (chore.paused || !chore.choreId || !chore.childMemberId) return
+  todaysChoreBusyKey.value = `${chore.choreId}-${chore.childMemberId}`
+  todaysChoreError.value = ''
+  try {
+    const body = {
+      choreId: chore.choreId,
+      childMemberId: chore.childMemberId,
+      date: chore.date || undefined,
+    }
+    if (chore.completed) {
+      await starapp.uncompleteChore(body)
+    } else {
+      await starapp.completeChore(body)
+    }
+    if (isParentHome.value) {
+      await loadParent()
+    } else {
+      await loadChild()
+    }
+  } catch (e) {
+    todaysChoreError.value = e instanceof Error ? e.message : String(e)
+  } finally {
+    todaysChoreBusyKey.value = ''
+  }
+}
+
 async function redeem(rewardId: number) {
-  const reward = childSummary.value?.rewards?.find((entry) => entry.id === rewardId)
+  const reward = rewardsSummary.value?.rewards?.find((entry) => entry.id === rewardId)
   if (
     !reward ||
     isPendingApproval(rewardId) ||
@@ -284,7 +328,11 @@ async function redeem(rewardId: number) {
   setupRewardNav()
   try {
     await starapp.requestRedemption({ rewardId })
-    await loadChild()
+    if (isParentHome.value) {
+      await loadParent()
+    } else {
+      await loadChild()
+    }
   } catch (e) {
     redeemError.value = e instanceof Error ? e.message : String(e)
   } finally {
@@ -298,18 +346,15 @@ onMounted(load)
 watch(() => statusState.status?.isLoggedIn, () => {
   void load()
 })
-watch(starChartNavRef, () => {
-  setupStarChartNav()
-})
 watch(rewardNavRef, () => {
   setupRewardNav()
 })
 watch(
   () => [
-    childSummary.value?.balance,
-    childSummary.value?.rewards,
-    childSummary.value?.pendingRewardIds,
-    childSummary.value?.unavailableRewardIds,
+    rewardsSummary.value?.balance,
+    rewardsSummary.value?.rewards,
+    rewardsSummary.value?.pendingRewardIds,
+    rewardsSummary.value?.unavailableRewardIds,
   ],
   () => {
     void nextTick(setupRewardNav)
@@ -380,6 +425,7 @@ watch(
             <strong>{{ person.member?.displayName }}</strong>
             <div class="balance" :style="memberStarStyle(person.member)">★ {{ person.balance ?? 0 }}</div>
             <div class="subtle last-award">{{ formatAward(person.lastAward) }}</div>
+            <TodayChoreProgress :progress="person.todayStarChartProgress || []" />
           </RouterLink>
         </div>
       </template>
@@ -403,6 +449,81 @@ watch(
     </template>
   </Section>
 
+  <template v-if="showTodaysChores">
+    <p v-if="todaysChoreError" class="inline-notification error list-banner-pad todays-chore-error">
+      {{ todaysChoreError }}
+    </p>
+    <Section
+      v-for="group in todaysChoresByChart"
+      :key="group.id"
+      subtitle="Tap today's cell to mark a chore done."
+      :padding="false"
+    >
+      <template #title>
+        <span class="section-title-with-icon">
+          <HugeiconsIcon :icon="StarIcon" width="22" height="22" aria-hidden="true" />
+          <RouterLink
+            :to="
+              group.id > 0
+                ? { name: 'familyStarChartView', params: { id: group.id } }
+                : { name: 'familyStarChart' }
+            "
+            class="title-link"
+          >
+            {{ group.name }}
+          </RouterLink>
+          <span>: Today's chores</span>
+        </span>
+      </template>
+      <TodaysStarChart
+        :chores="group.chores"
+        :busy-key="todaysChoreBusyKey"
+        @toggle="toggleTodaysChore"
+      />
+    </Section>
+  </template>
+
+  <Section
+    v-if="showPersonalRewardsSection"
+    title="Reward Shop"
+    subtitle="Save up stars and tap a reward to redeem it."
+    :icon="GiftIcon"
+    :padding="true"
+  >
+    <p v-if="redeemError" class="inline-notification error">{{ redeemError }}</p>
+    <Navigation v-if="personalSummary?.rewards?.length" ref="rewardNavRef">
+      <RewardNavigationGrid :member="personalSummary?.member" />
+    </Navigation>
+    <p v-else class="subtle">No rewards available right now.</p>
+  </Section>
+
+  <Section
+    v-if="showChildRewardsSection"
+    title="Reward Shop"
+    subtitle="Save up stars and tap a reward to redeem it."
+    :icon="GiftIcon"
+    :padding="true"
+  >
+    <p v-if="redeemError" class="inline-notification error">{{ redeemError }}</p>
+    <Navigation v-if="childSummary?.rewards?.length" ref="rewardNavRef">
+      <RewardNavigationGrid :member="childSummary?.member" />
+    </Navigation>
+    <p v-else class="subtle">No rewards available right now.</p>
+  </Section>
+
+  <Section
+    v-if="showPersonalAwardsSection"
+    title="Your recent awards"
+    subtitle="Stars you earned lately."
+    :icon="StarIcon"
+    :padding="true"
+  >
+    <RecentAwardsList
+      :entries="personalSummary?.recentAwards || []"
+      :member="personalSummary?.member"
+    />
+  </Section>
+
   <Section
     v-if="showChildAwardsSection"
     title="Recent awards"
@@ -414,36 +535,6 @@ watch(
       :entries="childSummary?.recentAwards || []"
       :member="childSummary?.member"
     />
-  </Section>
-
-  <Section
-    v-if="showChildRewardsSection"
-    title="Rewards you can get"
-    subtitle="Save up stars and tap a reward to redeem it."
-    :icon="GiftIcon"
-    :padding="true"
-  >
-    <p v-if="redeemError" class="inline-notification error">{{ redeemError }}</p>
-    <Navigation v-if="childSummary?.rewards?.length" ref="rewardNavRef">
-      <RewardNavigationGrid />
-    </Navigation>
-    <p v-else class="subtle">No rewards available right now.</p>
-  </Section>
-
-  <Section
-    v-if="showStarChartsSection"
-    title="Star charts"
-    :subtitle="isChildHome ? 'Open a weekly chart to see your chores.' : 'Open a weekly chart to mark chore completions.'"
-    :padding="true"
-  >
-    <Navigation v-if="starCharts.length" ref="starChartNavRef">
-      <NavigationGrid />
-    </Navigation>
-    <p v-else-if="isParentHome" class="subtle">
-      No star charts yet.
-      <RouterLink :to="{ name: 'familyStarCharts' }">Manage star charts</RouterLink>
-    </p>
-    <p v-else class="subtle">No chores assigned to you yet.</p>
   </Section>
 </template>
 
@@ -494,5 +585,25 @@ watch(
 }
 .error {
   color: var(--pico-del-color);
+}
+.list-banner-pad {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+.todays-chore-error {
+  margin-bottom: 0.5rem;
+}
+.section-title-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  vertical-align: middle;
+}
+.title-link {
+  color: var(--pico-primary);
+  text-decoration: none;
+}
+.title-link:hover {
+  text-decoration: underline;
 }
 </style>

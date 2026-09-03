@@ -9,6 +9,9 @@ func RequiredPermission(procedureName string) string {
 	switch procedureName {
 	case apiv1connect.StarAppServiceGetUserProcedure:
 		return rbac.PermissionUsersView
+
+	case apiv1connect.StarAppServiceSendUserTestNotificationProcedure:
+		return rbac.PermissionUsersView
 	case apiv1connect.StarAppServiceCreateUserProcedure:
 		return rbac.PermissionUsersCreate
 	case apiv1connect.StarAppServiceDeleteUserProcedure:
@@ -45,7 +48,8 @@ func RequiredPermission(procedureName string) string {
 		apiv1connect.StarAppServiceUpdateWebhookProcedure,
 		apiv1connect.StarAppServiceDeleteWebhookProcedure,
 		apiv1connect.StarAppServiceListWebhookDeliveriesProcedure,
-		apiv1connect.StarAppServiceFireTestWebhooksProcedure:
+		apiv1connect.StarAppServiceFireTestWebhooksProcedure,
+		apiv1connect.StarAppServiceListNotificationDeliveriesProcedure:
 		return rbac.PermissionSystemSettings
 
 	case apiv1connect.StarAppServiceImpersonateUserProcedure:
@@ -53,6 +57,9 @@ func RequiredPermission(procedureName string) string {
 
 	case apiv1connect.StarAppServiceStopImpersonationProcedure:
 		return ""
+
+	case apiv1connect.StarAppServiceGetMemberTodaysChoresProcedure:
+		return rbac.PermissionAppAccess
 
 	case apiv1connect.StarAppServiceGetMyFamilyProcedure,
 		apiv1connect.StarAppServiceListMembersProcedure:
@@ -123,7 +130,7 @@ func RequiredPermission(procedureName string) string {
 
 	case apiv1connect.StarAppServiceCompleteChoreProcedure,
 		apiv1connect.StarAppServiceUncompleteChoreProcedure:
-		return rbac.PermissionChoresComplete
+		return rbac.PermissionAppAccess
 	}
 	return rbac.PermissionAppAccess
 }

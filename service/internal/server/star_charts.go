@@ -60,6 +60,9 @@ func (s *Server) ListStarCharts(ctx context.Context, req *connect.Request[apiv1.
 		}
 	}
 	memberFilter := s.chartMemberFilter(fc)
+	if req.Msg.GetAssignedToMe() && fc.member != nil {
+		memberFilter = fc.member.ID
+	}
 	rows, err := s.store.ListStarCharts(ctx, fc.family.ID, req.Msg.IncludeInactive)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)

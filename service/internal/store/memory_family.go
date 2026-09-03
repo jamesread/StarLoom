@@ -444,3 +444,32 @@ func (m *Memory) CountPendingRedemptions(_ context.Context, familyID int) (int, 
 	}
 	return len(rows), nil
 }
+
+func (m *Memory) CountApprovedRedemptionsForMemberRewardBetween(_ context.Context, childMemberID, rewardID int, startDate, endDate string) (int, error) {
+	st := m.familyState()
+	count := 0
+	for _, row := range st.redemptions {
+		if row.ChildMemberID != childMemberID || row.RewardID != rewardID || row.Status != RedemptionApproved {
+			continue
+		}
+		granted := redemptionGrantedDate(row)
+		if granted == "" {
+			continue
+		}
+		if granted >= startDate && granted <= endDate {
+			count++
+		}
+	}
+	return count, nil
+}
+
+func redemptionGrantedDate(row RedemptionRow) string {
+	when := row.ResolvedAt
+	if when == "" {
+		when = row.CreatedAt
+	}
+	if len(when) >= 10 {
+		return when[:10]
+	}
+	return when
+}
