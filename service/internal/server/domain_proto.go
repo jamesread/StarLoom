@@ -39,13 +39,50 @@ func (s *Server) loadFamilyContext(ctx context.Context) (*familyContext, error) 
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	if member == nil {
-		return &familyContext{au: au}, nil
+		return s.loadUnlinkedFamilyContext(ctx, au)
 	}
+	return s.familyContextForMember(ctx, au, member)
+}
+
+func (s *Server) familyContextForMember(ctx context.Context, au *auth.AuthenticatedUser, member *store.FamilyMemberRow) (*familyContext, error) {
 	family, err := s.store.GetFamilyByID(ctx, member.FamilyID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	return &familyContext{family: family, member: member, au: au}, nil
+}
+
+func (s *Server) loadUnlinkedFamilyContext(ctx context.Context, au *auth.AuthenticatedUser) (*familyContext, error) {
+	if !au.HasPermission(rbac.PermissionFamilyManage) {
+		return &familyContext{au: au}, nil
+	}
+	family, err := s.store.GetFirstFamily(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	if family == nil {
+		return &familyContext{au: au}, nil
+	}
+	member, err := s.ensureHouseholdParent(ctx, au, family.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &familyContext{family: family, member: member, au: au}, nil
+}
+
+func (s *Server) ensureHouseholdParent(ctx context.Context, au *auth.AuthenticatedUser, familyID int) (*store.FamilyMemberRow, error) {
+	memberID, err := s.store.CreateMember(ctx, familyID, au.User.Username, store.MemberRoleParent, &au.User.ID, "")
+	if err != nil {
+		return nil, mapStoreError(err)
+	}
+	if err := s.store.EnsureUserInGroup(ctx, au.User.ID, rbac.GroupParents); err != nil {
+		s.log.WithError(err).Warn("ensure household parent in Parents group")
+	}
+	member, err := s.store.GetMemberByID(ctx, memberID)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	return member, nil
 }
 
 func (s *Server) requireFamilyContext(ctx context.Context) (*familyContext, error) {
