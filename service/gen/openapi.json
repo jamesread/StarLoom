@@ -8491,6 +8491,17 @@
           "createdBy": {
             "type": "string",
             "title": "created_by"
+          },
+          "userGroups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/starapp.api.v1.UserGroup"
+            },
+            "title": "user_groups"
+          },
+          "linkedMember": {
+            "title": "linked_member",
+            "$ref": "#/components/schemas/starapp.api.v1.FamilyMember"
           }
         },
         "title": "UserAccount",

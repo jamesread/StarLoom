@@ -8,13 +8,14 @@ require (
 	connectrpc.com/cors v0.1.0
 	github.com/expr-lang/expr v1.17.8
 	github.com/google/uuid v1.6.0
+	github.com/jamesread/armature-apprise v1.0.0
 	github.com/jamesread/armature-iam v0.0.0-20260901210623-5ecc730ee43d
 	github.com/jamesread/golure v0.0.0-20260902093223-27b18778c9a5
 	github.com/knadh/koanf/parsers/yaml v1.1.1
 	github.com/knadh/koanf/providers/file v1.2.1
 	github.com/knadh/koanf/v2 v2.3.6
 	github.com/mark3labs/mcp-go v1.0.0
-	github.com/mattn/go-sqlite3 v1.14.50
+	github.com/mattn/go-sqlite3 v1.14.52
 	github.com/prometheus/client_golang v1.24.1
 	github.com/rs/cors v1.11.1
 	github.com/rubenv/sql-migrate v1.8.1
@@ -26,7 +27,7 @@ require (
 
 require (
 	github.com/MicahParks/jwkset v0.11.3 // indirect
-	github.com/MicahParks/keyfunc/v3 v3.8.1 // indirect
+	github.com/MicahParks/keyfunc/v3 v3.8.2 // indirect
 	github.com/alexedwards/argon2id v1.0.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -36,7 +37,7 @@ require (
 	github.com/goccy/go-yaml v1.19.2 // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/google/jsonschema-go v0.4.3 // indirect
-	github.com/jamesread/httpauthshim v0.1.1-0.20260902201916-0d922a3e2f91 // indirect
+	github.com/jamesread/httpauthshim v0.2.0 // indirect
 	github.com/knadh/koanf/maps v0.1.3 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect

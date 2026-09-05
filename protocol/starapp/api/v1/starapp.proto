@@ -102,6 +102,8 @@ message UserAccount {
   string username = 2;
   string created_at = 3;
   string created_by = 4;
+  repeated UserGroup user_groups = 5;
+  FamilyMember linked_member = 6;
 }
 
 message GetUsersRequest {}

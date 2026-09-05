@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	aptemplate "github.com/jamesread/armature-apprise/template"
 )
 
 // DefaultRedemptionMessage is used when the message template cvar is empty.
@@ -35,27 +37,7 @@ func ApprovalURL(externalBaseURL string, redemptionID int) string {
 
 // RenderTemplate replaces {{placeholders}} in tmpl. Unknown placeholders are left unchanged.
 func RenderTemplate(tmpl string, vals map[string]string) string {
-	if tmpl == "" {
-		return ""
-	}
-	var b strings.Builder
-	b.Grow(len(tmpl))
-	for i := 0; i < len(tmpl); {
-		if tmpl[i] == '{' && i+1 < len(tmpl) && tmpl[i+1] == '{' {
-			end := strings.Index(tmpl[i+2:], "}}")
-			if end >= 0 {
-				key := strings.TrimSpace(tmpl[i+2 : i+2+end])
-				if v, ok := vals[key]; ok {
-					b.WriteString(v)
-					i += 2 + end + 2
-					continue
-				}
-			}
-		}
-		b.WriteByte(tmpl[i])
-		i++
-	}
-	return b.String()
+	return aptemplate.Render(tmpl, vals)
 }
 
 // RenderRedemptionMessage fills the redemption approval template.

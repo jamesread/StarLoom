@@ -136,6 +136,36 @@ func (s *Server) impersonatorUserID(ctx context.Context, header http.Header, au 
 	return au.User.ID, nil
 }
 
+func (s *Server) linkedMemberForUser(ctx context.Context, userID int) (*apiv1.FamilyMember, error) {
+	member, err := s.store.GetMemberByAccountID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	if member == nil {
+		return nil, nil
+	}
+	return toProtoMember(member), nil
+}
+
+func (s *Server) userGroupsForUser(ctx context.Context, userID int) ([]*apiv1.UserGroup, error) {
+	groupIDs, err := s.store.ListUserGroupIDsForUser(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	groups := make([]*apiv1.UserGroup, 0, len(groupIDs))
+	for _, groupID := range groupIDs {
+		group, err := s.store.GetUserGroupByID(ctx, groupID)
+		if err != nil || group == nil {
+			continue
+		}
+		groups = append(groups, toProtoUserGroup(group))
+	}
+	sort.Slice(groups, func(i, j int) bool {
+		return groups[i].Name < groups[j].Name
+	})
+	return groups, nil
+}
+
 func (s *Server) GetUsers(ctx context.Context, _ *connect.Request[apiv1.GetUsersRequest]) (*connect.Response[apiv1.GetUsersResponse], error) {
 	if _, err := s.requireAuth(ctx); err != nil {
 		return nil, err
@@ -147,7 +177,20 @@ func (s *Server) GetUsers(ctx context.Context, _ *connect.Request[apiv1.GetUsers
 	}
 	out := &apiv1.GetUsersResponse{}
 	for i := range rows {
-		out.Users = append(out.Users, toProtoUser(&rows[i]))
+		user := toProtoUser(&rows[i])
+		member, err := s.linkedMemberForUser(ctx, rows[i].ID)
+		if err != nil {
+			s.log.WithError(err).Error("get linked member for user")
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+		user.LinkedMember = member
+		groups, err := s.userGroupsForUser(ctx, rows[i].ID)
+		if err != nil {
+			s.log.WithError(err).Error("list user groups for user")
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+		user.UserGroups = groups
+		out.Users = append(out.Users, user)
 	}
 	return connect.NewResponse(out), nil
 }
@@ -176,27 +219,18 @@ func (s *Server) getUserResponse(ctx context.Context, userID int) (*apiv1.GetUse
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
 	}
 	out := &apiv1.GetUserResponse{User: toProtoUser(user)}
-	member, err := s.store.GetMemberByAccountID(ctx, userID)
+	member, err := s.linkedMemberForUser(ctx, userID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	if member != nil {
-		out.LinkedMember = toProtoMember(member)
+		out.LinkedMember = member
 	}
-	groupIDs, err := s.store.ListUserGroupIDsForUser(ctx, userID)
+	groups, err := s.userGroupsForUser(ctx, userID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	for _, groupID := range groupIDs {
-		group, err := s.store.GetUserGroupByID(ctx, groupID)
-		if err != nil || group == nil {
-			continue
-		}
-		out.UserGroups = append(out.UserGroups, toProtoUserGroup(group))
-	}
-	sort.Slice(out.UserGroups, func(i, j int) bool {
-		return out.UserGroups[i].Name < out.UserGroups[j].Name
-	})
+	out.UserGroups = groups
 	return out, nil
 }
 

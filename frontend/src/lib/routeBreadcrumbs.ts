@@ -40,6 +40,7 @@ export const breadcrumbsByRouteName: Record<string, () => BreadcrumbItem[]> = {
   users: () => iamTrail(crumb.users),
   userInfo: () => iamTrail(crumb.users),
   'user-groups': () => iamTrail(crumb.userGroups),
+  userGroupEdit: () => iamTrail(crumb.userGroups),
   'rbac-roles': () => iamTrail(crumb.rbac),
   'rbac-permissions': () => iamTrail(crumb.permissions),
   settings: () => trail(crumb.controlPanel, crumb.settings),

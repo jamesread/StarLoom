@@ -12,9 +12,9 @@ import {
   Refresh01Icon,
   UserIcon,
 } from '@hugeicons/core-free-icons'
-import { starapp, type UserAccount } from '../api/client'
+import { starapp, type UserAccount, type UserGroup } from '../api/client'
 import { useStatus } from '../composables/useStatus'
-import { hasPermission } from '../lib/rbacAccess'
+import { canViewFamilyHomeFromStatus, hasPermission } from '../lib/rbacAccess'
 
 const iconStrokeWidth = 2.5
 
@@ -30,17 +30,28 @@ const createUsernameInput = ref<HTMLInputElement | null>(null)
 const status = useStatus()
 
 const canCreate = computed(() => hasPermission(status.status, 'users.create'))
+const canLinkUserGroups = computed(() => hasPermission(status.status, 'usergroups.view'))
+const canLinkPerson = computed(() => canViewFamilyHomeFromStatus(status.status))
 
 const tableHeaders = [
   { key: 'username', label: 'Username', sortable: true },
+  { key: 'linkedPerson', label: 'Person', sortable: true },
+  { key: 'userGroups', label: 'Usergroups', sortable: false },
   { key: 'createdBy', label: 'Created by', sortable: true, width: '10rem' },
   { key: 'createdAt', label: 'Created', sortable: true, width: '11rem' },
 ]
+
+function visibleUserGroups(groups?: UserGroup[]) {
+  return (groups || []).slice(0, 3)
+}
 
 const rows = computed(() =>
   users.value.map((u) => ({
     id: u.id,
     username: u.username,
+    linkedPerson: u.linkedMember?.displayName || '',
+    linkedMemberId: u.linkedMember?.id || 0,
+    userGroups: u.userGroups || [],
     createdBy: u.createdBy || '—',
     createdAt: u.createdAt || '',
   })),
@@ -212,6 +223,33 @@ onMounted(load)
             <strong>{{ value }}</strong>
           </RouterLink>
         </template>
+        <template #cell-linkedPerson="{ row }">
+          <span v-if="!row.linkedPerson" class="subtle">—</span>
+          <RouterLink
+            v-else-if="canLinkPerson && row.linkedMemberId"
+            :to="{ name: 'familyPersonDetail', params: { id: row.linkedMemberId } }"
+            class="title-link"
+          >
+            {{ row.linkedPerson }}
+          </RouterLink>
+          <span v-else>{{ row.linkedPerson }}</span>
+        </template>
+        <template #cell-userGroups="{ row }">
+          <span v-if="!row.userGroups.length" class="subtle">—</span>
+          <span v-else class="user-group-links">
+            <template v-for="(group, index) in visibleUserGroups(row.userGroups)" :key="group.id">
+              <span v-if="index > 0" class="user-group-sep">, </span>
+              <RouterLink
+                v-if="canLinkUserGroups"
+                :to="{ name: 'userGroupEdit', params: { id: group.id } }"
+                class="title-link"
+              >
+                {{ group.name }}
+              </RouterLink>
+              <span v-else>{{ group.name }}</span>
+            </template>
+          </span>
+        </template>
         <template #cell-createdAt="{ value }">
           {{ formatDate(value) }}
         </template>
@@ -245,5 +283,13 @@ onMounted(load)
 
 .title-link:hover {
   text-decoration: underline;
+}
+
+.user-group-links {
+  display: inline;
+}
+
+.user-group-sep {
+  color: inherit;
 }
 </style>

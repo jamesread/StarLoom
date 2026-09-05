@@ -200,7 +200,9 @@ Toolbar rules:
 </Section>
 ```
 
-Row-level destructive actions (e.g. Deactivate on a table row) may stay inline in the table. Reference: `ChoresAdmin.vue`, `StarChart.vue`, `WebhooksAdmin.vue`.
+Row-level non-delete destructive actions (e.g. **Deactivate** on a chore row, **Revoke** on a ledger entry) may stay inline in the table. Reference: `ChoresAdmin.vue`, `ChildDetail.vue`.
+
+**Delete** actions do **not** belong in datatable rows or action columns. Put delete only in a PicoCrank **`DangerZone`** on the item **detail or edit** page (e.g. `UserInfoAdmin.vue`, `UserGroupEdit.vue`, `ChildEdit.vue`). The list page links to that page; the user confirms deletion there.
 
 ## Datatable row navigation
 
@@ -211,7 +213,7 @@ When a datatable row links to **edit**, **open**, or **detail**, always **naviga
 | Create | `<dialog>` on the list page, or a dedicated create route (e.g. `WebhookCreate.vue`) |
 | Edit / open / detail | New route with `:id` param (e.g. `/family/chores/:id`, `/control-panel/webhooks/:id`) |
 | Primary column | `RouterLink` to the edit/detail route |
-| Actions column | `RouterLink` labeled Edit, or navigate on row click |
+| Actions column | `RouterLink` labeled Edit, or navigate on row click — never a Delete button |
 
 Edit pages include a **Back** link in the section `#toolbar` returning to the list. On save, `router.push` back to the list. Reference: `ChoreEdit.vue`, `WebhookEdit.vue`, `ChildDetail.vue`.
 

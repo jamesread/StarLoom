@@ -30,6 +30,7 @@ import IamHub from './views/IamHub.vue'
 import UsersAdmin from './views/UsersAdmin.vue'
 import UserInfoAdmin from './views/UserInfoAdmin.vue'
 import UserGroupsAdmin from './views/UserGroupsAdmin.vue'
+import UserGroupEdit from './views/UserGroupEdit.vue'
 import RbacRolesAdmin from './views/RbacRolesAdmin.vue'
 import RbacPermissionsAdmin from './views/RbacPermissionsAdmin.vue'
 import MyPermissions from './views/MyPermissions.vue'
@@ -193,6 +194,7 @@ const routes = [
   { path: '/users', name: 'users', component: UsersAdmin, meta: { title: 'Users', requiresAuth: true, requiresIam: true } },
   { path: '/users/:id', name: 'userInfo', component: UserInfoAdmin, meta: { title: 'User', requiresAuth: true, requiresIam: true } },
   { path: '/user-groups', name: 'user-groups', component: UserGroupsAdmin, meta: { title: 'User groups', requiresAuth: true, requiresIam: true } },
+  { path: '/user-groups/:id', name: 'userGroupEdit', component: UserGroupEdit, meta: { title: 'User group', requiresAuth: true, requiresIam: true } },
   { path: '/settings/rbac', name: 'rbac-roles', component: RbacRolesAdmin, meta: { title: 'Roles', requiresAuth: true, requiresIam: true } },
   {
     path: '/settings/rbac/permissions',

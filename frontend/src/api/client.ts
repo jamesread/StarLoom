@@ -41,6 +41,8 @@ export type UserAccount = {
   username: string
   createdAt?: string
   createdBy?: string
+  userGroups?: UserGroup[]
+  linkedMember?: FamilyMember
 }
 
 export type RbacPermission = {
@@ -256,6 +258,18 @@ export const starapp = {
     return connectFetch<{ groups: UserGroup[] }>(
       '/starapp.api.v1.StarAppService/ListUserGroups',
       {},
+    )
+  },
+  createUserGroup(body: { name: string }) {
+    return connectFetch<{ group?: UserGroup }>(
+      '/starapp.api.v1.StarAppService/CreateUserGroup',
+      body,
+    )
+  },
+  deleteUserGroup(body: { groupId: number }) {
+    return connectFetch<Record<string, never>>(
+      '/starapp.api.v1.StarAppService/DeleteUserGroup',
+      body,
     )
   },
   getUserGroupMembers(body: { groupId: number }) {
