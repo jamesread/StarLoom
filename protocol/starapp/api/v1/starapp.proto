@@ -854,6 +854,7 @@ message Chore {
   repeated int32 child_member_ids = 7;
   string created_at = 8;
   int32 star_chart_id = 9;
+  int32 sort_order = 10;
 }
 
 message StarChart {
@@ -949,6 +950,14 @@ message UpdateChoreRequest {
 message UpdateChoreResponse {
   StandardResponse standard_response = 1;
   Chore chore = 2;
+}
+
+message ReorderChoresRequest {
+  repeated int32 chore_ids = 1;
+}
+
+message ReorderChoresResponse {
+  StandardResponse standard_response = 1;
 }
 
 message DeleteChoreRequest {
@@ -1129,6 +1138,7 @@ service StarAppService {
   rpc CreateChore(CreateChoreRequest) returns (CreateChoreResponse);
   rpc UpdateChore(UpdateChoreRequest) returns (UpdateChoreResponse);
   rpc DeleteChore(DeleteChoreRequest) returns (DeleteChoreResponse);
+  rpc ReorderChores(ReorderChoresRequest) returns (ReorderChoresResponse);
   rpc ListChorePauses(ListChorePausesRequest) returns (ListChorePausesResponse);
   rpc CreateChorePause(CreateChorePauseRequest) returns (CreateChorePauseResponse);
   rpc DeleteChorePause(DeleteChorePauseRequest) returns (DeleteChorePauseResponse);
