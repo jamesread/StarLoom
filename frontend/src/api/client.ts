@@ -341,16 +341,10 @@ export const starapp = {
   deleteApiKey(body: { id: number }) {
     return connectFetch<object>('/starapp.api.v1.StarAppService/DeleteApiKey', body)
   },
-  getBearerToken() {
-    return connectFetch<{ token?: string }>(
-      '/starapp.api.v1.StarAppService/GetBearerToken',
-      {},
-    )
-  },
-  regenerateBearerToken() {
-    return connectFetch<{ token?: string }>(
-      '/starapp.api.v1.StarAppService/RegenerateBearerToken',
-      {},
+  regenerateApiKey(body: { id: number }) {
+    return connectFetch<{ key: ApiKey; secret?: string }>(
+      '/starapp.api.v1.StarAppService/RegenerateApiKey',
+      body,
     )
   },
   listCvars() {

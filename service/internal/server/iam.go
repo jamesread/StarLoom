@@ -689,6 +689,58 @@ func (s *Server) CreateApiKey(ctx context.Context, req *connect.Request[apiv1.Cr
 	}), nil
 }
 
+func (s *Server) RegenerateApiKey(ctx context.Context, req *connect.Request[apiv1.RegenerateApiKeyRequest]) (*connect.Response[apiv1.RegenerateApiKeyResponse], error) {
+	au, err := s.requireWrite(ctx)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := s.store.ListAPIKeysForUser(ctx, au.User.ID)
+	if err != nil {
+		s.log.WithError(err).Error("list api keys before regenerate")
+		return nil, mapStoreError(err)
+	}
+	var old *store.APIKeyRow
+	for i := range rows {
+		if rows[i].ID == int(req.Msg.Id) {
+			old = &rows[i]
+			break
+		}
+	}
+	if old == nil {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("api key not found"))
+	}
+	secret, err := password.GenerateAPIKey("sa_")
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	// Revokes the compromised secret.
+	if err := s.store.DeleteAPIKey(ctx, old.ID, au.User.ID); err != nil {
+		s.log.WithError(err).Error("delete api key during regenerate")
+		return nil, mapStoreError(err)
+	}
+	id, err := s.store.CreateAPIKey(ctx, au.User.ID, old.Name, secret, old.ReadOnly)
+	if err != nil {
+		s.log.WithError(err).Error("create api key during regenerate")
+		return nil, mapStoreError(err)
+	}
+	rows, err = s.store.ListAPIKeysForUser(ctx, au.User.ID)
+	if err != nil {
+		s.log.WithError(err).Error("list api keys after regenerate")
+		return nil, mapStoreError(err)
+	}
+	var created *store.APIKeyRow
+	for i := range rows {
+		if rows[i].ID == id {
+			created = &rows[i]
+			break
+		}
+	}
+	return connect.NewResponse(&apiv1.RegenerateApiKeyResponse{
+		Key:    toProtoApiKey(created),
+		Secret: secret,
+	}), nil
+}
+
 func (s *Server) DeleteApiKey(ctx context.Context, req *connect.Request[apiv1.DeleteApiKeyRequest]) (*connect.Response[apiv1.DeleteApiKeyResponse], error) {
 	au, err := s.requireWrite(ctx)
 	if err != nil {

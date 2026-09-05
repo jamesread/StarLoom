@@ -1626,64 +1626,6 @@
         }
       }
     },
-    "/api/starapp.api.v1.StarAppService/GetBearerToken": {
-      "post": {
-        "tags": [
-          "starapp.api.v1.StarAppService"
-        ],
-        "summary": "GetBearerToken",
-        "operationId": "starapp.api.v1.StarAppService.GetBearerToken",
-        "parameters": [
-          {
-            "name": "Connect-Protocol-Version",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/connect-protocol-version"
-            }
-          },
-          {
-            "name": "Connect-Timeout-Ms",
-            "in": "header",
-            "schema": {
-              "$ref": "#/components/schemas/connect-timeout-header"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/starapp.api.v1.GetBearerTokenRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "default": {
-            "description": "Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/connect.error"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/starapp.api.v1.GetBearerTokenResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/starapp.api.v1.StarAppService/GetChildHomeSummary": {
       "post": {
         "tags": [
@@ -3888,13 +3830,13 @@
         }
       }
     },
-    "/api/starapp.api.v1.StarAppService/RegenerateBearerToken": {
+    "/api/starapp.api.v1.StarAppService/RegenerateApiKey": {
       "post": {
         "tags": [
           "starapp.api.v1.StarAppService"
         ],
-        "summary": "RegenerateBearerToken",
-        "operationId": "starapp.api.v1.StarAppService.RegenerateBearerToken",
+        "summary": "RegenerateApiKey",
+        "operationId": "starapp.api.v1.StarAppService.RegenerateApiKey",
         "parameters": [
           {
             "name": "Connect-Protocol-Version",
@@ -3916,7 +3858,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/starapp.api.v1.RegenerateBearerTokenRequest"
+                "$ref": "#/components/schemas/starapp.api.v1.RegenerateApiKeyRequest"
               }
             }
           },
@@ -3938,7 +3880,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/starapp.api.v1.RegenerateBearerTokenResponse"
+                  "$ref": "#/components/schemas/starapp.api.v1.RegenerateApiKeyResponse"
                 }
               }
             }
@@ -6421,22 +6363,6 @@
         "title": "FireTestWebhooksResponse",
         "additionalProperties": false
       },
-      "starapp.api.v1.GetBearerTokenRequest": {
-        "type": "object",
-        "title": "GetBearerTokenRequest",
-        "additionalProperties": false
-      },
-      "starapp.api.v1.GetBearerTokenResponse": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string",
-            "title": "token"
-          }
-        },
-        "title": "GetBearerTokenResponse",
-        "additionalProperties": false
-      },
       "starapp.api.v1.GetChildHomeSummaryRequest": {
         "type": "object",
         "title": "GetChildHomeSummaryRequest",
@@ -7738,20 +7664,31 @@
         "title": "Redemption",
         "additionalProperties": false
       },
-      "starapp.api.v1.RegenerateBearerTokenRequest": {
-        "type": "object",
-        "title": "RegenerateBearerTokenRequest",
-        "additionalProperties": false
-      },
-      "starapp.api.v1.RegenerateBearerTokenResponse": {
+      "starapp.api.v1.RegenerateApiKeyRequest": {
         "type": "object",
         "properties": {
-          "token": {
-            "type": "string",
-            "title": "token"
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
           }
         },
-        "title": "RegenerateBearerTokenResponse",
+        "title": "RegenerateApiKeyRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.RegenerateApiKeyResponse": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "title": "key",
+            "$ref": "#/components/schemas/starapp.api.v1.ApiKey"
+          },
+          "secret": {
+            "type": "string",
+            "title": "secret"
+          }
+        },
+        "title": "RegenerateApiKeyResponse",
         "additionalProperties": false
       },
       "starapp.api.v1.RejectRedemptionRequest": {
