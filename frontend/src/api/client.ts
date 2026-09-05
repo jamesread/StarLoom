@@ -140,6 +140,24 @@ export type MyPermissionAuditRow = {
   grantingGroups?: string[]
 }
 
+type ConnectErrorBody = {
+  code?: string
+  message?: string
+}
+
+async function readConnectError(res: Response): Promise<string> {
+  const fallback = res.statusText || `Request failed: ${res.status}`
+  try {
+    const body = (await res.json()) as ConnectErrorBody
+    if (typeof body.message === 'string' && body.message.trim()) {
+      return body.message.trim()
+    }
+  } catch {
+    // Non-JSON error bodies fall back to status text.
+  }
+  return fallback
+}
+
 async function connectFetch<T>(
   procedure: string,
   request: Record<string, unknown> = {},
@@ -154,7 +172,7 @@ async function connectFetch<T>(
     body: JSON.stringify(request),
   })
   if (!res.ok) {
-    throw new Error(res.statusText || `Request failed: ${res.status}`)
+    throw new Error(await readConnectError(res))
   }
   return res.json() as Promise<T>
 }

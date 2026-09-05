@@ -46,7 +46,7 @@ func (s *Server) RequestRedemption(ctx context.Context, req *connect.Request[api
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	if balance < reward.CostStars {
-		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("insufficient balance"))
+		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("insufficient star balance (has %d, needs %d)", balance, reward.CostStars))
 	}
 	if !s.rewardAvailableNow(ctx, reward, child.ID, balance, time.Now()) {
 		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("reward not available"))
@@ -135,7 +135,7 @@ func (s *Server) resolveRedemption(ctx context.Context, redemptionID int, status
 			return nil, connect.NewError(connect.CodeInternal, err)
 		}
 		if balance < red.StarsSpent {
-			return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("insufficient balance"))
+			return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("insufficient star balance (has %d, needs %d)", balance, red.StarsSpent))
 		}
 		createdBy := fc.member.ID
 		rewardID := red.RewardID
