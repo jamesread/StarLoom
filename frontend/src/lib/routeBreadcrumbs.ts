@@ -51,6 +51,7 @@ export const breadcrumbsByRouteName: Record<string, () => BreadcrumbItem[]> = {
   familyPersonCreate: () => trail(crumb.controlPanel, crumb.people, crumb.personCreate),
   familyPersonDetail: () => trail(crumb.controlPanel, crumb.people),
   familyPersonEdit: () => trail(crumb.controlPanel, crumb.people),
+  familyPersonNotifications: () => trail(crumb.controlPanel, crumb.people),
   familyChores: () => trail(crumb.controlPanel, crumb.chores),
   familyChoreEdit: () => trail(crumb.controlPanel, crumb.chores),
   familyStarCharts: () => trail(crumb.controlPanel, crumb.starCharts),

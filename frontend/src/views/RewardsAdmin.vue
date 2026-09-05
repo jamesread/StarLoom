@@ -5,6 +5,7 @@ import Section from 'picocrank/vue/components/Section.vue'
 import Table from 'picocrank/vue/components/Table.vue'
 import FormField from 'picocrank/vue/components/FormField.vue'
 import FormLayout from 'picocrank/vue/components/FormLayout.vue'
+import NotificationBlock from 'picocrank/vue/components/NotificationBlock.vue'
 import RadioGroup from 'picocrank/vue/components/RadioGroup.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { GiftIcon, PlusSignIcon, Refresh01Icon, TaskDone01Icon, ArrowLeft01Icon } from '@hugeicons/core-free-icons'
@@ -24,11 +25,13 @@ const redemptionsLoading = ref(true)
 const awardDialog = ref<HTMLDialogElement | null>(null)
 const createDialog = ref<HTMLDialogElement | null>(null)
 const createTitleInput = ref<HTMLInputElement | null>(null)
-const awardReward = ref<Reward | null>(null)
-const awardChildId = ref(0)
-const awardError = ref('')
-const awardMessage = ref('')
-const awarding = ref(false)
+const giveReward = ref<Reward | null>(null)
+const giveChildId = ref(0)
+const memberBalances = ref<Record<number, number>>({})
+const giveBalancesLoading = ref(false)
+const giveError = ref('')
+const giveMessage = ref('')
+const giving = ref(false)
 const creating = ref(false)
 const createError = ref('')
 
@@ -55,8 +58,22 @@ const personOptions = computed(() =>
   members.value
     .filter((m) => m.id !== myMemberId.value)
     .sort((a, b) => a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' }))
-    .map((m) => ({ label: m.displayName, value: m.id })),
+    .map((m) => {
+      const balance = memberBalances.value[m.id]
+      const starsSuffix = balance === undefined ? '' : ` (${balance} stars)`
+      return { label: `${m.displayName}${starsSuffix}`, value: m.id }
+    }),
 )
+
+const selectedGivePerson = computed(() =>
+  members.value.find((m) => m.id === giveChildId.value) ?? null,
+)
+
+const selectedGiveBalance = computed(() => {
+  if (!giveChildId.value) return null
+  const balance = memberBalances.value[giveChildId.value]
+  return balance === undefined ? null : balance
+})
 
 const tableHeaders = [
   { key: 'title', label: 'Title', sortable: true },
@@ -199,52 +216,76 @@ async function submitCreateReward() {
   }
 }
 
-function openAwardDialog(rewardId: number) {
+async function loadGiveBalances(memberIds: number[]) {
+  giveBalancesLoading.value = true
+  memberBalances.value = {}
+  try {
+    const entries = await Promise.all(
+      memberIds.map(async (id) => {
+        const res = await starapp.getMemberBalance({ memberId: id })
+        return [id, res.balance ?? 0] as const
+      }),
+    )
+    memberBalances.value = Object.fromEntries(entries)
+  } catch (e) {
+    giveError.value = e instanceof Error ? e.message : String(e)
+  } finally {
+    giveBalancesLoading.value = false
+  }
+}
+
+function openGiveDialog(rewardId: number) {
   const reward = rewards.value.find((r) => r.id === rewardId)
   if (!reward) return
-  awardReward.value = reward
-  awardChildId.value = personOptions.value[0]?.value || 0
-  awardError.value = ''
-  awardMessage.value = ''
+  giveReward.value = reward
+  giveChildId.value = personOptions.value[0]?.value || 0
+  giveError.value = ''
+  giveMessage.value = ''
+  const memberIds = members.value
+    .filter((m) => m.id !== myMemberId.value)
+    .map((m) => m.id)
+  void loadGiveBalances(memberIds)
   awardDialog.value?.showModal()
 }
 
-function closeAwardDialog() {
+function closeGiveDialog() {
   awardDialog.value?.close()
 }
 
-function resetAwardForm() {
-  awardReward.value = null
-  awardChildId.value = 0
-  awardError.value = ''
-  awarding.value = false
+function resetGiveForm() {
+  giveReward.value = null
+  giveChildId.value = 0
+  memberBalances.value = {}
+  giveBalancesLoading.value = false
+  giveError.value = ''
+  giving.value = false
 }
 
-async function awardRewardToChild() {
-  if (!awardReward.value?.id || !awardChildId.value) {
-    awardError.value = 'Select a person.'
+async function giveRewardToChild() {
+  if (!giveReward.value?.id || !giveChildId.value) {
+    giveError.value = 'Select a person.'
     return
   }
-  if (myMemberId.value && awardChildId.value === myMemberId.value) {
-    awardError.value = 'You cannot award a reward to yourself.'
+  if (myMemberId.value && giveChildId.value === myMemberId.value) {
+    giveError.value = 'You cannot give a reward to yourself.'
     return
   }
-  awarding.value = true
-  awardError.value = ''
-  awardMessage.value = ''
+  giving.value = true
+  giveError.value = ''
+  giveMessage.value = ''
   try {
     const res = await starapp.requestRedemption({
-      rewardId: awardReward.value.id,
-      childMemberId: awardChildId.value,
+      rewardId: giveReward.value.id,
+      childMemberId: giveChildId.value,
     })
-    awardMessage.value = res.standardResponse?.message || 'Reward awarded'
+    giveMessage.value = res.standardResponse?.message || 'Reward given'
     await load()
     await nextTick()
-    closeAwardDialog()
+    closeGiveDialog()
   } catch (e) {
-    awardError.value = e instanceof Error ? e.message : String(e)
+    giveError.value = e instanceof Error ? e.message : String(e)
   } finally {
-    awarding.value = false
+    giving.value = false
   }
 }
 
@@ -342,33 +383,37 @@ onMounted(load)
     </FormLayout>
   </dialog>
 
-  <dialog ref="awardDialog" class="dialog" @close="resetAwardForm">
-    <h2>Award reward</h2>
-    <p v-if="awardReward">
-      Give <strong>{{ awardReward.title }}</strong> ({{ awardReward.costStars }} stars) to a family member.
+  <dialog ref="awardDialog" class="dialog" @close="resetGiveForm">
+    <h2>Give Reward</h2>
+    <p v-if="giveReward">
+      Give <strong>{{ giveReward.title }}</strong> ({{ giveReward.costStars }} stars) to a family member.
     </p>
-    <FormLayout v-if="personOptions.length" @submit.prevent="awardRewardToChild">
+    <FormLayout v-if="personOptions.length" @submit.prevent="giveRewardToChild">
       <FormField label="Person" component-has-label>
         <RadioGroup
-          v-model="awardChildId"
+          v-model="giveChildId"
           variant="list"
           :options="personOptions"
-          name="award-reward-person"
+          name="give-reward-person"
         />
       </FormField>
-      <p v-if="awardError" class="inline-notification error">{{ awardError }}</p>
-      <p v-else-if="awardMessage" class="inline-notification note">{{ awardMessage }}</p>
+      <p v-if="giveBalancesLoading" class="person-balance muted">Loading star balances…</p>
+      <p v-else-if="selectedGivePerson && selectedGiveBalance !== null" class="person-balance">
+        <strong>{{ selectedGivePerson.displayName }}</strong> has {{ selectedGiveBalance }} stars.
+      </p>
+      <NotificationBlock v-if="giveError" type="error" :message="giveError" />
+      <p v-else-if="giveMessage" class="inline-notification note">{{ giveMessage }}</p>
       <template #actions>
-        <button type="button" class="neutral" :disabled="awarding" @click="closeAwardDialog">Cancel</button>
-        <button type="submit" class="good" :disabled="awarding || !awardChildId">
-          {{ awarding ? 'Awarding…' : 'Award' }}
+        <button type="button" class="neutral" :disabled="giving" @click="closeGiveDialog">Cancel</button>
+        <button type="submit" class="good" :disabled="giving || !giveChildId || giveBalancesLoading">
+          {{ giving ? 'Giving…' : 'Give' }}
         </button>
       </template>
     </FormLayout>
     <template v-else>
-      <p class="inline-notification note">No other family members to award rewards to.</p>
+      <p class="inline-notification note">No other family members to give rewards to.</p>
       <div class="dialog-actions">
-        <button type="button" class="neutral" @click="closeAwardDialog">Close</button>
+        <button type="button" class="neutral" @click="closeGiveDialog">Close</button>
       </div>
     </template>
   </dialog>
@@ -456,9 +501,9 @@ onMounted(load)
               v-if="row.active"
               type="button"
               class="good small"
-              @click="openAwardDialog(row.id)"
+              @click="openGiveDialog(row.id)"
             >
-              Award
+              Give
             </button>
           </div>
         </template>
@@ -575,6 +620,10 @@ onMounted(load)
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
+}
+
+.person-balance {
+  margin: 0;
 }
 
 .linkish {

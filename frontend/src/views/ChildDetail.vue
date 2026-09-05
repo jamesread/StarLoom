@@ -25,7 +25,6 @@ import {
 } from '../api/client'
 import MemberAvatar from '../components/MemberAvatar.vue'
 import TodaysStarChart from '../components/TodaysStarChart.vue'
-import ChoreNotificationSubscriptionsEditor from '../components/ChoreNotificationSubscriptionsEditor.vue'
 import { useStatus } from '../composables/useStatus'
 import {
   canCompleteChoresFromStatus,
@@ -327,7 +326,7 @@ onMounted(load)
     />
     <button
       type="button"
-      class="inline-icon neutral"
+      class="inline-icon neutral notification-test-btn"
       :disabled="testingNotify"
       @click="sendTestNotification"
     >
@@ -341,11 +340,20 @@ onMounted(load)
       <span>{{ testingNotify ? 'Sending…' : 'Send test notification' }}</span>
     </button>
 
-    <ChoreNotificationSubscriptionsEditor
+    <RouterLink
       v-if="canEditNotificationPrefs"
-      :subscriber-member-id="member.id"
-      :subscriber-display-name="member.displayName"
-    />
+      :to="{ name: 'familyPersonNotifications', params: { id: memberId } }"
+      class="button inline-icon neutral"
+    >
+      <HugeiconsIcon
+        :icon="Notification03Icon"
+        width="1em"
+        height="1em"
+        :strokeWidth="iconStrokeWidth"
+        aria-hidden="true"
+      />
+      <span>Edit chore notifications</span>
+    </RouterLink>
   </Section>
 
   <Section
@@ -519,6 +527,9 @@ onMounted(load)
 }
 .notification-tag dd {
   margin: 0;
+}
+.notification-test-btn {
+  margin-right: 0.75rem;
 }
 .balance {
   font-size: 1.75rem;

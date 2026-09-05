@@ -44,6 +44,7 @@ import ChildrenAdmin from './views/ChildrenAdmin.vue'
 import ChildCreate from './views/ChildCreate.vue'
 import ChildDetail from './views/ChildDetail.vue'
 import ChildEdit from './views/ChildEdit.vue'
+import PersonNotificationSubscriptions from './views/PersonNotificationSubscriptions.vue'
 import RewardsAdmin from './views/RewardsAdmin.vue'
 import RewardCreate from './views/RewardCreate.vue'
 import RewardEdit from './views/RewardEdit.vue'
@@ -80,6 +81,12 @@ const routes = [
     name: 'familyPersonEdit',
     component: ChildEdit,
     meta: { title: 'Edit person', requiresAuth: true, requiresFamilyAdmin: true },
+  },
+  {
+    path: '/control-panel/people/:id/notifications',
+    name: 'familyPersonNotifications',
+    component: PersonNotificationSubscriptions,
+    meta: { title: 'Chore notifications', requiresAuth: true, requiresFamilyAdmin: true },
   },
   { path: '/family/people', redirect: { name: 'familyPeople' } },
   { path: '/family/people/create', redirect: { name: 'familyPersonCreate' } },
