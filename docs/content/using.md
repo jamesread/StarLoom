@@ -76,3 +76,13 @@ Optional **availability expression** limits when a reward can be redeemed
 
 Only parents manage avatars. Children see their own picture on their home
 page.
+
+## Passive displays
+
+A wall tablet or a Home Assistant iframe cannot type a password. Open your
+own page from the header username and copy the value under **Bearer
+token**. Append `?token=<value>` to any StarLoom URL to sign that request
+in as you, read-only, so a screen with no keyboard still shows a star
+chart. The token is a credential, so treat the whole URL as one.
+**Regenerate** issues a new token and kills the old one, which breaks every
+display still holding it.

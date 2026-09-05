@@ -1,3 +1,5 @@
+import { bearerToken, clearBearerToken, hrefWithToken } from '../lib/bearerToken'
+
 const base = '/api'
 
 export type Features = {
@@ -142,12 +144,17 @@ async function connectFetch<T>(
   procedure: string,
   request: Record<string, unknown> = {},
 ): Promise<T> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  }
+  const token = bearerToken()
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
   const res = await fetch(base + procedure, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
+    headers,
     credentials: 'include',
     body: JSON.stringify(request),
   })
@@ -165,12 +172,15 @@ export const starapp = {
     return connectFetch<InitResponse>('/starapp.api.v1.StarAppService/Init', {})
   },
   loginWithUsernameAndPassword(body: { username: string; password: string }) {
+    // Password login replaces any token identity.
+    clearBearerToken()
     return connectFetch<{ standardResponse?: StandardResponse; username?: string }>(
       '/starapp.api.v1.StarAppService/LoginWithUsernameAndPassword',
       body,
     )
   },
   logout() {
+    clearBearerToken()
     return connectFetch<{ standardResponse?: StandardResponse }>(
       '/starapp.api.v1.StarAppService/Logout',
       {},
@@ -330,6 +340,18 @@ export const starapp = {
   },
   deleteApiKey(body: { id: number }) {
     return connectFetch<object>('/starapp.api.v1.StarAppService/DeleteApiKey', body)
+  },
+  getBearerToken() {
+    return connectFetch<{ token?: string }>(
+      '/starapp.api.v1.StarAppService/GetBearerToken',
+      {},
+    )
+  },
+  regenerateBearerToken() {
+    return connectFetch<{ token?: string }>(
+      '/starapp.api.v1.StarAppService/RegenerateBearerToken',
+      {},
+    )
   },
   listCvars() {
     return connectFetch<{ cvars: Cvar[] }>('/starapp.api.v1.StarAppService/ListCvars', {})
@@ -840,7 +862,7 @@ export type WeeklyStarChart = {
 
 export function memberAvatarUrl(memberId: number, hasAvatar?: boolean): string {
   if (!hasAvatar) return ''
-  return `/avatars/${memberId}`
+  return hrefWithToken(`/avatars/${memberId}`, bearerToken())
 }
 
 export function memberAvatarFileUrl(memberId: number, filename: string): string {

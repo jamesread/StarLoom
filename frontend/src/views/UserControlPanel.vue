@@ -9,6 +9,7 @@ import {
   DashboardSquareSettingIcon,
   Key01Icon,
   Notification03Icon,
+  Refresh01Icon,
   Settings01Icon,
   UserShield01Icon,
 } from '@hugeicons/core-free-icons'
@@ -23,6 +24,9 @@ const loggingOut = ref(false)
 const error = ref('')
 const personId = ref<number | null>(null)
 const personName = ref('')
+const bearerToken = ref('')
+const regenerating = ref(false)
+const iconStrokeWidth = 2.5
 
 const userData = computed(() => status.status)
 const showPersonLink = computed(
@@ -34,10 +38,32 @@ async function refreshUserData() {
   try {
     await fetchAppStatus({ force: true })
     await loadPerson()
+    await loadBearerToken()
     await nextTick()
     setupQuickActions()
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Refresh failed'
+  }
+}
+
+async function loadBearerToken() {
+  try {
+    const res = await starapp.getBearerToken()
+    bearerToken.value = res.token || ''
+  } catch {
+    bearerToken.value = ''
+  }
+}
+
+async function regenerateBearerToken() {
+  regenerating.value = true
+  try {
+    const res = await starapp.regenerateBearerToken()
+    bearerToken.value = res.token || ''
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Regenerate failed'
+  } finally {
+    regenerating.value = false
   }
 }
 
@@ -144,6 +170,33 @@ onMounted(() => {
     </dl>
   </Section>
 
+  <Section v-if="userData?.isLoggedIn && bearerToken" title="Bearer token" :padding="true">
+    <p>
+      Read-only token for passive displays. Append <code>?token=</code> and this value to any
+      StarLoom URL, and treat that URL as a password. Regenerating breaks every display still
+      using the old token.
+    </p>
+    <div class="token-row">
+      <label class="token-label" for="bearer-token">Token</label>
+      <input id="bearer-token" class="token-value" type="text" readonly :value="bearerToken" />
+      <button
+        type="button"
+        class="inline-icon neutral"
+        :disabled="regenerating"
+        @click="regenerateBearerToken"
+      >
+        <HugeiconsIcon
+          :icon="Refresh01Icon"
+          width="1em"
+          height="1em"
+          :strokeWidth="iconStrokeWidth"
+          aria-hidden="true"
+        />
+        <span>{{ regenerating ? 'Regenerating…' : 'Regenerate' }}</span>
+      </button>
+    </div>
+  </Section>
+
   <Section v-if="userData?.isLoggedIn" title="Notifications" :padding="true">
     <p>
       Choose which chore completions should notify you, or manage subscriptions from your
@@ -182,6 +235,21 @@ onMounted(() => {
   font-weight: bold;
 }
 .account-info dd {
+  margin: 0;
+}
+
+.token-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.token-label {
+  font-weight: bold;
+}
+
+.token-value {
+  flex: 1;
   margin: 0;
 }
 

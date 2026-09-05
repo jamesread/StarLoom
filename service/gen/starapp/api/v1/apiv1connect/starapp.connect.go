@@ -128,6 +128,12 @@ const (
 	// StarAppServiceDeleteApiKeyProcedure is the fully-qualified name of the StarAppService's
 	// DeleteApiKey RPC.
 	StarAppServiceDeleteApiKeyProcedure = "/starapp.api.v1.StarAppService/DeleteApiKey"
+	// StarAppServiceGetBearerTokenProcedure is the fully-qualified name of the StarAppService's
+	// GetBearerToken RPC.
+	StarAppServiceGetBearerTokenProcedure = "/starapp.api.v1.StarAppService/GetBearerToken"
+	// StarAppServiceRegenerateBearerTokenProcedure is the fully-qualified name of the StarAppService's
+	// RegenerateBearerToken RPC.
+	StarAppServiceRegenerateBearerTokenProcedure = "/starapp.api.v1.StarAppService/RegenerateBearerToken"
 	// StarAppServiceListCvarsProcedure is the fully-qualified name of the StarAppService's ListCvars
 	// RPC.
 	StarAppServiceListCvarsProcedure = "/starapp.api.v1.StarAppService/ListCvars"
@@ -327,6 +333,8 @@ type StarAppServiceClient interface {
 	ListApiKeys(context.Context, *connect.Request[v1.ListApiKeysRequest]) (*connect.Response[v1.ListApiKeysResponse], error)
 	CreateApiKey(context.Context, *connect.Request[v1.CreateApiKeyRequest]) (*connect.Response[v1.CreateApiKeyResponse], error)
 	DeleteApiKey(context.Context, *connect.Request[v1.DeleteApiKeyRequest]) (*connect.Response[v1.DeleteApiKeyResponse], error)
+	GetBearerToken(context.Context, *connect.Request[v1.GetBearerTokenRequest]) (*connect.Response[v1.GetBearerTokenResponse], error)
+	RegenerateBearerToken(context.Context, *connect.Request[v1.RegenerateBearerTokenRequest]) (*connect.Response[v1.RegenerateBearerTokenResponse], error)
 	ListCvars(context.Context, *connect.Request[v1.ListCvarsRequest]) (*connect.Response[v1.ListCvarsResponse], error)
 	UpdateCvar(context.Context, *connect.Request[v1.UpdateCvarRequest]) (*connect.Response[v1.Cvar], error)
 	ListWebhooks(context.Context, *connect.Request[v1.ListWebhooksRequest]) (*connect.Response[v1.ListWebhooksResponse], error)
@@ -590,6 +598,18 @@ func NewStarAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+StarAppServiceDeleteApiKeyProcedure,
 			connect.WithSchema(starAppServiceMethods.ByName("DeleteApiKey")),
+			connect.WithClientOptions(opts...),
+		),
+		getBearerToken: connect.NewClient[v1.GetBearerTokenRequest, v1.GetBearerTokenResponse](
+			httpClient,
+			baseURL+StarAppServiceGetBearerTokenProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("GetBearerToken")),
+			connect.WithClientOptions(opts...),
+		),
+		regenerateBearerToken: connect.NewClient[v1.RegenerateBearerTokenRequest, v1.RegenerateBearerTokenResponse](
+			httpClient,
+			baseURL+StarAppServiceRegenerateBearerTokenProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("RegenerateBearerToken")),
 			connect.WithClientOptions(opts...),
 		),
 		listCvars: connect.NewClient[v1.ListCvarsRequest, v1.ListCvarsResponse](
@@ -954,6 +974,8 @@ type starAppServiceClient struct {
 	listApiKeys                              *connect.Client[v1.ListApiKeysRequest, v1.ListApiKeysResponse]
 	createApiKey                             *connect.Client[v1.CreateApiKeyRequest, v1.CreateApiKeyResponse]
 	deleteApiKey                             *connect.Client[v1.DeleteApiKeyRequest, v1.DeleteApiKeyResponse]
+	getBearerToken                           *connect.Client[v1.GetBearerTokenRequest, v1.GetBearerTokenResponse]
+	regenerateBearerToken                    *connect.Client[v1.RegenerateBearerTokenRequest, v1.RegenerateBearerTokenResponse]
 	listCvars                                *connect.Client[v1.ListCvarsRequest, v1.ListCvarsResponse]
 	updateCvar                               *connect.Client[v1.UpdateCvarRequest, v1.Cvar]
 	listWebhooks                             *connect.Client[v1.ListWebhooksRequest, v1.ListWebhooksResponse]
@@ -1173,6 +1195,16 @@ func (c *starAppServiceClient) CreateApiKey(ctx context.Context, req *connect.Re
 // DeleteApiKey calls starapp.api.v1.StarAppService.DeleteApiKey.
 func (c *starAppServiceClient) DeleteApiKey(ctx context.Context, req *connect.Request[v1.DeleteApiKeyRequest]) (*connect.Response[v1.DeleteApiKeyResponse], error) {
 	return c.deleteApiKey.CallUnary(ctx, req)
+}
+
+// GetBearerToken calls starapp.api.v1.StarAppService.GetBearerToken.
+func (c *starAppServiceClient) GetBearerToken(ctx context.Context, req *connect.Request[v1.GetBearerTokenRequest]) (*connect.Response[v1.GetBearerTokenResponse], error) {
+	return c.getBearerToken.CallUnary(ctx, req)
+}
+
+// RegenerateBearerToken calls starapp.api.v1.StarAppService.RegenerateBearerToken.
+func (c *starAppServiceClient) RegenerateBearerToken(ctx context.Context, req *connect.Request[v1.RegenerateBearerTokenRequest]) (*connect.Response[v1.RegenerateBearerTokenResponse], error) {
+	return c.regenerateBearerToken.CallUnary(ctx, req)
 }
 
 // ListCvars calls starapp.api.v1.StarAppService.ListCvars.
@@ -1484,6 +1516,8 @@ type StarAppServiceHandler interface {
 	ListApiKeys(context.Context, *connect.Request[v1.ListApiKeysRequest]) (*connect.Response[v1.ListApiKeysResponse], error)
 	CreateApiKey(context.Context, *connect.Request[v1.CreateApiKeyRequest]) (*connect.Response[v1.CreateApiKeyResponse], error)
 	DeleteApiKey(context.Context, *connect.Request[v1.DeleteApiKeyRequest]) (*connect.Response[v1.DeleteApiKeyResponse], error)
+	GetBearerToken(context.Context, *connect.Request[v1.GetBearerTokenRequest]) (*connect.Response[v1.GetBearerTokenResponse], error)
+	RegenerateBearerToken(context.Context, *connect.Request[v1.RegenerateBearerTokenRequest]) (*connect.Response[v1.RegenerateBearerTokenResponse], error)
 	ListCvars(context.Context, *connect.Request[v1.ListCvarsRequest]) (*connect.Response[v1.ListCvarsResponse], error)
 	UpdateCvar(context.Context, *connect.Request[v1.UpdateCvarRequest]) (*connect.Response[v1.Cvar], error)
 	ListWebhooks(context.Context, *connect.Request[v1.ListWebhooksRequest]) (*connect.Response[v1.ListWebhooksResponse], error)
@@ -1743,6 +1777,18 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 		StarAppServiceDeleteApiKeyProcedure,
 		svc.DeleteApiKey,
 		connect.WithSchema(starAppServiceMethods.ByName("DeleteApiKey")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceGetBearerTokenHandler := connect.NewUnaryHandler(
+		StarAppServiceGetBearerTokenProcedure,
+		svc.GetBearerToken,
+		connect.WithSchema(starAppServiceMethods.ByName("GetBearerToken")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceRegenerateBearerTokenHandler := connect.NewUnaryHandler(
+		StarAppServiceRegenerateBearerTokenProcedure,
+		svc.RegenerateBearerToken,
+		connect.WithSchema(starAppServiceMethods.ByName("RegenerateBearerToken")),
 		connect.WithHandlerOptions(opts...),
 	)
 	starAppServiceListCvarsHandler := connect.NewUnaryHandler(
@@ -2137,6 +2183,10 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 			starAppServiceCreateApiKeyHandler.ServeHTTP(w, r)
 		case StarAppServiceDeleteApiKeyProcedure:
 			starAppServiceDeleteApiKeyHandler.ServeHTTP(w, r)
+		case StarAppServiceGetBearerTokenProcedure:
+			starAppServiceGetBearerTokenHandler.ServeHTTP(w, r)
+		case StarAppServiceRegenerateBearerTokenProcedure:
+			starAppServiceRegenerateBearerTokenHandler.ServeHTTP(w, r)
 		case StarAppServiceListCvarsProcedure:
 			starAppServiceListCvarsHandler.ServeHTTP(w, r)
 		case StarAppServiceUpdateCvarProcedure:
@@ -2384,6 +2434,14 @@ func (UnimplementedStarAppServiceHandler) CreateApiKey(context.Context, *connect
 
 func (UnimplementedStarAppServiceHandler) DeleteApiKey(context.Context, *connect.Request[v1.DeleteApiKeyRequest]) (*connect.Response[v1.DeleteApiKeyResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.DeleteApiKey is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) GetBearerToken(context.Context, *connect.Request[v1.GetBearerTokenRequest]) (*connect.Response[v1.GetBearerTokenResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.GetBearerToken is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) RegenerateBearerToken(context.Context, *connect.Request[v1.RegenerateBearerTokenRequest]) (*connect.Response[v1.RegenerateBearerTokenResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.RegenerateBearerToken is not implemented"))
 }
 
 func (UnimplementedStarAppServiceHandler) ListCvars(context.Context, *connect.Request[v1.ListCvarsRequest]) (*connect.Response[v1.ListCvarsResponse], error) {
