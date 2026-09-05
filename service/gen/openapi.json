@@ -3888,6 +3888,64 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/ReorderChores": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "ReorderChores",
+        "operationId": "starapp.api.v1.StarAppService.ReorderChores",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.ReorderChoresRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.ReorderChoresResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/RequestRedemption": {
       "post": {
         "tags": [
@@ -5373,6 +5431,11 @@
           "starChartId": {
             "type": "integer",
             "title": "star_chart_id",
+            "format": "int32"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "title": "sort_order",
             "format": "int32"
           }
         },
@@ -7568,6 +7631,32 @@
           }
         },
         "title": "RejectRedemptionResponse",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ReorderChoresRequest": {
+        "type": "object",
+        "properties": {
+          "choreIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "chore_ids"
+          }
+        },
+        "title": "ReorderChoresRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.ReorderChoresResponse": {
+        "type": "object",
+        "properties": {
+          "standardResponse": {
+            "title": "standard_response",
+            "$ref": "#/components/schemas/starapp.api.v1.StandardResponse"
+          }
+        },
+        "title": "ReorderChoresResponse",
         "additionalProperties": false
       },
       "starapp.api.v1.RequestRedemptionRequest": {

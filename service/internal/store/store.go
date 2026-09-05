@@ -69,6 +69,7 @@ type Store interface {
 	CreateChore(ctx context.Context, familyID, starChartID int, title string, starReward, weekdayMask int, childMemberIDs []int) (int, error)
 	UpdateChore(ctx context.Context, id int, starChartID int, title string, starReward, weekdayMask int, active bool, childMemberIDs []int) error
 	DeactivateChore(ctx context.Context, id int) error
+	ReorderChores(ctx context.Context, familyID int, choreIDs []int) error
 
 	ListStarCharts(ctx context.Context, familyID int, includeInactive bool) ([]StarChartRow, error)
 	GetStarChartByID(ctx context.Context, id int) (*StarChartRow, error)
