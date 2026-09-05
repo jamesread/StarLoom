@@ -122,6 +122,7 @@ func RequiredPermission(procedureName string) string {
 	case apiv1connect.StarAppServiceCreateChoreProcedure,
 		apiv1connect.StarAppServiceUpdateChoreProcedure,
 		apiv1connect.StarAppServiceDeleteChoreProcedure,
+		apiv1connect.StarAppServiceReorderChoresProcedure,
 		apiv1connect.StarAppServiceCreateChorePauseProcedure,
 		apiv1connect.StarAppServiceDeleteChorePauseProcedure,
 		apiv1connect.StarAppServiceCreateStarChartProcedure,
