@@ -2,7 +2,8 @@
 import Header from 'picocrank/vue/components/Header.vue'
 import Navigation from 'picocrank/vue/components/Navigation.vue'
 import Sidebar from 'picocrank/vue/components/Sidebar.vue'
-import { StarIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
+import { DashboardSquareSettingIcon, StarIcon } from '@hugeicons/core-free-icons'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import AppFooter from './AppFooter.vue'
@@ -29,6 +30,9 @@ const siteTitle = computed(() => status.status?.siteTitle || 'StarApp')
 const showFooter = computed(() => init.init?.showFooter !== false)
 const username = computed(() => headerDisplayName(status.status))
 const isLoggedIn = computed(() => Boolean(status.status?.isLoggedIn))
+const showControlPanelLink = computed(
+  () => isLoggedIn.value && canAccessControlPanelFromStatus(status.status),
+)
 
 watch(
   siteTitle,
@@ -83,6 +87,10 @@ function goHome() {
 function goToUserControlPanel() {
   router.push({ name: 'userControlPanel' })
 }
+
+function goToControlPanel() {
+  router.push({ name: 'controlPanel' })
+}
 </script>
 
 <template>
@@ -102,7 +110,25 @@ function goToUserControlPanel() {
         @logo-click="goHome"
         @toggle-sidebar="toggleSidebar"
         @user-click="goToUserControlPanel"
-      />
+      >
+        <template #toolbar>
+          <button
+            v-if="showControlPanelLink"
+            type="button"
+            class="inline-icon neutral"
+            aria-label="Control Panel"
+            title="Control Panel"
+            @click="goToControlPanel"
+          >
+            <HugeiconsIcon
+              :icon="DashboardSquareSettingIcon"
+              width="1em"
+              height="1em"
+              aria-hidden="true"
+            />
+          </button>
+        </template>
+      </Header>
     </Navigation>
 
     <div id="layout">
