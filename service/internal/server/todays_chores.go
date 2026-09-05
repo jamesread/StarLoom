@@ -111,7 +111,8 @@ func appendTodaysAssignments(
 }
 
 func sortTodaysChores(rows []*apiv1.TodaysChore) {
-	sort.Slice(rows, func(i, j int) bool {
+	// Stable keeps manual chore order.
+	sort.SliceStable(rows, func(i, j int) bool {
 		leftChart := rows[i].GetStarChartName()
 		rightChart := rows[j].GetStarChartName()
 		if leftChart != rightChart {
@@ -119,10 +120,7 @@ func sortTodaysChores(rows []*apiv1.TodaysChore) {
 		}
 		left := rows[i].GetChild().GetDisplayName()
 		right := rows[j].GetChild().GetDisplayName()
-		if left != right {
-			return left < right
-		}
-		return rows[i].Title < rows[j].Title
+		return left < right
 	})
 }
 

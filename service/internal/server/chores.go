@@ -48,6 +48,7 @@ func toProtoChore(cw *store.ChoreWithAssignments) *apiv1.Chore {
 		ChildMemberIds: childIDs,
 		CreatedAt:      cw.Chore.CreatedAt,
 		StarChartId:    int32(cw.Chore.StarChartID),
+		SortOrder:      int32(cw.Chore.SortOrder),
 	}
 }
 
@@ -188,6 +189,29 @@ func (s *Server) UpdateChore(ctx context.Context, req *connect.Request[apiv1.Upd
 	return connect.NewResponse(&apiv1.UpdateChoreResponse{
 		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Chore updated"},
 		Chore:            toProtoChore(updated),
+	}), nil
+}
+
+func (s *Server) ReorderChores(ctx context.Context, req *connect.Request[apiv1.ReorderChoresRequest]) (*connect.Response[apiv1.ReorderChoresResponse], error) {
+	fc, err := s.requireFamilyContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := s.requireWrite(ctx); err != nil {
+		return nil, err
+	}
+	if _, err := s.requirePermission(ctx, rbac.PermissionChoresManage); err != nil {
+		return nil, err
+	}
+	ids := make([]int, 0, len(req.Msg.ChoreIds))
+	for _, id := range req.Msg.ChoreIds {
+		ids = append(ids, int(id))
+	}
+	if err := s.store.ReorderChores(ctx, fc.family.ID, ids); err != nil {
+		return nil, mapStoreError(err)
+	}
+	return connect.NewResponse(&apiv1.ReorderChoresResponse{
+		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Chore order saved"},
 	}), nil
 }
 

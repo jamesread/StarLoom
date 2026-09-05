@@ -26,7 +26,12 @@ func (m *Memory) ListChores(ctx context.Context, familyID int, starChartID int, 
 		}
 		out = append(out, cw)
 	}
-	sort.Slice(out, func(i, j int) bool { return out[i].Chore.Title < out[j].Chore.Title })
+	sort.Slice(out, func(i, j int) bool {
+		if out[i].Chore.SortOrder != out[j].Chore.SortOrder {
+			return out[i].Chore.SortOrder < out[j].Chore.SortOrder
+		}
+		return out[i].Chore.Title < out[j].Chore.Title
+	})
 	return out, nil
 }
 
@@ -53,9 +58,15 @@ func (m *Memory) CreateChore(_ context.Context, familyID, starChartID int, title
 	}
 	st.nextChoreID++
 	id := st.nextChoreID
+	maxSort := 0
+	for _, cw := range st.chores {
+		if cw.Chore.FamilyID == familyID && cw.Chore.SortOrder > maxSort {
+			maxSort = cw.Chore.SortOrder
+		}
+	}
 	c := ChoreRow{
 		ID: id, FamilyID: familyID, StarChartID: starChartID, Title: title, StarReward: starReward,
-		WeekdayMask: weekdayMask, Active: true, CreatedAt: familyNow(),
+		WeekdayMask: weekdayMask, Active: true, SortOrder: maxSort + 1, CreatedAt: familyNow(),
 	}
 	var assigns []ChoreAssignmentRow
 	for _, childID := range childMemberIDs {
@@ -92,6 +103,21 @@ func (m *Memory) UpdateChore(_ context.Context, id int, starChartID int, title s
 	}
 	cw.Assignments = assigns
 	st.chores[id] = cw
+	return nil
+}
+
+func (m *Memory) ReorderChores(_ context.Context, familyID int, choreIDs []int) error {
+	st := m.choreState()
+	st.mu.Lock()
+	defer st.mu.Unlock()
+	for i, id := range choreIDs {
+		cw, ok := st.chores[id]
+		if !ok || cw.Chore.FamilyID != familyID {
+			continue
+		}
+		cw.Chore.SortOrder = i + 1
+		st.chores[id] = cw
+	}
 	return nil
 }
 
