@@ -340,6 +340,18 @@ message DeleteApiKeyRequest {
 
 message DeleteApiKeyResponse {}
 
+message GetBearerTokenRequest {}
+
+message GetBearerTokenResponse {
+  string token = 1;
+}
+
+message RegenerateBearerTokenRequest {}
+
+message RegenerateBearerTokenResponse {
+  string token = 1;
+}
+
 message Cvar {
   string key = 1;
   string main_type = 2;
@@ -1088,6 +1100,8 @@ service StarAppService {
   rpc ListApiKeys(ListApiKeysRequest) returns (ListApiKeysResponse);
   rpc CreateApiKey(CreateApiKeyRequest) returns (CreateApiKeyResponse);
   rpc DeleteApiKey(DeleteApiKeyRequest) returns (DeleteApiKeyResponse);
+  rpc GetBearerToken(GetBearerTokenRequest) returns (GetBearerTokenResponse);
+  rpc RegenerateBearerToken(RegenerateBearerTokenRequest) returns (RegenerateBearerTokenResponse);
   rpc ListCvars(ListCvarsRequest) returns (ListCvarsResponse);
   rpc UpdateCvar(UpdateCvarRequest) returns (Cvar);
   rpc ListWebhooks(ListWebhooksRequest) returns (ListWebhooksResponse);
