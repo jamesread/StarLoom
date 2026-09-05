@@ -6,14 +6,17 @@ import FormField from 'picocrank/vue/components/FormField.vue'
 import FormLayout from 'picocrank/vue/components/FormLayout.vue'
 import RadioGroup from 'picocrank/vue/components/RadioGroup.vue'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { ArrowLeft01Icon, StarIcon } from '@hugeicons/core-free-icons'
-import { starapp, type StarChart } from '../api/client'
+import { ArrowDown01Icon, ArrowLeft01Icon, ArrowUp01Icon, StarIcon } from '@hugeicons/core-free-icons'
+import { starapp, type Chore, type StarChart } from '../api/client'
 
 const route = useRoute()
 const router = useRouter()
 const chartId = computed(() => Number(route.params.id))
 
 const chart = ref<StarChart | null>(null)
+const chores = ref<Chore[]>([])
+const dragIndex = ref(-1)
+const reordering = ref(false)
 const error = ref('')
 const saving = ref(false)
 const loading = ref(true)
@@ -44,6 +47,8 @@ async function load() {
     form.name = chart.value.name
     form.sortOrder = chart.value.sortOrder ?? 0
     form.active = chart.value.active !== false
+    const choreRes = await starapp.listChores({ starChartId: chartId.value })
+    chores.value = choreRes.chores || []
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
   } finally {
@@ -68,6 +73,35 @@ async function save() {
   } finally {
     saving.value = false
   }
+}
+
+// Moves one chore, one write at a time.
+async function move(from: number, to: number) {
+  if (reordering.value) return
+  if (from < 0 || from >= chores.value.length) return
+  if (to < 0 || to >= chores.value.length || from === to) return
+  const previous = chores.value
+  const next = previous.slice()
+  const [moved] = next.splice(from, 1)
+  next.splice(to, 0, moved)
+  chores.value = next
+  error.value = ''
+  reordering.value = true
+  try {
+    await starapp.reorderChores({ choreIds: next.map((c) => c.id) })
+  } catch (e) {
+    chores.value = previous
+    error.value = e instanceof Error ? e.message : String(e)
+  } finally {
+    reordering.value = false
+  }
+}
+
+// Drops the dragged row at this index.
+function onDrop(index: number) {
+  const from = dragIndex.value
+  dragIndex.value = -1
+  if (from >= 0) move(from, index)
 }
 
 async function removeChart() {
@@ -133,5 +167,73 @@ onMounted(load)
         </button>
       </template>
     </FormLayout>
+
+    <template v-if="!loading && chart">
+      <h3>Chore order</h3>
+      <p class="subtle">Drag a row, or use the arrows, to set the order chores appear on the chart.</p>
+      <table v-if="chores.length" class="chore-order">
+        <tbody>
+          <tr
+            v-for="(chore, index) in chores"
+            :key="chore.id"
+            draggable="true"
+            @dragstart="dragIndex = index"
+            @dragover.prevent
+            @drop.prevent="onDrop(index)"
+          >
+            <td>{{ chore.title }}</td>
+            <td class="order-actions">
+              <button
+                type="button"
+                class="inline-icon neutral"
+                :aria-label="`Move ${chore.title} up`"
+                :disabled="reordering || index === 0"
+                @click="move(index, index - 1)"
+              >
+                <HugeiconsIcon
+                  :icon="ArrowUp01Icon"
+                  width="1em"
+                  height="1em"
+                  :strokeWidth="2.5"
+                  aria-hidden="true"
+                />
+              </button>
+              <button
+                type="button"
+                class="inline-icon neutral"
+                :aria-label="`Move ${chore.title} down`"
+                :disabled="reordering || index === chores.length - 1"
+                @click="move(index, index + 1)"
+              >
+                <HugeiconsIcon
+                  :icon="ArrowDown01Icon"
+                  width="1em"
+                  height="1em"
+                  :strokeWidth="2.5"
+                  aria-hidden="true"
+                />
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p v-else class="subtle">No chores on this chart yet.</p>
+    </template>
   </Section>
 </template>
+
+<style scoped>
+.chore-order {
+  width: 100%;
+}
+.chore-order tr {
+  cursor: grab;
+}
+.order-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+.order-actions button:disabled {
+  opacity: 0.35;
+}
+</style>

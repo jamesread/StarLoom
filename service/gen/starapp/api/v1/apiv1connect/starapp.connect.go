@@ -278,6 +278,9 @@ const (
 	// StarAppServiceDeleteChoreProcedure is the fully-qualified name of the StarAppService's
 	// DeleteChore RPC.
 	StarAppServiceDeleteChoreProcedure = "/starapp.api.v1.StarAppService/DeleteChore"
+	// StarAppServiceReorderChoresProcedure is the fully-qualified name of the StarAppService's
+	// ReorderChores RPC.
+	StarAppServiceReorderChoresProcedure = "/starapp.api.v1.StarAppService/ReorderChores"
 	// StarAppServiceListChorePausesProcedure is the fully-qualified name of the StarAppService's
 	// ListChorePauses RPC.
 	StarAppServiceListChorePausesProcedure = "/starapp.api.v1.StarAppService/ListChorePauses"
@@ -383,6 +386,7 @@ type StarAppServiceClient interface {
 	CreateChore(context.Context, *connect.Request[v1.CreateChoreRequest]) (*connect.Response[v1.CreateChoreResponse], error)
 	UpdateChore(context.Context, *connect.Request[v1.UpdateChoreRequest]) (*connect.Response[v1.UpdateChoreResponse], error)
 	DeleteChore(context.Context, *connect.Request[v1.DeleteChoreRequest]) (*connect.Response[v1.DeleteChoreResponse], error)
+	ReorderChores(context.Context, *connect.Request[v1.ReorderChoresRequest]) (*connect.Response[v1.ReorderChoresResponse], error)
 	ListChorePauses(context.Context, *connect.Request[v1.ListChorePausesRequest]) (*connect.Response[v1.ListChorePausesResponse], error)
 	CreateChorePause(context.Context, *connect.Request[v1.CreateChorePauseRequest]) (*connect.Response[v1.CreateChorePauseResponse], error)
 	DeleteChorePause(context.Context, *connect.Request[v1.DeleteChorePauseRequest]) (*connect.Response[v1.DeleteChorePauseResponse], error)
@@ -900,6 +904,12 @@ func NewStarAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(starAppServiceMethods.ByName("DeleteChore")),
 			connect.WithClientOptions(opts...),
 		),
+		reorderChores: connect.NewClient[v1.ReorderChoresRequest, v1.ReorderChoresResponse](
+			httpClient,
+			baseURL+StarAppServiceReorderChoresProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("ReorderChores")),
+			connect.WithClientOptions(opts...),
+		),
 		listChorePauses: connect.NewClient[v1.ListChorePausesRequest, v1.ListChorePausesResponse](
 			httpClient,
 			baseURL+StarAppServiceListChorePausesProcedure,
@@ -1024,6 +1034,7 @@ type starAppServiceClient struct {
 	createChore                              *connect.Client[v1.CreateChoreRequest, v1.CreateChoreResponse]
 	updateChore                              *connect.Client[v1.UpdateChoreRequest, v1.UpdateChoreResponse]
 	deleteChore                              *connect.Client[v1.DeleteChoreRequest, v1.DeleteChoreResponse]
+	reorderChores                            *connect.Client[v1.ReorderChoresRequest, v1.ReorderChoresResponse]
 	listChorePauses                          *connect.Client[v1.ListChorePausesRequest, v1.ListChorePausesResponse]
 	createChorePause                         *connect.Client[v1.CreateChorePauseRequest, v1.CreateChorePauseResponse]
 	deleteChorePause                         *connect.Client[v1.DeleteChorePauseRequest, v1.DeleteChorePauseResponse]
@@ -1451,6 +1462,11 @@ func (c *starAppServiceClient) DeleteChore(ctx context.Context, req *connect.Req
 	return c.deleteChore.CallUnary(ctx, req)
 }
 
+// ReorderChores calls starapp.api.v1.StarAppService.ReorderChores.
+func (c *starAppServiceClient) ReorderChores(ctx context.Context, req *connect.Request[v1.ReorderChoresRequest]) (*connect.Response[v1.ReorderChoresResponse], error) {
+	return c.reorderChores.CallUnary(ctx, req)
+}
+
 // ListChorePauses calls starapp.api.v1.StarAppService.ListChorePauses.
 func (c *starAppServiceClient) ListChorePauses(ctx context.Context, req *connect.Request[v1.ListChorePausesRequest]) (*connect.Response[v1.ListChorePausesResponse], error) {
 	return c.listChorePauses.CallUnary(ctx, req)
@@ -1566,6 +1582,7 @@ type StarAppServiceHandler interface {
 	CreateChore(context.Context, *connect.Request[v1.CreateChoreRequest]) (*connect.Response[v1.CreateChoreResponse], error)
 	UpdateChore(context.Context, *connect.Request[v1.UpdateChoreRequest]) (*connect.Response[v1.UpdateChoreResponse], error)
 	DeleteChore(context.Context, *connect.Request[v1.DeleteChoreRequest]) (*connect.Response[v1.DeleteChoreResponse], error)
+	ReorderChores(context.Context, *connect.Request[v1.ReorderChoresRequest]) (*connect.Response[v1.ReorderChoresResponse], error)
 	ListChorePauses(context.Context, *connect.Request[v1.ListChorePausesRequest]) (*connect.Response[v1.ListChorePausesResponse], error)
 	CreateChorePause(context.Context, *connect.Request[v1.CreateChorePauseRequest]) (*connect.Response[v1.CreateChorePauseResponse], error)
 	DeleteChorePause(context.Context, *connect.Request[v1.DeleteChorePauseRequest]) (*connect.Response[v1.DeleteChorePauseResponse], error)
@@ -2079,6 +2096,12 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 		connect.WithSchema(starAppServiceMethods.ByName("DeleteChore")),
 		connect.WithHandlerOptions(opts...),
 	)
+	starAppServiceReorderChoresHandler := connect.NewUnaryHandler(
+		StarAppServiceReorderChoresProcedure,
+		svc.ReorderChores,
+		connect.WithSchema(starAppServiceMethods.ByName("ReorderChores")),
+		connect.WithHandlerOptions(opts...),
+	)
 	starAppServiceListChorePausesHandler := connect.NewUnaryHandler(
 		StarAppServiceListChorePausesProcedure,
 		svc.ListChorePauses,
@@ -2283,6 +2306,8 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 			starAppServiceUpdateChoreHandler.ServeHTTP(w, r)
 		case StarAppServiceDeleteChoreProcedure:
 			starAppServiceDeleteChoreHandler.ServeHTTP(w, r)
+		case StarAppServiceReorderChoresProcedure:
+			starAppServiceReorderChoresHandler.ServeHTTP(w, r)
 		case StarAppServiceListChorePausesProcedure:
 			starAppServiceListChorePausesHandler.ServeHTTP(w, r)
 		case StarAppServiceCreateChorePauseProcedure:
@@ -2634,6 +2659,10 @@ func (UnimplementedStarAppServiceHandler) UpdateChore(context.Context, *connect.
 
 func (UnimplementedStarAppServiceHandler) DeleteChore(context.Context, *connect.Request[v1.DeleteChoreRequest]) (*connect.Response[v1.DeleteChoreResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.DeleteChore is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) ReorderChores(context.Context, *connect.Request[v1.ReorderChoresRequest]) (*connect.Response[v1.ReorderChoresResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.ReorderChores is not implemented"))
 }
 
 func (UnimplementedStarAppServiceHandler) ListChorePauses(context.Context, *connect.Request[v1.ListChorePausesRequest]) (*connect.Response[v1.ListChorePausesResponse], error) {

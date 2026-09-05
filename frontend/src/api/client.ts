@@ -616,6 +616,12 @@ export const starapp = {
       body,
     )
   },
+  reorderChores(body: { choreIds: number[] }) {
+    return connectFetch<{ standardResponse?: StandardResponse }>(
+      '/starapp.api.v1.StarAppService/ReorderChores',
+      body,
+    )
+  },
   deleteChore(body: { id: number }) {
     return connectFetch<{ standardResponse?: StandardResponse }>(
       '/starapp.api.v1.StarAppService/DeleteChore',
@@ -803,6 +809,7 @@ export type Chore = {
   childMemberIds?: number[]
   createdAt?: string
   starChartId?: number
+  sortOrder?: number
 }
 
 export type StarChart = {

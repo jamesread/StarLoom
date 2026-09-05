@@ -10,6 +10,7 @@ type ChoreRow struct {
 	StarReward  int
 	WeekdayMask int
 	Active      bool
+	SortOrder   int
 	CreatedAt   string
 }
 
