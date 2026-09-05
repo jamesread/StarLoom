@@ -8,6 +8,7 @@ import (
 	"sync"
 )
 
+// ListChores returns a family's chores in display order.
 func (m *Memory) ListChores(ctx context.Context, familyID int, starChartID int, includeInactive bool) ([]ChoreWithAssignments, error) {
 	st := m.choreState()
 	st.mu.Lock()
@@ -46,6 +47,7 @@ func (m *Memory) GetChoreByID(_ context.Context, id int) (*ChoreWithAssignments,
 	return nil, nil
 }
 
+// CreateChore appends a chore to the end of the order.
 func (m *Memory) CreateChore(_ context.Context, familyID, starChartID int, title string, starReward, weekdayMask int, childMemberIDs []int) (int, error) {
 	st := m.choreState()
 	st.mu.Lock()
@@ -106,6 +108,7 @@ func (m *Memory) UpdateChore(_ context.Context, id int, starChartID int, title s
 	return nil
 }
 
+// ReorderChores numbers the given chores from one.
 func (m *Memory) ReorderChores(_ context.Context, familyID int, choreIDs []int) error {
 	st := m.choreState()
 	st.mu.Lock()

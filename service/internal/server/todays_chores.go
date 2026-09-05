@@ -110,8 +110,8 @@ func appendTodaysAssignments(
 	return out
 }
 
+// sortTodaysChores groups by chart and child, keeping chore order.
 func sortTodaysChores(rows []*apiv1.TodaysChore) {
-	// Stable keeps manual chore order.
 	sort.SliceStable(rows, func(i, j int) bool {
 		leftChart := rows[i].GetStarChartName()
 		rightChart := rows[j].GetStarChartName()

@@ -50,6 +50,7 @@ func IsScheduledOnDate(mask int, date string) bool {
 	return mask&(1<<(wd-1)) != 0
 }
 
+// ListChores returns a family's chores in display order.
 func (s *SQLite) ListChores(ctx context.Context, familyID int, starChartID int, includeInactive bool) ([]ChoreWithAssignments, error) {
 	q := `SELECT id, family_id, star_chart_id, title, star_reward, weekday_mask, active, sort_order, created_at
 		FROM chores WHERE family_id = ?`
@@ -106,6 +107,7 @@ func (s *SQLite) listAssignmentsForChore(ctx context.Context, choreID int) ([]Ch
 	return out, rows.Err()
 }
 
+// GetChoreByID returns one chore with its assignments.
 func (s *SQLite) GetChoreByID(ctx context.Context, id int) (*ChoreWithAssignments, error) {
 	var c ChoreRow
 	var active int
@@ -130,6 +132,7 @@ func (s *SQLite) GetChoreByID(ctx context.Context, id int) (*ChoreWithAssignment
 	return &ChoreWithAssignments{Chore: c, Assignments: assigns}, nil
 }
 
+// CreateChore appends a chore to the end of the order.
 func (s *SQLite) CreateChore(ctx context.Context, familyID, starChartID int, title string, starReward, weekdayMask int, childMemberIDs []int) (int, error) {
 	if weekdayMask == 0 {
 		weekdayMask = 127
@@ -181,6 +184,7 @@ func (s *SQLite) UpdateChore(ctx context.Context, id int, starChartID int, title
 	return nil
 }
 
+// ReorderChores numbers the given chores from one.
 func (s *SQLite) ReorderChores(ctx context.Context, familyID int, choreIDs []int) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {

@@ -30,6 +30,7 @@ func maskToWeekdaysProto(mask int) []int32 {
 	return out
 }
 
+// toProtoChore maps a stored chore to the API type.
 func toProtoChore(cw *store.ChoreWithAssignments) *apiv1.Chore {
 	if cw == nil {
 		return nil
@@ -192,6 +193,7 @@ func (s *Server) UpdateChore(ctx context.Context, req *connect.Request[apiv1.Upd
 	}), nil
 }
 
+// ReorderChores stores a parent's chore display order.
 func (s *Server) ReorderChores(ctx context.Context, req *connect.Request[apiv1.ReorderChoresRequest]) (*connect.Response[apiv1.ReorderChoresResponse], error) {
 	fc, err := s.requireFamilyContext(ctx)
 	if err != nil {
@@ -203,9 +205,9 @@ func (s *Server) ReorderChores(ctx context.Context, req *connect.Request[apiv1.R
 	if _, err := s.requirePermission(ctx, rbac.PermissionChoresManage); err != nil {
 		return nil, err
 	}
-	ids := make([]int, 0, len(req.Msg.ChoreIds))
-	for _, id := range req.Msg.ChoreIds {
-		ids = append(ids, int(id))
+	ids, err := s.validateReorderChoreIDs(ctx, fc.family.ID, req.Msg.ChoreIds)
+	if err != nil {
+		return nil, err
 	}
 	if err := s.store.ReorderChores(ctx, fc.family.ID, ids); err != nil {
 		return nil, mapStoreError(err)
@@ -571,6 +573,27 @@ func (s *Server) toggleChoreCompletion(ctx context.Context, fc *familyContext, c
 		StandardResponse: &apiv1.StandardResponse{Success: true, Message: msg},
 		NewBalance:       int32(balance),
 	}), nil
+}
+
+// validateReorderChoreIDs rejects empty, duplicate and foreign chore ids.
+func (s *Server) validateReorderChoreIDs(ctx context.Context, familyID int, ids []int32) ([]int, error) {
+	if len(ids) == 0 {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("at least one chore required"))
+	}
+	out := make([]int, 0, len(ids))
+	seen := map[int]bool{}
+	for _, id := range ids {
+		if seen[int(id)] {
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("duplicate chore id %d", id))
+		}
+		cw, err := s.store.GetChoreByID(ctx, int(id))
+		if err != nil || cw == nil || cw.Chore.FamilyID != familyID {
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid chore id %d", id))
+		}
+		seen[int(id)] = true
+		out = append(out, int(id))
+	}
+	return out, nil
 }
 
 func (s *Server) validateChoreMemberIDs(ctx context.Context, familyID int, ids []int32) ([]int, error) {

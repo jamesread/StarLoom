@@ -16,6 +16,7 @@ const chartId = computed(() => Number(route.params.id))
 const chart = ref<StarChart | null>(null)
 const chores = ref<Chore[]>([])
 const dragIndex = ref(-1)
+const reordering = ref(false)
 const error = ref('')
 const saving = ref(false)
 const loading = ref(true)
@@ -74,20 +75,29 @@ async function save() {
   }
 }
 
+// Moves one chore, one write at a time.
 async function move(from: number, to: number) {
+  if (reordering.value) return
+  if (from < 0 || from >= chores.value.length) return
   if (to < 0 || to >= chores.value.length || from === to) return
-  const next = chores.value.slice()
+  const previous = chores.value
+  const next = previous.slice()
   const [moved] = next.splice(from, 1)
   next.splice(to, 0, moved)
   chores.value = next
   error.value = ''
+  reordering.value = true
   try {
     await starapp.reorderChores({ choreIds: next.map((c) => c.id) })
   } catch (e) {
+    chores.value = previous
     error.value = e instanceof Error ? e.message : String(e)
+  } finally {
+    reordering.value = false
   }
 }
 
+// Drops the dragged row at this index.
 function onDrop(index: number) {
   const from = dragIndex.value
   dragIndex.value = -1
@@ -177,7 +187,7 @@ onMounted(load)
                 type="button"
                 class="inline-icon neutral"
                 :aria-label="`Move ${chore.title} up`"
-                :disabled="index === 0"
+                :disabled="reordering || index === 0"
                 @click="move(index, index - 1)"
               >
                 <HugeiconsIcon
@@ -192,7 +202,7 @@ onMounted(load)
                 type="button"
                 class="inline-icon neutral"
                 :aria-label="`Move ${chore.title} down`"
-                :disabled="index === chores.length - 1"
+                :disabled="reordering || index === chores.length - 1"
                 @click="move(index, index + 1)"
               >
                 <HugeiconsIcon
