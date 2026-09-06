@@ -42,6 +42,8 @@ github.com/jamesread/armature-apprise v1.0.0 h1:HRHZ5WWaAqpit0MKAyl64ACU92gTATBw
 github.com/jamesread/armature-apprise v1.0.0/go.mod h1:jg4Hse95rX2d9PLFQwdG4O5//4xRpnT61d3U/bwIgUs=
 github.com/jamesread/armature-iam v0.0.0-20260901210623-5ecc730ee43d h1:+GhEA0wELMUojm2IA0CTSdw4VNfoYt3xwIgrGpGBVtQ=
 github.com/jamesread/armature-iam v0.0.0-20260901210623-5ecc730ee43d/go.mod h1:51noGiJsZwoylKpIm7WMOLQMWngCe/rWc3ZbNDSVCNQ=
+github.com/jamesread/armature-iam v1.0.1 h1:l9mQu+qgS9iebYLS2XCgSSxBp/9r+spPzPRUdTvRhOs=
+github.com/jamesread/armature-iam v1.0.1/go.mod h1:51noGiJsZwoylKpIm7WMOLQMWngCe/rWc3ZbNDSVCNQ=
 github.com/jamesread/golure v0.0.0-20260902093223-27b18778c9a5 h1:AN7u+AYEs94l0CFrAavOcCsriZAiF+sJCmb0gXfRulk=
 github.com/jamesread/golure v0.0.0-20260902093223-27b18778c9a5/go.mod h1:BZ/CMtZJJ4LNEBDSjGfafTJMjlDPIA9FS16+reN9NUE=
 github.com/jamesread/httpauthshim v0.2.0 h1:0vWutwipdNBCROQyjhsONdlb6qxcbnyajNc4fl8r/Fc=
