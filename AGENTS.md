@@ -106,6 +106,12 @@ Regenerate OpenAPI after proto changes:
 make -C protocol
 ```
 
+## Branching and pull requests
+
+Open all pull requests against the **`next`** branch, not `main`. The `next` branch is **commits queued for the next release**. Admins occasionally merge `next` into `main` to cut a new release; `main` reflects what is currently released (or release-ready).
+
+When creating or retargeting PRs, use `next` as the base branch.
+
 ## Commit authorship
 
 StarApp requires every commit to be attributable to a **human**. When you help with changes:

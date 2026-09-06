@@ -44,6 +44,10 @@ Co-authored-by: Cursor Agent <cursoragent@cursor.com>
 
 Do not commit with an agent or bot as the sole author. Review and project policy expect human attribution on the `Author` line; co-authors record assistant involvement without replacing human ownership.
 
+## Target the `next` branch
+
+Open pull requests against **`next`**, not `main`. The `next` branch is **commits queued for the next release**. Admins occasionally merge `next` into `main` when cutting a new release; `main` tracks what is currently released (or release-ready).
+
 ## Mechanics of submitting a pull request
 
 When you are ready for a PR, please see the [pull request template](.github/PULL_REQUEST_TEMPLATE.md).
