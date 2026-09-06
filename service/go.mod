@@ -9,7 +9,7 @@ require (
 	github.com/expr-lang/expr v1.17.8
 	github.com/google/uuid v1.6.0
 	github.com/jamesread/armature-apprise v1.0.0
-	github.com/jamesread/armature-iam v0.0.0-20260901210623-5ecc730ee43d
+	github.com/jamesread/armature-iam v1.0.1
 	github.com/jamesread/golure v0.0.0-20260902093223-27b18778c9a5
 	github.com/knadh/koanf/parsers/yaml v1.1.1
 	github.com/knadh/koanf/providers/file v1.2.1
