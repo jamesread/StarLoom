@@ -106,6 +106,26 @@ Regenerate OpenAPI after proto changes:
 make -C protocol
 ```
 
+## Commit authorship
+
+StarApp requires every commit to be attributable to a **human**. When you help with changes:
+
+1. **Do not commit** unless the user explicitly asks you to.
+2. **Never set yourself as the commit author.** The `Author` field must be the human who requested and owns the change (their configured `user.name` and `user.email`).
+3. **Add a `Co-authored-by` trailer** when an agent assisted with the commit, so assistant involvement is still recorded.
+
+Include the co-author trailer in the commit message body (after a blank line following the subject):
+
+```
+fix: correct star balance on redemption
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+```
+
+Use the actual agent or product name (e.g. `Cursor Agent`, `GitHub Copilot`, `Claude`) and a stable noreply or vendor-provided address when one exists. If the human runs `git commit` themselves, remind them to add the trailer or provide a complete message they can paste.
+
+Do not change `git config` to impersonate the user or the agent.
+
 ## Frontend forms
 
 Wrap every data-entry form in PicoCrank **`FormLayout`** with **`FormField`** children. Put primary and secondary actions in the `#actions` slot; use `@submit.prevent` on `FormLayout` and `type="submit"` on the primary button.
