@@ -128,6 +128,9 @@ const (
 	// StarAppServiceDeleteApiKeyProcedure is the fully-qualified name of the StarAppService's
 	// DeleteApiKey RPC.
 	StarAppServiceDeleteApiKeyProcedure = "/starapp.api.v1.StarAppService/DeleteApiKey"
+	// StarAppServiceRegenerateApiKeyProcedure is the fully-qualified name of the StarAppService's
+	// RegenerateApiKey RPC.
+	StarAppServiceRegenerateApiKeyProcedure = "/starapp.api.v1.StarAppService/RegenerateApiKey"
 	// StarAppServiceListCvarsProcedure is the fully-qualified name of the StarAppService's ListCvars
 	// RPC.
 	StarAppServiceListCvarsProcedure = "/starapp.api.v1.StarAppService/ListCvars"
@@ -330,6 +333,7 @@ type StarAppServiceClient interface {
 	ListApiKeys(context.Context, *connect.Request[v1.ListApiKeysRequest]) (*connect.Response[v1.ListApiKeysResponse], error)
 	CreateApiKey(context.Context, *connect.Request[v1.CreateApiKeyRequest]) (*connect.Response[v1.CreateApiKeyResponse], error)
 	DeleteApiKey(context.Context, *connect.Request[v1.DeleteApiKeyRequest]) (*connect.Response[v1.DeleteApiKeyResponse], error)
+	RegenerateApiKey(context.Context, *connect.Request[v1.RegenerateApiKeyRequest]) (*connect.Response[v1.RegenerateApiKeyResponse], error)
 	ListCvars(context.Context, *connect.Request[v1.ListCvarsRequest]) (*connect.Response[v1.ListCvarsResponse], error)
 	UpdateCvar(context.Context, *connect.Request[v1.UpdateCvarRequest]) (*connect.Response[v1.Cvar], error)
 	ListWebhooks(context.Context, *connect.Request[v1.ListWebhooksRequest]) (*connect.Response[v1.ListWebhooksResponse], error)
@@ -594,6 +598,12 @@ func NewStarAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+StarAppServiceDeleteApiKeyProcedure,
 			connect.WithSchema(starAppServiceMethods.ByName("DeleteApiKey")),
+			connect.WithClientOptions(opts...),
+		),
+		regenerateApiKey: connect.NewClient[v1.RegenerateApiKeyRequest, v1.RegenerateApiKeyResponse](
+			httpClient,
+			baseURL+StarAppServiceRegenerateApiKeyProcedure,
+			connect.WithSchema(starAppServiceMethods.ByName("RegenerateApiKey")),
 			connect.WithClientOptions(opts...),
 		),
 		listCvars: connect.NewClient[v1.ListCvarsRequest, v1.ListCvarsResponse](
@@ -964,6 +974,7 @@ type starAppServiceClient struct {
 	listApiKeys                              *connect.Client[v1.ListApiKeysRequest, v1.ListApiKeysResponse]
 	createApiKey                             *connect.Client[v1.CreateApiKeyRequest, v1.CreateApiKeyResponse]
 	deleteApiKey                             *connect.Client[v1.DeleteApiKeyRequest, v1.DeleteApiKeyResponse]
+	regenerateApiKey                         *connect.Client[v1.RegenerateApiKeyRequest, v1.RegenerateApiKeyResponse]
 	listCvars                                *connect.Client[v1.ListCvarsRequest, v1.ListCvarsResponse]
 	updateCvar                               *connect.Client[v1.UpdateCvarRequest, v1.Cvar]
 	listWebhooks                             *connect.Client[v1.ListWebhooksRequest, v1.ListWebhooksResponse]
@@ -1184,6 +1195,11 @@ func (c *starAppServiceClient) CreateApiKey(ctx context.Context, req *connect.Re
 // DeleteApiKey calls starapp.api.v1.StarAppService.DeleteApiKey.
 func (c *starAppServiceClient) DeleteApiKey(ctx context.Context, req *connect.Request[v1.DeleteApiKeyRequest]) (*connect.Response[v1.DeleteApiKeyResponse], error) {
 	return c.deleteApiKey.CallUnary(ctx, req)
+}
+
+// RegenerateApiKey calls starapp.api.v1.StarAppService.RegenerateApiKey.
+func (c *starAppServiceClient) RegenerateApiKey(ctx context.Context, req *connect.Request[v1.RegenerateApiKeyRequest]) (*connect.Response[v1.RegenerateApiKeyResponse], error) {
+	return c.regenerateApiKey.CallUnary(ctx, req)
 }
 
 // ListCvars calls starapp.api.v1.StarAppService.ListCvars.
@@ -1500,6 +1516,7 @@ type StarAppServiceHandler interface {
 	ListApiKeys(context.Context, *connect.Request[v1.ListApiKeysRequest]) (*connect.Response[v1.ListApiKeysResponse], error)
 	CreateApiKey(context.Context, *connect.Request[v1.CreateApiKeyRequest]) (*connect.Response[v1.CreateApiKeyResponse], error)
 	DeleteApiKey(context.Context, *connect.Request[v1.DeleteApiKeyRequest]) (*connect.Response[v1.DeleteApiKeyResponse], error)
+	RegenerateApiKey(context.Context, *connect.Request[v1.RegenerateApiKeyRequest]) (*connect.Response[v1.RegenerateApiKeyResponse], error)
 	ListCvars(context.Context, *connect.Request[v1.ListCvarsRequest]) (*connect.Response[v1.ListCvarsResponse], error)
 	UpdateCvar(context.Context, *connect.Request[v1.UpdateCvarRequest]) (*connect.Response[v1.Cvar], error)
 	ListWebhooks(context.Context, *connect.Request[v1.ListWebhooksRequest]) (*connect.Response[v1.ListWebhooksResponse], error)
@@ -1760,6 +1777,12 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 		StarAppServiceDeleteApiKeyProcedure,
 		svc.DeleteApiKey,
 		connect.WithSchema(starAppServiceMethods.ByName("DeleteApiKey")),
+		connect.WithHandlerOptions(opts...),
+	)
+	starAppServiceRegenerateApiKeyHandler := connect.NewUnaryHandler(
+		StarAppServiceRegenerateApiKeyProcedure,
+		svc.RegenerateApiKey,
+		connect.WithSchema(starAppServiceMethods.ByName("RegenerateApiKey")),
 		connect.WithHandlerOptions(opts...),
 	)
 	starAppServiceListCvarsHandler := connect.NewUnaryHandler(
@@ -2160,6 +2183,8 @@ func NewStarAppServiceHandler(svc StarAppServiceHandler, opts ...connect.Handler
 			starAppServiceCreateApiKeyHandler.ServeHTTP(w, r)
 		case StarAppServiceDeleteApiKeyProcedure:
 			starAppServiceDeleteApiKeyHandler.ServeHTTP(w, r)
+		case StarAppServiceRegenerateApiKeyProcedure:
+			starAppServiceRegenerateApiKeyHandler.ServeHTTP(w, r)
 		case StarAppServiceListCvarsProcedure:
 			starAppServiceListCvarsHandler.ServeHTTP(w, r)
 		case StarAppServiceUpdateCvarProcedure:
@@ -2409,6 +2434,10 @@ func (UnimplementedStarAppServiceHandler) CreateApiKey(context.Context, *connect
 
 func (UnimplementedStarAppServiceHandler) DeleteApiKey(context.Context, *connect.Request[v1.DeleteApiKeyRequest]) (*connect.Response[v1.DeleteApiKeyResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.DeleteApiKey is not implemented"))
+}
+
+func (UnimplementedStarAppServiceHandler) RegenerateApiKey(context.Context, *connect.Request[v1.RegenerateApiKeyRequest]) (*connect.Response[v1.RegenerateApiKeyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("starapp.api.v1.StarAppService.RegenerateApiKey is not implemented"))
 }
 
 func (UnimplementedStarAppServiceHandler) ListCvars(context.Context, *connect.Request[v1.ListCvarsRequest]) (*connect.Response[v1.ListCvarsResponse], error) {

@@ -38,6 +38,13 @@ async function removeKey(id: number) {
   await load()
 }
 
+async function regenerateKey(id: number) {
+  newSecret.value = ''
+  const res = await starapp.regenerateApiKey({ id })
+  newSecret.value = res.secret || ''
+  await load()
+}
+
 onMounted(async () => {
   try {
     await load()
@@ -67,9 +74,14 @@ onMounted(async () => {
       </template>
     </FormLayout>
     <p v-if="newSecret" class="inline-notification note">Copy this secret now — it will not be shown again: <code>{{ newSecret }}</code></p>
+    <p>
+      To show a chart on a passive display, create a read-only key and append
+      <code>?token=</code> and the secret to the StarLoom URL.
+    </p>
     <ul>
       <li v-for="k in keys" :key="k.id">
         {{ k.name }} ({{ k.readOnly ? 'read-only' : 'read/write' }})
+        <button type="button" class="neutral small" @click="regenerateKey(k.id)">Regenerate</button>
         <button type="button" class="bad small" @click="removeKey(k.id)">Delete</button>
       </li>
     </ul>

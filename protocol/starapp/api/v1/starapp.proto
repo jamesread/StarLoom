@@ -342,6 +342,15 @@ message DeleteApiKeyRequest {
 
 message DeleteApiKeyResponse {}
 
+message RegenerateApiKeyRequest {
+  int32 id = 1;
+}
+
+message RegenerateApiKeyResponse {
+  ApiKey key = 1;
+  string secret = 2;
+}
+
 message Cvar {
   string key = 1;
   string main_type = 2;
@@ -1090,6 +1099,7 @@ service StarAppService {
   rpc ListApiKeys(ListApiKeysRequest) returns (ListApiKeysResponse);
   rpc CreateApiKey(CreateApiKeyRequest) returns (CreateApiKeyResponse);
   rpc DeleteApiKey(DeleteApiKeyRequest) returns (DeleteApiKeyResponse);
+  rpc RegenerateApiKey(RegenerateApiKeyRequest) returns (RegenerateApiKeyResponse);
   rpc ListCvars(ListCvarsRequest) returns (ListCvarsResponse);
   rpc UpdateCvar(UpdateCvarRequest) returns (Cvar);
   rpc ListWebhooks(ListWebhooksRequest) returns (ListWebhooksResponse);

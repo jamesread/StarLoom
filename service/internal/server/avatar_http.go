@@ -28,6 +28,12 @@ func (s *Server) AvatarHandler(layer *auth.Layer) http.Handler {
 		}
 
 		ctx := r.Context()
+		// Image tags cannot send headers.
+		if r.Header.Get("Authorization") == "" {
+			if token := r.URL.Query().Get("token"); token != "" {
+				r.Header.Set("Authorization", "Bearer "+token)
+			}
+		}
 		info, err := layer.Handle(ctx, r)
 		if err != nil || info == nil {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)

@@ -3830,6 +3830,64 @@
         }
       }
     },
+    "/api/starapp.api.v1.StarAppService/RegenerateApiKey": {
+      "post": {
+        "tags": [
+          "starapp.api.v1.StarAppService"
+        ],
+        "summary": "RegenerateApiKey",
+        "operationId": "starapp.api.v1.StarAppService.RegenerateApiKey",
+        "parameters": [
+          {
+            "name": "Connect-Protocol-Version",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/connect-protocol-version"
+            }
+          },
+          {
+            "name": "Connect-Timeout-Ms",
+            "in": "header",
+            "schema": {
+              "$ref": "#/components/schemas/connect-timeout-header"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/starapp.api.v1.RegenerateApiKeyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connect.error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/starapp.api.v1.RegenerateApiKeyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/starapp.api.v1.StarAppService/RejectRedemption": {
       "post": {
         "tags": [
@@ -7604,6 +7662,33 @@
           }
         },
         "title": "Redemption",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.RegenerateApiKeyRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "id",
+            "format": "int32"
+          }
+        },
+        "title": "RegenerateApiKeyRequest",
+        "additionalProperties": false
+      },
+      "starapp.api.v1.RegenerateApiKeyResponse": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "title": "key",
+            "$ref": "#/components/schemas/starapp.api.v1.ApiKey"
+          },
+          "secret": {
+            "type": "string",
+            "title": "secret"
+          }
+        },
+        "title": "RegenerateApiKeyResponse",
         "additionalProperties": false
       },
       "starapp.api.v1.RejectRedemptionRequest": {
