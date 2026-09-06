@@ -17,13 +17,31 @@ on:
       - '.github/workflows/docs.yml'
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pages: write
-
 jobs:
   build:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install MkDocs
+        run: pip install -r docs/requirements.txt
+
+      - name: Build docs
+        run: mkdocs build --strict -f docs/mkdocs.yml
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
