@@ -36,6 +36,9 @@ const personalSummary = ref<ChildHomeSummary | null>(null)
 const rewardNavRef = ref<InstanceType<typeof Navigation> | null>(null)
 const redeemingRewardId = ref<number | null>(null)
 const redeemError = ref('')
+const quantityDialog = ref<HTMLDialogElement | null>(null)
+const quantityReward = ref<Reward | null>(null)
+const redeemQuantity = ref(1)
 const todaysChoreError = ref('')
 const todaysChoreBusyKey = ref('')
 
@@ -312,7 +315,17 @@ async function toggleTodaysChore(chore: TodaysChore) {
   }
 }
 
-async function redeem(rewardId: number) {
+const maxQuantity = computed(() =>
+  Math.max(1, Math.floor((rewardsSummary.value?.balance ?? 0) / (quantityReward.value?.costStars || 1))),
+)
+
+function submitQuantity() {
+  const id = quantityReward.value?.id
+  quantityDialog.value?.close()
+  if (id) void redeem(id, redeemQuantity.value)
+}
+
+async function redeem(rewardId: number, quantity?: number) {
   const reward = rewardsSummary.value?.rewards?.find((entry) => entry.id === rewardId)
   if (
     !reward ||
@@ -323,11 +336,17 @@ async function redeem(rewardId: number) {
   ) {
     return
   }
+  if (reward.multiSpend && quantity === undefined) {
+    quantityReward.value = reward
+    redeemQuantity.value = 1
+    quantityDialog.value?.showModal()
+    return
+  }
   redeemingRewardId.value = rewardId
   redeemError.value = ''
   setupRewardNav()
   try {
-    await starapp.requestRedemption({ rewardId })
+    await starapp.requestRedemption({ rewardId, quantity })
     if (isParentHome.value) {
       await loadParent()
     } else {
@@ -536,6 +555,20 @@ watch(
       :member="childSummary?.member"
     />
   </Section>
+
+  <dialog ref="quantityDialog" class="dialog">
+    <h2>{{ quantityReward?.title }}</h2>
+    <FormLayout @submit.prevent="submitQuantity">
+      <FormField label="How many?" for="redeem-quantity">
+        <input id="redeem-quantity" v-model.number="redeemQuantity" type="number" min="1" :max="maxQuantity" required />
+      </FormField>
+      <p class="subtle">{{ redeemQuantity * (quantityReward?.costStars ?? 0) }} stars</p>
+      <template #actions>
+        <button type="submit" class="good">Redeem</button>
+        <button type="button" class="neutral" @click="quantityDialog?.close()">Cancel</button>
+      </template>
+    </FormLayout>
+  </dialog>
 </template>
 
 <style scoped>

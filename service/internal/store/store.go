@@ -53,8 +53,8 @@ type Store interface {
 
 	ListRewards(ctx context.Context, familyID int, includeInactive bool) ([]RewardRow, error)
 	GetRewardByID(ctx context.Context, id int) (*RewardRow, error)
-	CreateReward(ctx context.Context, familyID int, title, description string, costStars int, approvalRequired bool, availabilityExpression string) (int, error)
-	UpdateReward(ctx context.Context, id int, title, description string, costStars int, active, approvalRequired bool, availabilityExpression string) error
+	CreateReward(ctx context.Context, familyID int, title, description string, costStars int, approvalRequired bool, availabilityExpression string, multiSpend bool) (int, error)
+	UpdateReward(ctx context.Context, id int, title, description string, costStars int, active, approvalRequired bool, availabilityExpression string, multiSpend bool) error
 	DeactivateReward(ctx context.Context, id int) error
 
 	ListRedemptions(ctx context.Context, familyID int, status string) ([]RedemptionRow, error)

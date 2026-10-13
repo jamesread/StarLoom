@@ -526,6 +526,7 @@ export const starapp = {
     costStars: number
     approvalRequired?: boolean
     availabilityExpression?: string
+    multiSpend?: boolean
   }) {
     return connectFetch<{ standardResponse?: StandardResponse; reward?: Reward }>(
       '/starapp.api.v1.StarAppService/CreateReward',
@@ -540,6 +541,7 @@ export const starapp = {
     active: boolean
     approvalRequired: boolean
     availabilityExpression?: string
+    multiSpend?: boolean
   }) {
     return connectFetch<{ standardResponse?: StandardResponse; reward?: Reward }>(
       '/starapp.api.v1.StarAppService/UpdateReward',
@@ -552,7 +554,7 @@ export const starapp = {
       body,
     )
   },
-  requestRedemption(body: { rewardId: number; childMemberId?: number }) {
+  requestRedemption(body: { rewardId: number; childMemberId?: number; quantity?: number }) {
     return connectFetch<{ standardResponse?: StandardResponse; redemption?: Redemption }>(
       '/starapp.api.v1.StarAppService/RequestRedemption',
       body,
@@ -744,6 +746,7 @@ export type Reward = {
   active?: boolean
   approvalRequired?: boolean
   availabilityExpression?: string
+  multiSpend?: boolean
 }
 
 export type Redemption = {

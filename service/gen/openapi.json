@@ -5774,6 +5774,10 @@
           "availabilityExpression": {
             "type": "string",
             "title": "availability_expression"
+          },
+          "multiSpend": {
+            "type": "boolean",
+            "title": "multi_spend"
           }
         },
         "title": "CreateRewardRequest",
@@ -7671,6 +7675,11 @@
             "type": "integer",
             "title": "child_member_id",
             "format": "int32"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "quantity",
+            "format": "int32"
           }
         },
         "title": "RequestRedemptionRequest",
@@ -7796,6 +7805,10 @@
           "availabilityExpression": {
             "type": "string",
             "title": "availability_expression"
+          },
+          "multiSpend": {
+            "type": "boolean",
+            "title": "multi_spend"
           }
         },
         "title": "Reward",
@@ -8434,6 +8447,10 @@
           "availabilityExpression": {
             "type": "string",
             "title": "availability_expression"
+          },
+          "multiSpend": {
+            "type": "boolean",
+            "title": "multi_spend"
           }
         },
         "title": "UpdateRewardRequest",

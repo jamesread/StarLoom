@@ -52,7 +52,7 @@ func (s *Server) CreateReward(ctx context.Context, req *connect.Request[apiv1.Cr
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid availability expression: %w", err))
 	}
 	approval := req.Msg.ApprovalRequired || s.redemptionApprovalDefault(ctx)
-	id, err := s.store.CreateReward(ctx, fc.family.ID, title, req.Msg.Description, int(req.Msg.CostStars), approval, availabilityExpression)
+	id, err := s.store.CreateReward(ctx, fc.family.ID, title, req.Msg.Description, int(req.Msg.CostStars), approval, availabilityExpression, req.Msg.MultiSpend)
 	if err != nil {
 		return nil, mapStoreError(err)
 	}
@@ -86,7 +86,7 @@ func (s *Server) UpdateReward(ctx context.Context, req *connect.Request[apiv1.Up
 	if err := rewards.ValidateAvailabilityExpression(availabilityExpression); err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid availability expression: %w", err))
 	}
-	if err := s.store.UpdateReward(ctx, reward.ID, title, req.Msg.Description, int(req.Msg.CostStars), req.Msg.Active, req.Msg.ApprovalRequired, availabilityExpression); err != nil {
+	if err := s.store.UpdateReward(ctx, reward.ID, title, req.Msg.Description, int(req.Msg.CostStars), req.Msg.Active, req.Msg.ApprovalRequired, availabilityExpression, req.Msg.MultiSpend); err != nil {
 		return nil, mapStoreError(err)
 	}
 	reward, _ = s.store.GetRewardByID(ctx, reward.ID)
