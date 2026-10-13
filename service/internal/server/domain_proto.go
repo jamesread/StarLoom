@@ -176,6 +176,7 @@ func toProtoReward(r *store.RewardRow) *apiv1.Reward {
 		Active:                 r.Active,
 		ApprovalRequired:       r.ApprovalRequired,
 		AvailabilityExpression: r.AvailabilityExpression,
+		MultiSpend:             r.MultiSpend,
 	}
 }
 

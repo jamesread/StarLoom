@@ -144,7 +144,7 @@ FamilyMember
   display_name, role (parent | child), avatar_path (nullable), created_at
 
 Reward
-  id, family_id, title, description, cost_stars, active, approval_required
+  id, family_id, title, description, cost_stars, active, approval_required, multi_spend
 
 StarLedgerEntry
   id, family_id, child_member_id, amount (+/-), entry_type (award | revoke | redeem),
@@ -313,7 +313,7 @@ Child accounts must not receive IAM, Settings, or Control Panel permissions (`us
 
 ### WF3 — Redeem reward
 
-1. Child (or parent on behalf of child) selects an active reward.
+1. Child (or parent on behalf of child) selects an active reward. A `multi_spend` reward also takes a `quantity`; the cost is `cost_stars × quantity`.
 2. If `approval_required`: create pending redemption; surface on parent home.
 3. Else: debit stars, mark redemption approved, show confirmation.
 4. Parent may mark a redemption as **fulfilled** (`fulfilled_at`; optional UX; does not affect balance).
@@ -416,7 +416,7 @@ Detailed protobuf definitions belong in `protocol/starapp/api/v1/` as implementa
 
 | RPC | Purpose |
 |-----|---------|
-| `RequestRedemption` | Child or parent requests reward |
+| `RequestRedemption` | Child or parent requests reward, with optional `quantity` |
 | `ApproveRedemption` | Parent approves pending request |
 | `RejectRedemption` | Parent rejects pending request |
 | `ListRedemptions` | Filter by status / member |
