@@ -11,18 +11,18 @@
     "lint": "echo \"Lint placeholder\" && exit 0"
   },
   "dependencies": {
-    "@hugeicons/core-free-icons": "^4.3.0",
-    "picocrank": "^1.28.0",
-    "vue": "^3.5.42",
-    "vue-router": "^5.3.1"
+    "@hugeicons/core-free-icons": "^4.4.0",
+    "picocrank": "^1.40.0",
+    "vue": "^3.5.44",
+    "vue-router": "^5.4.0"
   },
   "devDependencies": {
-    "@types/node": "^26.4.1",
+    "@types/node": "^26.6.6",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
-    "@vitejs/plugin-vue": "^6.0.8",
+    "@vitejs/plugin-vue": "^6.0.10",
     "@vue/tsconfig": "^0.9.1",
     "typescript": "~7.0.2",
-    "vite": "^8.2.2",
-    "vue-tsc": "^3.3.11"
+    "vite": "^8.3.5",
+    "vue-tsc": "^3.3.14"
   }
 }
