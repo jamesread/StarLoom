@@ -27,6 +27,7 @@ const createDialog = ref<HTMLDialogElement | null>(null)
 const createTitleInput = ref<HTMLInputElement | null>(null)
 const giveReward = ref<Reward | null>(null)
 const giveChildId = ref(0)
+const giveQuantity = ref(1)
 const memberBalances = ref<Record<number, number>>({})
 const giveBalancesLoading = ref(false)
 const giveError = ref('')
@@ -40,6 +41,7 @@ const createForm = reactive({
   description: '',
   costStars: 5,
   approvalRequired: true,
+  multiSpend: false,
   active: true,
   availabilityExpression: '',
 })
@@ -164,6 +166,7 @@ function resetCreateForm() {
   createForm.description = ''
   createForm.costStars = 5
   createForm.approvalRequired = true
+  createForm.multiSpend = false
   createForm.active = true
   createForm.availabilityExpression = ''
   createError.value = ''
@@ -194,6 +197,7 @@ async function submitCreateReward() {
       costStars: createForm.costStars,
       approvalRequired: createForm.approvalRequired,
       availabilityExpression: createForm.availabilityExpression.trim(),
+      multiSpend: createForm.multiSpend,
     })
     const created = res.reward
     if (created?.id && !createForm.active) {
@@ -205,6 +209,7 @@ async function submitCreateReward() {
         active: false,
         approvalRequired: createForm.approvalRequired,
         availabilityExpression: createForm.availabilityExpression.trim(),
+        multiSpend: createForm.multiSpend,
       })
     }
     closeCreateDialog()
@@ -239,6 +244,7 @@ function openGiveDialog(rewardId: number) {
   if (!reward) return
   giveReward.value = reward
   giveChildId.value = personOptions.value[0]?.value || 0
+  giveQuantity.value = 1
   giveError.value = ''
   giveMessage.value = ''
   const memberIds = members.value
@@ -277,6 +283,7 @@ async function giveRewardToChild() {
     const res = await starapp.requestRedemption({
       rewardId: giveReward.value.id,
       childMemberId: giveChildId.value,
+      quantity: giveReward.value.multiSpend ? giveQuantity.value : undefined,
     })
     giveMessage.value = res.standardResponse?.message || 'Reward given'
     await load()
@@ -352,6 +359,18 @@ onMounted(load)
           :options="booleanOptions"
         />
       </FormField>
+      <FormField
+        label="Redeem in multiples"
+        description="Yes asks for a quantity on each redemption. The cost applies per unit."
+        component-has-label
+      >
+        <RadioGroup
+          v-model="createForm.multiSpend"
+          name="reward-create-multi-spend"
+          variant="boolean"
+          :options="booleanOptions"
+        />
+      </FormField>
       <FormField label="Status" component-has-label>
         <RadioGroup
           v-model="createForm.active"
@@ -386,7 +405,7 @@ onMounted(load)
   <dialog ref="awardDialog" class="dialog" @close="resetGiveForm">
     <h2>Give Reward</h2>
     <p v-if="giveReward">
-      Give <strong>{{ giveReward.title }}</strong> ({{ giveReward.costStars }} stars) to a family member.
+      Give <strong>{{ giveReward.title }}</strong> ({{ giveReward.costStars }} stars{{ giveReward.multiSpend ? ' each' : '' }}) to a family member.
     </p>
     <FormLayout v-if="personOptions.length" @submit.prevent="giveRewardToChild">
       <FormField label="Person" component-has-label>
@@ -396,6 +415,9 @@ onMounted(load)
           :options="personOptions"
           name="give-reward-person"
         />
+      </FormField>
+      <FormField v-if="giveReward?.multiSpend" label="Quantity" for="give-reward-quantity">
+        <input id="give-reward-quantity" v-model.number="giveQuantity" type="number" min="1" required />
       </FormField>
       <p v-if="giveBalancesLoading" class="person-balance muted">Loading star balances…</p>
       <p v-else-if="selectedGivePerson && selectedGiveBalance !== null" class="person-balance">

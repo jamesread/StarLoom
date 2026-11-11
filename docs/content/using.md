@@ -36,13 +36,17 @@ day of this week.
 
 Completing a chore writes an award to that child’s ledger.
 
-## Awarding stars by hand
+## Awarding and deducting stars by hand
 
 From a person’s page, enter an amount and an optional note (“Helped with
 dinner”). The default amount comes from
 [Settings](configuration.md) (`Default award stars`).
 
-Revoke is for mistakes. It cannot take the balance below zero.
+A negative amount deducts stars, for example -5 with the note “Lying about
+homework”.
+
+Revoke is for mistakes. Revokes and deductions both stop at a zero
+balance.
 
 ## Redeeming rewards
 
@@ -65,6 +69,10 @@ rewards stay in history but no longer appear in the shop.
 
 Optional **availability expression** limits when a reward can be redeemed
 (for example not on Mondays). Leave it blank for always available.
+
+Set **Redeem in multiples** to Yes for a reward priced per unit, such as
+pocket money at 1 star per 10c. Each redemption asks how many, and the cost
+is the reward cost times that quantity.
 
 ## People and avatars
 

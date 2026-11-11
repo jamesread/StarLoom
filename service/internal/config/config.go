@@ -12,7 +12,7 @@ import (
 )
 
 // RequiredMigration is the sql-migrate id this binary expects to be applied.
-const RequiredMigration = "15.chore-sort-order.sql"
+const RequiredMigration = "16.reward-multi-spend.sql"
 
 // Config holds StarApp service configuration.
 type Config struct {

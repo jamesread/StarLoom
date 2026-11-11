@@ -5571,6 +5571,7 @@ type Reward struct {
 	Active                 bool                   `protobuf:"varint,6,opt,name=active,proto3" json:"active,omitempty"`
 	ApprovalRequired       bool                   `protobuf:"varint,7,opt,name=approval_required,json=approvalRequired,proto3" json:"approval_required,omitempty"`
 	AvailabilityExpression string                 `protobuf:"bytes,8,opt,name=availability_expression,json=availabilityExpression,proto3" json:"availability_expression,omitempty"`
+	MultiSpend             bool                   `protobuf:"varint,9,opt,name=multi_spend,json=multiSpend,proto3" json:"multi_spend,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -5659,6 +5660,13 @@ func (x *Reward) GetAvailabilityExpression() string {
 		return x.AvailabilityExpression
 	}
 	return ""
+}
+
+func (x *Reward) GetMultiSpend() bool {
+	if x != nil {
+		return x.MultiSpend
+	}
+	return false
 }
 
 type Redemption struct {
@@ -7485,6 +7493,7 @@ type CreateRewardRequest struct {
 	CostStars              int32                  `protobuf:"varint,3,opt,name=cost_stars,json=costStars,proto3" json:"cost_stars,omitempty"`
 	ApprovalRequired       bool                   `protobuf:"varint,4,opt,name=approval_required,json=approvalRequired,proto3" json:"approval_required,omitempty"`
 	AvailabilityExpression string                 `protobuf:"bytes,5,opt,name=availability_expression,json=availabilityExpression,proto3" json:"availability_expression,omitempty"`
+	MultiSpend             bool                   `protobuf:"varint,6,opt,name=multi_spend,json=multiSpend,proto3" json:"multi_spend,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -7554,6 +7563,13 @@ func (x *CreateRewardRequest) GetAvailabilityExpression() string {
 	return ""
 }
 
+func (x *CreateRewardRequest) GetMultiSpend() bool {
+	if x != nil {
+		return x.MultiSpend
+	}
+	return false
+}
+
 type CreateRewardResponse struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	StandardResponse *StandardResponse      `protobuf:"bytes,1,opt,name=standard_response,json=standardResponse,proto3" json:"standard_response,omitempty"`
@@ -7615,6 +7631,7 @@ type UpdateRewardRequest struct {
 	Active                 bool                   `protobuf:"varint,5,opt,name=active,proto3" json:"active,omitempty"`
 	ApprovalRequired       bool                   `protobuf:"varint,6,opt,name=approval_required,json=approvalRequired,proto3" json:"approval_required,omitempty"`
 	AvailabilityExpression string                 `protobuf:"bytes,7,opt,name=availability_expression,json=availabilityExpression,proto3" json:"availability_expression,omitempty"`
+	MultiSpend             bool                   `protobuf:"varint,8,opt,name=multi_spend,json=multiSpend,proto3" json:"multi_spend,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -7696,6 +7713,13 @@ func (x *UpdateRewardRequest) GetAvailabilityExpression() string {
 		return x.AvailabilityExpression
 	}
 	return ""
+}
+
+func (x *UpdateRewardRequest) GetMultiSpend() bool {
+	if x != nil {
+		return x.MultiSpend
+	}
+	return false
 }
 
 type UpdateRewardResponse struct {
@@ -7842,6 +7866,7 @@ type RequestRedemptionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RewardId      int32                  `protobuf:"varint,1,opt,name=reward_id,json=rewardId,proto3" json:"reward_id,omitempty"`
 	ChildMemberId int32                  `protobuf:"varint,2,opt,name=child_member_id,json=childMemberId,proto3" json:"child_member_id,omitempty"`
+	Quantity      int32                  `protobuf:"varint,3,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -7886,6 +7911,13 @@ func (x *RequestRedemptionRequest) GetRewardId() int32 {
 func (x *RequestRedemptionRequest) GetChildMemberId() int32 {
 	if x != nil {
 		return x.ChildMemberId
+	}
+	return 0
+}
+
+func (x *RequestRedemptionRequest) GetQuantity() int32 {
+	if x != nil {
+		return x.Quantity
 	}
 	return 0
 }
@@ -11410,7 +11442,7 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"\x11related_reward_id\x18\a \x01(\x05R\x0frelatedRewardId\x12/\n" +
 	"\x14created_by_member_id\x18\b \x01(\x05R\x11createdByMemberId\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\t \x01(\tR\tcreatedAt\"\x8a\x02\n" +
+	"created_at\x18\t \x01(\tR\tcreatedAt\"\xab\x02\n" +
 	"\x06Reward\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x1b\n" +
 	"\tfamily_id\x18\x02 \x01(\x05R\bfamilyId\x12\x14\n" +
@@ -11420,7 +11452,9 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"cost_stars\x18\x05 \x01(\x05R\tcostStars\x12\x16\n" +
 	"\x06active\x18\x06 \x01(\bR\x06active\x12+\n" +
 	"\x11approval_required\x18\a \x01(\bR\x10approvalRequired\x127\n" +
-	"\x17availability_expression\x18\b \x01(\tR\x16availabilityExpression\"\x9e\x03\n" +
+	"\x17availability_expression\x18\b \x01(\tR\x16availabilityExpression\x12\x1f\n" +
+	"\vmulti_spend\x18\t \x01(\bR\n" +
+	"multiSpend\"\x9e\x03\n" +
 	"\n" +
 	"Redemption\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x1b\n" +
@@ -11538,17 +11572,19 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"\x12ListRewardsRequest\x12)\n" +
 	"\x10include_inactive\x18\x01 \x01(\bR\x0fincludeInactive\"G\n" +
 	"\x13ListRewardsResponse\x120\n" +
-	"\arewards\x18\x01 \x03(\v2\x16.starapp.api.v1.RewardR\arewards\"\xd2\x01\n" +
+	"\arewards\x18\x01 \x03(\v2\x16.starapp.api.v1.RewardR\arewards\"\xf3\x01\n" +
 	"\x13CreateRewardRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1d\n" +
 	"\n" +
 	"cost_stars\x18\x03 \x01(\x05R\tcostStars\x12+\n" +
 	"\x11approval_required\x18\x04 \x01(\bR\x10approvalRequired\x127\n" +
-	"\x17availability_expression\x18\x05 \x01(\tR\x16availabilityExpression\"\x95\x01\n" +
+	"\x17availability_expression\x18\x05 \x01(\tR\x16availabilityExpression\x12\x1f\n" +
+	"\vmulti_spend\x18\x06 \x01(\bR\n" +
+	"multiSpend\"\x95\x01\n" +
 	"\x14CreateRewardResponse\x12M\n" +
 	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x12.\n" +
-	"\x06reward\x18\x02 \x01(\v2\x16.starapp.api.v1.RewardR\x06reward\"\xfa\x01\n" +
+	"\x06reward\x18\x02 \x01(\v2\x16.starapp.api.v1.RewardR\x06reward\"\x9b\x02\n" +
 	"\x13UpdateRewardRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12 \n" +
@@ -11557,17 +11593,20 @@ const file_starapp_api_v1_starapp_proto_rawDesc = "" +
 	"cost_stars\x18\x04 \x01(\x05R\tcostStars\x12\x16\n" +
 	"\x06active\x18\x05 \x01(\bR\x06active\x12+\n" +
 	"\x11approval_required\x18\x06 \x01(\bR\x10approvalRequired\x127\n" +
-	"\x17availability_expression\x18\a \x01(\tR\x16availabilityExpression\"\x95\x01\n" +
+	"\x17availability_expression\x18\a \x01(\tR\x16availabilityExpression\x12\x1f\n" +
+	"\vmulti_spend\x18\b \x01(\bR\n" +
+	"multiSpend\"\x95\x01\n" +
 	"\x14UpdateRewardResponse\x12M\n" +
 	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x12.\n" +
 	"\x06reward\x18\x02 \x01(\v2\x16.starapp.api.v1.RewardR\x06reward\"%\n" +
 	"\x13DeleteRewardRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\"e\n" +
 	"\x14DeleteRewardResponse\x12M\n" +
-	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\"_\n" +
+	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\"{\n" +
 	"\x18RequestRedemptionRequest\x12\x1b\n" +
 	"\treward_id\x18\x01 \x01(\x05R\brewardId\x12&\n" +
-	"\x0fchild_member_id\x18\x02 \x01(\x05R\rchildMemberId\"\xa6\x01\n" +
+	"\x0fchild_member_id\x18\x02 \x01(\x05R\rchildMemberId\x12\x1a\n" +
+	"\bquantity\x18\x03 \x01(\x05R\bquantity\"\xa6\x01\n" +
 	"\x19RequestRedemptionResponse\x12M\n" +
 	"\x11standard_response\x18\x01 \x01(\v2 .starapp.api.v1.StandardResponseR\x10standardResponse\x12:\n" +
 	"\n" +

@@ -23,6 +23,8 @@ service/starapp
 service/tmp/
 *.db
 *.db-journal
+*.db-shm
+*.db-wal
 
 # Config / local data
 config.yaml
