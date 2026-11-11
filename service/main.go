@@ -14,6 +14,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/jamesread/starapp/service/internal/auth"
+	"github.com/jamesread/starapp/service/internal/buildinfo"
 	"github.com/jamesread/starapp/service/internal/config"
 	mcppkg "github.com/jamesread/starapp/service/internal/mcp"
 	"github.com/jamesread/starapp/service/internal/migrate"
@@ -41,6 +42,8 @@ func main() {
 }
 
 func run(log *logrus.Logger, configDir string) error {
+	log.WithField("version", buildinfo.Version).Info("starting starapp")
+
 	cfg, err := config.Load(configDir)
 	if err != nil {
 		return fmt.Errorf("config: %w", err)

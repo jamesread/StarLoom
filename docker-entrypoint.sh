@@ -20,6 +20,12 @@ case "$DRIVER" in
     ;;
 esac
 
-cd "/var/app/database/${DRIVER}" && sql-migrate up
 CONFIG_DIR="${STARAPP_CONFIG_DIR:-/config}"
+DEFAULT_CONFIG="/usr/share/starapp/config.yaml.default"
+mkdir -p "$CONFIG_DIR"
+if [ ! -f "$CONFIG_DIR/config.yaml" ] && [ -f "$DEFAULT_CONFIG" ]; then
+  cp "$DEFAULT_CONFIG" "$CONFIG_DIR/config.yaml"
+fi
+
+cd "/var/app/database/${DRIVER}" && sql-migrate up
 exec /usr/bin/starapp -configdir "$CONFIG_DIR" "$@"
