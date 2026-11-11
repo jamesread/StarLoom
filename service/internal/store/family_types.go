@@ -52,6 +52,7 @@ type RewardRow struct {
 	Active                 bool
 	ApprovalRequired       bool
 	AvailabilityExpression string
+	MultiSpend             bool
 }
 
 type RedemptionRow struct {

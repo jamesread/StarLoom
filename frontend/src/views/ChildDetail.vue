@@ -169,14 +169,18 @@ async function load() {
 }
 
 async function award() {
+  if (!awardForm.amount) {
+    awardError.value = 'Enter a non-zero amount'
+    return
+  }
   awarding.value = true
   awardError.value = ''
   try {
-    const res = await starapp.awardStars({
-      childMemberId: memberId.value,
-      amount: awardForm.amount,
-      note: awardForm.note,
-    })
+    const body = { childMemberId: memberId.value, note: awardForm.note }
+    const res =
+      awardForm.amount < 0
+        ? await starapp.revokeStars({ ...body, amount: -awardForm.amount })
+        : await starapp.awardStars({ ...body, amount: awardForm.amount })
     balance.value = res.newBalance ?? balance.value
     awardForm.note = ''
     await load()
@@ -384,7 +388,7 @@ onMounted(load)
 
   <Section
     v-if="member && canAwardBonus"
-    subtitle="Give extra stars outside of chores."
+    subtitle="Give or deduct stars outside of chores. Enter a negative amount to deduct."
     :padding="true"
   >
     <template #title>
@@ -397,13 +401,15 @@ onMounted(load)
     <FormLayout class="award-form" @submit.prevent="award">
       <p v-if="awardError" class="inline-notification error">{{ awardError }}</p>
       <FormField label="Amount" for="award-amount">
-        <input id="award-amount" v-model.number="awardForm.amount" type="number" min="1" max="100" required />
+        <input id="award-amount" v-model.number="awardForm.amount" type="number" min="-100" max="100" required />
       </FormField>
       <FormField label="Note" for="award-note">
         <input id="award-note" v-model="awardForm.note" type="text" placeholder="Optional" />
       </FormField>
       <template #actions>
-        <button type="submit" class="good" :disabled="awarding">{{ awarding ? 'Awarding…' : 'Award' }}</button>
+        <button type="submit" :class="awardForm.amount < 0 ? 'bad' : 'good'" :disabled="awarding">
+          {{ awarding ? 'Saving…' : awardForm.amount < 0 ? 'Deduct' : 'Award' }}
+        </button>
       </template>
     </FormLayout>
   </Section>

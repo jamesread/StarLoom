@@ -18,6 +18,7 @@ const form = reactive({
   description: '',
   costStars: 5,
   approvalRequired: true,
+  multiSpend: false,
   active: true,
   availabilityExpression: '',
 })
@@ -42,6 +43,7 @@ async function createReward() {
       costStars: form.costStars,
       approvalRequired: form.approvalRequired,
       availabilityExpression: form.availabilityExpression.trim(),
+      multiSpend: form.multiSpend,
     })
     const created = res.reward
     if (created?.id && !form.active) {
@@ -53,6 +55,7 @@ async function createReward() {
         active: false,
         approvalRequired: form.approvalRequired,
         availabilityExpression: form.availabilityExpression.trim(),
+        multiSpend: form.multiSpend,
       })
     }
     router.push({ name: 'familyRewards' })
@@ -104,6 +107,18 @@ async function createReward() {
         <RadioGroup
           v-model="form.approvalRequired"
           name="reward-create-approval"
+          variant="boolean"
+          :options="booleanOptions"
+        />
+      </FormField>
+      <FormField
+        label="Redeem in multiples"
+        description="Yes asks for a quantity on each redemption. The cost applies per unit."
+        component-has-label
+      >
+        <RadioGroup
+          v-model="form.multiSpend"
+          name="reward-create-multi-spend"
           variant="boolean"
           :options="booleanOptions"
         />

@@ -41,25 +41,30 @@ func (s *Server) RequestRedemption(ctx context.Context, req *connect.Request[api
 	if reward.ApprovalRequired && child.ID == fc.member.ID && fc.au.HasPermission(rbac.PermissionRedemptionsApprove) {
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("cannot request approval for your own reward"))
 	}
+	qty := max(int(req.Msg.Quantity), 1)
+	if qty > 1 && !reward.MultiSpend {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("quantity must be 1 for this reward"))
+	}
+	cost := reward.CostStars * qty
 	balance, err := s.store.GetMemberBalance(ctx, child.ID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	if balance < reward.CostStars {
-		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("insufficient star balance (has %d, needs %d)", balance, reward.CostStars))
+	if balance < cost {
+		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("insufficient star balance (has %d, needs %d)", balance, cost))
 	}
 	if !s.rewardAvailableNow(ctx, reward, child.ID, balance, time.Now()) {
 		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("reward not available"))
 	}
 	if reward.ApprovalRequired {
-		id, err := s.store.CreateRedemption(ctx, fc.family.ID, child.ID, reward.ID, reward.CostStars, store.RedemptionPending, nil)
+		id, err := s.store.CreateRedemption(ctx, fc.family.ID, child.ID, reward.ID, cost, store.RedemptionPending, nil)
 		if err != nil {
 			return nil, mapStoreError(err)
 		}
 		red, _ := s.store.GetRedemptionByID(ctx, id)
 		s.webhooks.Dispatch(ctx, "redemption.requested", map[string]any{
 			"family_id": fc.family.ID, "child_member_id": child.ID, "reward_id": reward.ID,
-			"stars_spent": reward.CostStars, "redemption_id": id,
+			"stars_spent": cost, "redemption_id": id,
 		})
 		s.notifyRedemptionRequested(ctx, red)
 		return connect.NewResponse(&apiv1.RequestRedemptionResponse{
@@ -72,7 +77,7 @@ func (s *Server) RequestRedemption(ctx context.Context, req *connect.Request[api
 	if fc.au.HasPermission(rbac.PermissionStarsViewFamily) {
 		ledgerCreator = &createdBy
 	}
-	neg := -reward.CostStars
+	neg := -cost
 	rewardID := reward.ID
 	entryID, err := s.store.InsertLedgerEntry(ctx, store.StarLedgerRow{
 		FamilyID: fc.family.ID, ChildMemberID: child.ID, Amount: neg,
@@ -81,7 +86,7 @@ func (s *Server) RequestRedemption(ctx context.Context, req *connect.Request[api
 	if err != nil {
 		return nil, mapStoreError(err)
 	}
-	id, err := s.store.CreateRedemption(ctx, fc.family.ID, child.ID, reward.ID, reward.CostStars, store.RedemptionApproved, &entryID)
+	id, err := s.store.CreateRedemption(ctx, fc.family.ID, child.ID, reward.ID, cost, store.RedemptionApproved, &entryID)
 	if err != nil {
 		return nil, mapStoreError(err)
 	}

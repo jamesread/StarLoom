@@ -297,7 +297,7 @@ func (s *SQLite) InsertLedgerEntry(ctx context.Context, row StarLedgerRow) (int,
 }
 
 func (s *SQLite) ListRewards(ctx context.Context, familyID int, includeInactive bool) ([]RewardRow, error) {
-	q := `SELECT id, family_id, title, description, cost_stars, active, approval_required, availability_expression FROM rewards WHERE family_id = ?`
+	q := `SELECT id, family_id, title, description, cost_stars, active, approval_required, availability_expression, multi_spend FROM rewards WHERE family_id = ?`
 	if !includeInactive {
 		q += ` AND active = 1`
 	}
@@ -311,12 +311,13 @@ func (s *SQLite) ListRewards(ctx context.Context, familyID int, includeInactive 
 	out := []RewardRow{}
 	for rows.Next() {
 		var r RewardRow
-		var active, approval int
-		if err := rows.Scan(&r.ID, &r.FamilyID, &r.Title, &r.Description, &r.CostStars, &active, &approval, &r.AvailabilityExpression); err != nil {
+		var active, approval, multi int
+		if err := rows.Scan(&r.ID, &r.FamilyID, &r.Title, &r.Description, &r.CostStars, &active, &approval, &r.AvailabilityExpression, &multi); err != nil {
 			return nil, err
 		}
 		r.Active = active != 0
 		r.ApprovalRequired = approval != 0
+		r.MultiSpend = multi != 0
 		out = append(out, r)
 	}
 	return out, rows.Err()
@@ -324,10 +325,10 @@ func (s *SQLite) ListRewards(ctx context.Context, familyID int, includeInactive 
 
 func (s *SQLite) GetRewardByID(ctx context.Context, id int) (*RewardRow, error) {
 	var r RewardRow
-	var active, approval int
+	var active, approval, multi int
 	err := s.db.QueryRowContext(ctx,
-		`SELECT id, family_id, title, description, cost_stars, active, approval_required, availability_expression FROM rewards WHERE id = ?`, id,
-	).Scan(&r.ID, &r.FamilyID, &r.Title, &r.Description, &r.CostStars, &active, &approval, &r.AvailabilityExpression)
+		`SELECT id, family_id, title, description, cost_stars, active, approval_required, availability_expression, multi_spend FROM rewards WHERE id = ?`, id,
+	).Scan(&r.ID, &r.FamilyID, &r.Title, &r.Description, &r.CostStars, &active, &approval, &r.AvailabilityExpression, &multi)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -336,18 +337,23 @@ func (s *SQLite) GetRewardByID(ctx context.Context, id int) (*RewardRow, error) 
 	}
 	r.Active = active != 0
 	r.ApprovalRequired = approval != 0
+	r.MultiSpend = multi != 0
 	return &r, nil
 }
 
-func (s *SQLite) CreateReward(ctx context.Context, familyID int, title, description string, costStars int, approvalRequired bool, availabilityExpression string) (int, error) {
+func (s *SQLite) CreateReward(ctx context.Context, familyID int, title, description string, costStars int, approvalRequired bool, availabilityExpression string, multiSpend bool) (int, error) {
 	active := 1
 	approval := 0
 	if approvalRequired {
 		approval = 1
 	}
+	multi := 0
+	if multiSpend {
+		multi = 1
+	}
 	res, err := s.db.ExecContext(ctx,
-		`INSERT INTO rewards (family_id, title, description, cost_stars, active, approval_required, availability_expression) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-		familyID, title, description, costStars, active, approval, availabilityExpression)
+		`INSERT INTO rewards (family_id, title, description, cost_stars, active, approval_required, availability_expression, multi_spend) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+		familyID, title, description, costStars, active, approval, availabilityExpression, multi)
 	if err != nil {
 		return 0, err
 	}
@@ -358,7 +364,7 @@ func (s *SQLite) CreateReward(ctx context.Context, familyID int, title, descript
 	return int(id), nil
 }
 
-func (s *SQLite) UpdateReward(ctx context.Context, id int, title, description string, costStars int, active, approvalRequired bool, availabilityExpression string) error {
+func (s *SQLite) UpdateReward(ctx context.Context, id int, title, description string, costStars int, active, approvalRequired bool, availabilityExpression string, multiSpend bool) error {
 	activeInt := 0
 	if active {
 		activeInt = 1
@@ -367,9 +373,13 @@ func (s *SQLite) UpdateReward(ctx context.Context, id int, title, description st
 	if approvalRequired {
 		approvalInt = 1
 	}
+	multi := 0
+	if multiSpend {
+		multi = 1
+	}
 	_, err := s.db.ExecContext(ctx,
-		`UPDATE rewards SET title = ?, description = ?, cost_stars = ?, active = ?, approval_required = ?, availability_expression = ? WHERE id = ?`,
-		title, description, costStars, activeInt, approvalInt, availabilityExpression, id)
+		`UPDATE rewards SET title = ?, description = ?, cost_stars = ?, active = ?, approval_required = ?, availability_expression = ?, multi_spend = ? WHERE id = ?`,
+		title, description, costStars, activeInt, approvalInt, availabilityExpression, multi, id)
 	return err
 }
 

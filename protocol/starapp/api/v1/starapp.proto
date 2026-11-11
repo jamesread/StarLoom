@@ -529,6 +529,7 @@ message Reward {
   bool active = 6;
   bool approval_required = 7;
   string availability_expression = 8;
+  bool multi_spend = 9;
 }
 
 message Redemption {
@@ -712,6 +713,7 @@ message CreateRewardRequest {
   int32 cost_stars = 3;
   bool approval_required = 4;
   string availability_expression = 5;
+  bool multi_spend = 6;
 }
 
 message CreateRewardResponse {
@@ -727,6 +729,7 @@ message UpdateRewardRequest {
   bool active = 5;
   bool approval_required = 6;
   string availability_expression = 7;
+  bool multi_spend = 8;
 }
 
 message UpdateRewardResponse {
@@ -745,6 +748,7 @@ message DeleteRewardResponse {
 message RequestRedemptionRequest {
   int32 reward_id = 1;
   int32 child_member_id = 2;
+  int32 quantity = 3;
 }
 
 message RequestRedemptionResponse {
