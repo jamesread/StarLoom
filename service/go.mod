@@ -9,7 +9,7 @@ require (
 	github.com/expr-lang/expr v1.17.8
 	github.com/google/uuid v1.6.0
 	github.com/jamesread/armature-apprise v1.0.0
-	github.com/jamesread/armature-iam v1.0.1
+	github.com/jamesread/armature-iam v1.0.2
 	github.com/jamesread/golure v0.0.0-20261109011053-762140af0cc1
 	github.com/knadh/koanf/parsers/yaml v1.1.1
 	github.com/knadh/koanf/providers/file v1.2.1
@@ -37,7 +37,7 @@ require (
 	github.com/goccy/go-yaml v1.19.2 // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/google/jsonschema-go v0.4.3 // indirect
-	github.com/jamesread/httpauthshim v0.2.1 // indirect
+	github.com/jamesread/armature-httpauthshim v0.3.0 // indirect
 	github.com/knadh/koanf/maps v0.1.3 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
