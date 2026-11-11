@@ -23,7 +23,7 @@ COPY --from=sqlmigrate /go/bin/sql-migrate /usr/bin/sql-migrate
 COPY --from=build /starapp /usr/bin/starapp
 COPY database /var/app/database
 COPY frontend/dist /usr/share/starapp/webui
-COPY config/container/config.yaml /config/config.yaml
+COPY config/container/config.yaml /usr/share/starapp/config.yaml.default
 COPY docker-entrypoint.sh /usr/local/bin/starapp-entrypoint.sh
 RUN chmod +x /usr/local/bin/starapp-entrypoint.sh /usr/bin/starapp /usr/bin/sql-migrate
 ENV DB_DRIVER=sqlite

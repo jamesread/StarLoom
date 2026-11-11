@@ -67,7 +67,7 @@ cookie.
 ## Optional single sign-on
 
 You can extend `auth:` in `config.yaml` for JWT, trusted headers, or mTLS
-via [httpauthshim](https://github.com/jamesread/httpauthshim). Strip inbound
+via [armature-httpauthshim](https://github.com/jamesread/armature-httpauthshim). Strip inbound
 identity headers at your reverse proxy unless you trust the source.
 
 Most families only need username and password.
