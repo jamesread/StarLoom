@@ -3,13 +3,14 @@ package store
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 )
 
 func scanFamily(row *sql.Row) (*FamilyRow, error) {
 	var f FamilyRow
 	if err := row.Scan(&f.ID, &f.Name, &f.CreatedAt); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
 		return nil, err
@@ -61,11 +62,16 @@ func scanMember(scanner interface {
 	if err := scanner.Scan(
 		&m.ID, &m.FamilyID, &accountID, &m.DisplayName, &m.Role, &avatarPath, &starColor, &m.CreatedAt, &username,
 	); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
 		return nil, err
 	}
+	applyMemberNullables(&m, accountID, avatarPath, starColor, username)
+	return &m, nil
+}
+
+func applyMemberNullables(m *FamilyMemberRow, accountID sql.NullInt64, avatarPath, starColor, username sql.NullString) {
 	if accountID.Valid {
 		v := int(accountID.Int64)
 		m.UserAccountID = &v
@@ -79,7 +85,6 @@ func scanMember(scanner interface {
 	if username.Valid {
 		m.Username = username.String
 	}
-	return &m, nil
 }
 
 const memberSelect = `SELECT fm.id, fm.family_id, fm.user_account_id, fm.display_name, fm.role,
@@ -100,36 +105,32 @@ func (s *SQLite) ListMembersByFamily(ctx context.Context, familyID int) ([]Famil
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	out := []FamilyMemberRow{}
 	for rows.Next() {
-		var m FamilyMemberRow
-		var accountID sql.NullInt64
-		var avatarPath sql.NullString
-		var starColor sql.NullString
-		var username sql.NullString
-		if err := rows.Scan(
-			&m.ID, &m.FamilyID, &accountID, &m.DisplayName, &m.Role, &avatarPath, &starColor, &m.CreatedAt, &username,
-		); err != nil {
+		m, err := scanMemberRow(rows)
+		if err != nil {
 			return nil, err
 		}
-		if accountID.Valid {
-			v := int(accountID.Int64)
-			m.UserAccountID = &v
-		}
-		if avatarPath.Valid {
-			m.AvatarPath = avatarPath.String
-		}
-		if starColor.Valid {
-			m.StarColor = starColor.String
-		}
-		if username.Valid {
-			m.Username = username.String
-		}
-		out = append(out, m)
+		out = append(out, *m)
 	}
 	return out, rows.Err()
+}
+
+func scanMemberRow(rows *sql.Rows) (*FamilyMemberRow, error) {
+	var m FamilyMemberRow
+	var accountID sql.NullInt64
+	var avatarPath sql.NullString
+	var starColor sql.NullString
+	var username sql.NullString
+	if err := rows.Scan(
+		&m.ID, &m.FamilyID, &accountID, &m.DisplayName, &m.Role, &avatarPath, &starColor, &m.CreatedAt, &username,
+	); err != nil {
+		return nil, err
+	}
+	applyMemberNullables(&m, accountID, avatarPath, starColor, username)
+	return &m, nil
 }
 
 func (s *SQLite) CreateMember(ctx context.Context, familyID int, displayName, role string, accountID *int, starColor string) (int, error) {
@@ -226,7 +227,7 @@ func scanLedger(scanner interface {
 		&e.ID, &e.FamilyID, &e.ChildMemberID, &e.Amount, &e.EntryType, &e.Note,
 		&rewardID, &createdBy, &e.CreatedAt,
 	); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
 		return nil, err
@@ -253,7 +254,7 @@ func (s *SQLite) ListLedger(ctx context.Context, memberID, limit int) ([]StarLed
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	out := []StarLedgerRow{}
 	for rows.Next() {
@@ -306,7 +307,7 @@ func (s *SQLite) ListRewards(ctx context.Context, familyID int, includeInactive 
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	out := []RewardRow{}
 	for rows.Next() {
@@ -329,7 +330,7 @@ func (s *SQLite) GetRewardByID(ctx context.Context, id int) (*RewardRow, error) 
 	err := s.db.QueryRowContext(ctx,
 		`SELECT id, family_id, title, description, cost_stars, active, approval_required, availability_expression, multi_spend FROM rewards WHERE id = ?`, id,
 	).Scan(&r.ID, &r.FamilyID, &r.Title, &r.Description, &r.CostStars, &active, &approval, &r.AvailabilityExpression, &multi)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
 	if err != nil {
@@ -389,6 +390,16 @@ func (s *SQLite) DeactivateReward(ctx context.Context, id int) error {
 }
 
 func (s *SQLite) ListRedemptions(ctx context.Context, familyID int, status string) ([]RedemptionRow, error) {
+	q, args := listRedemptionsQuery(familyID, status)
+	rows, err := s.db.QueryContext(ctx, q, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = rows.Close() }()
+	return scanRedemptionRows(rows)
+}
+
+func listRedemptionsQuery(familyID int, status string) (string, []any) {
 	q := `SELECT r.id, r.family_id, r.child_member_id, r.reward_id, r.stars_spent, r.status,
 		r.ledger_entry_id, r.created_at, COALESCE(r.resolved_at, ''), r.resolved_by_member_id,
 		COALESCE(r.fulfilled_at, ''), rw.title, fm.display_name
@@ -401,36 +412,46 @@ func (s *SQLite) ListRedemptions(ctx context.Context, familyID int, status strin
 		q += ` AND r.status = ?`
 		args = append(args, status)
 	}
-	q += ` ORDER BY r.created_at DESC, r.id DESC`
+	return q + ` ORDER BY r.created_at DESC, r.id DESC`, args
+}
 
-	rows, err := s.db.QueryContext(ctx, q, args...)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
+func scanRedemptionRows(rows *sql.Rows) ([]RedemptionRow, error) {
 	out := []RedemptionRow{}
 	for rows.Next() {
-		var r RedemptionRow
-		var ledgerID sql.NullInt64
-		var resolvedBy sql.NullInt64
-		if err := rows.Scan(
-			&r.ID, &r.FamilyID, &r.ChildMemberID, &r.RewardID, &r.StarsSpent, &r.Status,
-			&ledgerID, &r.CreatedAt, &r.ResolvedAt, &resolvedBy, &r.FulfilledAt, &r.RewardTitle, &r.ChildDisplayName,
-		); err != nil {
+		r, err := scanRedemptionRow(rows)
+		if err != nil {
 			return nil, err
-		}
-		if ledgerID.Valid {
-			v := int(ledgerID.Int64)
-			r.LedgerEntryID = &v
-		}
-		if resolvedBy.Valid {
-			v := int(resolvedBy.Int64)
-			r.ResolvedByMemberID = &v
 		}
 		out = append(out, r)
 	}
 	return out, rows.Err()
+}
+
+func scanRedemptionRow(scanner interface {
+	Scan(dest ...any) error
+}) (RedemptionRow, error) {
+	var r RedemptionRow
+	var ledgerID sql.NullInt64
+	var resolvedBy sql.NullInt64
+	if err := scanner.Scan(
+		&r.ID, &r.FamilyID, &r.ChildMemberID, &r.RewardID, &r.StarsSpent, &r.Status,
+		&ledgerID, &r.CreatedAt, &r.ResolvedAt, &resolvedBy, &r.FulfilledAt, &r.RewardTitle, &r.ChildDisplayName,
+	); err != nil {
+		return RedemptionRow{}, err
+	}
+	applyRedemptionNullables(&r, ledgerID, resolvedBy)
+	return r, nil
+}
+
+func applyRedemptionNullables(r *RedemptionRow, ledgerID, resolvedBy sql.NullInt64) {
+	if ledgerID.Valid {
+		v := int(ledgerID.Int64)
+		r.LedgerEntryID = &v
+	}
+	if resolvedBy.Valid {
+		v := int(resolvedBy.Int64)
+		r.ResolvedByMemberID = &v
+	}
 }
 
 func (s *SQLite) GetRedemptionByID(ctx context.Context, id int) (*RedemptionRow, error) {
@@ -449,7 +470,7 @@ func (s *SQLite) GetRedemptionByID(ctx context.Context, id int) (*RedemptionRow,
 		&r.ID, &r.FamilyID, &r.ChildMemberID, &r.RewardID, &r.StarsSpent, &r.Status,
 		&ledgerID, &r.CreatedAt, &r.ResolvedAt, &resolvedBy, &r.FulfilledAt, &r.RewardTitle, &r.ChildDisplayName,
 	)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
 	if err != nil {

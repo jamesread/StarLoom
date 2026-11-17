@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"time"
 
 	connectcors "connectrpc.com/cors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -43,26 +44,67 @@ func main() {
 
 func run(log *logrus.Logger, configDir string) error {
 	log.WithField("version", buildinfo.Version).Info("starting starapp")
+	cfg, st, err := openRuntime(log, configDir)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = st.Close() }()
+	svc, err := bootstrapRuntime(context.Background(), log, cfg, st)
+	if err != nil {
+		return err
+	}
+	return listenHTTP(log, cfg, buildMux(cfg, st, svc, log))
+}
 
+func openRuntime(log *logrus.Logger, configDir string) (*config.Config, store.Store, error) {
 	cfg, err := config.Load(configDir)
 	if err != nil {
-		return fmt.Errorf("config: %w", err)
+		return nil, nil, fmt.Errorf("config: %w", err)
 	}
-
 	log.WithFields(logrus.Fields{
 		"config_dir": cfg.ConfigDir,
 		"db_driver":  cfg.DBDriver,
 		"db_path":    cfg.DBPath,
 	}).Info("database configuration")
-
 	st, err := openStore(cfg)
 	if err != nil {
-		return fmt.Errorf("database %q: open: %w", cfg.DBPath, err)
+		return nil, nil, fmt.Errorf("database %q: open: %w", cfg.DBPath, err)
 	}
-	defer st.Close()
+	return cfg, st, nil
+}
 
-	ctx := context.Background()
+func bootstrapRuntime(ctx context.Context, log *logrus.Logger, cfg *config.Config, st store.Store) (*server.Server, error) {
+	if err := prepareDatabase(ctx, log, cfg, st); err != nil {
+		return nil, err
+	}
+	if err := server.EnsureDefaultCvars(ctx, st, "StarApp", cfg.ShowFooter); err != nil {
+		return nil, fmt.Errorf("cvars: %w", err)
+	}
+	svc := server.New(cfg, st, &webhook.Dispatcher{Store: st}, log)
+	if err := svc.BootstrapIAM(ctx); err != nil {
+		return nil, fmt.Errorf("iam bootstrap: %w", err)
+	}
+	return svc, nil
+}
 
+func listenHTTP(log *logrus.Logger, cfg *config.Config, mux http.Handler) error {
+	log.WithFields(logrus.Fields{
+		"addr":      cfg.HTTPAddr,
+		"db_path":   cfg.DBPath,
+		"db_driver": cfg.DBDriver,
+	}).Info("starapp listening")
+	httpSrv := &http.Server{
+		Addr:              cfg.HTTPAddr,
+		Handler:           mux,
+		ReadHeaderTimeout: 10 * time.Second,
+	}
+	if err := httpSrv.ListenAndServe(); err != nil {
+		return fmt.Errorf("http: %w", err)
+	}
+	return nil
+}
+
+func prepareDatabase(ctx context.Context, log *logrus.Logger, cfg *config.Config, st store.Store) error {
 	migrationsDir, err := migrate.FindSQLiteMigrationsDir()
 	if err != nil {
 		return fmt.Errorf("database %q: %w", cfg.DBPath, err)
@@ -82,37 +124,29 @@ func run(log *logrus.Logger, configDir string) error {
 			"applied": applied,
 		}).Info("database migrations applied")
 	}
-
 	if err := migrate.AssertRequired(ctx, st, config.RequiredMigration, cfg.DBPath); err != nil {
 		return err
 	}
-	if latest, err := st.LatestMigration(ctx); err != nil {
+	logSchemaReady(ctx, log, cfg, st)
+	return nil
+}
+
+func logSchemaReady(ctx context.Context, log *logrus.Logger, cfg *config.Config, st store.Store) {
+	latest, err := st.LatestMigration(ctx)
+	if err != nil {
 		log.WithField("db_path", cfg.DBPath).WithError(err).Warn("could not read current database migration")
-	} else {
-		log.WithFields(logrus.Fields{
-			"db_path":   cfg.DBPath,
-			"migration": latest,
-		}).Info("database schema ready")
+		return
 	}
+	log.WithFields(logrus.Fields{
+		"db_path":   cfg.DBPath,
+		"migration": latest,
+	}).Info("database schema ready")
+}
 
-	siteTitle := "StarApp"
-	showFooter := true
-	if cfg != nil {
-		showFooter = cfg.ShowFooter
-	}
-	if err := server.EnsureDefaultCvars(ctx, st, siteTitle, showFooter); err != nil {
-		return fmt.Errorf("cvars: %w", err)
-	}
-
-	svc := server.New(cfg, st, &webhook.Dispatcher{Store: st}, log)
-	if err := svc.BootstrapIAM(ctx); err != nil {
-		return fmt.Errorf("iam bootstrap: %w", err)
-	}
-
+func buildMux(cfg *config.Config, st store.Store, svc *server.Server, log *logrus.Logger) *http.ServeMux {
 	authLayer := auth.NewLayer(st, cfg.Auth, log)
 	apiPath, apiHandler := svc.Handler(authLayer)
 	apiHandler = withCORS(apiHandler)
-
 	mcpHandler := authLayer.WrapMCPHandler(mcppkg.NewHandler(svc))
 
 	mux := http.NewServeMux()
@@ -124,23 +158,12 @@ func run(log *logrus.Logger, configDir string) error {
 	mux.Handle("/mcp", mcpHandler)
 	mux.Handle("/mcp/", mcpHandler)
 	mux.Handle("/avatars/", svc.AvatarHandler(authLayer))
-
 	if cfg.WebUIDir != "" {
 		webui := filepath.Clean(cfg.WebUIDir)
 		mux.Handle("/", http.FileServer(http.Dir(webui)))
 		log.WithField("webui", webui).Info("serving web UI")
 	}
-
-	log.WithFields(logrus.Fields{
-		"addr":      cfg.HTTPAddr,
-		"db_path":   cfg.DBPath,
-		"db_driver": cfg.DBDriver,
-	}).Info("starapp listening")
-
-	if err := http.ListenAndServe(cfg.HTTPAddr, mux); err != nil {
-		return fmt.Errorf("http: %w", err)
-	}
-	return nil
+	return mux
 }
 
 func openStore(cfg *config.Config) (store.Store, error) {

@@ -38,14 +38,14 @@ func TestReorderChoresDrivesListAndChartOrder(t *testing.T) {
 
 	ids := map[string]int32{}
 	for _, title := range []string{"Apples", "Bananas", "Cherries"} {
-		chore, err := svc.CreateChore(parentCtx, connect.NewRequest(&apiv1.CreateChoreRequest{
+		chore, createErr := svc.CreateChore(parentCtx, connect.NewRequest(&apiv1.CreateChoreRequest{
 			Title:          title,
 			StarReward:     1,
 			Weekdays:       []int32{1, 2, 3, 4, 5, 6, 7},
 			ChildMemberIds: []int32{int32(childMemberID)},
 			StarChartId:    chartID,
 		}))
-		require.NoError(t, err)
+		require.NoError(t, createErr)
 		ids[title] = chore.Msg.Chore.Id
 	}
 
@@ -94,14 +94,14 @@ func TestReorderChoresRejectsBadIDs(t *testing.T) {
 
 	ids := make([]int32, 0, 2)
 	for _, title := range []string{"Apples", "Bananas"} {
-		chore, err := svc.CreateChore(parentCtx, connect.NewRequest(&apiv1.CreateChoreRequest{
+		chore, createErr := svc.CreateChore(parentCtx, connect.NewRequest(&apiv1.CreateChoreRequest{
 			Title:          title,
 			StarReward:     1,
 			Weekdays:       []int32{1, 2, 3, 4, 5, 6, 7},
 			ChildMemberIds: []int32{int32(childMemberID)},
 			StarChartId:    chartID,
 		}))
-		require.NoError(t, err)
+		require.NoError(t, createErr)
 		ids = append(ids, chore.Msg.Chore.Id)
 	}
 
@@ -118,11 +118,11 @@ func TestReorderChoresRejectsBadIDs(t *testing.T) {
 		"foreign":   {ids[0], int32(foreignChoreID)},
 	} {
 		t.Run(name, func(t *testing.T) {
-			_, err := svc.ReorderChores(parentCtx, connect.NewRequest(&apiv1.ReorderChoresRequest{
+			_, reorderErr := svc.ReorderChores(parentCtx, connect.NewRequest(&apiv1.ReorderChoresRequest{
 				ChoreIds: choreIDs,
 			}))
-			require.Error(t, err)
-			require.Equal(t, connect.CodeInvalidArgument, connect.CodeOf(err))
+			require.Error(t, reorderErr)
+			require.Equal(t, connect.CodeInvalidArgument, connect.CodeOf(reorderErr))
 		})
 	}
 

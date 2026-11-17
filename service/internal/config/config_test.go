@@ -13,7 +13,7 @@ import (
 func TestRequiredMigration(t *testing.T) {
 	latest, err := latestSQLiteMigration()
 	require.NoError(t, err)
-	require.Equal(t, latest, RequiredMigration,
+	require.Equal(t, RequiredMigration, latest,
 		"update RequiredMigration in config.go when adding sqlite migrations")
 }
 

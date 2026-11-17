@@ -14,19 +14,7 @@ func (m *Memory) ListChores(ctx context.Context, familyID int, starChartID int, 
 	st.mu.Lock()
 	defer st.mu.Unlock()
 	m.ensureDefaultStarChartLocked(familyID)
-	var out []ChoreWithAssignments
-	for _, cw := range st.chores {
-		if cw.Chore.FamilyID != familyID {
-			continue
-		}
-		if starChartID > 0 && cw.Chore.StarChartID != starChartID {
-			continue
-		}
-		if !includeInactive && !cw.Chore.Active {
-			continue
-		}
-		out = append(out, cw)
-	}
+	out := filterMemoryChores(st.chores, familyID, starChartID, includeInactive)
 	sort.Slice(out, func(i, j int) bool {
 		if out[i].Chore.SortOrder != out[j].Chore.SortOrder {
 			return out[i].Chore.SortOrder < out[j].Chore.SortOrder
@@ -34,6 +22,33 @@ func (m *Memory) ListChores(ctx context.Context, familyID int, starChartID int, 
 		return out[i].Chore.Title < out[j].Chore.Title
 	})
 	return out, nil
+}
+
+func filterMemoryChores(chores map[int]ChoreWithAssignments, familyID, starChartID int, includeInactive bool) []ChoreWithAssignments {
+	var out []ChoreWithAssignments
+	for _, cw := range chores {
+		if memoryChoreMatches(cw, familyID, starChartID, includeInactive) {
+			out = append(out, cw)
+		}
+	}
+	return out
+}
+
+func memoryChoreMatches(cw ChoreWithAssignments, familyID, starChartID int, includeInactive bool) bool {
+	if cw.Chore.FamilyID != familyID {
+		return false
+	}
+	return chartAndActiveMatch(cw, starChartID, includeInactive)
+}
+
+func chartAndActiveMatch(cw ChoreWithAssignments, starChartID int, includeInactive bool) bool {
+	if starChartID > 0 && cw.Chore.StarChartID != starChartID {
+		return false
+	}
+	if !includeInactive && !cw.Chore.Active {
+		return false
+	}
+	return true
 }
 
 func (m *Memory) GetChoreByID(_ context.Context, id int) (*ChoreWithAssignments, error) {
@@ -58,25 +73,37 @@ func (m *Memory) CreateChore(_ context.Context, familyID, starChartID int, title
 	if weekdayMask == 0 {
 		weekdayMask = 127
 	}
+	return m.insertMemoryChore(st, familyID, starChartID, title, starReward, weekdayMask, childMemberIDs), nil
+}
+
+func (m *Memory) insertMemoryChore(st *memoryChore, familyID, starChartID int, title string, starReward, weekdayMask int, childMemberIDs []int) int {
 	st.nextChoreID++
 	id := st.nextChoreID
+	c := ChoreRow{
+		ID: id, FamilyID: familyID, StarChartID: starChartID, Title: title, StarReward: starReward,
+		WeekdayMask: weekdayMask, Active: true, SortOrder: maxChoreSort(st.chores, familyID) + 1, CreatedAt: familyNow(),
+	}
+	st.chores[id] = ChoreWithAssignments{Chore: c, Assignments: newMemoryAssignments(st, id, childMemberIDs)}
+	return id
+}
+
+func maxChoreSort(chores map[int]ChoreWithAssignments, familyID int) int {
 	maxSort := 0
-	for _, cw := range st.chores {
+	for _, cw := range chores {
 		if cw.Chore.FamilyID == familyID && cw.Chore.SortOrder > maxSort {
 			maxSort = cw.Chore.SortOrder
 		}
 	}
-	c := ChoreRow{
-		ID: id, FamilyID: familyID, StarChartID: starChartID, Title: title, StarReward: starReward,
-		WeekdayMask: weekdayMask, Active: true, SortOrder: maxSort + 1, CreatedAt: familyNow(),
-	}
+	return maxSort
+}
+
+func newMemoryAssignments(st *memoryChore, choreID int, childMemberIDs []int) []ChoreAssignmentRow {
 	var assigns []ChoreAssignmentRow
 	for _, childID := range childMemberIDs {
 		st.nextAssignmentID++
-		assigns = append(assigns, ChoreAssignmentRow{ID: st.nextAssignmentID, ChoreID: id, ChildMemberID: childID})
+		assigns = append(assigns, ChoreAssignmentRow{ID: st.nextAssignmentID, ChoreID: choreID, ChildMemberID: childID})
 	}
-	st.chores[id] = ChoreWithAssignments{Chore: c, Assignments: assigns}
-	return id, nil
+	return assigns
 }
 
 func (m *Memory) UpdateChore(_ context.Context, id int, starChartID int, title string, starReward, weekdayMask int, active bool, childMemberIDs []int) error {
@@ -240,10 +267,15 @@ func (m *Memory) ListCompletionsForWeek(_ context.Context, familyID int, weekSta
 	st := m.choreState()
 	st.mu.Lock()
 	defer st.mu.Unlock()
+	assignChore, assignChild, choreReward := memoryAssignmentMaps(st.chores, familyID)
+	return filterWeekCompletions(st.completions, assignChore, assignChild, choreReward, weekStart, weekEnd), nil
+}
+
+func memoryAssignmentMaps(chores map[int]ChoreWithAssignments, familyID int) (map[int]int, map[int]int, map[int]int) {
 	assignChore := map[int]int{}
 	assignChild := map[int]int{}
 	choreReward := map[int]int{}
-	for id, cw := range st.chores {
+	for id, cw := range chores {
 		if cw.Chore.FamilyID != familyID {
 			continue
 		}
@@ -253,13 +285,14 @@ func (m *Memory) ListCompletionsForWeek(_ context.Context, familyID int, weekSta
 			assignChild[a.ID] = a.ChildMemberID
 		}
 	}
+	return assignChore, assignChild, choreReward
+}
+
+func filterWeekCompletions(completions map[int]ChoreCompletionRow, assignChore, assignChild, choreReward map[int]int, weekStart, weekEnd string) []WeeklyChartCompletion {
 	var out []WeeklyChartCompletion
-	for _, c := range st.completions {
+	for _, c := range completions {
 		choreID, ok := assignChore[c.AssignmentID]
-		if !ok {
-			continue
-		}
-		if c.CompletionDate < weekStart || c.CompletionDate > weekEnd {
+		if !ok || c.CompletionDate < weekStart || c.CompletionDate > weekEnd {
 			continue
 		}
 		out = append(out, WeeklyChartCompletion{
@@ -268,54 +301,60 @@ func (m *Memory) ListCompletionsForWeek(_ context.Context, familyID int, weekSta
 			StarsEarned: choreReward[choreID], LedgerEntryID: c.LedgerEntryID,
 		})
 	}
-	return out, nil
+	return out
 }
 
 func (m *Memory) ListChoreLedgerEntryIDs(_ context.Context, familyID int) ([]int, error) {
 	st := m.choreState()
 	st.mu.Lock()
 	defer st.mu.Unlock()
+	return ledgerIDsForFamilyCompletions(st.chores, st.completions, familyID), nil
+}
+
+func ledgerIDsForFamilyCompletions(chores map[int]ChoreWithAssignments, completions map[int]ChoreCompletionRow, familyID int) []int {
+	assignFamily := familyAssignmentSet(chores, familyID)
+	var out []int
+	for _, c := range completions {
+		if assignFamily[c.AssignmentID] && c.LedgerEntryID != nil {
+			out = append(out, *c.LedgerEntryID)
+		}
+	}
+	return out
+}
+
+func familyAssignmentSet(chores map[int]ChoreWithAssignments, familyID int) map[int]bool {
 	assignFamily := map[int]bool{}
-	for _, cw := range st.chores {
+	for _, cw := range chores {
 		if cw.Chore.FamilyID == familyID {
 			for _, a := range cw.Assignments {
 				assignFamily[a.ID] = true
 			}
 		}
 	}
-	var out []int
-	for _, c := range st.completions {
-		if assignFamily[c.AssignmentID] && c.LedgerEntryID != nil {
-			out = append(out, *c.LedgerEntryID)
-		}
-	}
-	return out, nil
+	return assignFamily
 }
 
 func (m *Memory) ListBonusStarsForWeek(ctx context.Context, familyID int, weekStart, weekEnd string, choreLedgerIDs []int) (map[int]map[string]int, error) {
-	choreSet := map[int]bool{}
-	for _, id := range choreLedgerIDs {
-		choreSet[id] = true
-	}
+	choreSet := intSet(choreLedgerIDs)
 	fam := m.familyState()
 	fam.mu.Lock()
 	defer fam.mu.Unlock()
+	return accumulateBonusStars(fam.ledger, familyID, weekStart, weekEnd, choreSet), nil
+}
+
+func intSet(ids []int) map[int]bool {
+	out := map[int]bool{}
+	for _, id := range ids {
+		out[id] = true
+	}
+	return out
+}
+
+func accumulateBonusStars(ledger map[int]StarLedgerRow, familyID int, weekStart, weekEnd string, choreSet map[int]bool) map[int]map[string]int {
 	out := map[int]map[string]int{}
-	for _, e := range fam.ledger {
-		if e.FamilyID != familyID || e.EntryType != LedgerTypeAward {
-			continue
-		}
-		if strings.HasPrefix(e.Note, "Chore:") {
-			continue
-		}
-		d := e.CreatedAt
-		if len(d) >= 10 {
-			d = d[:10]
-		}
-		if d < weekStart || d > weekEnd {
-			continue
-		}
-		if choreSet[e.ID] {
+	for _, e := range ledger {
+		d, ok := bonusStarDate(e, familyID, weekStart, weekEnd, choreSet)
+		if !ok {
 			continue
 		}
 		if out[e.ChildMemberID] == nil {
@@ -323,19 +362,46 @@ func (m *Memory) ListBonusStarsForWeek(ctx context.Context, familyID int, weekSt
 		}
 		out[e.ChildMemberID][d] += e.Amount
 	}
-	return out, nil
+	return out
+}
+
+func bonusStarDate(e StarLedgerRow, familyID int, weekStart, weekEnd string, choreSet map[int]bool) (string, bool) {
+	if !isBonusAwardCandidate(e, familyID, choreSet) {
+		return "", false
+	}
+	d := ledgerDate(e.CreatedAt)
+	if d < weekStart || d > weekEnd {
+		return "", false
+	}
+	return d, true
+}
+
+func isBonusAwardCandidate(e StarLedgerRow, familyID int, choreSet map[int]bool) bool {
+	if e.FamilyID != familyID || e.EntryType != LedgerTypeAward {
+		return false
+	}
+	if strings.HasPrefix(e.Note, "Chore:") || choreSet[e.ID] {
+		return false
+	}
+	return true
+}
+
+func ledgerDate(createdAt string) string {
+	if len(createdAt) >= 10 {
+		return createdAt[:10]
+	}
+	return createdAt
 }
 
 type memoryChore struct {
-	mu sync.Mutex
-
-	nextChoreID      int
 	chores           map[int]ChoreWithAssignments
+	pauses           map[int]ChorePauseRow
+	completions      map[int]ChoreCompletionRow
+	nextChoreID      int
 	nextAssignmentID int
 	nextPauseID      int
-	pauses           map[int]ChorePauseRow
 	nextCompletionID int
-	completions      map[int]ChoreCompletionRow
+	mu               sync.Mutex
 }
 
 func (m *Memory) choreState() *memoryChore {

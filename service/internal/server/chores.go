@@ -84,11 +84,8 @@ func parseWeekStart(raw string) (string, error) {
 }
 
 func (s *Server) ListChores(ctx context.Context, req *connect.Request[apiv1.ListChoresRequest]) (*connect.Response[apiv1.ListChoresResponse], error) {
-	fc, err := s.requireFamilyContext(ctx)
+	fc, err := s.requireFamilyPermission(ctx, rbac.PermissionChoresViewFamily)
 	if err != nil {
-		return nil, err
-	}
-	if _, err := s.requirePermission(ctx, rbac.PermissionChoresViewFamily); err != nil {
 		return nil, err
 	}
 	rows, err := s.store.ListChores(ctx, fc.family.ID, int(req.Msg.StarChartId), req.Msg.IncludeInactive)
@@ -103,37 +100,27 @@ func (s *Server) ListChores(ctx context.Context, req *connect.Request[apiv1.List
 }
 
 func (s *Server) CreateChore(ctx context.Context, req *connect.Request[apiv1.CreateChoreRequest]) (*connect.Response[apiv1.CreateChoreResponse], error) {
-	fc, err := s.requireFamilyContext(ctx)
+	fc, err := s.requireFamilyWritePermission(ctx, rbac.PermissionChoresManage)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.requireWrite(ctx); err != nil {
-		return nil, err
-	}
-	if _, err := s.requirePermission(ctx, rbac.PermissionChoresManage); err != nil {
-		return nil, err
-	}
-	title := req.Msg.Title
-	if title == "" {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("title required"))
-	}
-	reward := int(req.Msg.StarReward)
-	if reward <= 0 {
-		reward = 1
-	}
-	if reward > cvar.MaxAwardStars {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("star_reward must be 1-%d", cvar.MaxAwardStars))
-	}
-	childIDs, err := s.validateChoreMemberIDs(ctx, fc.family.ID, req.Msg.ChildMemberIds)
+	return s.createChoreForFamily(ctx, fc, req.Msg)
+}
+
+func (s *Server) createChoreForFamily(ctx context.Context, fc *familyContext, msg *apiv1.CreateChoreRequest) (*connect.Response[apiv1.CreateChoreResponse], error) {
+	title, reward, err := normalizeChoreInput(msg.Title, int(msg.StarReward))
 	if err != nil {
 		return nil, err
 	}
-	mask := weekdaysToMask(req.Msg.Weekdays)
-	starChartID, _, err := s.resolveStarChartID(ctx, fc.family.ID, int(req.Msg.StarChartId))
+	childIDs, err := s.validateChoreMemberIDs(ctx, fc.family.ID, msg.ChildMemberIds)
 	if err != nil {
 		return nil, err
 	}
-	id, err := s.store.CreateChore(ctx, fc.family.ID, starChartID, title, reward, mask, childIDs)
+	starChartID, _, err := s.resolveStarChartID(ctx, fc.family.ID, int(msg.StarChartId))
+	if err != nil {
+		return nil, err
+	}
+	id, err := s.store.CreateChore(ctx, fc.family.ID, starChartID, title, reward, weekdaysToMask(msg.Weekdays), childIDs)
 	if err != nil {
 		return nil, mapStoreError(err)
 	}
@@ -144,46 +131,37 @@ func (s *Server) CreateChore(ctx context.Context, req *connect.Request[apiv1.Cre
 	}), nil
 }
 
-func (s *Server) UpdateChore(ctx context.Context, req *connect.Request[apiv1.UpdateChoreRequest]) (*connect.Response[apiv1.UpdateChoreResponse], error) {
-	fc, err := s.requireFamilyContext(ctx)
-	if err != nil {
-		return nil, err
+func normalizeChoreInput(title string, reward int) (string, int, error) {
+	if title == "" {
+		return "", 0, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("title required"))
 	}
-	if _, err := s.requireWrite(ctx); err != nil {
-		return nil, err
-	}
-	if _, err := s.requirePermission(ctx, rbac.PermissionChoresManage); err != nil {
-		return nil, err
-	}
-	cw, err := s.store.GetChoreByID(ctx, int(req.Msg.Id))
-	if err != nil || cw == nil || cw.Chore.FamilyID != fc.family.ID {
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("chore not found"))
-	}
-	reward := int(req.Msg.StarReward)
 	if reward <= 0 {
 		reward = 1
 	}
-	childIDs, err := s.validateChoreMemberIDs(ctx, fc.family.ID, req.Msg.ChildMemberIds)
+	if reward > cvar.MaxAwardStars {
+		return "", 0, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("star_reward must be 1-%d", cvar.MaxAwardStars))
+	}
+	return title, reward, nil
+}
+
+func (s *Server) UpdateChore(ctx context.Context, req *connect.Request[apiv1.UpdateChoreRequest]) (*connect.Response[apiv1.UpdateChoreResponse], error) {
+	fc, err := s.requireFamilyWritePermission(ctx, rbac.PermissionChoresManage)
 	if err != nil {
 		return nil, err
 	}
-	mask := weekdaysToMask(req.Msg.Weekdays)
-	starChartID := cw.Chore.StarChartID
-	if req.Msg.StarChartId > 0 {
-		id, _, err := s.resolveStarChartID(ctx, fc.family.ID, int(req.Msg.StarChartId))
-		if err != nil {
-			return nil, err
-		}
-		starChartID = id
+	return s.updateChoreForFamily(ctx, fc, req.Msg)
+}
+
+func (s *Server) updateChoreForFamily(ctx context.Context, fc *familyContext, msg *apiv1.UpdateChoreRequest) (*connect.Response[apiv1.UpdateChoreResponse], error) {
+	cw, err := s.familyChore(ctx, fc.family.ID, int(msg.Id))
+	if err != nil {
+		return nil, err
 	}
-	if starChartID == 0 {
-		id, _, err := s.resolveStarChartID(ctx, fc.family.ID, 0)
-		if err != nil {
-			return nil, err
-		}
-		starChartID = id
+	params, err := s.updateChoreParams(ctx, fc.family.ID, cw, msg)
+	if err != nil {
+		return nil, err
 	}
-	if err := s.store.UpdateChore(ctx, cw.Chore.ID, starChartID, req.Msg.Title, reward, mask, req.Msg.Active, childIDs); err != nil {
+	if err := s.store.UpdateChore(ctx, cw.Chore.ID, params.starChartID, msg.Title, params.reward, weekdaysToMask(msg.Weekdays), msg.Active, params.childIDs); err != nil {
 		return nil, mapStoreError(err)
 	}
 	updated, _ := s.store.GetChoreByID(ctx, cw.Chore.ID)
@@ -193,16 +171,56 @@ func (s *Server) UpdateChore(ctx context.Context, req *connect.Request[apiv1.Upd
 	}), nil
 }
 
+type choreUpdateParams struct {
+	childIDs    []int
+	reward      int
+	starChartID int
+}
+
+func (s *Server) updateChoreParams(ctx context.Context, familyID int, cw *store.ChoreWithAssignments, msg *apiv1.UpdateChoreRequest) (choreUpdateParams, error) {
+	reward := int(msg.StarReward)
+	if reward <= 0 {
+		reward = 1
+	}
+	childIDs, err := s.validateChoreMemberIDs(ctx, familyID, msg.ChildMemberIds)
+	if err != nil {
+		return choreUpdateParams{}, err
+	}
+	starChartID, err := s.choreStarChartID(ctx, familyID, cw.Chore.StarChartID, int(msg.StarChartId))
+	if err != nil {
+		return choreUpdateParams{}, err
+	}
+	return choreUpdateParams{reward: reward, childIDs: childIDs, starChartID: starChartID}, nil
+}
+
+func (s *Server) familyChore(ctx context.Context, familyID, choreID int) (*store.ChoreWithAssignments, error) {
+	cw, err := s.store.GetChoreByID(ctx, choreID)
+	if err != nil || cw == nil || cw.Chore.FamilyID != familyID {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("chore not found"))
+	}
+	return cw, nil
+}
+
+func (s *Server) choreStarChartID(ctx context.Context, familyID, currentID, requestedID int) (int, error) {
+	starChartID := currentID
+	if requestedID > 0 {
+		id, _, err := s.resolveStarChartID(ctx, familyID, requestedID)
+		if err != nil {
+			return 0, err
+		}
+		starChartID = id
+	}
+	if starChartID != 0 {
+		return starChartID, nil
+	}
+	id, _, err := s.resolveStarChartID(ctx, familyID, 0)
+	return id, err
+}
+
 // ReorderChores stores a parent's chore display order.
 func (s *Server) ReorderChores(ctx context.Context, req *connect.Request[apiv1.ReorderChoresRequest]) (*connect.Response[apiv1.ReorderChoresResponse], error) {
-	fc, err := s.requireFamilyContext(ctx)
+	fc, err := s.requireFamilyWritePermission(ctx, rbac.PermissionChoresManage)
 	if err != nil {
-		return nil, err
-	}
-	if _, err := s.requireWrite(ctx); err != nil {
-		return nil, err
-	}
-	if _, err := s.requirePermission(ctx, rbac.PermissionChoresManage); err != nil {
 		return nil, err
 	}
 	ids, err := s.validateReorderChoreIDs(ctx, fc.family.ID, req.Msg.ChoreIds)
@@ -218,19 +236,13 @@ func (s *Server) ReorderChores(ctx context.Context, req *connect.Request[apiv1.R
 }
 
 func (s *Server) DeleteChore(ctx context.Context, req *connect.Request[apiv1.DeleteChoreRequest]) (*connect.Response[apiv1.DeleteChoreResponse], error) {
-	fc, err := s.requireFamilyContext(ctx)
+	fc, err := s.requireFamilyWritePermission(ctx, rbac.PermissionChoresManage)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.requireWrite(ctx); err != nil {
+	cw, err := s.familyChore(ctx, fc.family.ID, int(req.Msg.Id))
+	if err != nil {
 		return nil, err
-	}
-	if _, err := s.requirePermission(ctx, rbac.PermissionChoresManage); err != nil {
-		return nil, err
-	}
-	cw, err := s.store.GetChoreByID(ctx, int(req.Msg.Id))
-	if err != nil || cw == nil || cw.Chore.FamilyID != fc.family.ID {
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("chore not found"))
 	}
 	if err := s.store.DeactivateChore(ctx, cw.Chore.ID); err != nil {
 		return nil, mapStoreError(err)
@@ -241,11 +253,8 @@ func (s *Server) DeleteChore(ctx context.Context, req *connect.Request[apiv1.Del
 }
 
 func (s *Server) ListChorePauses(ctx context.Context, _ *connect.Request[apiv1.ListChorePausesRequest]) (*connect.Response[apiv1.ListChorePausesResponse], error) {
-	fc, err := s.requireFamilyContext(ctx)
+	fc, err := s.requireFamilyPermission(ctx, rbac.PermissionChoresViewFamily)
 	if err != nil {
-		return nil, err
-	}
-	if _, err := s.requirePermission(ctx, rbac.PermissionChoresViewFamily); err != nil {
 		return nil, err
 	}
 	rows, err := s.store.ListChorePauses(ctx, fc.family.ID)
@@ -260,65 +269,51 @@ func (s *Server) ListChorePauses(ctx context.Context, _ *connect.Request[apiv1.L
 }
 
 func (s *Server) CreateChorePause(ctx context.Context, req *connect.Request[apiv1.CreateChorePauseRequest]) (*connect.Response[apiv1.CreateChorePauseResponse], error) {
-	fc, err := s.requireFamilyContext(ctx)
+	fc, err := s.requireFamilyWritePermission(ctx, rbac.PermissionChoresManage)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.requireWrite(ctx); err != nil {
+	start, end, err := validatePauseDates(req.Msg.StartDate, req.Msg.EndDate)
+	if err != nil {
 		return nil, err
-	}
-	if _, err := s.requirePermission(ctx, rbac.PermissionChoresManage); err != nil {
-		return nil, err
-	}
-	start, end := req.Msg.StartDate, req.Msg.EndDate
-	if start == "" || end == "" {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("start_date and end_date required"))
-	}
-	if start > end {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("start_date must be on or before end_date"))
 	}
 	id, err := s.store.CreateChorePause(ctx, fc.family.ID, start, end, req.Msg.Reason)
 	if err != nil {
 		return nil, mapStoreError(err)
 	}
-	pauses, _ := s.store.ListChorePauses(ctx, fc.family.ID)
-	var pause *store.ChorePauseRow
-	for i := range pauses {
-		if pauses[i].ID == id {
-			pause = &pauses[i]
-			break
-		}
-	}
 	return connect.NewResponse(&apiv1.CreateChorePauseResponse{
 		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Chores paused"},
-		Pause:            toProtoChorePause(pause),
+		Pause:            toProtoChorePause(s.findChorePause(ctx, fc.family.ID, id)),
 	}), nil
 }
 
-func (s *Server) DeleteChorePause(ctx context.Context, req *connect.Request[apiv1.DeleteChorePauseRequest]) (*connect.Response[apiv1.DeleteChorePauseResponse], error) {
-	fc, err := s.requireFamilyContext(ctx)
-	if err != nil {
-		return nil, err
+func validatePauseDates(start, end string) (string, string, error) {
+	if start == "" || end == "" {
+		return "", "", connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("start_date and end_date required"))
 	}
-	if _, err := s.requireWrite(ctx); err != nil {
-		return nil, err
+	if start > end {
+		return "", "", connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("start_date must be on or before end_date"))
 	}
-	if _, err := s.requirePermission(ctx, rbac.PermissionChoresManage); err != nil {
-		return nil, err
-	}
-	pauses, err := s.store.ListChorePauses(ctx, fc.family.ID)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-	found := false
-	for _, p := range pauses {
-		if p.ID == int(req.Msg.Id) {
-			found = true
-			break
+	return start, end, nil
+}
+
+func (s *Server) findChorePause(ctx context.Context, familyID, id int) *store.ChorePauseRow {
+	pauses, _ := s.store.ListChorePauses(ctx, familyID)
+	for i := range pauses {
+		if pauses[i].ID == id {
+			return &pauses[i]
 		}
 	}
-	if !found {
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("pause not found"))
+	return nil
+}
+
+func (s *Server) DeleteChorePause(ctx context.Context, req *connect.Request[apiv1.DeleteChorePauseRequest]) (*connect.Response[apiv1.DeleteChorePauseResponse], error) {
+	fc, err := s.requireFamilyWritePermission(ctx, rbac.PermissionChoresManage)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.requireChorePause(ctx, fc.family.ID, int(req.Msg.Id)); err != nil {
+		return nil, err
 	}
 	if err := s.store.DeleteChorePause(ctx, int(req.Msg.Id)); err != nil {
 		return nil, mapStoreError(err)
@@ -328,117 +323,25 @@ func (s *Server) DeleteChorePause(ctx context.Context, req *connect.Request[apiv
 	}), nil
 }
 
+func (s *Server) requireChorePause(ctx context.Context, familyID, pauseID int) error {
+	pauses, err := s.store.ListChorePauses(ctx, familyID)
+	if err != nil {
+		return connect.NewError(connect.CodeInternal, err)
+	}
+	for _, p := range pauses {
+		if p.ID == pauseID {
+			return nil
+		}
+	}
+	return connect.NewError(connect.CodeNotFound, fmt.Errorf("pause not found"))
+}
+
 func (s *Server) GetWeeklyStarChart(ctx context.Context, req *connect.Request[apiv1.GetWeeklyStarChartRequest]) (*connect.Response[apiv1.GetWeeklyStarChartResponse], error) {
-	fc, err := s.requireFamilyContext(ctx)
+	fc, err := s.requireFamilyPermissionAny(ctx, rbac.PermissionChoresViewFamily, rbac.PermissionStarsViewOwn)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.requirePermission(ctx, rbac.PermissionChoresViewFamily); err != nil {
-		if _, err2 := s.requirePermission(ctx, rbac.PermissionStarsViewOwn); err2 != nil {
-			return nil, err
-		}
-	}
-	weekStart, err := parseWeekStart(req.Msg.WeekStart)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, err)
-	}
-	dates, err := store.WeekDates(weekStart)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, err)
-	}
-	weekEnd := dates[6]
-
-	starChartID, starChart, err := s.resolveStarChartID(ctx, fc.family.ID, int(req.Msg.StarChartId))
-	if err != nil {
-		return nil, err
-	}
-
-	chores, err := s.store.ListChores(ctx, fc.family.ID, starChartID, false)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-	completions, err := s.store.ListCompletionsForWeek(ctx, fc.family.ID, weekStart, weekEnd)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-	completionMap := map[string]store.WeeklyChartCompletion{}
-	for _, c := range completions {
-		key := fmt.Sprintf("%d:%d:%s", c.ChoreID, c.ChildMemberID, c.CompletionDate)
-		completionMap[key] = c
-	}
-
-	members, _ := s.store.ListMembersByFamily(ctx, fc.family.ID)
-	memberByID := map[int]store.FamilyMemberRow{}
-	for _, m := range members {
-		memberByID[m.ID] = m
-	}
-
-	childFilter := s.chartChildFilter(fc)
-	out := &apiv1.GetWeeklyStarChartResponse{
-		WeekStart:     weekStart,
-		WeekEnd:       weekEnd,
-		StarChartId:   int32(starChartID),
-		StarChartName: starChart.Name,
-	}
-
-	for _, cw := range chores {
-		row := &apiv1.WeeklyStarChartRow{
-			ChoreId:    int32(cw.Chore.ID),
-			Title:      cw.Chore.Title,
-			StarReward: int32(cw.Chore.StarReward),
-			Weekdays:   maskToWeekdaysProto(cw.Chore.WeekdayMask),
-		}
-		for _, assign := range cw.Assignments {
-			if childFilter != 0 && assign.ChildMemberID != childFilter {
-				continue
-			}
-			child := memberByID[assign.ChildMemberID]
-			childRow := &apiv1.WeeklyStarChartChild{
-				AssignmentId: int32(assign.ID),
-				Child:        toProtoMember(&child),
-			}
-			for _, date := range dates {
-				paused, _ := s.store.IsDatePaused(ctx, fc.family.ID, date)
-				scheduled := store.IsScheduledOnDate(cw.Chore.WeekdayMask, date) && !paused
-				key := fmt.Sprintf("%d:%d:%s", cw.Chore.ID, assign.ChildMemberID, date)
-				comp := completionMap[key]
-				day := &apiv1.WeeklyStarChartDay{
-					Date: date, Scheduled: scheduled, Paused: paused,
-					Completed: comp.CompletionDate != "", StarsEarned: int32(comp.StarsEarned),
-				}
-				childRow.Days = append(childRow.Days, day)
-			}
-			row.Children = append(row.Children, childRow)
-		}
-		if len(row.Children) > 0 {
-			out.Rows = append(out.Rows, row)
-		}
-	}
-
-	choreLedgerIDs, _ := s.store.ListChoreLedgerEntryIDs(ctx, fc.family.ID)
-	bonusMap, err := s.store.ListBonusStarsForWeek(ctx, fc.family.ID, weekStart, weekEnd, choreLedgerIDs)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-	for _, m := range members {
-		if !isFamilyStarMember(&m, fc.family.ID) {
-			continue
-		}
-		if childFilter != 0 && m.ID != childFilter {
-			continue
-		}
-		childBonus := bonusMap[m.ID]
-		childRow := &apiv1.WeeklyStarChartBonusChild{
-			Child: toProtoMember(&m),
-		}
-		for _, date := range dates {
-			childRow.Days = append(childRow.Days, &apiv1.WeeklyStarChartDay{
-				Date: date, StarsEarned: int32(childBonus[date]),
-			})
-		}
-		out.BonusChildren = append(out.BonusChildren, childRow)
-	}
-	return connect.NewResponse(out), nil
+	return s.buildWeeklyStarChart(ctx, fc, req.Msg)
 }
 
 func (s *Server) chartMemberFilter(fc *familyContext) int {
@@ -460,10 +363,10 @@ func (s *Server) CompleteChore(ctx context.Context, req *connect.Request[apiv1.C
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.requireWrite(ctx); err != nil {
+	if _, err = s.requireWrite(ctx); err != nil {
 		return nil, err
 	}
-	if err := s.authorizeChoreToggle(fc, int(req.Msg.ChildMemberId)); err != nil {
+	if err = s.authorizeChoreToggle(fc, int(req.Msg.ChildMemberId)); err != nil {
 		return nil, err
 	}
 	return s.toggleChoreCompletion(ctx, fc, int(req.Msg.ChoreId), int(req.Msg.ChildMemberId), req.Msg.Date, true)
@@ -474,10 +377,10 @@ func (s *Server) UncompleteChore(ctx context.Context, req *connect.Request[apiv1
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.requireWrite(ctx); err != nil {
+	if _, err = s.requireWrite(ctx); err != nil {
 		return nil, err
 	}
-	if err := s.authorizeChoreToggle(fc, int(req.Msg.ChildMemberId)); err != nil {
+	if err = s.authorizeChoreToggle(fc, int(req.Msg.ChildMemberId)); err != nil {
 		return nil, err
 	}
 	resp, err := s.toggleChoreCompletion(ctx, fc, int(req.Msg.ChoreId), int(req.Msg.ChildMemberId), req.Msg.Date, false)
@@ -494,85 +397,14 @@ func (s *Server) toggleChoreCompletion(ctx context.Context, fc *familyContext, c
 	if date == "" {
 		date = time.Now().Format("2006-01-02")
 	}
-	cw, err := s.store.GetChoreByID(ctx, choreID)
-	if err != nil || cw == nil || cw.Chore.FamilyID != fc.family.ID || !cw.Chore.Active {
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("chore not found"))
-	}
-	member, err := s.store.GetMemberByID(ctx, childMemberID)
-	if err != nil || !isFamilyStarMember(member, fc.family.ID) {
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("member not found"))
-	}
-	assign, err := s.store.GetAssignment(ctx, choreID, childMemberID)
-	if err != nil || assign == nil {
-		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("member not assigned to chore"))
-	}
-	paused, _ := s.store.IsDatePaused(ctx, fc.family.ID, date)
-	if paused {
-		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("chores are paused on this date"))
-	}
-	if !store.IsScheduledOnDate(cw.Chore.WeekdayMask, date) {
-		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("chore not scheduled on this date"))
-	}
-	existing, err := s.store.GetCompletion(ctx, assign.ID, date)
+	cw, assign, err := s.loadToggleChoreContext(ctx, fc, choreID, childMemberID, date)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
+		return nil, err
 	}
 	if complete {
-		if existing != nil {
-			balance, _ := s.store.GetMemberBalance(ctx, childMemberID)
-			return connect.NewResponse(&apiv1.CompleteChoreResponse{
-				StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Already completed"},
-				NewBalance:       int32(balance),
-			}), nil
-		}
-		createdBy := fc.member.ID
-		entryID, err := s.store.InsertLedgerEntry(ctx, store.StarLedgerRow{
-			FamilyID: fc.family.ID, ChildMemberID: childMemberID, Amount: cw.Chore.StarReward,
-			EntryType: store.LedgerTypeAward, Note: fmt.Sprintf("Chore: %s", cw.Chore.Title),
-			CreatedByMemberID: &createdBy,
-		})
-		if err != nil {
-			return nil, mapStoreError(err)
-		}
-		if _, err := s.store.InsertChoreCompletion(ctx, assign.ID, date, entryID); err != nil {
-			return nil, mapStoreError(err)
-		}
-		s.webhooks.Dispatch(ctx, "stars.awarded", map[string]any{
-			"family_id": fc.family.ID, "child_member_id": childMemberID,
-			"amount": cw.Chore.StarReward, "note": fmt.Sprintf("Chore: %s", cw.Chore.Title),
-			"created_by_member_id": createdBy, "chore_id": choreID,
-		})
-		s.notifyChoreCompleted(ctx, fc.family.ID, childMemberID, choreID, cw.Chore.Title, cw.Chore.StarReward, date, createdBy)
-	} else {
-		if existing == nil {
-			balance, _ := s.store.GetMemberBalance(ctx, childMemberID)
-			return connect.NewResponse(&apiv1.CompleteChoreResponse{
-				StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Not completed"},
-				NewBalance:       int32(balance),
-			}), nil
-		}
-		createdBy := fc.member.ID
-		neg := -cw.Chore.StarReward
-		if _, err := s.store.InsertLedgerEntry(ctx, store.StarLedgerRow{
-			FamilyID: fc.family.ID, ChildMemberID: childMemberID, Amount: neg,
-			EntryType: store.LedgerTypeRevoke, Note: fmt.Sprintf("Undo chore: %s", cw.Chore.Title),
-			CreatedByMemberID: &createdBy,
-		}); err != nil {
-			return nil, mapStoreError(err)
-		}
-		if err := s.store.DeleteChoreCompletion(ctx, existing.ID); err != nil {
-			return nil, mapStoreError(err)
-		}
+		return s.completeChoreAssignment(ctx, fc, cw, assign, childMemberID, date)
 	}
-	balance, _ := s.store.GetMemberBalance(ctx, childMemberID)
-	msg := "Chore completed"
-	if !complete {
-		msg = "Chore uncompleted"
-	}
-	return connect.NewResponse(&apiv1.CompleteChoreResponse{
-		StandardResponse: &apiv1.StandardResponse{Success: true, Message: msg},
-		NewBalance:       int32(balance),
-	}), nil
+	return s.uncompleteChoreAssignment(ctx, fc, cw, assign, childMemberID, date)
 }
 
 // validateReorderChoreIDs rejects empty, duplicate and foreign chore ids.
@@ -580,38 +412,60 @@ func (s *Server) validateReorderChoreIDs(ctx context.Context, familyID int, ids 
 	if len(ids) == 0 {
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("at least one chore required"))
 	}
+	return s.uniqueFamilyChoreIDs(ctx, familyID, ids)
+}
+
+func (s *Server) uniqueFamilyChoreIDs(ctx context.Context, familyID int, ids []int32) ([]int, error) {
 	out := make([]int, 0, len(ids))
 	seen := map[int]bool{}
 	for _, id := range ids {
-		if seen[int(id)] {
-			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("duplicate chore id %d", id))
+		if err := appendUniqueFamilyChore(ctx, s, familyID, int(id), seen, &out); err != nil {
+			return nil, err
 		}
-		cw, err := s.store.GetChoreByID(ctx, int(id))
-		if err != nil || cw == nil || cw.Chore.FamilyID != familyID {
-			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid chore id %d", id))
-		}
-		seen[int(id)] = true
-		out = append(out, int(id))
 	}
 	return out, nil
+}
+
+func appendUniqueFamilyChore(ctx context.Context, s *Server, familyID, id int, seen map[int]bool, out *[]int) error {
+	if seen[id] {
+		return connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("duplicate chore id %d", id))
+	}
+	cw, err := s.store.GetChoreByID(ctx, id)
+	if err != nil || cw == nil || cw.Chore.FamilyID != familyID {
+		return connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid chore id %d", id))
+	}
+	seen[id] = true
+	*out = append(*out, id)
+	return nil
 }
 
 func (s *Server) validateChoreMemberIDs(ctx context.Context, familyID int, ids []int32) ([]int, error) {
 	if len(ids) == 0 {
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("at least one person required"))
 	}
+	return s.uniqueFamilyMemberIDs(ctx, familyID, ids)
+}
+
+func (s *Server) uniqueFamilyMemberIDs(ctx context.Context, familyID int, ids []int32) ([]int, error) {
 	out := make([]int, 0, len(ids))
 	seen := map[int]bool{}
 	for _, id := range ids {
-		if seen[int(id)] {
-			continue
+		if err := appendUniqueFamilyMember(ctx, s, familyID, int(id), seen, &out); err != nil {
+			return nil, err
 		}
-		m, err := s.store.GetMemberByID(ctx, int(id))
-		if err != nil || !isFamilyStarMember(m, familyID) {
-			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid member id %d", id))
-		}
-		seen[int(id)] = true
-		out = append(out, int(id))
 	}
 	return out, nil
+}
+
+func appendUniqueFamilyMember(ctx context.Context, s *Server, familyID, id int, seen map[int]bool, out *[]int) error {
+	if seen[id] {
+		return connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("duplicate member id %d", id))
+	}
+	member, err := s.store.GetMemberByID(ctx, id)
+	if err != nil || !isFamilyStarMember(member, familyID) {
+		return connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid member id %d", id))
+	}
+	seen[id] = true
+	*out = append(*out, id)
+	return nil
 }

@@ -7,8 +7,8 @@ import (
 )
 
 type memoryChoreNotifications struct {
-	nextID int
 	rows   map[int]ChoreNotificationSubscriptionRow
+	nextID int
 }
 
 func (m *Memory) notifyState() *memoryChoreNotifications {
@@ -68,16 +68,7 @@ func (m *Memory) MatchingChoreNotificationSubscribers(_ context.Context, familyI
 	seen := map[int]bool{}
 	out := make([]int, 0)
 	for _, row := range st.rows {
-		if row.FamilyID != familyID {
-			continue
-		}
-		if row.ChildMemberID != nil && *row.ChildMemberID != childMemberID {
-			continue
-		}
-		if row.ChoreID != nil && *row.ChoreID != choreID {
-			continue
-		}
-		if seen[row.SubscriberMemberID] {
+		if !subscriptionMatches(row, familyID, childMemberID, choreID) || seen[row.SubscriberMemberID] {
 			continue
 		}
 		seen[row.SubscriberMemberID] = true
@@ -85,6 +76,17 @@ func (m *Memory) MatchingChoreNotificationSubscribers(_ context.Context, familyI
 	}
 	sort.Ints(out)
 	return out, nil
+}
+
+func subscriptionMatches(row ChoreNotificationSubscriptionRow, familyID, childMemberID, choreID int) bool {
+	if row.FamilyID != familyID {
+		return false
+	}
+	return optionalIDMatches(row.ChildMemberID, childMemberID) && optionalIDMatches(row.ChoreID, choreID)
+}
+
+func optionalIDMatches(ptr *int, want int) bool {
+	return ptr == nil || *ptr == want
 }
 
 func childKey(id *int) string {

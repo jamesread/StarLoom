@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"connectrpc.com/connect"
-	"google.golang.org/protobuf/proto"
 
 	apiv1 "github.com/jamesread/starapp/service/gen/starapp/api/v1"
 	"github.com/jamesread/starapp/service/internal/i18n"
@@ -25,7 +24,7 @@ func (s *Server) GetUserPreferences(ctx context.Context, _ *connect.Request[apiv
 	return connect.NewResponse(&apiv1.GetUserPreferencesResponse{
 		Language:           prefs.Language,
 		AvailableLanguages: i18n.AvailableLanguageCodes(),
-		SidebarEnabled:     proto.Bool(prefs.SidebarEnabled),
+		SidebarEnabled:     new(prefs.SidebarEnabled),
 	}), nil
 }
 

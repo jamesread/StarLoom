@@ -27,35 +27,85 @@ func NewHandler(srv *srvpkg.Server) http.Handler {
 		server.WithToolCapabilities(false),
 		server.WithRecovery(),
 	)
+	registerReadTools(mcpServer, srv)
+	registerWriteTools(mcpServer, srv)
+	return server.NewStreamableHTTPServer(mcpServer, server.WithEndpointPath("/mcp"))
+}
 
+func registerReadTools(mcpServer *server.MCPServer, srv *srvpkg.Server) {
 	mcpServer.AddTool(mcp.NewTool("starapp_ping",
 		mcp.WithDescription("Health check — verifies connectivity and returns Init metadata."),
-	), func(ctx context.Context, _ mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		return handleInit(ctx, srv)
-	})
-
+	), initTool(srv))
 	mcpServer.AddTool(mcp.NewTool("starapp_init",
 		mcp.WithDescription("Return SPA bootstrap metadata (title, version, features, webhook events)."),
-	), func(ctx context.Context, _ mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		return handleInit(ctx, srv)
-	})
-
+	), initTool(srv))
 	mcpServer.AddTool(mcp.NewTool("starapp_list_cvars",
 		mcp.WithDescription("List runtime configuration variables (cvars)."),
-	), func(ctx context.Context, _ mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		res, err := srv.ListCvars(ctx, connect.NewRequest(&apiv1.ListCvarsRequest{}))
-		if err != nil {
-			return mcp.NewToolResultError(err.Error()), nil
-		}
-		return jsonResult(map[string]any{"cvars": res.Msg.GetCvars()})
-	})
+	), listCvarsTool(srv))
+	mcpServer.AddTool(mcp.NewTool("starapp_list_webhooks",
+		mcp.WithDescription("List outbound webhook targets and supported event names."),
+	), listWebhooksTool(srv))
+}
 
+func registerWriteTools(mcpServer *server.MCPServer, srv *srvpkg.Server) {
 	mcpServer.AddTool(mcp.NewTool("starapp_update_cvar",
 		mcp.WithDescription("Update a configuration variable by key."),
 		mcp.WithString("key", mcp.Required(), mcp.Description("Cvar key (e.g. site_title, show_footer)")),
 		mcp.WithNumber("value_int", mcp.Description("Integer/boolean value (0 or 1 for booleans)")),
 		mcp.WithString("value_string", mcp.Description("String value when the cvar type is string")),
-	), func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	), updateCvarTool(srv))
+	mcpServer.AddTool(mcp.NewTool("starapp_create_webhook",
+		mcp.WithDescription("Create an outbound webhook target."),
+		mcp.WithString("url", mcp.Required(), mcp.Description("HTTPS callback URL")),
+		mcp.WithString("secret", mcp.Required(), mcp.Description("HMAC signing secret")),
+		mcp.WithString("events", mcp.Required(), mcp.Description("Comma-separated event names (e.g. stars.awarded,redemption.requested)")),
+		mcp.WithBoolean("enabled", mcp.Description("Whether delivery is enabled (default true)")),
+	), createWebhookTool(srv))
+	mcpServer.AddTool(mcp.NewTool("starapp_update_webhook",
+		mcp.WithDescription("Update an outbound webhook target."),
+		mcp.WithNumber("id", mcp.Required(), mcp.Description("Webhook target ID")),
+		mcp.WithString("url", mcp.Description("HTTPS callback URL")),
+		mcp.WithString("secret", mcp.Description("New HMAC secret (omit to keep existing)")),
+		mcp.WithString("events", mcp.Description("Comma-separated event names")),
+		mcp.WithBoolean("enabled", mcp.Description("Whether delivery is enabled")),
+	), updateWebhookTool(srv))
+	mcpServer.AddTool(mcp.NewTool("starapp_delete_webhook",
+		mcp.WithDescription("Delete an outbound webhook target."),
+		mcp.WithNumber("id", mcp.Required(), mcp.Description("Webhook target ID")),
+	), deleteWebhookTool(srv))
+}
+
+func initTool(srv *srvpkg.Server) func(context.Context, mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	return func(ctx context.Context, _ mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		return handleInit(ctx, srv)
+	}
+}
+
+func listCvarsTool(srv *srvpkg.Server) func(context.Context, mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	return func(ctx context.Context, _ mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		res, err := srv.ListCvars(ctx, connect.NewRequest(&apiv1.ListCvarsRequest{}))
+		if err != nil {
+			return mcp.NewToolResultError(err.Error()), nil
+		}
+		return jsonResult(map[string]any{"cvars": res.Msg.GetCvars()})
+	}
+}
+
+func listWebhooksTool(srv *srvpkg.Server) func(context.Context, mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	return func(ctx context.Context, _ mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		res, err := srv.ListWebhooks(ctx, connect.NewRequest(&apiv1.ListWebhooksRequest{}))
+		if err != nil {
+			return mcp.NewToolResultError(err.Error()), nil
+		}
+		return jsonResult(map[string]any{
+			"webhooks": res.Msg.GetWebhooks(),
+			"events":   res.Msg.GetEvents(),
+		})
+	}
+}
+
+func updateCvarTool(srv *srvpkg.Server) func(context.Context, mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	return func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		if err := requireWrite(ctx); err != nil {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
@@ -72,63 +122,43 @@ func NewHandler(srv *srvpkg.Server) http.Handler {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
 		return jsonResult(res.Msg)
-	})
+	}
+}
 
-	mcpServer.AddTool(mcp.NewTool("starapp_list_webhooks",
-		mcp.WithDescription("List outbound webhook targets and supported event names."),
-	), func(ctx context.Context, _ mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		res, err := srv.ListWebhooks(ctx, connect.NewRequest(&apiv1.ListWebhooksRequest{}))
-		if err != nil {
-			return mcp.NewToolResultError(err.Error()), nil
-		}
-		return jsonResult(map[string]any{
-			"webhooks": res.Msg.GetWebhooks(),
-			"events":   res.Msg.GetEvents(),
-		})
-	})
-
-	mcpServer.AddTool(mcp.NewTool("starapp_create_webhook",
-		mcp.WithDescription("Create an outbound webhook target."),
-		mcp.WithString("url", mcp.Required(), mcp.Description("HTTPS callback URL")),
-		mcp.WithString("secret", mcp.Required(), mcp.Description("HMAC signing secret")),
-		mcp.WithString("events", mcp.Required(), mcp.Description("Comma-separated event names (e.g. stars.awarded,redemption.requested)")),
-		mcp.WithBoolean("enabled", mcp.Description("Whether delivery is enabled (default true)")),
-	), func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func createWebhookTool(srv *srvpkg.Server) func(context.Context, mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	return func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		if err := requireWrite(ctx); err != nil {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
-		eventsStr, err := req.RequireString("events")
-		if err != nil {
-			return mcp.NewToolResultError(err.Error()), nil
-		}
-		url, err := req.RequireString("url")
-		if err != nil {
-			return mcp.NewToolResultError(err.Error()), nil
-		}
-		secret, err := req.RequireString("secret")
+		eventsStr, url, secret, err := requireWebhookCreateArgs(req)
 		if err != nil {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
 		res, err := srv.CreateWebhook(ctx, connect.NewRequest(&apiv1.CreateWebhookRequest{
-			Url:     url,
-			Secret:  secret,
-			Events:  splitCSV(eventsStr),
-			Enabled: req.GetBool("enabled", true),
+			Url: url, Secret: secret, Events: splitCSV(eventsStr), Enabled: req.GetBool("enabled", true),
 		}))
 		if err != nil {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
 		return jsonResult(res.Msg.GetWebhook())
-	})
+	}
+}
 
-	mcpServer.AddTool(mcp.NewTool("starapp_update_webhook",
-		mcp.WithDescription("Update an outbound webhook target."),
-		mcp.WithNumber("id", mcp.Required(), mcp.Description("Webhook target ID")),
-		mcp.WithString("url", mcp.Description("HTTPS callback URL")),
-		mcp.WithString("secret", mcp.Description("New HMAC secret (omit to keep existing)")),
-		mcp.WithString("events", mcp.Description("Comma-separated event names")),
-		mcp.WithBoolean("enabled", mcp.Description("Whether delivery is enabled")),
-	), func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func requireWebhookCreateArgs(req mcp.CallToolRequest) (events, url, secret string, err error) {
+	events, err = req.RequireString("events")
+	if err != nil {
+		return "", "", "", err
+	}
+	url, err = req.RequireString("url")
+	if err != nil {
+		return "", "", "", err
+	}
+	secret, err = req.RequireString("secret")
+	return events, url, secret, err
+}
+
+func updateWebhookTool(srv *srvpkg.Server) func(context.Context, mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	return func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		if err := requireWrite(ctx); err != nil {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
@@ -137,22 +167,18 @@ func NewHandler(srv *srvpkg.Server) http.Handler {
 			return mcp.NewToolResultError("id is required"), nil
 		}
 		res, err := srv.UpdateWebhook(ctx, connect.NewRequest(&apiv1.UpdateWebhookRequest{
-			Id:      id,
-			Url:     req.GetString("url", ""),
-			Secret:  req.GetString("secret", ""),
-			Events:  splitCSV(req.GetString("events", "")),
-			Enabled: req.GetBool("enabled", true),
+			Id: id, Url: req.GetString("url", ""), Secret: req.GetString("secret", ""),
+			Events: splitCSV(req.GetString("events", "")), Enabled: req.GetBool("enabled", true),
 		}))
 		if err != nil {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
 		return jsonResult(res.Msg)
-	})
+	}
+}
 
-	mcpServer.AddTool(mcp.NewTool("starapp_delete_webhook",
-		mcp.WithDescription("Delete an outbound webhook target."),
-		mcp.WithNumber("id", mcp.Required(), mcp.Description("Webhook target ID")),
-	), func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func deleteWebhookTool(srv *srvpkg.Server) func(context.Context, mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	return func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		if err := requireWrite(ctx); err != nil {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
@@ -165,9 +191,7 @@ func NewHandler(srv *srvpkg.Server) http.Handler {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
 		return jsonResult(map[string]any{"deleted": true, "id": id})
-	})
-
-	return server.NewStreamableHTTPServer(mcpServer, server.WithEndpointPath("/mcp"))
+	}
 }
 
 func handleInit(ctx context.Context, srv *srvpkg.Server) (*mcp.CallToolResult, error) {
@@ -191,7 +215,7 @@ func splitCSV(s string) []string {
 		return nil
 	}
 	var out []string
-	for _, part := range strings.Split(s, ",") {
+	for part := range strings.SplitSeq(s, ",") {
 		if t := strings.TrimSpace(part); t != "" {
 			out = append(out, t)
 		}

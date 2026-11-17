@@ -42,3 +42,4 @@ docs/site/
 # service/gen/
 
 __pycache__
+var/marketing/screenshots/tmp/

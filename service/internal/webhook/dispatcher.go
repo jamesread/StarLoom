@@ -8,8 +8,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"maps"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 	"time"
 
@@ -25,10 +27,8 @@ var SupportedEvents = []string{
 
 func NormalizeEvent(event string) (string, error) {
 	event = strings.TrimSpace(event)
-	for _, e := range SupportedEvents {
-		if event == e {
-			return event, nil
-		}
+	if slices.Contains(SupportedEvents, event) {
+		return event, nil
 	}
 	return "", fmt.Errorf("unsupported webhook event")
 }
@@ -59,14 +59,21 @@ func NormalizeURL(raw string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("webhook URL is not valid")
 	}
-	scheme := strings.ToLower(u.Scheme)
-	if scheme != "http" && scheme != "https" {
-		return "", fmt.Errorf("webhook URL scheme must be http or https")
-	}
-	if strings.TrimSpace(u.Host) == "" {
-		return "", fmt.Errorf("webhook URL host is required")
+	if err := checkWebhookURL(u); err != nil {
+		return "", err
 	}
 	return raw, nil
+}
+
+func checkWebhookURL(u *url.URL) error {
+	scheme := strings.ToLower(u.Scheme)
+	if scheme != "http" && scheme != "https" {
+		return fmt.Errorf("webhook URL scheme must be http or https")
+	}
+	if strings.TrimSpace(u.Host) == "" {
+		return fmt.Errorf("webhook URL host is required")
+	}
+	return nil
 }
 
 func Signature(payloadJSON, secret string) string {
@@ -89,9 +96,7 @@ func (d *Dispatcher) Dispatch(ctx context.Context, event string, data map[string
 		"event":     event,
 		"timestamp": time.Now().UTC().Format(time.RFC3339),
 	}
-	for k, v := range data {
-		payload[k] = v
-	}
+	maps.Copy(payload, data)
 	body, err := json.Marshal(payload)
 	if err != nil {
 		return
@@ -114,30 +119,14 @@ func (d *Dispatcher) httpClient() *http.Client {
 }
 
 func (d *Dispatcher) postWebhook(ctx context.Context, client *http.Client, event string, wh store.WebhookTargetRow, body []byte) {
-	row := store.WebhookDeliveryRow{
-		WebhookTargetID: wh.ID,
-		Event:           event,
-		URL:             wh.URL,
-		FiredAt:         time.Now().UTC().Format(time.RFC3339),
-	}
+	row := newWebhookDelivery(event, wh)
 	if _, err := NormalizeURL(wh.URL); err != nil {
-		row.ErrorMessage = err.Error()
-		_, _ = d.Store.InsertWebhookDelivery(ctx, row)
+		d.failDelivery(ctx, &row, err.Error())
 		return
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, wh.URL, bytes.NewReader(body))
+	resp, err := d.doWebhookRequest(ctx, client, event, wh, body)
 	if err != nil {
-		row.ErrorMessage = err.Error()
-		_, _ = d.Store.InsertWebhookDelivery(ctx, row)
-		return
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-StarApp-Event", event)
-	req.Header.Set("X-StarApp-Signature", "sha256="+Signature(string(body), wh.Secret))
-	resp, err := client.Do(req)
-	if err != nil {
-		row.ErrorMessage = err.Error()
-		_, _ = d.Store.InsertWebhookDelivery(ctx, row)
+		d.failDelivery(ctx, &row, err.Error())
 		return
 	}
 	row.HTTPStatus = resp.StatusCode
@@ -147,4 +136,35 @@ func (d *Dispatcher) postWebhook(ctx context.Context, client *http.Client, event
 		row.ErrorMessage = fmt.Sprintf("HTTP %d", resp.StatusCode)
 	}
 	_, _ = d.Store.InsertWebhookDelivery(ctx, row)
+}
+
+func newWebhookDelivery(event string, wh store.WebhookTargetRow) store.WebhookDeliveryRow {
+	return store.WebhookDeliveryRow{
+		WebhookTargetID: wh.ID,
+		Event:           event,
+		URL:             wh.URL,
+		FiredAt:         time.Now().UTC().Format(time.RFC3339),
+	}
+}
+
+func (d *Dispatcher) failDelivery(ctx context.Context, row *store.WebhookDeliveryRow, msg string) {
+	row.ErrorMessage = msg
+	_, _ = d.Store.InsertWebhookDelivery(ctx, *row)
+}
+
+func (d *Dispatcher) doWebhookRequest(
+	ctx context.Context,
+	client *http.Client,
+	event string,
+	wh store.WebhookTargetRow,
+	body []byte,
+) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, wh.URL, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-StarApp-Event", event)
+	req.Header.Set("X-StarApp-Signature", "sha256="+Signature(string(body), wh.Secret))
+	return client.Do(req)
 }

@@ -16,25 +16,37 @@ func (s *SQLite) ListChoreNotificationSubscriptions(ctx context.Context, subscri
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
+	return scanChoreNotificationRows(rows)
+}
+
+func scanChoreNotificationRows(rows *sql.Rows) ([]ChoreNotificationSubscriptionRow, error) {
 	out := make([]ChoreNotificationSubscriptionRow, 0)
 	for rows.Next() {
-		var row ChoreNotificationSubscriptionRow
-		var childID, choreID sql.NullInt64
-		if err := rows.Scan(&row.ID, &row.FamilyID, &row.SubscriberMemberID, &childID, &choreID, &row.CreatedAt); err != nil {
+		row, err := scanChoreNotificationRow(rows)
+		if err != nil {
 			return nil, err
-		}
-		if childID.Valid {
-			v := int(childID.Int64)
-			row.ChildMemberID = &v
-		}
-		if choreID.Valid {
-			v := int(choreID.Int64)
-			row.ChoreID = &v
 		}
 		out = append(out, row)
 	}
 	return out, rows.Err()
+}
+
+func scanChoreNotificationRow(rows *sql.Rows) (ChoreNotificationSubscriptionRow, error) {
+	var row ChoreNotificationSubscriptionRow
+	var childID, choreID sql.NullInt64
+	if err := rows.Scan(&row.ID, &row.FamilyID, &row.SubscriberMemberID, &childID, &choreID, &row.CreatedAt); err != nil {
+		return ChoreNotificationSubscriptionRow{}, err
+	}
+	if childID.Valid {
+		v := int(childID.Int64)
+		row.ChildMemberID = &v
+	}
+	if choreID.Valid {
+		v := int(choreID.Int64)
+		row.ChoreID = &v
+	}
+	return row, nil
 }
 
 func (s *SQLite) ReplaceChoreNotificationSubscriptions(ctx context.Context, familyID, subscriberMemberID int, subs []ChoreNotificationSubscriptionRow) error {
@@ -47,14 +59,15 @@ func (s *SQLite) ReplaceChoreNotificationSubscriptions(ctx context.Context, fami
 	if _, err := tx.ExecContext(ctx, `DELETE FROM chore_notification_subscriptions WHERE subscriber_member_id = ?`, subscriberMemberID); err != nil {
 		return err
 	}
+	if err := insertChoreNotificationSubs(ctx, tx, familyID, subscriberMemberID, subs); err != nil {
+		return err
+	}
+	return tx.Commit()
+}
+
+func insertChoreNotificationSubs(ctx context.Context, tx *sql.Tx, familyID, subscriberMemberID int, subs []ChoreNotificationSubscriptionRow) error {
 	for i := range subs {
-		var childID, choreID any
-		if subs[i].ChildMemberID != nil {
-			childID = *subs[i].ChildMemberID
-		}
-		if subs[i].ChoreID != nil {
-			choreID = *subs[i].ChoreID
-		}
+		childID, choreID := nullableIDs(subs[i].ChildMemberID, subs[i].ChoreID)
 		if _, err := tx.ExecContext(ctx, `
 			INSERT INTO chore_notification_subscriptions (family_id, subscriber_member_id, child_member_id, chore_id)
 			VALUES (?, ?, ?, ?)`,
@@ -63,7 +76,18 @@ func (s *SQLite) ReplaceChoreNotificationSubscriptions(ctx context.Context, fami
 			return err
 		}
 	}
-	return tx.Commit()
+	return nil
+}
+
+func nullableIDs(childID, choreID *int) (any, any) {
+	var c, ch any
+	if childID != nil {
+		c = *childID
+	}
+	if choreID != nil {
+		ch = *choreID
+	}
+	return c, ch
 }
 
 func (s *SQLite) MatchingChoreNotificationSubscribers(ctx context.Context, familyID, childMemberID, choreID int) ([]int, error) {
@@ -78,7 +102,7 @@ func (s *SQLite) MatchingChoreNotificationSubscribers(ctx context.Context, famil
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	out := make([]int, 0)
 	for rows.Next() {
 		var id int

@@ -1,8 +1,8 @@
 package store
 
 type UserPreferencesRow struct {
-	UserAccountID  int
 	Language       string
+	UserAccountID  int
 	SidebarEnabled bool
 }
 

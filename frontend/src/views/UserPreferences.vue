@@ -9,7 +9,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { starapp } from '../api/client'
 import { useInit } from '../composables/useInit'
-import { applyAppTheming, themeControlFromFeatures } from '../lib/applyAppTheming'
+import { themeControlFromFeatures } from '../lib/applyAppTheming'
 import { applyUserLanguage, applyUserSidebar, languageLabel } from '../lib/userPreferences'
 
 const router = useRouter()

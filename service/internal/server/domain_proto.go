@@ -18,15 +18,58 @@ type familyContext struct {
 	au     *auth.AuthenticatedUser
 }
 
-func (s *Server) requirePermission(ctx context.Context, perm string) (*auth.AuthenticatedUser, error) {
+func (s *Server) requirePermission(ctx context.Context, perm string) error {
 	au, err := s.requireAuth(ctx)
+	if err != nil {
+		return err
+	}
+	if !au.HasPermission(perm) {
+		return connect.NewError(connect.CodePermissionDenied, fmt.Errorf("missing permission %s", perm))
+	}
+	return nil
+}
+
+// requireFamilyPermission loads family context and checks a permission.
+func (s *Server) requireFamilyPermission(ctx context.Context, perm string) (*familyContext, error) {
+	fc, err := s.requireFamilyContext(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if !au.HasPermission(perm) {
-		return nil, connect.NewError(connect.CodePermissionDenied, fmt.Errorf("missing permission %s", perm))
+	if err = s.requirePermission(ctx, perm); err != nil {
+		return nil, err
 	}
-	return au, nil
+	return fc, nil
+}
+
+// requireFamilyPermissionAny loads family context and accepts any of the given permissions.
+func (s *Server) requireFamilyPermissionAny(ctx context.Context, perms ...string) (*familyContext, error) {
+	fc, err := s.requireFamilyContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var last error
+	for _, perm := range perms {
+		if err = s.requirePermission(ctx, perm); err == nil {
+			return fc, nil
+		}
+		last = err
+	}
+	return nil, last
+}
+
+// requireFamilyWritePermission loads family context, rejects read-only keys, and checks a permission.
+func (s *Server) requireFamilyWritePermission(ctx context.Context, perm string) (*familyContext, error) {
+	fc, err := s.requireFamilyContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if _, err = s.requireWrite(ctx); err != nil {
+		return nil, err
+	}
+	if err = s.requirePermission(ctx, perm); err != nil {
+		return nil, err
+	}
+	return fc, nil
 }
 
 func (s *Server) loadFamilyContext(ctx context.Context) (*familyContext, error) {
@@ -75,8 +118,8 @@ func (s *Server) ensureHouseholdParent(ctx context.Context, au *auth.Authenticat
 	if err != nil {
 		return nil, mapStoreError(err)
 	}
-	if err := s.store.EnsureUserInGroup(ctx, au.User.ID, rbac.GroupParents); err != nil {
-		s.log.WithError(err).Warn("ensure household parent in Parents group")
+	if ensureErr := s.store.EnsureUserInGroup(ctx, au.User.ID, rbac.GroupParents); ensureErr != nil {
+		s.log.WithError(ensureErr).Warn("ensure household parent in Parents group")
 	}
 	member, err := s.store.GetMemberByID(ctx, memberID)
 	if err != nil {
@@ -97,13 +140,17 @@ func (s *Server) requireFamilyContext(ctx context.Context) (*familyContext, erro
 }
 
 func (s *Server) canViewMember(au *auth.AuthenticatedUser, caller, target *store.FamilyMemberRow) bool {
-	if au.HasPermission(rbac.PermissionStarsViewFamily) {
-		return caller != nil && target != nil && caller.FamilyID == target.FamilyID
-	}
-	if au.HasPermission(rbac.PermissionStarsViewOwn) {
-		return caller != nil && target != nil && caller.ID == target.ID
-	}
-	return false
+	return canViewFamilyStars(au, caller, target) || canViewOwnStars(au, caller, target)
+}
+
+func canViewFamilyStars(au *auth.AuthenticatedUser, caller, target *store.FamilyMemberRow) bool {
+	return au.HasPermission(rbac.PermissionStarsViewFamily) &&
+		caller != nil && target != nil && caller.FamilyID == target.FamilyID
+}
+
+func canViewOwnStars(au *auth.AuthenticatedUser, caller, target *store.FamilyMemberRow) bool {
+	return au.HasPermission(rbac.PermissionStarsViewOwn) &&
+		caller != nil && target != nil && caller.ID == target.ID
 }
 
 func toProtoFamily(f *store.FamilyRow) *apiv1.Family {

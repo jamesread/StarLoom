@@ -59,9 +59,9 @@ func RenderRedemptionMessage(tmpl string, p RedemptionPlaceholders) string {
 type ChoreCompletedPlaceholders struct {
 	ChildName       string
 	ChoreTitle      string
-	Stars           int
 	Date            string
 	CompletedByName string
+	Stars           int
 }
 
 // RenderChoreCompletedMessage fills the chore completed notification template.

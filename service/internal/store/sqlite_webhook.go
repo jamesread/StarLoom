@@ -123,33 +123,47 @@ func insertWebhookTargetTx(ctx context.Context, tx *sql.Tx, url, secret string, 
 }
 
 func (s *SQLite) UpdateWebhookTarget(ctx context.Context, id int, url, secret string, events []string, enabled bool, clearSecret bool) error {
+	cur, err := s.webhookTargetForUpdate(ctx, id, url, secret, clearSecret)
+	if err != nil {
+		return err
+	}
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback() }()
+	if err := s.writeWebhookTargetUpdate(ctx, tx, id, cur, events, enabled); err != nil {
+		return err
+	}
+	return tx.Commit()
+}
+
+func (s *SQLite) webhookTargetForUpdate(ctx context.Context, id int, url, secret string, clearSecret bool) (*WebhookTargetRow, error) {
 	cur, err := s.FindWebhookTarget(ctx, id)
 	if err != nil || cur == nil {
-		return sql.ErrNoRows
+		return nil, sql.ErrNoRows
 	}
+	applyWebhookUpdateFields(cur, url, secret, clearSecret)
+	return cur, nil
+}
+
+func applyWebhookUpdateFields(cur *WebhookTargetRow, url, secret string, clearSecret bool) {
 	if url != "" {
 		cur.URL = url
 	}
 	if !clearSecret && secret != "" {
 		cur.Secret = secret
 	}
+}
 
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer func() { _ = tx.Rollback() }()
-
+func (s *SQLite) writeWebhookTargetUpdate(ctx context.Context, tx *sql.Tx, id int, cur *WebhookTargetRow, events []string, enabled bool) error {
 	now := time.Now().UTC().Format("2006-01-02 15:04:05")
 	if _, err := tx.ExecContext(ctx,
 		`UPDATE webhook_targets SET url = ?, secret = ?, enabled = ?, updated = ? WHERE id = ?`,
 		cur.URL, cur.Secret, boolToInt(enabled), now, id); err != nil {
 		return err
 	}
-	if err := replaceWebhookEventsTx(ctx, tx, id, events); err != nil {
-		return err
-	}
-	return tx.Commit()
+	return replaceWebhookEventsTx(ctx, tx, id, events)
 }
 
 func (s *SQLite) DeleteWebhookTarget(ctx context.Context, id int) error {
@@ -238,7 +252,7 @@ func (s *SQLite) ListWebhookDeliveries(ctx context.Context, limit int) ([]Webhoo
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	out := []WebhookDeliveryRow{}
 	for rows.Next() {

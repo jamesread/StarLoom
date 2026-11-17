@@ -1,0 +1,123 @@
+version: "2"
+
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  default: none
+  enable:
+    - bidichk
+    - bodyclose
+    - copyloopvar
+    - durationcheck
+    - errcheck
+    - errorlint
+    - gocritic
+    - gocyclo
+    - gosec
+    - govet
+    - ineffassign
+    - misspell
+    - modernize
+    - nilerr
+    - noctx
+    - staticcheck
+    - testifylint
+    - thelper
+    - unconvert
+    - unparam
+    - unused
+    - usestdlibvars
+  settings:
+    gocyclo:
+      min-complexity: 5
+    gosec:
+      enable-all-rules: true
+    govet:
+      enable-all: true
+  exclusions:
+    generated: lax
+    paths:
+      - (^|/)gen(/|$)
+    rules:
+      - path: (^|/)gen(/|$)
+        linters:
+          - gocyclo
+      - path: \.(pb|connect)\.go$
+        linters:
+          - gocyclo
+      - path: _test\.go
+        linters:
+          - gosec
+          - gocyclo
+      - path: _test\.go
+        text: "fieldalignment:"
+        linters:
+          - govet
+
+      # Secure is set from STARAPP_SECURE_COOKIES for TLS / reverse proxies; gosec wants a literal true.
+      - path: internal/auth/cookies\.go
+        text: "G124:"
+        linters:
+          - gosec
+
+      # Avatars are public web assets served under /avatars/; 0644/0755 is intentional.
+      - path: internal/avatar/
+        text: "G301:"
+        linters:
+          - gosec
+      - path: internal/avatar/
+        text: "G306:"
+        linters:
+          - gosec
+      - path: internal/store/
+        text: "G301:"
+        linters:
+          - gosec
+
+      # Paths are contained under the avatar/theme root or operator-supplied webui dirs.
+      - path: internal/avatar/
+        text: "G304:"
+        linters:
+          - gosec
+      - path: internal/avatar/
+        text: "G703:"
+        linters:
+          - gosec
+      - path: internal/server/avatar_http\.go
+        text: "G304:"
+        linters:
+          - gosec
+      - path: internal/server/avatar_http\.go
+        text: "G703:"
+        linters:
+          - gosec
+      - path: internal/themes/
+        text: "G304:"
+        linters:
+          - gosec
+
+      # Avatar bytes are served with a sniffed image Content-Type after authz.
+      - path: internal/server/avatar_http\.go
+        text: "G705:"
+        linters:
+          - gosec
+
+      # Protobuf fields are int32; DB identifiers are int.
+      - path: internal/server/
+        text: "G115:"
+        linters:
+          - gosec
+
+      # Fire-and-forget notification delivery must outlive the request.
+      - path: internal/server/
+        text: "G118:"
+        linters:
+          - gosec
+
+      # Placeholders are built only from integer IDs via sqlPlaceholders.
+      - path: internal/store/sqlite_chores\.go
+        text: "G202:"
+        linters:
+          - gosec

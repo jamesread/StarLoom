@@ -47,11 +47,9 @@ migrate:
 migrate-status:
 	DB_PATH="$(DB_PATH)" $(MAKE) -wC database/sqlite status
 
-# Marketing PNGs in var/marketing/. Requires the SPA at https://localhost:5173.
-# The shim skips webdriver_manager so Selenium uses the system chromedriver.
+# Marketing PNGs in var/marketing/screenshots/. Requires the SPA at https://localhost:5173.
 screenshots:
-	PYTHONPATH="$(CURDIR)/var/marketing/chromedriver-shim$(if $(PYTHONPATH),:$(PYTHONPATH))" \
-		repo-helper screenshot
+	$(MAKE) -wC var/marketing/screenshots shoot
 
 clean:
 	$(MAKE) -wC protocol clean

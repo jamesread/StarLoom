@@ -12,13 +12,18 @@ import (
 )
 
 func (s *Server) GetParentHomeSummary(ctx context.Context, _ *connect.Request[apiv1.GetParentHomeSummaryRequest]) (*connect.Response[apiv1.GetParentHomeSummaryResponse], error) {
-	fc, err := s.requireFamilyContext(ctx)
+	fc, err := s.requireFamilyPermission(ctx, rbac.PermissionStarsViewFamily)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.requirePermission(ctx, rbac.PermissionStarsViewFamily); err != nil {
+	out, err := s.buildParentHomeSummary(ctx, fc)
+	if err != nil {
 		return nil, err
 	}
+	return connect.NewResponse(out), nil
+}
+
+func (s *Server) buildParentHomeSummary(ctx context.Context, fc *familyContext) (*apiv1.GetParentHomeSummaryResponse, error) {
 	members, err := s.store.ListMembersByFamily(ctx, fc.family.ID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
@@ -28,42 +33,93 @@ func (s *Server) GetParentHomeSummary(ctx context.Context, _ *connect.Request[ap
 		Family:             toProtoFamily(fc.family),
 		PendingRedemptions: int32(pending),
 	}
-	for i := range members {
-		if !isFamilyStarMember(&members[i], fc.family.ID) {
-			continue
-		}
-		balance, _ := s.store.GetMemberBalance(ctx, members[i].ID)
-		last, _ := s.store.GetLastAward(ctx, members[i].ID)
-		progress, err := s.memberTodayStarChartProgress(ctx, fc, members[i].ID)
-		if err != nil {
-			return nil, connect.NewError(connect.CodeInternal, err)
-		}
-		out.Children = append(out.Children, &apiv1.ChildHomeSummary{
-			Member:                 toProtoMember(&members[i]),
-			Balance:                int32(balance),
-			LastAward:              toProtoLedger(last),
-			TodayStarChartProgress: progress,
-		})
+	children, err := s.parentHomeChildren(ctx, fc, members)
+	if err != nil {
+		return nil, err
 	}
+	out.Children = children
 	if fc.member == nil {
-		return connect.NewResponse(out), nil
+		return out, nil
 	}
 	chores, err := s.listTodaysChores(ctx, fc, fc.member.ID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	out.TodaysChores = chores
-	return connect.NewResponse(out), nil
+	return out, nil
+}
+
+func (s *Server) parentHomeChildren(ctx context.Context, fc *familyContext, members []store.FamilyMemberRow) ([]*apiv1.ChildHomeSummary, error) {
+	out := make([]*apiv1.ChildHomeSummary, 0)
+	for i := range members {
+		if !isFamilyStarMember(&members[i], fc.family.ID) {
+			continue
+		}
+		child, err := s.parentHomeChild(ctx, fc, &members[i])
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, child)
+	}
+	return out, nil
+}
+
+func (s *Server) parentHomeChild(ctx context.Context, fc *familyContext, member *store.FamilyMemberRow) (*apiv1.ChildHomeSummary, error) {
+	balance, _ := s.store.GetMemberBalance(ctx, member.ID)
+	last, _ := s.store.GetLastAward(ctx, member.ID)
+	progress, err := s.memberTodayStarChartProgress(ctx, fc, member.ID)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	return &apiv1.ChildHomeSummary{
+		Member:                 toProtoMember(member),
+		Balance:                int32(balance),
+		LastAward:              toProtoLedger(last),
+		TodayStarChartProgress: progress,
+	}, nil
 }
 
 func (s *Server) GetChildHomeSummary(ctx context.Context, _ *connect.Request[apiv1.GetChildHomeSummaryRequest]) (*connect.Response[apiv1.GetChildHomeSummaryResponse], error) {
-	fc, err := s.requireFamilyContext(ctx)
+	fc, err := s.requireFamilyPermission(ctx, rbac.PermissionStarsViewOwn)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := s.requirePermission(ctx, rbac.PermissionStarsViewOwn); err != nil {
+	out, err := s.buildChildHomeSummary(ctx, fc)
+	if err != nil {
 		return nil, err
 	}
+	return connect.NewResponse(out), nil
+}
+
+func (s *Server) buildChildHomeSummary(ctx context.Context, fc *familyContext) (*apiv1.GetChildHomeSummaryResponse, error) {
+	data, err := s.loadChildHomeData(ctx, fc)
+	if err != nil {
+		return nil, err
+	}
+	out := &apiv1.GetChildHomeSummaryResponse{
+		Member:  toProtoMember(fc.member),
+		Balance: int32(data.balance),
+	}
+	fillChildPendingRewards(out, fc.member.ID, data.pendingRows)
+	fillChildRecentAwards(out, data.ledger)
+	fillChildRewards(ctx, s, out, fc, data.rewards, data.balance, data.pendingRewardIDs)
+	chores, err := s.listTodaysChores(ctx, fc, fc.member.ID)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	out.TodaysChores = chores
+	return out, nil
+}
+
+type childHomeData struct {
+	pendingRewardIDs map[int]struct{}
+	ledger           []store.StarLedgerRow
+	rewards          []store.RewardRow
+	pendingRows      []store.RedemptionRow
+	balance          int
+}
+
+func (s *Server) loadChildHomeData(ctx context.Context, fc *familyContext) (*childHomeData, error) {
 	balance, err := s.store.GetMemberBalance(ctx, fc.member.ID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
@@ -80,49 +136,77 @@ func (s *Server) GetChildHomeSummary(ctx context.Context, _ *connect.Request[api
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	pendingRewardIDs := map[int]struct{}{}
-	out := &apiv1.GetChildHomeSummaryResponse{
-		Member:  toProtoMember(fc.member),
-		Balance: int32(balance),
-	}
+	return &childHomeData{
+		balance: balance, ledger: ledger, rewards: rewards, pendingRows: pendingRows,
+		pendingRewardIDs: map[int]struct{}{},
+	}, nil
+}
+
+func fillChildPendingRewards(out *apiv1.GetChildHomeSummaryResponse, memberID int, pendingRows []store.RedemptionRow) {
 	for i := range pendingRows {
-		if pendingRows[i].ChildMemberID != fc.member.ID {
+		if pendingRows[i].ChildMemberID != memberID {
 			continue
 		}
-		pendingRewardIDs[pendingRows[i].RewardID] = struct{}{}
 		out.PendingRewardIds = append(out.PendingRewardIds, int32(pendingRows[i].RewardID))
 	}
+}
+
+func fillChildRecentAwards(out *apiv1.GetChildHomeSummaryResponse, ledger []store.StarLedgerRow) {
 	for i := range ledger {
 		if ledger[i].EntryType == store.LedgerTypeAward || ledger[i].Amount > 0 {
 			out.RecentAwards = append(out.RecentAwards, toProtoLedger(&ledger[i]))
 		}
 	}
-	rewardIncluded := map[int]bool{}
+}
+
+func fillChildRewards(
+	ctx context.Context,
+	s *Server,
+	out *apiv1.GetChildHomeSummaryResponse,
+	fc *familyContext,
+	rewards []store.RewardRow,
+	balance int,
+	pendingRewardIDs map[int]struct{},
+) {
+	for i := range out.PendingRewardIds {
+		pendingRewardIDs[int(out.PendingRewardIds[i])] = struct{}{}
+	}
+	included := map[int]bool{}
 	now := time.Now()
 	for i := range rewards {
 		if !rewards[i].Active {
 			continue
 		}
 		out.Rewards = append(out.Rewards, toProtoReward(&rewards[i]))
-		rewardIncluded[rewards[i].ID] = true
+		included[rewards[i].ID] = true
 		if s.rewardUnavailableDueToSchedule(ctx, &rewards[i], fc.member.ID, balance, now) {
 			out.UnavailableRewardIds = append(out.UnavailableRewardIds, int32(rewards[i].ID))
 		}
 	}
+	appendPendingRewards(ctx, s, out, pendingRewardIDs, included)
+}
+
+func appendPendingRewards(
+	ctx context.Context,
+	s *Server,
+	out *apiv1.GetChildHomeSummaryResponse,
+	pendingRewardIDs map[int]struct{},
+	included map[int]bool,
+) {
 	for rewardID := range pendingRewardIDs {
-		if rewardIncluded[rewardID] {
+		if included[rewardID] {
 			continue
 		}
-		reward, err := s.store.GetRewardByID(ctx, rewardID)
-		if err != nil || reward == nil || !reward.Active {
-			continue
+		if reward := activeRewardOrNil(ctx, s, rewardID); reward != nil {
+			out.Rewards = append(out.Rewards, toProtoReward(reward))
 		}
-		out.Rewards = append(out.Rewards, toProtoReward(reward))
 	}
-	chores, err := s.listTodaysChores(ctx, fc, fc.member.ID)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
+}
+
+func activeRewardOrNil(ctx context.Context, s *Server, rewardID int) *store.RewardRow {
+	reward, err := s.store.GetRewardByID(ctx, rewardID)
+	if err != nil || reward == nil || !reward.Active {
+		return nil
 	}
-	out.TodaysChores = chores
-	return connect.NewResponse(out), nil
+	return reward
 }

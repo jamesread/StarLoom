@@ -13,9 +13,9 @@ import (
 // AvailabilityEnv is the variable set exposed to reward availability expressions.
 // Times use the server local timezone.
 type AvailabilityEnv struct {
+	DayName      string
 	Hour         int
 	Minute       int
-	DayName      string
 	Day          int
 	Month        int
 	Year         int

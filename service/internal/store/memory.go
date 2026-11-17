@@ -30,7 +30,7 @@ func OpenMemory() *Memory {
 	if err != nil {
 		panic(err)
 	}
-	if err := seedDomainRBAC(iam.DB()); err != nil {
+	if err := seedDomainRBAC(context.Background(), iam.DB()); err != nil {
 		panic(err)
 	}
 	return &Memory{SQLite: iam, cvars: map[string]CvarRow{}, userPrefs: map[int]UserPreferencesRow{}}

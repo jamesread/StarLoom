@@ -6,8 +6,8 @@ import (
 )
 
 type memoryNotificationDeliveries struct {
-	nextID int
 	rows   []NotificationDeliveryRow
+	nextID int
 }
 
 func (m *Memory) notificationDeliveryState() *memoryNotificationDeliveries {
@@ -24,13 +24,19 @@ func (m *Memory) InsertNotificationDelivery(_ context.Context, row NotificationD
 	if row.SentAt == "" {
 		row.SentAt = familyNow()
 	}
-	if row.RecipientMemberID != 0 && row.RecipientDisplayName == "" {
-		if member, err := m.GetMemberByID(context.Background(), row.RecipientMemberID); err == nil && member != nil {
-			row.RecipientDisplayName = member.DisplayName
-		}
-	}
+	row.RecipientDisplayName = m.resolveDeliveryDisplayName(row)
 	st.rows = append(st.rows, row)
 	return row.ID, nil
+}
+
+func (m *Memory) resolveDeliveryDisplayName(row NotificationDeliveryRow) string {
+	if row.RecipientDisplayName != "" || row.RecipientMemberID == 0 {
+		return row.RecipientDisplayName
+	}
+	if member, err := m.GetMemberByID(context.Background(), row.RecipientMemberID); err == nil && member != nil {
+		return member.DisplayName
+	}
+	return row.RecipientDisplayName
 }
 
 func (m *Memory) ListNotificationDeliveries(_ context.Context, limit int) ([]NotificationDeliveryRow, error) {

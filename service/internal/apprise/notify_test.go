@@ -9,7 +9,7 @@ import (
 func TestPersonTag(t *testing.T) {
 	assert.Equal(t, "starloom_uid_42", PersonTag(42))
 	assert.Equal(t, "starloom_uid_1,starloom_uid_3", JoinPersonTags([]int{1, 3}))
-	assert.Equal(t, "", JoinPersonTags(nil))
+	assert.Empty(t, JoinPersonTags(nil))
 }
 
 func TestApprovalURL(t *testing.T) {

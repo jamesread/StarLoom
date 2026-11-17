@@ -9,18 +9,17 @@ import (
 )
 
 type memoryFamily struct {
-	mu sync.Mutex
-
-	nextFamilyID     int
 	families         map[int]FamilyRow
-	nextMemberID     int
 	members          map[int]FamilyMemberRow
-	nextLedgerID     int
 	ledger           map[int]StarLedgerRow
-	nextRewardID     int
 	rewards          map[int]RewardRow
-	nextRedemptionID int
 	redemptions      map[int]RedemptionRow
+	nextFamilyID     int
+	nextMemberID     int
+	nextLedgerID     int
+	nextRewardID     int
+	nextRedemptionID int
+	mu               sync.Mutex
 }
 
 func (m *Memory) familyState() *memoryFamily {
@@ -100,7 +99,7 @@ func (m *Memory) UpdateFamilyName(_ context.Context, id int, name string) error 
 	return nil
 }
 
-func (m *Memory) enrichMember(st *memoryFamily, mrow FamilyMemberRow) FamilyMemberRow {
+func (m *Memory) enrichMember(_ *memoryFamily, mrow FamilyMemberRow) FamilyMemberRow {
 	if mrow.UserAccountID != nil {
 		if u, err := m.GetUserByID(context.Background(), *mrow.UserAccountID); err == nil && u != nil {
 			mrow.Username = u.Username
@@ -202,6 +201,15 @@ func (m *Memory) DeleteMember(_ context.Context, id int) error {
 	if _, ok := st.members[id]; !ok {
 		return fmt.Errorf("member not found")
 	}
+	purgeMemberRows(st, id)
+	delete(st.members, id)
+	st.mu.Unlock()
+	m.deleteMemberChoreData(id)
+	st.mu.Lock()
+	return nil
+}
+
+func purgeMemberRows(st *memoryFamily, id int) {
 	for lid, row := range st.ledger {
 		if row.ChildMemberID == id {
 			delete(st.ledger, lid)
@@ -212,11 +220,6 @@ func (m *Memory) DeleteMember(_ context.Context, id int) error {
 			delete(st.redemptions, rid)
 		}
 	}
-	delete(st.members, id)
-	st.mu.Unlock()
-	m.deleteMemberChoreData(id)
-	st.mu.Lock()
-	return nil
 }
 
 func (m *Memory) deleteMemberChoreData(memberID int) {
@@ -226,12 +229,18 @@ func (m *Memory) deleteMemberChoreData(memberID int) {
 	ch := m.choreState()
 	ch.mu.Lock()
 	defer ch.mu.Unlock()
-	removedAssignments := map[int]bool{}
+	removed := filterMemberAssignments(ch, memberID)
+	purgeCompletions(ch, removed)
+	m.purgeMemberNotificationSubs(memberID)
+}
+
+func filterMemberAssignments(ch *memoryChore, memberID int) map[int]bool {
+	removed := map[int]bool{}
 	for id, cw := range ch.chores {
 		filtered := cw.Assignments[:0]
 		for _, a := range cw.Assignments {
 			if a.ChildMemberID == memberID {
-				removedAssignments[a.ID] = true
+				removed[a.ID] = true
 				continue
 			}
 			filtered = append(filtered, a)
@@ -239,22 +248,33 @@ func (m *Memory) deleteMemberChoreData(memberID int) {
 		cw.Assignments = filtered
 		ch.chores[id] = cw
 	}
+	return removed
+}
+
+func purgeCompletions(ch *memoryChore, removed map[int]bool) {
 	for cid, c := range ch.completions {
-		if removedAssignments[c.AssignmentID] {
+		if removed[c.AssignmentID] {
 			delete(ch.completions, cid)
 		}
 	}
-	if m.choreNotifications != nil {
-		for nid, row := range m.choreNotifications.rows {
-			if row.SubscriberMemberID == memberID {
-				delete(m.choreNotifications.rows, nid)
-				continue
-			}
-			if row.ChildMemberID != nil && *row.ChildMemberID == memberID {
-				delete(m.choreNotifications.rows, nid)
-			}
+}
+
+func (m *Memory) purgeMemberNotificationSubs(memberID int) {
+	if m.choreNotifications == nil {
+		return
+	}
+	for nid, row := range m.choreNotifications.rows {
+		if subscriptionTouchesMember(row, memberID) {
+			delete(m.choreNotifications.rows, nid)
 		}
 	}
+}
+
+func subscriptionTouchesMember(row ChoreNotificationSubscriptionRow, memberID int) bool {
+	if row.SubscriberMemberID == memberID {
+		return true
+	}
+	return row.ChildMemberID != nil && *row.ChildMemberID == memberID
 }
 
 func (m *Memory) SetMemberAvatarPath(_ context.Context, id int, path string) error {
@@ -290,22 +310,31 @@ func (m *Memory) ListLedger(_ context.Context, memberID, limit int) ([]StarLedge
 	if limit <= 0 {
 		limit = 50
 	}
+	rows := memberLedgerRows(st.ledger, memberID)
+	sortLedgerNewest(rows)
+	if len(rows) > limit {
+		rows = rows[:limit]
+	}
+	return rows, nil
+}
+
+func memberLedgerRows(ledger map[int]StarLedgerRow, memberID int) []StarLedgerRow {
 	rows := []StarLedgerRow{}
-	for _, e := range st.ledger {
+	for _, e := range ledger {
 		if e.ChildMemberID == memberID {
 			rows = append(rows, e)
 		}
 	}
+	return rows
+}
+
+func sortLedgerNewest(rows []StarLedgerRow) {
 	sort.Slice(rows, func(i, j int) bool {
 		if rows[i].CreatedAt != rows[j].CreatedAt {
 			return rows[i].CreatedAt > rows[j].CreatedAt
 		}
 		return rows[i].ID > rows[j].ID
 	})
-	if len(rows) > limit {
-		rows = rows[:limit]
-	}
-	return rows, nil
 }
 
 func (m *Memory) GetLastAward(_ context.Context, memberID int) (*StarLedgerRow, error) {
@@ -340,16 +369,7 @@ func (m *Memory) ListRewards(_ context.Context, familyID int, includeInactive bo
 	st := m.familyState()
 	st.mu.Lock()
 	defer st.mu.Unlock()
-	out := []RewardRow{}
-	for _, r := range st.rewards {
-		if r.FamilyID != familyID {
-			continue
-		}
-		if !includeInactive && !r.Active {
-			continue
-		}
-		out = append(out, r)
-	}
+	out := filterRewards(st.rewards, familyID, includeInactive)
 	sort.Slice(out, func(i, j int) bool {
 		if out[i].CostStars != out[j].CostStars {
 			return out[i].CostStars < out[j].CostStars
@@ -357,6 +377,26 @@ func (m *Memory) ListRewards(_ context.Context, familyID int, includeInactive bo
 		return out[i].Title < out[j].Title
 	})
 	return out, nil
+}
+
+func filterRewards(rewards map[int]RewardRow, familyID int, includeInactive bool) []RewardRow {
+	out := []RewardRow{}
+	for _, r := range rewards {
+		if rewardMatches(r, familyID, includeInactive) {
+			out = append(out, r)
+		}
+	}
+	return out
+}
+
+func rewardMatches(r RewardRow, familyID int, includeInactive bool) bool {
+	if r.FamilyID != familyID {
+		return false
+	}
+	if !includeInactive && !r.Active {
+		return false
+	}
+	return true
 }
 
 func (m *Memory) GetRewardByID(_ context.Context, id int) (*RewardRow, error) {
@@ -420,22 +460,7 @@ func (m *Memory) ListRedemptions(_ context.Context, familyID int, status string)
 	st := m.familyState()
 	st.mu.Lock()
 	defer st.mu.Unlock()
-	out := []RedemptionRow{}
-	for _, r := range st.redemptions {
-		if familyID > 0 && r.FamilyID != familyID {
-			continue
-		}
-		if status != "" && r.Status != status {
-			continue
-		}
-		if rw, ok := st.rewards[r.RewardID]; ok {
-			r.RewardTitle = rw.Title
-		}
-		if mrow, ok := st.members[r.ChildMemberID]; ok {
-			r.ChildDisplayName = mrow.DisplayName
-		}
-		out = append(out, r)
-	}
+	out := collectRedemptions(st, familyID, status)
 	sort.Slice(out, func(i, j int) bool {
 		if out[i].CreatedAt != out[j].CreatedAt {
 			return out[i].CreatedAt > out[j].CreatedAt
@@ -443,6 +468,37 @@ func (m *Memory) ListRedemptions(_ context.Context, familyID int, status string)
 		return out[i].ID > out[j].ID
 	})
 	return out, nil
+}
+
+func collectRedemptions(st *memoryFamily, familyID int, status string) []RedemptionRow {
+	out := []RedemptionRow{}
+	for _, r := range st.redemptions {
+		if !redemptionMatches(r, familyID, status) {
+			continue
+		}
+		out = append(out, decorateRedemption(st, r))
+	}
+	return out
+}
+
+func redemptionMatches(r RedemptionRow, familyID int, status string) bool {
+	if familyID > 0 && r.FamilyID != familyID {
+		return false
+	}
+	if status != "" && r.Status != status {
+		return false
+	}
+	return true
+}
+
+func decorateRedemption(st *memoryFamily, r RedemptionRow) RedemptionRow {
+	if rw, ok := st.rewards[r.RewardID]; ok {
+		r.RewardTitle = rw.Title
+	}
+	if mrow, ok := st.members[r.ChildMemberID]; ok {
+		r.ChildDisplayName = mrow.DisplayName
+	}
+	return r
 }
 
 func (m *Memory) GetRedemptionByID(_ context.Context, id int) (*RedemptionRow, error) {
@@ -500,18 +556,26 @@ func (m *Memory) CountApprovedRedemptionsForMemberRewardBetween(_ context.Contex
 	st := m.familyState()
 	count := 0
 	for _, row := range st.redemptions {
-		if row.ChildMemberID != childMemberID || row.RewardID != rewardID || row.Status != RedemptionApproved {
-			continue
-		}
-		granted := redemptionGrantedDate(row)
-		if granted == "" {
-			continue
-		}
-		if granted >= startDate && granted <= endDate {
+		if approvedRedemptionInRange(row, childMemberID, rewardID, startDate, endDate) {
 			count++
 		}
 	}
 	return count, nil
+}
+
+func approvedRedemptionInRange(row RedemptionRow, childMemberID, rewardID int, startDate, endDate string) bool {
+	if !isApprovedMemberReward(row, childMemberID, rewardID) {
+		return false
+	}
+	granted := redemptionGrantedDate(row)
+	if granted == "" {
+		return false
+	}
+	return granted >= startDate && granted <= endDate
+}
+
+func isApprovedMemberReward(row RedemptionRow, childMemberID, rewardID int) bool {
+	return row.ChildMemberID == childMemberID && row.RewardID == rewardID && row.Status == RedemptionApproved
 }
 
 func redemptionGrantedDate(row RedemptionRow) string {

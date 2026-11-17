@@ -17,7 +17,7 @@ func (s *SQLite) ListStarCharts(ctx context.Context, familyID int, includeInacti
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	var out []StarChartRow
 	for rows.Next() {
 		var sc StarChartRow

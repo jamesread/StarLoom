@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 )
@@ -67,14 +68,8 @@ func namesFromIndex(path string) []string {
 	}
 	names := make([]string, 0, len(payload.Themes))
 	for _, raw := range payload.Themes {
-		var asString string
-		if err := json.Unmarshal(raw, &asString); err == nil && asString != "" {
-			names = append(names, asString)
-			continue
-		}
-		var asObject indexEntry
-		if err := json.Unmarshal(raw, &asObject); err == nil && asObject.ID != "" {
-			names = append(names, asObject.ID)
+		if name := parseThemeName(raw); name != "" {
+			names = append(names, name)
 		}
 	}
 	return uniqueSorted(names)
@@ -103,12 +98,19 @@ func IsValidName(name string, allowed []string) bool {
 	if name == "" {
 		return true
 	}
-	for _, candidate := range allowed {
-		if candidate == name {
-			return true
-		}
+	return slices.Contains(allowed, name)
+}
+
+func parseThemeName(raw json.RawMessage) string {
+	var asString string
+	if err := json.Unmarshal(raw, &asString); err == nil && asString != "" {
+		return asString
 	}
-	return false
+	var asObject indexEntry
+	if err := json.Unmarshal(raw, &asObject); err == nil && asObject.ID != "" {
+		return asObject.ID
+	}
+	return ""
 }
 
 func uniqueSorted(names []string) []string {

@@ -98,43 +98,74 @@ func (s *Server) ListCvars(ctx context.Context, _ *connect.Request[apiv1.ListCva
 }
 
 func validateCvarUpdate(row *store.CvarRow, valueInt int32, valueString string, allowedThemes []string) (int, string, error) {
-	switch row.Key {
-	case cvar.KeyThemeControl:
-		value := strings.TrimSpace(valueString)
-		if value != cvar.ThemeControlSystem && value != cvar.ThemeControlUser {
-			return 0, "", fmt.Errorf("theme_control must be system or user")
-		}
-		return 0, value, nil
-	case cvar.KeyThemeName:
-		value := strings.TrimSpace(valueString)
-		if !themes.IsValidName(value, allowedThemes) {
-			return 0, "", fmt.Errorf("unknown theme %q", value)
-		}
-		return 0, value, nil
+	if value, handled, err := validateThemeCvar(row.Key, valueString, allowedThemes); handled {
+		return 0, value, err
 	}
+	return validateTypedCvar(row, valueInt, valueString)
+}
 
+func validateThemeCvar(key, valueString string, allowedThemes []string) (string, bool, error) {
+	switch key {
+	case cvar.KeyThemeControl:
+		return validateThemeControl(valueString)
+	case cvar.KeyThemeName:
+		return validateThemeName(valueString, allowedThemes)
+	default:
+		return "", false, nil
+	}
+}
+
+func validateThemeControl(valueString string) (string, bool, error) {
+	value := strings.TrimSpace(valueString)
+	if value != cvar.ThemeControlSystem && value != cvar.ThemeControlUser {
+		return "", true, fmt.Errorf("theme_control must be system or user")
+	}
+	return value, true, nil
+}
+
+func validateThemeName(valueString string, allowedThemes []string) (string, bool, error) {
+	value := strings.TrimSpace(valueString)
+	if !themes.IsValidName(value, allowedThemes) {
+		return "", true, fmt.Errorf("unknown theme %q", value)
+	}
+	return value, true, nil
+}
+
+func validateTypedCvar(row *store.CvarRow, valueInt int32, valueString string) (int, string, error) {
 	switch row.MainType {
 	case cvar.TypeString:
 		return validateStringCvar(row.Key, valueString)
 	case cvar.TypeTextarea:
-		if len(valueString) > cvar.MaxTextareaCvarLen {
-			return 0, "", fmt.Errorf("value too long")
-		}
-		return 0, valueString, nil
+		return validateTextareaCvar(valueString)
 	case cvar.TypeInt:
-		v := int(valueInt)
-		if row.Key == cvar.KeyDefaultAwardStars && (v < 1 || v > cvar.MaxAwardStars) {
-			return 0, "", fmt.Errorf("default_award_stars must be between 1 and %d", cvar.MaxAwardStars)
-		}
-		return v, "", nil
+		return validateIntCvar(row.Key, valueInt)
 	case cvar.TypeBool:
-		if valueInt != 0 {
-			return 1, "", nil
-		}
-		return 0, "", nil
+		return validateBoolCvar(valueInt)
 	default:
 		return 0, "", fmt.Errorf("unsupported cvar type")
 	}
+}
+
+func validateBoolCvar(valueInt int32) (int, string, error) {
+	if valueInt != 0 {
+		return 1, "", nil
+	}
+	return 0, "", nil
+}
+
+func validateTextareaCvar(valueString string) (int, string, error) {
+	if len(valueString) > cvar.MaxTextareaCvarLen {
+		return 0, "", fmt.Errorf("value too long")
+	}
+	return 0, valueString, nil
+}
+
+func validateIntCvar(key string, valueInt int32) (int, string, error) {
+	v := int(valueInt)
+	if key == cvar.KeyDefaultAwardStars && (v < 1 || v > cvar.MaxAwardStars) {
+		return 0, "", fmt.Errorf("default_award_stars must be between 1 and %d", cvar.MaxAwardStars)
+	}
+	return v, "", nil
 }
 
 func validateStringCvar(key, valueString string) (int, string, error) {

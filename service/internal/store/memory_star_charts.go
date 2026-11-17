@@ -8,10 +8,9 @@ import (
 )
 
 type memoryStarChart struct {
-	mu sync.Mutex
-
-	nextStarChartID int
 	starCharts      map[int]StarChartRow
+	nextStarChartID int
+	mu              sync.Mutex
 }
 
 func (m *Memory) starChartState() *memoryStarChart {
@@ -41,16 +40,7 @@ func (m *Memory) ListStarCharts(_ context.Context, familyID int, includeInactive
 	st.mu.Lock()
 	defer st.mu.Unlock()
 	m.ensureDefaultStarChartLocked(familyID)
-	var out []StarChartRow
-	for _, sc := range st.starCharts {
-		if sc.FamilyID != familyID {
-			continue
-		}
-		if !includeInactive && !sc.Active {
-			continue
-		}
-		out = append(out, sc)
-	}
+	out := filterStarCharts(st.starCharts, familyID, includeInactive)
 	sort.Slice(out, func(i, j int) bool {
 		if out[i].SortOrder != out[j].SortOrder {
 			return out[i].SortOrder < out[j].SortOrder
@@ -58,6 +48,26 @@ func (m *Memory) ListStarCharts(_ context.Context, familyID int, includeInactive
 		return out[i].Name < out[j].Name
 	})
 	return out, nil
+}
+
+func filterStarCharts(charts map[int]StarChartRow, familyID int, includeInactive bool) []StarChartRow {
+	var out []StarChartRow
+	for _, sc := range charts {
+		if starChartMatches(sc, familyID, includeInactive) {
+			out = append(out, sc)
+		}
+	}
+	return out
+}
+
+func starChartMatches(sc StarChartRow, familyID int, includeInactive bool) bool {
+	if sc.FamilyID != familyID {
+		return false
+	}
+	if !includeInactive && !sc.Active {
+		return false
+	}
+	return true
 }
 
 func (m *Memory) GetStarChartByID(_ context.Context, id int) (*StarChartRow, error) {
@@ -133,15 +143,21 @@ func (m *Memory) CountChoresForStarChartAndMember(_ context.Context, starChartID
 	defer ch.mu.Unlock()
 	count := 0
 	for _, cw := range ch.chores {
-		if cw.Chore.StarChartID != starChartID || !cw.Chore.Active {
-			continue
-		}
-		for _, assign := range cw.Assignments {
-			if assign.ChildMemberID == memberID {
-				count++
-				break
-			}
+		if choreAssignedOnChart(cw, starChartID, memberID) {
+			count++
 		}
 	}
 	return count, nil
+}
+
+func choreAssignedOnChart(cw ChoreWithAssignments, starChartID, memberID int) bool {
+	if cw.Chore.StarChartID != starChartID || !cw.Chore.Active {
+		return false
+	}
+	for _, assign := range cw.Assignments {
+		if assign.ChildMemberID == memberID {
+			return true
+		}
+	}
+	return false
 }

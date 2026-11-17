@@ -40,7 +40,7 @@ function copyDirectoryRecursive(sourceDir: string, targetDir: string) {
 function supplementalThemesPlugin() {
   return {
     name: 'starapp-supplemental-themes',
-    configureServer(server: { middlewares: { use: Function } }) {
+    configureServer(server: { middlewares: { use: (..._args: unknown[]) => unknown } }) {
       if (!fs.existsSync(supplementalThemesDir)) {
         return
       }

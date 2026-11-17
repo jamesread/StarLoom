@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -52,6 +53,16 @@ func IsScheduledOnDate(mask int, date string) bool {
 
 // ListChores returns a family's chores in display order.
 func (s *SQLite) ListChores(ctx context.Context, familyID int, starChartID int, includeInactive bool) ([]ChoreWithAssignments, error) {
+	q, args := listChoresQuery(familyID, starChartID, includeInactive)
+	rows, err := s.db.QueryContext(ctx, q, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = rows.Close() }()
+	return s.scanChoresWithAssignments(ctx, rows)
+}
+
+func listChoresQuery(familyID, starChartID int, includeInactive bool) (string, []any) {
 	q := `SELECT id, family_id, star_chart_id, title, star_reward, weekday_mask, active, sort_order, created_at
 		FROM chores WHERE family_id = ?`
 	args := []any{familyID}
@@ -62,31 +73,37 @@ func (s *SQLite) ListChores(ctx context.Context, familyID int, starChartID int, 
 	if !includeInactive {
 		q += ` AND active = 1`
 	}
-	q += ` ORDER BY sort_order, title`
-	rows, err := s.db.QueryContext(ctx, q, args...)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+	return q + ` ORDER BY sort_order, title`, args
+}
+
+func (s *SQLite) scanChoresWithAssignments(ctx context.Context, rows *sql.Rows) ([]ChoreWithAssignments, error) {
 	var out []ChoreWithAssignments
 	for rows.Next() {
-		var c ChoreRow
-		var active int
-		var chartID sql.NullInt64
-		if err := rows.Scan(&c.ID, &c.FamilyID, &chartID, &c.Title, &c.StarReward, &c.WeekdayMask, &active, &c.SortOrder, &c.CreatedAt); err != nil {
-			return nil, err
-		}
-		if chartID.Valid {
-			c.StarChartID = int(chartID.Int64)
-		}
-		c.Active = active != 0
-		assigns, err := s.listAssignmentsForChore(ctx, c.ID)
+		cw, err := s.scanChoreWithAssignmentsRow(ctx, rows)
 		if err != nil {
 			return nil, err
 		}
-		out = append(out, ChoreWithAssignments{Chore: c, Assignments: assigns})
+		out = append(out, cw)
 	}
 	return out, rows.Err()
+}
+
+func (s *SQLite) scanChoreWithAssignmentsRow(ctx context.Context, rows *sql.Rows) (ChoreWithAssignments, error) {
+	var c ChoreRow
+	var active int
+	var chartID sql.NullInt64
+	if err := rows.Scan(&c.ID, &c.FamilyID, &chartID, &c.Title, &c.StarReward, &c.WeekdayMask, &active, &c.SortOrder, &c.CreatedAt); err != nil {
+		return ChoreWithAssignments{}, err
+	}
+	if chartID.Valid {
+		c.StarChartID = int(chartID.Int64)
+	}
+	c.Active = active != 0
+	assigns, err := s.listAssignmentsForChore(ctx, c.ID)
+	if err != nil {
+		return ChoreWithAssignments{}, err
+	}
+	return ChoreWithAssignments{Chore: c, Assignments: assigns}, nil
 }
 
 func (s *SQLite) listAssignmentsForChore(ctx context.Context, choreID int) ([]ChoreAssignmentRow, error) {
@@ -95,7 +112,7 @@ func (s *SQLite) listAssignmentsForChore(ctx context.Context, choreID int) ([]Ch
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	var out []ChoreAssignmentRow
 	for rows.Next() {
 		var a ChoreAssignmentRow
@@ -115,7 +132,7 @@ func (s *SQLite) GetChoreByID(ctx context.Context, id int) (*ChoreWithAssignment
 	err := s.db.QueryRowContext(ctx,
 		`SELECT id, family_id, star_chart_id, title, star_reward, weekday_mask, active, sort_order, created_at FROM chores WHERE id = ?`, id,
 	).Scan(&c.ID, &c.FamilyID, &chartID, &c.Title, &c.StarReward, &c.WeekdayMask, &active, &c.SortOrder, &c.CreatedAt)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
 	if err != nil {
@@ -137,6 +154,14 @@ func (s *SQLite) CreateChore(ctx context.Context, familyID, starChartID int, tit
 	if weekdayMask == 0 {
 		weekdayMask = 127
 	}
+	choreID, err := s.insertChoreRow(ctx, familyID, starChartID, title, starReward, weekdayMask)
+	if err != nil {
+		return 0, err
+	}
+	return choreID, s.insertChoreAssignments(ctx, choreID, childMemberIDs)
+}
+
+func (s *SQLite) insertChoreRow(ctx context.Context, familyID, starChartID int, title string, starReward, weekdayMask int) (int, error) {
 	res, err := s.db.ExecContext(ctx,
 		`INSERT INTO chores (family_id, star_chart_id, title, star_reward, weekday_mask, sort_order)
 			VALUES (?, ?, ?, ?, ?, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM chores WHERE family_id = ?))`,
@@ -148,40 +173,41 @@ func (s *SQLite) CreateChore(ctx context.Context, familyID, starChartID int, tit
 	if err != nil {
 		return 0, err
 	}
-	choreID := int(id64)
+	return int(id64), nil
+}
+
+func (s *SQLite) insertChoreAssignments(ctx context.Context, choreID int, childMemberIDs []int) error {
 	for _, childID := range childMemberIDs {
 		if _, err := s.db.ExecContext(ctx,
 			`INSERT INTO chore_assignments (chore_id, child_member_id) VALUES (?, ?)`, choreID, childID); err != nil {
-			return 0, err
+			return err
 		}
 	}
-	return choreID, nil
+	return nil
 }
 
 func (s *SQLite) UpdateChore(ctx context.Context, id int, starChartID int, title string, starReward, weekdayMask int, active bool, childMemberIDs []int) error {
-	activeInt := 0
-	if active {
-		activeInt = 1
-	}
 	if weekdayMask == 0 {
 		weekdayMask = 127
 	}
-	_, err := s.db.ExecContext(ctx,
-		`UPDATE chores SET star_chart_id = ?, title = ?, star_reward = ?, weekday_mask = ?, active = ? WHERE id = ?`,
-		starChartID, title, starReward, weekdayMask, activeInt, id)
-	if err != nil {
+	if err := s.updateChoreRow(ctx, id, starChartID, title, starReward, weekdayMask, active); err != nil {
 		return err
 	}
 	if _, err := s.db.ExecContext(ctx, `DELETE FROM chore_assignments WHERE chore_id = ?`, id); err != nil {
 		return err
 	}
-	for _, childID := range childMemberIDs {
-		if _, err := s.db.ExecContext(ctx,
-			`INSERT INTO chore_assignments (chore_id, child_member_id) VALUES (?, ?)`, id, childID); err != nil {
-			return err
-		}
+	return s.insertChoreAssignments(ctx, id, childMemberIDs)
+}
+
+func (s *SQLite) updateChoreRow(ctx context.Context, id, starChartID int, title string, starReward, weekdayMask int, active bool) error {
+	activeInt := 0
+	if active {
+		activeInt = 1
 	}
-	return nil
+	_, err := s.db.ExecContext(ctx,
+		`UPDATE chores SET star_chart_id = ?, title = ?, star_reward = ?, weekday_mask = ?, active = ? WHERE id = ?`,
+		starChartID, title, starReward, weekdayMask, activeInt, id)
+	return err
 }
 
 // ReorderChores numbers the given chores from one.
@@ -213,7 +239,7 @@ func (s *SQLite) ListChorePauses(ctx context.Context, familyID int) ([]ChorePaus
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	var out []ChorePauseRow
 	for rows.Next() {
 		var p ChorePauseRow
@@ -254,7 +280,7 @@ func (s *SQLite) GetAssignment(ctx context.Context, choreID, childMemberID int) 
 	err := s.db.QueryRowContext(ctx,
 		`SELECT id, chore_id, child_member_id FROM chore_assignments WHERE chore_id = ? AND child_member_id = ?`,
 		choreID, childMemberID).Scan(&a.ID, &a.ChoreID, &a.ChildMemberID)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
 	if err != nil {
@@ -270,7 +296,7 @@ func (s *SQLite) GetCompletion(ctx context.Context, assignmentID int, date strin
 		`SELECT id, assignment_id, completion_date, ledger_entry_id, created_at
 		 FROM chore_completions WHERE assignment_id = ? AND completion_date = ?`,
 		assignmentID, date).Scan(&c.ID, &c.AssignmentID, &c.CompletionDate, &ledgerID, &c.CreatedAt)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
 	if err != nil {
@@ -311,7 +337,7 @@ func (s *SQLite) ListCompletionsForWeek(ctx context.Context, familyID int, weekS
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	var out []WeeklyChartCompletion
 	for rows.Next() {
 		var w WeeklyChartCompletion
@@ -337,7 +363,7 @@ func (s *SQLite) ListChoreLedgerEntryIDs(ctx context.Context, familyID int) ([]i
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	var out []int
 	for rows.Next() {
 		var id int
@@ -350,6 +376,16 @@ func (s *SQLite) ListChoreLedgerEntryIDs(ctx context.Context, familyID int) ([]i
 }
 
 func (s *SQLite) ListBonusStarsForWeek(ctx context.Context, familyID int, weekStart, weekEnd string, choreLedgerIDs []int) (map[int]map[string]int, error) {
+	q, args := bonusStarsQuery(familyID, weekStart, weekEnd, choreLedgerIDs)
+	rows, err := s.db.QueryContext(ctx, q, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = rows.Close() }()
+	return scanBonusStars(rows)
+}
+
+func bonusStarsQuery(familyID int, weekStart, weekEnd string, choreLedgerIDs []int) (string, []any) {
 	q := `
 		SELECT child_member_id, date(created_at) AS d, SUM(amount) AS total
 		FROM star_ledger_entries
@@ -365,12 +401,10 @@ func (s *SQLite) ListBonusStarsForWeek(ctx context.Context, familyID int, weekSt
 			args = append(args, id)
 		}
 	}
-	q += ` GROUP BY child_member_id, date(created_at)`
-	rows, err := s.db.QueryContext(ctx, q, args...)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+	return q + ` GROUP BY child_member_id, date(created_at)`, args
+}
+
+func scanBonusStars(rows *sql.Rows) (map[int]map[string]int, error) {
 	out := map[int]map[string]int{}
 	for rows.Next() {
 		var childID int

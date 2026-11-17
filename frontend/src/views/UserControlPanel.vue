@@ -4,7 +4,6 @@ import NavigationGrid from 'picocrank/vue/components/NavigationGrid.vue'
 import Section from 'picocrank/vue/components/Section.vue'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { HugeiconsIcon } from '@hugeicons/vue'
 import {
   DashboardSquareSettingIcon,
   Key01Icon,

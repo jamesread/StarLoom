@@ -11,53 +11,71 @@
 
 ## Screenshots
 
-Login (Space theme);
+### Login
+
+Sign-in screen in the Space theme, where parents and children enter the family star rewards app.
 
 <p align="center">
-<img alt="Login page in the Space theme" src="var/marketing/login-space.png" />
+<img alt="Login page in the Space theme" src="var/marketing/screenshots/login-space.png" />
 </p>
 
-Parent home (Egypt theme) — family overview as a privileged user;
+### Parent home
+
+Family overview for a privileged parent in the Egypt theme, with children, stars and quick actions in one place.
 
 <p align="center">
-<img alt="Parent home in the Egypt theme" src="var/marketing/parent-home-egypt.png" />
+<img alt="Parent home in the Egypt theme" src="var/marketing/screenshots/parent-home-egypt.png" />
 </p>
 
-Child home (Aztecs theme) — personal stars and rewards;
+### Child home
+
+A child's personal home in the Aztecs theme, showing their star balance and rewards they can redeem.
 
 <p align="center">
-<img alt="Child home in the Aztecs theme" src="var/marketing/child-home-aztecs.png" />
+<img alt="Child home in the Aztecs theme" src="var/marketing/screenshots/child-home-aztecs.png" />
 </p>
 
-Weekly star chart (Ancient Greece theme);
+### Weekly star chart
+
+The weekly star chart in the Ancient Greece theme, where parents track chores and award stars day by day.
 
 <p align="center">
-<img alt="Star chart in the Ancient Greece theme" src="var/marketing/star-chart-greece.png" />
+<img alt="Star chart in the Ancient Greece theme" src="var/marketing/screenshots/star-chart-greece.png" />
 </p>
 
-Rewards and redemption requests (Space theme, dark);
+### Rewards
+
+Rewards and redemption requests in the Space theme with dark mode, so parents can approve privileges earned with stars.
 
 <p align="center">
-<img alt="Rewards admin in the Space theme, dark mode" src="var/marketing/rewards-space-dark.png" />
+<img alt="Rewards admin in the Space theme, dark mode" src="var/marketing/screenshots/rewards-space-dark.png" />
 </p>
 
-People (Aztecs theme, dark);
+### People
+
+Family people admin in the Aztecs theme with dark mode, listing members and their roles.
 
 <p align="center">
-<img alt="People admin in the Aztecs theme, dark mode" src="var/marketing/people-aztecs-dark.png" />
+<img alt="People admin in the Aztecs theme, dark mode" src="var/marketing/screenshots/people-aztecs-dark.png" />
 </p>
 
-Control Panel (Catppuccin theme);
+### Control Panel
+
+The system Control Panel in the Catppuccin theme, the hub for IAM, settings and other privileged tools.
 
 <p align="center">
-<img alt="Control Panel in the Catppuccin theme" src="var/marketing/control-panel-catppuccin.png" />
+<img alt="Control Panel in the Catppuccin theme" src="var/marketing/screenshots/control-panel-catppuccin.png" />
 </p>
 
-User preferences (Egypt theme);
+### User preferences
+
+User preferences in the Egypt theme, where each person sets language, sidebar and theme options.
 
 <p align="center">
-<img alt="User preferences in the Egypt theme" src="var/marketing/preferences-egypt.png" />
+<img alt="User preferences in the Egypt theme" src="var/marketing/screenshots/preferences-egypt.png" />
 </p>
+
+Screenshots can be regenerated with `make screenshots` (Vite SPA must be running at https://localhost:5173).
 
 ## Documentation
 

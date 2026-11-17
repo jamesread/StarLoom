@@ -24,13 +24,14 @@ func TestSQLiteHasMigrationWithRecord(t *testing.T) {
 	require.NoError(t, err)
 	t.Cleanup(func() { _ = st.Close() })
 
-	_, err = st.db.Exec(`
+	ctx := context.Background()
+	_, err = st.db.ExecContext(ctx, `
 CREATE TABLE migrations (
   id VARCHAR(255) NOT NULL PRIMARY KEY,
   applied_at DATETIME
 )`)
 	require.NoError(t, err)
-	_, err = st.db.Exec(
+	_, err = st.db.ExecContext(ctx,
 		`INSERT INTO migrations (id, applied_at) VALUES (?, datetime('now'))`,
 		config.RequiredMigration,
 	)
@@ -50,7 +51,7 @@ func TestSQLiteLatestMigrationEmpty(t *testing.T) {
 	require.NoError(t, err)
 	t.Cleanup(func() { _ = st.Close() })
 
-	_, err = st.db.Exec(`
+	_, err = st.db.ExecContext(context.Background(), `
 CREATE TABLE migrations (
   id VARCHAR(255) NOT NULL PRIMARY KEY,
   applied_at DATETIME
@@ -59,5 +60,5 @@ CREATE TABLE migrations (
 
 	latest, err := st.LatestMigration(context.Background())
 	require.NoError(t, err)
-	require.Equal(t, "", latest)
+	require.Empty(t, latest)
 }

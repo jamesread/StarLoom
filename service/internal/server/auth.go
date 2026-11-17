@@ -28,13 +28,18 @@ func (s *Server) bootstrapIAM(ctx context.Context) error {
 	if err := s.store.SeedDomainRBAC(ctx); err != nil {
 		return err
 	}
+	return s.ensureBootstrapAdmin(ctx)
+}
+
+func (s *Server) ensureBootstrapAdmin(ctx context.Context) error {
 	count, err := s.store.CountUserAccounts(ctx)
-	if err != nil {
+	if err != nil || count > 0 {
 		return err
 	}
-	if count > 0 {
-		return nil
-	}
+	return s.createBootstrapAdmin(ctx)
+}
+
+func (s *Server) createBootstrapAdmin(ctx context.Context) error {
 	hash, err := password.Hash("admin")
 	if err != nil {
 		return err
@@ -60,76 +65,111 @@ func (s *Server) shellFields(ctx context.Context) (title string, resp *apiv1.Ini
 func (s *Server) GetStatus(ctx context.Context, req *connect.Request[apiv1.GetStatusRequest]) (*connect.Response[apiv1.GetStatusResponse], error) {
 	au := auth.UserFromContext(ctx)
 	_, init := s.shellFields(ctx)
-
-	res := &apiv1.GetStatusResponse{
-		ShowFooter:        init.ShowFooter,
-		ShowNewVersions:   init.ShowNewVersions,
-		AvailableVersion:  init.AvailableVersion,
-		CurrentVersion:    init.CurrentVersion,
-		PageTitle:         init.PageTitle,
-		ShowVersionNumber: init.ShowVersionNumber,
-		SiteTitle:         init.SiteTitle,
-		Features:          init.Features,
-		WebhookEvents:     init.WebhookEvents,
-		UsesSecureCookies: auth.SecureCookiesEnabled(),
-		Username:          "<anonymous>",
-		IsLoggedIn:        au != nil && au.User != nil && au.User.ID > 0,
+	res := baseStatusResponse(init, au)
+	if isLoggedInUser(au) {
+		s.fillLoggedInStatus(ctx, res, au, req.Header())
 	}
-
-	if au != nil && au.User != nil && au.User.ID > 0 {
-		res.Username = au.User.Username
-		res.DisplayName = s.accountDisplayName(ctx, au.User.ID, au.User.Username)
-		res.IsLoggedIn = true
-		if user, uerr := s.store.GetUserByID(ctx, au.User.ID); uerr == nil && user != nil {
-			res.AccountCreatedAt = user.CreatedAt
-		}
-		if au.RBAC != nil {
-			res.RbacIsSuperuser = au.RBAC.IsSuperuser
-			for p := range au.RBAC.Permissions {
-				res.RbacPermissions = append(res.RbacPermissions, p)
-			}
-			sort.Strings(res.RbacPermissions)
-		}
-		if sid := sessionIDFromHeader(req.Header()); sid != "" {
-			if sess, err := s.store.GetSessionBySID(ctx, sid); err == nil && sess != nil && sess.ImpersonatorUserID != nil {
-				res.IsImpersonating = true
-				if imp, _ := s.store.GetUserByID(ctx, *sess.ImpersonatorUserID); imp != nil {
-					res.ImpersonatorUsername = imp.Username
-				}
-			}
-		}
-	}
-
 	return connect.NewResponse(res), nil
 }
 
+func isLoggedInUser(au *auth.AuthenticatedUser) bool {
+	return au != nil && au.User != nil && au.User.ID > 0
+}
+
+func baseStatusResponse(init *apiv1.InitResponse, au *auth.AuthenticatedUser) *apiv1.GetStatusResponse {
+	return &apiv1.GetStatusResponse{
+		ShowFooter: init.ShowFooter, ShowNewVersions: init.ShowNewVersions,
+		AvailableVersion: init.AvailableVersion, CurrentVersion: init.CurrentVersion,
+		PageTitle: init.PageTitle, ShowVersionNumber: init.ShowVersionNumber,
+		SiteTitle: init.SiteTitle, Features: init.Features, WebhookEvents: init.WebhookEvents,
+		UsesSecureCookies: auth.SecureCookiesEnabled(),
+		Username:          "<anonymous>", IsLoggedIn: isLoggedInUser(au),
+	}
+}
+
+func (s *Server) fillLoggedInStatus(ctx context.Context, res *apiv1.GetStatusResponse, au *auth.AuthenticatedUser, header http.Header) {
+	res.Username = au.User.Username
+	res.DisplayName = s.accountDisplayName(ctx, au.User.ID, au.User.Username)
+	res.IsLoggedIn = true
+	if user, uerr := s.store.GetUserByID(ctx, au.User.ID); uerr == nil && user != nil {
+		res.AccountCreatedAt = user.CreatedAt
+	}
+	fillStatusRBAC(res, au)
+	s.fillStatusImpersonation(ctx, res, header)
+}
+
+func fillStatusRBAC(res *apiv1.GetStatusResponse, au *auth.AuthenticatedUser) {
+	if au.RBAC == nil {
+		return
+	}
+	res.RbacIsSuperuser = au.RBAC.IsSuperuser
+	for p := range au.RBAC.Permissions {
+		res.RbacPermissions = append(res.RbacPermissions, p)
+	}
+	sort.Strings(res.RbacPermissions)
+}
+
+func (s *Server) fillStatusImpersonation(ctx context.Context, res *apiv1.GetStatusResponse, header http.Header) {
+	sid := sessionIDFromHeader(header)
+	if sid == "" {
+		return
+	}
+	impersonatorID, ok := s.sessionImpersonatorID(ctx, sid)
+	if !ok {
+		return
+	}
+	res.IsImpersonating = true
+	if imp, _ := s.store.GetUserByID(ctx, impersonatorID); imp != nil {
+		res.ImpersonatorUsername = imp.Username
+	}
+}
+
+func (s *Server) sessionImpersonatorID(ctx context.Context, sid string) (int, bool) {
+	sess, err := s.store.GetSessionBySID(ctx, sid)
+	if err != nil || sess == nil || sess.ImpersonatorUserID == nil {
+		return 0, false
+	}
+	return *sess.ImpersonatorUserID, true
+}
+
 func sessionIDFromHeader(h http.Header) string {
-	for _, part := range strings.Split(h.Get("Cookie"), ";") {
+	prefix := auth.SessionCookieName() + "="
+	for part := range strings.SplitSeq(h.Get("Cookie"), ";") {
 		part = strings.TrimSpace(part)
-		if strings.HasPrefix(part, auth.SessionCookieName()+"=") {
-			return strings.TrimPrefix(part, auth.SessionCookieName()+"=")
+		if val, ok := strings.CutPrefix(part, prefix); ok {
+			return val
 		}
 	}
 	return ""
 }
 
 func (s *Server) LoginWithUsernameAndPassword(ctx context.Context, req *connect.Request[apiv1.LoginWithUsernameAndPasswordRequest]) (*connect.Response[apiv1.LoginWithUsernameAndPasswordResponse], error) {
-	username := strings.TrimSpace(req.Msg.Username)
-	user, err := s.store.GetUserByUsername(ctx, username)
+	user, err := s.store.GetUserByUsername(ctx, strings.TrimSpace(req.Msg.Username))
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	res := connect.NewResponse(&apiv1.LoginWithUsernameAndPasswordResponse{
+	res := failedLoginResponse()
+	if !passwordMatches(user, req.Msg.Password) {
+		return res, nil
+	}
+	return s.completeLogin(ctx, res, user)
+}
+
+func failedLoginResponse() *connect.Response[apiv1.LoginWithUsernameAndPasswordResponse] {
+	return connect.NewResponse(&apiv1.LoginWithUsernameAndPasswordResponse{
 		StandardResponse: &apiv1.StandardResponse{Success: false, Message: "Invalid username or password"},
 	})
-	if user == nil || user.PasswordHash == "" {
-		return res, nil
-	}
-	match, err := password.Verify(user.PasswordHash, req.Msg.Password)
-	if err != nil || !match {
-		return res, nil
-	}
+}
 
+func passwordMatches(user *store.UserAccountRow, plain string) bool {
+	if user == nil || user.PasswordHash == "" {
+		return false
+	}
+	match, err := password.Verify(user.PasswordHash, plain)
+	return err == nil && match
+}
+
+func (s *Server) completeLogin(ctx context.Context, res *connect.Response[apiv1.LoginWithUsernameAndPasswordResponse], user *store.UserAccountRow) (*connect.Response[apiv1.LoginWithUsernameAndPasswordResponse], error) {
 	sid := uuid.NewString()
 	if err := s.store.CreateSession(ctx, sid, user.ID, nil); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
@@ -154,6 +194,22 @@ func (s *Server) Logout(ctx context.Context, req *connect.Request[apiv1.LogoutRe
 }
 
 func (s *Server) ChangePassword(ctx context.Context, req *connect.Request[apiv1.ChangePasswordRequest]) (*connect.Response[apiv1.ChangePasswordResponse], error) {
+	au, err := s.requireWritableUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if len(req.Msg.NewPassword) < 8 {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("new password must be at least 8 characters"))
+	}
+	if err := s.changeUserPassword(ctx, au.User.ID, req.Msg.CurrentPassword, req.Msg.NewPassword); err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&apiv1.ChangePasswordResponse{
+		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Password changed"},
+	}), nil
+}
+
+func (s *Server) requireWritableUser(ctx context.Context) (*auth.AuthenticatedUser, error) {
 	au := auth.UserFromContext(ctx)
 	if au == nil || au.User == nil {
 		return nil, connect.NewError(connect.CodeUnauthenticated, fmt.Errorf("authentication required"))
@@ -161,30 +217,44 @@ func (s *Server) ChangePassword(ctx context.Context, req *connect.Request[apiv1.
 	if au.ReadOnly {
 		return nil, connect.NewError(connect.CodePermissionDenied, fmt.Errorf("read-only API key"))
 	}
-	if len(req.Msg.NewPassword) < 8 {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("new password must be at least 8 characters"))
+	return au, nil
+}
+
+func (s *Server) changeUserPassword(ctx context.Context, userID int, currentPassword, newPassword string) error {
+	user, err := s.passwordUser(ctx, userID)
+	if err != nil {
+		return err
 	}
-	user, err := s.store.GetUserByID(ctx, au.User.ID)
+	if vErr := verifyCurrentPassword(user.PasswordHash, currentPassword); vErr != nil {
+		return vErr
+	}
+	hash, err := password.Hash(newPassword)
+	if err != nil {
+		return connect.NewError(connect.CodeInternal, err)
+	}
+	if err := s.store.UpdateUserPassword(ctx, user.ID, hash); err != nil {
+		return connect.NewError(connect.CodeInternal, err)
+	}
+	return nil
+}
+
+func (s *Server) passwordUser(ctx context.Context, userID int) (*store.UserAccountRow, error) {
+	user, err := s.store.GetUserByID(ctx, userID)
 	if err != nil || user == nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	if user.PasswordHash == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("user has no password set"))
 	}
-	match, err := password.Verify(user.PasswordHash, req.Msg.CurrentPassword)
+	return user, nil
+}
+
+func verifyCurrentPassword(hash, currentPassword string) error {
+	match, err := password.Verify(hash, currentPassword)
 	if err != nil || !match {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid current password"))
+		return connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid current password"))
 	}
-	hash, err := password.Hash(req.Msg.NewPassword)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-	if err := s.store.UpdateUserPassword(ctx, user.ID, hash); err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-	return connect.NewResponse(&apiv1.ChangePasswordResponse{
-		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Password changed"},
-	}), nil
+	return nil
 }
 
 func toProtoUser(u *store.UserAccountRow) *apiv1.UserAccount {

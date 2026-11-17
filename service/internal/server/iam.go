@@ -99,28 +99,45 @@ func mapStoreError(err error) *connect.Error {
 	if err == nil {
 		return nil
 	}
+	return connect.NewError(storeErrorCode(err), err)
+}
+
+func storeErrorCode(err error) connect.Code {
 	if errors.Is(err, sql.ErrNoRows) {
-		return connect.NewError(connect.CodeNotFound, err)
+		return connect.CodeNotFound
 	}
+	if isFailedPreconditionStoreError(err) {
+		return connect.CodeFailedPrecondition
+	}
+	if strings.Contains(err.Error(), "already exists") {
+		return connect.CodeAlreadyExists
+	}
+	return connect.CodeInternal
+}
+
+func isFailedPreconditionStoreError(err error) bool {
 	if errors.Is(err, iamstore.ErrNoSuperuser) ||
 		errors.Is(err, iamstore.ErrSystemRole) ||
 		errors.Is(err, iamstore.ErrSystemGroup) ||
 		errors.Is(err, iamstore.ErrRenameSystemRole) {
-		return connect.NewError(connect.CodeFailedPrecondition, err)
+		return true
 	}
-	msg := err.Error()
-	switch {
-	case strings.Contains(msg, "already exists"):
-		return connect.NewError(connect.CodeAlreadyExists, err)
-	case strings.Contains(msg, "cannot delete system"),
-		strings.Contains(msg, "cannot modify system"),
-		strings.Contains(msg, "cannot rename system"),
-		strings.Contains(msg, "cannot set permissions for system"),
-		strings.Contains(msg, "refusing to leave the system without a superuser"):
-		return connect.NewError(connect.CodeFailedPrecondition, err)
-	default:
-		return connect.NewError(connect.CodeInternal, err)
+	return isSystemGuardMessage(err.Error())
+}
+
+func isSystemGuardMessage(msg string) bool {
+	for _, needle := range []string{
+		"cannot delete system",
+		"cannot modify system",
+		"cannot rename system",
+		"cannot set permissions for system",
+		"refusing to leave the system without a superuser",
+	} {
+		if strings.Contains(msg, needle) {
+			return true
+		}
 	}
+	return false
 }
 
 func (s *Server) impersonatorUserID(ctx context.Context, header http.Header, au *auth.AuthenticatedUser) (int, error) {
@@ -177,22 +194,30 @@ func (s *Server) GetUsers(ctx context.Context, _ *connect.Request[apiv1.GetUsers
 	}
 	out := &apiv1.GetUsersResponse{}
 	for i := range rows {
-		user := toProtoUser(&rows[i])
-		member, err := s.linkedMemberForUser(ctx, rows[i].ID)
+		user, err := s.enrichUserProto(ctx, &rows[i])
 		if err != nil {
-			s.log.WithError(err).Error("get linked member for user")
-			return nil, connect.NewError(connect.CodeInternal, err)
+			return nil, err
 		}
-		user.LinkedMember = member
-		groups, err := s.userGroupsForUser(ctx, rows[i].ID)
-		if err != nil {
-			s.log.WithError(err).Error("list user groups for user")
-			return nil, connect.NewError(connect.CodeInternal, err)
-		}
-		user.UserGroups = groups
 		out.Users = append(out.Users, user)
 	}
 	return connect.NewResponse(out), nil
+}
+
+func (s *Server) enrichUserProto(ctx context.Context, row *store.UserAccountRow) (*apiv1.UserAccount, error) {
+	user := toProtoUser(row)
+	member, err := s.linkedMemberForUser(ctx, row.ID)
+	if err != nil {
+		s.log.WithError(err).Error("get linked member for user")
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	user.LinkedMember = member
+	groups, err := s.userGroupsForUser(ctx, row.ID)
+	if err != nil {
+		s.log.WithError(err).Error("list user groups for user")
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	user.UserGroups = groups
+	return user, nil
 }
 
 func (s *Server) GetUser(ctx context.Context, req *connect.Request[apiv1.GetUserRequest]) (*connect.Response[apiv1.GetUserResponse], error) {
@@ -211,12 +236,9 @@ func (s *Server) GetUser(ctx context.Context, req *connect.Request[apiv1.GetUser
 }
 
 func (s *Server) getUserResponse(ctx context.Context, userID int) (*apiv1.GetUserResponse, error) {
-	user, err := s.store.GetUserByID(ctx, userID)
+	user, err := s.requireUserByID(ctx, userID)
 	if err != nil {
-		return nil, mapStoreError(err)
-	}
-	if user == nil {
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
+		return nil, err
 	}
 	out := &apiv1.GetUserResponse{User: toProtoUser(user)}
 	member, err := s.linkedMemberForUser(ctx, userID)
@@ -234,36 +256,72 @@ func (s *Server) getUserResponse(ctx context.Context, userID int) (*apiv1.GetUse
 	return out, nil
 }
 
+func (s *Server) requireUserByID(ctx context.Context, userID int) (*store.UserAccountRow, error) {
+	user, err := s.store.GetUserByID(ctx, userID)
+	if err != nil {
+		return nil, mapStoreError(err)
+	}
+	if user == nil {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
+	}
+	return user, nil
+}
+
 func (s *Server) CreateUser(ctx context.Context, req *connect.Request[apiv1.CreateUserRequest]) (*connect.Response[apiv1.CreateUserResponse], error) {
 	if _, err := s.requireWrite(ctx); err != nil {
 		return nil, err
 	}
-	username := strings.TrimSpace(req.Msg.Username)
+	username, hash, err := validateCreateUserInput(req.Msg.Username, req.Msg.Password)
+	if err != nil {
+		return nil, err
+	}
+	user, err := s.insertAdminUser(ctx, username, hash)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&apiv1.CreateUserResponse{
+		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "User created"},
+		User:             toProtoUser(user),
+	}), nil
+}
+
+func validateCreateUserInput(username, pwd string) (string, string, error) {
+	username = strings.TrimSpace(username)
 	if username == "" {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("username required"))
+		return "", "", connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("username required"))
 	}
-	pwd := req.Msg.Password
 	if pwd != "" && len(pwd) < 8 {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("password must be at least 8 characters"))
+		return "", "", connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("password must be at least 8 characters"))
 	}
-	hash := ""
-	if pwd != "" {
-		var err error
-		hash, err = password.Hash(pwd)
-		if err != nil {
-			return nil, connect.NewError(connect.CodeInternal, err)
-		}
+	hash, err := optionalPasswordHash(pwd)
+	if err != nil {
+		return "", "", err
 	}
+	return username, hash, nil
+}
+
+func optionalPasswordHash(pwd string) (string, error) {
+	if pwd == "" {
+		return "", nil
+	}
+	hash, err := password.Hash(pwd)
+	if err != nil {
+		return "", connect.NewError(connect.CodeInternal, err)
+	}
+	return hash, nil
+}
+
+func (s *Server) insertAdminUser(ctx context.Context, username, hash string) (*store.UserAccountRow, error) {
 	id, err := s.store.CreateUserAccount(ctx, username, hash, store.UserCreatedByAdmin)
 	if err != nil {
 		s.log.WithError(err).Error("create user account")
 		return nil, mapStoreError(err)
 	}
-	if err := s.store.EnsureUserInEveryoneGroup(ctx, id); err != nil {
+	if err = s.store.EnsureUserInEveryoneGroup(ctx, id); err != nil {
 		s.log.WithError(err).Error("ensure user in everyone group")
 		return nil, mapStoreError(err)
 	}
-	if err := s.store.EnsureRBACBootstrap(ctx); err != nil {
+	if err = s.store.EnsureRBACBootstrap(ctx); err != nil {
 		s.log.WithError(err).Error("ensure rbac bootstrap")
 		return nil, mapStoreError(err)
 	}
@@ -272,10 +330,7 @@ func (s *Server) CreateUser(ctx context.Context, req *connect.Request[apiv1.Crea
 		s.log.WithError(err).Error("get created user")
 		return nil, mapStoreError(err)
 	}
-	return connect.NewResponse(&apiv1.CreateUserResponse{
-		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "User created"},
-		User:             toProtoUser(user),
-	}), nil
+	return user, nil
 }
 
 func (s *Server) DeleteUser(ctx context.Context, req *connect.Request[apiv1.DeleteUserRequest]) (*connect.Response[apiv1.DeleteUserResponse], error) {
@@ -419,10 +474,7 @@ func (s *Server) rbacRolesByNames(ctx context.Context, names []string) ([]*apiv1
 	if len(names) == 0 {
 		return nil, nil
 	}
-	want := make(map[string]struct{}, len(names))
-	for _, name := range names {
-		want[name] = struct{}{}
-	}
+	want := nameSet(names)
 	all, err := s.store.ListRBACRoles(ctx)
 	if err != nil {
 		s.log.WithError(err).Error("list rbac roles")
@@ -435,6 +487,14 @@ func (s *Server) rbacRolesByNames(ctx context.Context, names []string) ([]*apiv1
 		}
 	}
 	return out, nil
+}
+
+func nameSet(names []string) map[string]struct{} {
+	want := make(map[string]struct{}, len(names))
+	for _, name := range names {
+		want[name] = struct{}{}
+	}
+	return want
 }
 
 func (s *Server) GetUserGroupRbacRoles(ctx context.Context, req *connect.Request[apiv1.GetUserGroupRbacRolesRequest]) (*connect.Response[apiv1.GetUserGroupRbacRolesResponse], error) {
@@ -571,18 +631,26 @@ func (s *Server) GetUserGroupMembers(ctx context.Context, req *connect.Request[a
 		s.log.WithError(err).Error("list user group member ids")
 		return nil, mapStoreError(err)
 	}
-	out := &apiv1.GetUserGroupMembersResponse{}
-	for _, userID := range memberIDs {
+	members, err := s.loadUsersByIDs(ctx, memberIDs)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&apiv1.GetUserGroupMembersResponse{Members: members}), nil
+}
+
+func (s *Server) loadUsersByIDs(ctx context.Context, userIDs []int) ([]*apiv1.UserAccount, error) {
+	out := make([]*apiv1.UserAccount, 0, len(userIDs))
+	for _, userID := range userIDs {
 		user, err := s.store.GetUserByID(ctx, userID)
 		if err != nil {
 			s.log.WithError(err).Error("get user group member")
 			return nil, mapStoreError(err)
 		}
 		if user != nil {
-			out.Members = append(out.Members, toProtoUser(user))
+			out = append(out, toProtoUser(user))
 		}
 	}
-	return connect.NewResponse(out), nil
+	return out, nil
 }
 
 func (s *Server) SetUserGroupMembers(ctx context.Context, req *connect.Request[apiv1.SetUserGroupMembersRequest]) (*connect.Response[apiv1.SetUserGroupMembersResponse], error) {
@@ -603,24 +671,11 @@ func (s *Server) ImpersonateUser(ctx context.Context, req *connect.Request[apiv1
 	if err != nil {
 		return nil, err
 	}
-	targetID := int(req.Msg.UserId)
-	target, err := s.store.GetUserByID(ctx, targetID)
-	if err != nil {
-		s.log.WithError(err).Error("get impersonation target")
-		return nil, mapStoreError(err)
-	}
-	if target == nil {
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
-	}
-	impersonatorID, err := s.impersonatorUserID(ctx, req.Header(), au)
+	targetID, impersonatorID, err := s.impersonationPair(ctx, req, au)
 	if err != nil {
 		return nil, err
 	}
-	if impersonatorID == targetID {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("cannot impersonate yourself"))
-	}
-	oldSID := sessionIDFromHeader(req.Header())
-	if oldSID != "" {
+	if oldSID := sessionIDFromHeader(req.Header()); oldSID != "" {
 		_ = s.store.DeleteSession(ctx, oldSID)
 	}
 	newSID := uuid.NewString()
@@ -636,31 +691,37 @@ func (s *Server) ImpersonateUser(ctx context.Context, req *connect.Request[apiv1
 	return res, nil
 }
 
+func (s *Server) impersonationPair(ctx context.Context, req *connect.Request[apiv1.ImpersonateUserRequest], au *auth.AuthenticatedUser) (int, int, error) {
+	targetID := int(req.Msg.UserId)
+	target, err := s.store.GetUserByID(ctx, targetID)
+	if err != nil {
+		s.log.WithError(err).Error("get impersonation target")
+		return 0, 0, mapStoreError(err)
+	}
+	if target == nil {
+		return 0, 0, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
+	}
+	impersonatorID, err := s.impersonatorUserID(ctx, req.Header(), au)
+	if err != nil {
+		return 0, 0, err
+	}
+	if impersonatorID == targetID {
+		return 0, 0, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("cannot impersonate yourself"))
+	}
+	return targetID, impersonatorID, nil
+}
+
 func (s *Server) StopImpersonation(ctx context.Context, req *connect.Request[apiv1.StopImpersonationRequest]) (*connect.Response[apiv1.StopImpersonationResponse], error) {
 	if _, err := s.requireAuth(ctx); err != nil {
 		return nil, err
 	}
-	sid := sessionIDFromHeader(req.Header())
-	if sid == "" {
-		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("not impersonating"))
-	}
-	sess, err := s.store.GetSessionBySID(ctx, sid)
+	sid, impersonatorID, err := s.stopImpersonationSession(ctx, req.Header())
 	if err != nil {
-		s.log.WithError(err).Error("get session for stop impersonation")
-		return nil, mapStoreError(err)
+		return nil, err
 	}
-	if sess == nil || sess.ImpersonatorUserID == nil {
-		return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("not impersonating"))
-	}
-	impersonatorID := *sess.ImpersonatorUserID
-	if err := s.store.DeleteSession(ctx, sid); err != nil && !errors.Is(err, sql.ErrNoRows) {
-		s.log.WithError(err).Error("delete impersonation session")
-		return nil, mapStoreError(err)
-	}
-	newSID := uuid.NewString()
-	if err := s.store.CreateSession(ctx, newSID, impersonatorID, nil); err != nil {
-		s.log.WithError(err).Error("restore impersonator session")
-		return nil, mapStoreError(err)
+	newSID, err := s.restoreImpersonatorSession(ctx, sid, impersonatorID)
+	if err != nil {
+		return nil, err
 	}
 	res := connect.NewResponse(&apiv1.StopImpersonationResponse{
 		StandardResponse: &apiv1.StandardResponse{Success: true, Message: "Impersonation stopped"},
@@ -668,6 +729,35 @@ func (s *Server) StopImpersonation(ctx context.Context, req *connect.Request[api
 	c := auth.NewSessionCookie(newSID)
 	res.Header().Add("Set-Cookie", c.String())
 	return res, nil
+}
+
+func (s *Server) restoreImpersonatorSession(ctx context.Context, sid string, impersonatorID int) (string, error) {
+	if err := s.store.DeleteSession(ctx, sid); err != nil && !errors.Is(err, sql.ErrNoRows) {
+		s.log.WithError(err).Error("delete impersonation session")
+		return "", mapStoreError(err)
+	}
+	newSID := uuid.NewString()
+	if err := s.store.CreateSession(ctx, newSID, impersonatorID, nil); err != nil {
+		s.log.WithError(err).Error("restore impersonator session")
+		return "", mapStoreError(err)
+	}
+	return newSID, nil
+}
+
+func (s *Server) stopImpersonationSession(ctx context.Context, header http.Header) (string, int, error) {
+	sid := sessionIDFromHeader(header)
+	if sid == "" {
+		return "", 0, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("not impersonating"))
+	}
+	sess, err := s.store.GetSessionBySID(ctx, sid)
+	if err != nil {
+		s.log.WithError(err).Error("get session for stop impersonation")
+		return "", 0, mapStoreError(err)
+	}
+	if sess == nil || sess.ImpersonatorUserID == nil {
+		return "", 0, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("not impersonating"))
+	}
+	return sid, *sess.ImpersonatorUserID, nil
 }
 
 func (s *Server) ListApiKeys(ctx context.Context, _ *connect.Request[apiv1.ListApiKeysRequest]) (*connect.Response[apiv1.ListApiKeysResponse], error) {
@@ -696,31 +786,45 @@ func (s *Server) CreateApiKey(ctx context.Context, req *connect.Request[apiv1.Cr
 	if name == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("name required"))
 	}
-	secret, err := password.GenerateAPIKey("sa_")
+	secret, created, err := s.createAPIKeyRow(ctx, au.User.ID, name, req.Msg.ReadOnly)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-	id, err := s.store.CreateAPIKey(ctx, au.User.ID, name, secret, req.Msg.ReadOnly)
-	if err != nil {
-		s.log.WithError(err).Error("create api key")
-		return nil, mapStoreError(err)
-	}
-	rows, err := s.store.ListAPIKeysForUser(ctx, au.User.ID)
-	if err != nil {
-		s.log.WithError(err).Error("list api keys after create")
-		return nil, mapStoreError(err)
-	}
-	var created *store.APIKeyRow
-	for i := range rows {
-		if rows[i].ID == id {
-			created = &rows[i]
-			break
-		}
+		return nil, err
 	}
 	return connect.NewResponse(&apiv1.CreateApiKeyResponse{
 		Key:    toProtoApiKey(created),
 		Secret: secret,
 	}), nil
+}
+
+func (s *Server) createAPIKeyRow(ctx context.Context, userID int, name string, readOnly bool) (string, *store.APIKeyRow, error) {
+	secret, err := password.GenerateAPIKey("sa_")
+	if err != nil {
+		return "", nil, connect.NewError(connect.CodeInternal, err)
+	}
+	id, err := s.store.CreateAPIKey(ctx, userID, name, secret, readOnly)
+	if err != nil {
+		s.log.WithError(err).Error("create api key")
+		return "", nil, mapStoreError(err)
+	}
+	created, err := s.findAPIKey(ctx, userID, id)
+	if err != nil {
+		return "", nil, err
+	}
+	return secret, created, nil
+}
+
+func (s *Server) findAPIKey(ctx context.Context, userID, id int) (*store.APIKeyRow, error) {
+	rows, err := s.store.ListAPIKeysForUser(ctx, userID)
+	if err != nil {
+		s.log.WithError(err).Error("list api keys after create")
+		return nil, mapStoreError(err)
+	}
+	for i := range rows {
+		if rows[i].ID == id {
+			return &rows[i], nil
+		}
+	}
+	return nil, nil
 }
 
 func (s *Server) DeleteApiKey(ctx context.Context, req *connect.Request[apiv1.DeleteApiKeyRequest]) (*connect.Response[apiv1.DeleteApiKeyResponse], error) {

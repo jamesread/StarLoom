@@ -8,6 +8,7 @@ import (
 	_ "image/png"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -33,24 +34,10 @@ func Dir(configDir string) string {
 }
 
 func Save(configDir string, memberID int, data []byte, contentType string) (relativePath string, err error) {
-	if len(data) == 0 || len(data) > MaxBytes {
-		return "", fmt.Errorf("image must be between 1 byte and 2 MB")
+	ext, err := validateImagePayload(data, contentType)
+	if err != nil {
+		return "", err
 	}
-
-	contentType = normalizeContentType(contentType)
-	if _, ok := allowedTypes[contentType]; !ok {
-		if detected := detectContentType(data); detected != "" {
-			contentType = detected
-		}
-	}
-	ext, ok := allowedTypes[contentType]
-	if !ok {
-		return "", fmt.Errorf("unsupported image type %q (use JPEG, PNG, or WebP)", contentType)
-	}
-	if _, err := decodeConfig(data); err != nil {
-		return "", fmt.Errorf("invalid image data: %w", err)
-	}
-
 	dir := Dir(configDir)
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return "", err
@@ -59,11 +46,36 @@ func Save(configDir string, memberID int, data []byte, contentType string) (rela
 		return "", err
 	}
 	filename := fmt.Sprintf("%d%s", memberID, ext)
-	full := filepath.Join(dir, filename)
-	if err := os.WriteFile(full, data, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, filename), data, 0o644); err != nil {
 		return "", err
 	}
 	return filename, nil
+}
+
+func validateImagePayload(data []byte, contentType string) (ext string, err error) {
+	if len(data) == 0 || len(data) > MaxBytes {
+		return "", fmt.Errorf("image must be between 1 byte and 2 MB")
+	}
+	contentType = resolveContentType(data, contentType)
+	ext, ok := allowedTypes[contentType]
+	if !ok {
+		return "", fmt.Errorf("unsupported image type %q (use JPEG, PNG, or WebP)", contentType)
+	}
+	if _, err := decodeConfig(data); err != nil {
+		return "", fmt.Errorf("invalid image data: %w", err)
+	}
+	return ext, nil
+}
+
+func resolveContentType(data []byte, contentType string) string {
+	contentType = normalizeContentType(contentType)
+	if _, ok := allowedTypes[contentType]; ok {
+		return contentType
+	}
+	if detected := detectContentType(data); detected != "" {
+		return detected
+	}
+	return contentType
 }
 
 func Select(configDir string, memberID int, filename string) (relativePath string, err error) {
@@ -73,12 +85,16 @@ func Select(configDir string, memberID int, filename string) (relativePath strin
 	}
 	dir := Dir(configDir)
 	src := filepath.Join(dir, base)
-	if _, err := os.Stat(src); err != nil {
+	if _, err = os.Stat(src); err != nil {
 		return "", fmt.Errorf("avatar not found")
 	}
 	if isCurrentSlot(memberID, base) {
 		return base, nil
 	}
+	return promoteAvatar(dir, memberID, src, base)
+}
+
+func promoteAvatar(dir string, memberID int, src, base string) (string, error) {
 	if err := archiveCurrentSlot(dir, memberID); err != nil {
 		return "", err
 	}
@@ -86,17 +102,24 @@ func Select(configDir string, memberID int, filename string) (relativePath strin
 	if err != nil {
 		return "", err
 	}
-	ext := filepath.Ext(base)
-	destName := fmt.Sprintf("%d%s", memberID, ext)
-	dest := filepath.Join(dir, destName)
-	if err := os.WriteFile(dest, data, 0o644); err != nil {
+	destName := fmt.Sprintf("%d%s", memberID, filepath.Ext(base))
+	if err := os.WriteFile(filepath.Join(dir, destName), data, 0o644); err != nil {
 		return "", err
 	}
 	return destName, nil
 }
 
 func List(configDir string, memberID int, currentPath string) ([]Entry, error) {
-	dir := Dir(configDir)
+	entries, err := readAvatarDir(Dir(configDir))
+	if err != nil || entries == nil {
+		return nil, err
+	}
+	out := memberAvatarEntries(entries, memberID, filepath.Base(currentPath))
+	sortAvatarEntries(out)
+	return out, nil
+}
+
+func readAvatarDir(dir string) ([]os.DirEntry, error) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -104,7 +127,10 @@ func List(configDir string, memberID int, currentPath string) ([]Entry, error) {
 		}
 		return nil, err
 	}
-	currentBase := filepath.Base(currentPath)
+	return entries, nil
+}
+
+func memberAvatarEntries(entries []os.DirEntry, memberID int, currentBase string) []Entry {
 	out := make([]Entry, 0)
 	for _, entry := range entries {
 		if entry.IsDir() {
@@ -114,18 +140,18 @@ func List(configDir string, memberID int, currentPath string) ([]Entry, error) {
 		if !BelongsToMember(memberID, name) {
 			continue
 		}
-		out = append(out, Entry{
-			Filename:  name,
-			IsCurrent: name == currentBase,
-		})
+		out = append(out, Entry{Filename: name, IsCurrent: name == currentBase})
 	}
+	return out
+}
+
+func sortAvatarEntries(out []Entry) {
 	sort.Slice(out, func(i, j int) bool {
 		if out[i].IsCurrent != out[j].IsCurrent {
 			return out[i].IsCurrent
 		}
 		return out[i].Filename > out[j].Filename
 	})
-	return out, nil
 }
 
 func DeleteCurrent(configDir string, memberID int) error {
@@ -137,36 +163,29 @@ func DeleteCurrent(configDir string, memberID int) error {
 }
 
 func DeleteAll(configDir string, memberID int) error {
-	dir := Dir(configDir)
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return nil
-		}
+	entries, err := readAvatarDir(Dir(configDir))
+	if err != nil || entries == nil {
 		return err
 	}
 	prefix := fmt.Sprintf("%d", memberID)
 	for _, entry := range entries {
-		if entry.IsDir() {
-			continue
+		if shouldDeleteMemberFile(entry, prefix) {
+			_ = os.Remove(filepath.Join(Dir(configDir), entry.Name()))
 		}
-		name := entry.Name()
-		if !strings.HasPrefix(name, prefix) {
-			continue
-		}
-		suffix := name[len(prefix):]
-		if suffix == "" {
-			continue
-		}
-		if suffix[0] != '.' && suffix[0] != '-' {
-			continue
-		}
-		if !hasAllowedExt(name) {
-			continue
-		}
-		_ = os.Remove(filepath.Join(dir, name))
 	}
 	return nil
+}
+
+func shouldDeleteMemberFile(entry os.DirEntry, prefix string) bool {
+	if entry.IsDir() || !strings.HasPrefix(entry.Name(), prefix) {
+		return false
+	}
+	return memberOwnedAvatarName(entry.Name(), prefix)
+}
+
+func memberOwnedAvatarName(name, prefix string) bool {
+	suffix := name[len(prefix):]
+	return suffix != "" && (suffix[0] == '.' || suffix[0] == '-') && hasAllowedExt(name)
 }
 
 // Delete removes the current avatar slot for a member. Prefer DeleteCurrent.
@@ -182,7 +201,7 @@ func Path(configDir, relativePath string) string {
 }
 
 func BelongsToMember(memberID int, filename string) bool {
-	if strings.Contains(filename, "/") || strings.Contains(filename, "\\") || filename != filepath.Base(filename) {
+	if !isSafeAvatarFilename(filename) {
 		return false
 	}
 	base := filepath.Base(filename)
@@ -190,17 +209,25 @@ func BelongsToMember(memberID int, filename string) bool {
 	if !strings.HasPrefix(base, prefix) {
 		return false
 	}
-	suffix := base[len(prefix):]
+	return memberFilenameSuffixOK(base[len(prefix):], base)
+}
+
+func isSafeAvatarFilename(filename string) bool {
+	return !strings.Contains(filename, "/") &&
+		!strings.Contains(filename, "\\") &&
+		filename == filepath.Base(filename)
+}
+
+func memberFilenameSuffixOK(suffix, base string) bool {
 	if suffix == "" {
 		return false
 	}
-	if suffix[0] == '.' {
+	switch suffix[0] {
+	case '.', '-':
 		return hasAllowedExt(base)
-	}
-	if suffix[0] != '-' {
+	default:
 		return false
 	}
-	return hasAllowedExt(base)
 }
 
 func archiveCurrentSlot(dir string, memberID int) error {
@@ -229,12 +256,15 @@ func isCurrentSlot(memberID int, filename string) bool {
 
 func hasAllowedExt(filename string) bool {
 	ext := strings.ToLower(filepath.Ext(filename))
-	for _, allowed := range allowedTypes {
-		if ext == allowed {
-			return true
-		}
+	return slices.Contains(values(allowedTypes), ext)
+}
+
+func values(m map[string]string) []string {
+	out := make([]string, 0, len(m))
+	for _, v := range m {
+		out = append(out, v)
 	}
-	return false
+	return out
 }
 
 func normalizeContentType(contentType string) string {
@@ -250,16 +280,28 @@ func normalizeContentType(contentType string) string {
 }
 
 func detectContentType(data []byte) string {
-	if len(data) >= 3 && data[0] == 0xff && data[1] == 0xd8 && data[2] == 0xff {
+	if isJPEG(data) {
 		return "image/jpeg"
 	}
-	if len(data) >= 8 && bytes.Equal(data[:8], []byte{0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a}) {
+	if isPNG(data) {
 		return "image/png"
 	}
-	if len(data) >= 12 && bytes.Equal(data[:4], []byte("RIFF")) && bytes.Equal(data[8:12], []byte("WEBP")) {
+	if isWEBP(data) {
 		return "image/webp"
 	}
 	return ""
+}
+
+func isJPEG(data []byte) bool {
+	return len(data) >= 3 && data[0] == 0xff && data[1] == 0xd8 && data[2] == 0xff
+}
+
+func isPNG(data []byte) bool {
+	return len(data) >= 8 && bytes.Equal(data[:8], []byte{0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a})
+}
+
+func isWEBP(data []byte) bool {
+	return len(data) >= 12 && bytes.Equal(data[:4], []byte("RIFF")) && bytes.Equal(data[8:12], []byte("WEBP"))
 }
 
 func decodeConfig(data []byte) (image.Config, error) {

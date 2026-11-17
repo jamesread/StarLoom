@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -26,19 +27,25 @@ func TestDiscoveryEndpoints(t *testing.T) {
 	t.Cleanup(ts.Close)
 
 	t.Run("llms.txt", func(t *testing.T) {
-		res, err := http.Get(ts.URL + "/llms.txt")
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, ts.URL+"/llms.txt", nil)
 		require.NoError(t, err)
-		defer res.Body.Close()
+		res, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		defer func() { require.NoError(t, res.Body.Close()) }()
 		require.Equal(t, http.StatusOK, res.StatusCode)
 		require.Contains(t, res.Header.Get("Content-Type"), "text/plain")
+		_, _ = io.Copy(io.Discard, res.Body)
 	})
 
 	t.Run("openapi", func(t *testing.T) {
-		res, err := http.Get(ts.URL + "/openapi")
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, ts.URL+"/openapi", nil)
 		require.NoError(t, err)
-		defer res.Body.Close()
+		res, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		defer func() { require.NoError(t, res.Body.Close()) }()
 		require.Equal(t, http.StatusOK, res.StatusCode)
 		require.Contains(t, res.Header.Get("Content-Type"), "application/json")
 		require.NotEmpty(t, openAPISpec)
+		_, _ = io.Copy(io.Discard, res.Body)
 	})
 }

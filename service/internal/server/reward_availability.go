@@ -26,10 +26,7 @@ func (s *Server) rewardUnavailableDueToSchedule(ctx context.Context, reward *sto
 	if reward == nil || !reward.Active {
 		return false
 	}
-	listBalance := balance
-	if listBalance < reward.CostStars {
-		listBalance = reward.CostStars
-	}
+	listBalance := max(balance, reward.CostStars)
 	env, err := s.rewardAvailabilityEnv(ctx, reward, memberID, listBalance, now)
 	if err != nil {
 		return true

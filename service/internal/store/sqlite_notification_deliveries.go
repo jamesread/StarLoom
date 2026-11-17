@@ -34,7 +34,7 @@ func (s *SQLite) ListNotificationDeliveries(ctx context.Context, limit int) ([]N
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	out := make([]NotificationDeliveryRow, 0)
 	for rows.Next() {
 		var row NotificationDeliveryRow

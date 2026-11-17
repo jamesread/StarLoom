@@ -1,10 +1,10 @@
 package store
 
 type StarChartRow struct {
+	Name      string
+	CreatedAt string
 	ID        int
 	FamilyID  int
-	Name      string
 	SortOrder int
 	Active    bool
-	CreatedAt string
 }

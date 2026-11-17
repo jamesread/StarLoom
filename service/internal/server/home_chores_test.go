@@ -186,7 +186,7 @@ func TestParentHomeOmitsChoresNotScheduledToday(t *testing.T) {
 	_, err = svc.CreateChore(parentCtx, connect.NewRequest(&apiv1.CreateChoreRequest{
 		Title:          "Only another day",
 		StarReward:     1,
-		Weekdays:       []int32{int32(other)},
+		Weekdays:       []int32{other},
 		ChildMemberIds: []int32{int32(parentMemberID)},
 	}))
 	require.NoError(t, err)

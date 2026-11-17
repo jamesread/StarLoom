@@ -2,15 +2,16 @@ package store
 
 import (
 	"context"
+	"slices"
 	"sort"
 	"time"
 )
 
 type memoryWebhook struct {
-	nextID         int
-	nextDeliveryID int
 	byID           map[int]WebhookTargetRow
 	deliveries     []WebhookDeliveryRow
+	nextID         int
+	nextDeliveryID int
 }
 
 func (m *Memory) webhookState() *memoryWebhook {
@@ -47,11 +48,8 @@ func (m *Memory) EnabledTargetsForEvent(_ context.Context, event string) ([]Webh
 		if !row.Enabled {
 			continue
 		}
-		for _, e := range row.Events {
-			if e == event {
-				out = append(out, row)
-				break
-			}
+		if slices.Contains(row.Events, event) {
+			out = append(out, row)
 		}
 	}
 	return out, nil

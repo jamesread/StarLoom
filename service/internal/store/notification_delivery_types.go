@@ -8,13 +8,13 @@ const (
 
 // NotificationDeliveryRow records one outbound Apprise notification attempt.
 type NotificationDeliveryRow struct {
-	ID                   int
-	FamilyID             int
-	RecipientMemberID    int
 	RecipientDisplayName string
 	NotificationType     string
 	Title                string
-	Success              bool
 	ErrorMessage         string
 	SentAt               string
+	ID                   int
+	FamilyID             int
+	RecipientMemberID    int
+	Success              bool
 }

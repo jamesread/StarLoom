@@ -21,7 +21,7 @@ func TestUserPreferencesDefaultsAndSave(t *testing.T) {
 
 	got, err := svc.GetUserPreferences(ctx, connect.NewRequest(&apiv1.GetUserPreferencesRequest{}))
 	require.NoError(t, err)
-	require.Equal(t, "", got.Msg.Language)
+	require.Empty(t, got.Msg.Language)
 	require.True(t, got.Msg.GetSidebarEnabled())
 	require.Contains(t, got.Msg.AvailableLanguages, "en")
 

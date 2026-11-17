@@ -4,10 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"os"
-	"path/filepath"
-
-	_ "github.com/mattn/go-sqlite3"
 
 	iamsqlite "github.com/jamesread/armature-iam/store/sqlite"
 )
@@ -16,40 +12,6 @@ import (
 type SQLite struct {
 	*iamsqlite.SQLite
 	db *sql.DB
-}
-
-// OpenSQLite opens (or creates) a SQLite database at dbPath.
-func OpenSQLite(dbPath string) (*SQLite, error) {
-	dir := filepath.Dir(dbPath)
-	if err := os.MkdirAll(dir, 0o755); err != nil {
-		return nil, err
-	}
-
-	dsn := dbPath + "?_foreign_keys=on&_busy_timeout=5000"
-	db, err := sql.Open("sqlite3", dsn)
-	if err != nil {
-		return nil, err
-	}
-
-	db.SetMaxOpenConns(4)
-	db.SetMaxIdleConns(4)
-	db.SetConnMaxLifetime(-1)
-
-	if _, err := db.Exec(`PRAGMA journal_mode=WAL`); err != nil {
-		_ = db.Close()
-		return nil, err
-	}
-	if _, err := db.Exec(`PRAGMA synchronous=NORMAL`); err != nil {
-		_ = db.Close()
-		return nil, err
-	}
-
-	if err := db.Ping(); err != nil {
-		_ = db.Close()
-		return nil, err
-	}
-
-	return &SQLite{db: db, SQLite: iamsqlite.New(db)}, nil
 }
 
 // SQLDB exposes the underlying connection for migrations.

@@ -53,18 +53,18 @@ SELECT g.id, r.id FROM user_groups g CROSS JOIN rbac_roles r
 WHERE g.name = 'Children' AND r.name = 'child';
 `
 
-func seedDomainRBAC(db *sql.DB) error {
-	_, err := db.Exec(domainRBACSQL)
+func seedDomainRBAC(ctx context.Context, db *sql.DB) error {
+	_, err := db.ExecContext(ctx, domainRBACSQL)
 	return err
 }
 
-func (s *SQLite) SeedDomainRBAC(_ context.Context) error {
-	return seedDomainRBAC(s.db)
+func (s *SQLite) SeedDomainRBAC(ctx context.Context) error {
+	return seedDomainRBAC(ctx, s.db)
 }
 
-func (m *Memory) SeedDomainRBAC(_ context.Context) error {
+func (m *Memory) SeedDomainRBAC(ctx context.Context) error {
 	if m.SQLite == nil {
 		return nil
 	}
-	return seedDomainRBAC(m.SQLite.DB())
+	return seedDomainRBAC(ctx, m.DB())
 }
